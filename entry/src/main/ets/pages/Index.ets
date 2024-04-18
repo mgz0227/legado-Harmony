@@ -6,6 +6,10 @@ struct Index {
   build() {
     Row() {
       Column() {
+        Image($r("app.media.app_icon"))
+          .objectFit(ImageFit.Cover)
+          .width(100)
+          .height(100)
         Text(this.message)
           .fontSize(50)
           .fontWeight(FontWeight.Bold)
