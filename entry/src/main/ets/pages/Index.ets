@@ -1,11 +1,24 @@
 import CommonConstants from '../common/constants/CommonConstants';
+import router from '@ohos.router'; // 引入路由管理器
 
 @Entry
 @Component
 struct Index {
   @State name: string = '开源阅读'
   @State Tip: string = '享受阅读时光'
-
+  onPageShow() {
+    setTimeout(() => {
+      // 使用路由管理器跳转到主页面
+      router.pushUrl({
+        url: 'pages/main' // 主页面的URI
+      });
+    }, 1000); // 1000毫秒 = 1秒
+  }
+  onPageHide() {
+    {
+      router.clear();
+    }
+  }
   build() {
     Stack() {
       Image($r('app.media.ic_launcher_background'))
@@ -30,4 +43,5 @@ struct Index {
     }
     .height('100%')
   }
+
 }
