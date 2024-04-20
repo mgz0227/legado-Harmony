@@ -1,47 +1,57 @@
-import CommonConstants from '../common/constants/CommonConstants';
-import router from '@ohos.router'; // 引入路由管理器
-
 @Entry
 @Component
-struct Index {
-  @State name: string = '开源阅读'
-  @State Tip: string = '享受阅读时光'
-  onPageShow() {
-    setTimeout(() => {
-      // 使用路由管理器跳转到主页面
-      router.pushUrl({
-        url: 'pages/main' // 主页面的URI
-      });
-    }, 2000); // 1000毫秒 = 1秒
-  }
-  onPageHide() {
-    {
-      router.clear();
+struct Main {
+  @State message: string = '这是应用主界面'
+  @State currentIndex: number = 0
+
+  @Builder TabBarBuilder(title: ResourceStr, image: ResourceStr, index: number) {
+    Column({ space: 8 }) {
+      Image(image)
+        .width(22)
+        .fillColor(this.selectColor(index))
+      Text(title)
+        .fontSize(14)
+        .fontColor(this.selectColor(index))
     }
   }
+
+  selectColor(index: number) {
+    return this.currentIndex === index ? Color.Black : Color.Gray
+  }
+
   build() {
-    Stack() {
-      Image($r('app.media.ic_launcher_background'))
-        .width(CommonConstants.FULL_WIDTH)
-        .height(CommonConstants.FULL_HEIGHT)
+    Tabs({ barPosition: BarPosition.End }) {
 
-      Column() {
-        Row() {
-          Text(this.name)
-            .fontSize(45)
-            .fontWeight(FontWeight.Bold)
-            .width(45)
-          Text(this.Tip)
-            .fontSize(20)
-            .fontWeight(FontWeight.Normal)
-            .width(25)
-            .markAnchor({ x: -20, y: -80 })
-              }
-
+      TabContent() {
+        Text('我的')
       }
-      .width('100%')
-    }
-    .height('100%')
-  }
+      .tabBar(this.TabBarBuilder('首页', $r('app.media.icon'), TabId.HOME))
 
+      TabContent() {
+        Text('我的')
+      }
+      .tabBar(this.TabBarBuilder('明细', $r('app.media.icon'), TabId.FIND))
+
+      TabContent() {
+        Text('我的')
+      }
+      .tabBar(this.TabBarBuilder('统计', $r('app.media.icon'), TabId.SUB))
+
+      TabContent() {
+        Text('我的')
+      }
+      .tabBar(this.TabBarBuilder('我的', $r('app.media.icon'), TabId.MINE))
+
+    }
+    .width('100%')
+    .height('100%')
+    .onChange(index => this.currentIndex = index)
+  }
+}
+
+export enum TabId {
+  HOME,
+  FIND,
+  SUB,
+  MINE
 }
