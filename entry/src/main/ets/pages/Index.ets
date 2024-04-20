@@ -23,19 +23,19 @@ struct Main {
     Tabs({ barPosition: BarPosition.End }) {
 
       TabContent() {
-        Text('我的')
+        Text('书架')
       }
-      .tabBar(this.TabBarBuilder('首页', $r('app.media.icon'), TabId.HOME))
+      .tabBar(this.TabBarBuilder('书架', $r('app.media.icon'), TabId.HOME))
 
       TabContent() {
-        Text('我的')
+        Text('发现')
       }
-      .tabBar(this.TabBarBuilder('明细', $r('app.media.icon'), TabId.FIND))
+      .tabBar(this.TabBarBuilder('发现', $r('app.media.icon'), TabId.FIND))
 
       TabContent() {
-        Text('我的')
+        Text('订阅源')
       }
-      .tabBar(this.TabBarBuilder('统计', $r('app.media.icon'), TabId.SUB))
+      .tabBar(this.TabBarBuilder('订阅源', $r('app.media.icon'), TabId.SUB))
 
       TabContent() {
         Text('我的')
