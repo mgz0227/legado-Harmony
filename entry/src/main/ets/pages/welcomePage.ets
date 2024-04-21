@@ -12,7 +12,7 @@ struct Index {
       router.pushUrl({
         url: 'pages/Index' // 主页面的URI
       });
-    }, 1000); // 1000毫秒 = 1秒
+    }, 1500); // 1000毫秒 = 1秒
   }
   onPageHide() {
     {
