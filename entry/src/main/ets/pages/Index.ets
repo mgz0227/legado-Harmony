@@ -1,7 +1,7 @@
 @Entry
 @Component
 struct Main {
-  @State message: string = '这是应用主界面'
+
   @State currentIndex: number = 0
 
   @Builder TabBarBuilder(title: ResourceStr, image: ResourceStr, index: number) {
