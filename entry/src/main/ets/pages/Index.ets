@@ -25,22 +25,22 @@ struct Main {
       TabContent() {
         Text('书架')
       }
-      .tabBar(this.TabBarBuilder('书架', $r('app.media.icon'), TabId.HOME))
+      .tabBar(this.TabBarBuilder('书架', $r('app.media.HOME_line'), TabId.HOME))
 
       TabContent() {
         Text('发现')
       }
-      .tabBar(this.TabBarBuilder('发现', $r('app.media.icon'), TabId.FIND))
+      .tabBar(this.TabBarBuilder('发现', $r('app.media.FIND_line'), TabId.FIND))
 
       TabContent() {
         Text('订阅源')
       }
-      .tabBar(this.TabBarBuilder('订阅源', $r('app.media.icon'), TabId.SUB))
+      .tabBar(this.TabBarBuilder('订阅源', $r('app.media.SUB_line'), TabId.SUB))
 
       TabContent() {
         Text('我的')
       }
-      .tabBar(this.TabBarBuilder('我的', $r('app.media.icon'), TabId.MINE))
+      .tabBar(this.TabBarBuilder('我的', $r('app.media.MINE_line'), TabId.MINE))
 
     }
     .width('100%')
