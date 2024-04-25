@@ -36,7 +36,7 @@ struct Index {
             .fontWeight(FontWeight.Normal)
             .width(25)
             .markAnchor({ x: -20, y: -80 })
-              }
+        }
 
       }
       .width('100%')
