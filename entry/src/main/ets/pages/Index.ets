@@ -1,57 +1,70 @@
+import { MainScrollBar, NavItem } from '../componets/type'
+import BookShelf from './view/BookShelf'
+import Find from './view/Find'
+import MyHome from './view/MyHome'
+import Subscription from './view/Subscription'
+
 @Entry
 @Component
 struct Main {
 
-  @State currentIndex: number = 0
+  @State currentTabIndex: number = 0
 
-  @Builder TabBarBuilder(title: ResourceStr, image: ResourceStr, index: number) {
-    Column({ space: 8 }) {
-      Image(image)
-        .width(22)
-        .fillColor(this.selectColor(index))
-      Text(title)
-        .fontSize(14)
-        .fontColor(this.selectColor(index))
+  @Builder TabBuilder(index = 0, name: string,icon_select: Resource,unselected: Resource) {
+    Flex({
+      direction:FlexDirection.Column,
+      alignItems:ItemAlign.Center,
+      justifyContent:FlexAlign.Center
+    }){
+      Image(this.currentTabIndex === index?icon_select:unselected).width(25).height(25)
+      Text(name).fontSize(11).fontColor(Color.Black).margin(5).fontColor(this.currentTabIndex === index ?'rgb(255,119, 50)' : '#000000')
     }
   }
 
-  selectColor(index: number) {
-    return this.currentIndex === index ? Color.Black : Color.Gray
-  }
+  nav : NavItem[] = [
+    new NavItem(0,$r("app.media.HOME_theme"),$r('app.media.HOME_line') ,'书架'),
+    new NavItem(1,$r('app.media.FIND_theme'), $r('app.media.FIND_line') ,'发现'),
+    new NavItem(2,$r('app.media.SUB_theme'),$r('app.media.SUB_line'), '订阅源'),
+    new NavItem(3, $r('app.media.MINE_theme'),$r('app.media.MINE_line'), '我的')
+  ]
+
+  @State scrollType:MainScrollBar[] = [
+    new MainScrollBar(false,new Scroller()),
+    new MainScrollBar(false,new Scroller()),
+    new MainScrollBar(false,new Scroller()),
+    new MainScrollBar(false,new Scroller()),
+    new MainScrollBar(false,new Scroller())
+  ]
 
   build() {
-    Tabs({ barPosition: BarPosition.End }) {
-
-      TabContent() {
-        Text('书架')
+    Column() {
+      Tabs({
+        barPosition:BarPosition.End
+      }){
+        ForEach(this.nav,(item:NavItem) => {
+          TabContent() {
+            Column() {
+              Scroll(this.scrollType[item.index].isScroll) {
+                if (item.index === 0){
+                  BookShelf()
+                } else if (item.index === 1){
+                  Find()
+                } else if (item.index === 2){
+                  Subscription()
+                } else if (item.index === 3){
+                  MyHome()
+                }
+              }
+            }
+          }.tabBar(
+            this.TabBuilder(item.index,item.title,item.selectImg,item.unselected)
+          )
+        })
       }
-      .tabBar(this.TabBarBuilder('书架', $r('app.media.HOME_line'), TabId.HOME))
-
-      TabContent() {
-        Text('发现')
-      }
-      .tabBar(this.TabBarBuilder('发现', $r('app.media.FIND_line'), TabId.FIND))
-
-      TabContent() {
-        Text('订阅源')
-      }
-      .tabBar(this.TabBarBuilder('订阅源', $r('app.media.SUB_line'), TabId.SUB))
-
-      TabContent() {
-        Text('我的')
-      }
-      .tabBar(this.TabBarBuilder('我的', $r('app.media.MINE_line'), TabId.MINE))
-
+      .backgroundColor('rgba(214, 213, 213, 0.7)')
+      .onChange((index) => {
+        this.currentTabIndex = index
+      })
     }
-    .width('100%')
-    .height('100%')
-    .onChange(index => this.currentIndex = index)
   }
-}
-
-export enum TabId {
-  HOME,
-  FIND,
-  SUB,
-  MINE
 }
