@@ -1,4 +1,4 @@
-import { MainScrollBar, NavItem } from '../componets/type'
+import { MainScrollBar, NavItem } from '../componets/dataList/type'
 import BookShelf from './view/BookShelf'
 import Find from './view/Find'
 import MyHome from './view/MyHome'
