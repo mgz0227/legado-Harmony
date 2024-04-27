@@ -29,9 +29,12 @@ export default struct novelPage{
       BookInfo()
       BookInfo()
       BookInfo()
+      BookInfo()
+      Divider().vertical(false)
+      Row(){
+        Text('END').fontColor('rgba(84, 84, 84, 0.30)').fontWeight(500)
+      }
     }
     .backgroundColor('rgba(255,250,247,0.8)')
-    .alignItems(HorizontalAlign.Start)
-
   }
 }
