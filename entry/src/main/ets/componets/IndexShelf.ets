@@ -5,6 +5,7 @@ import BookType from './head/BookType'
 
 import soundPage from '../pages/view/bookShelf/soundPage'
 import IndexSearchType from './head/IndexSearchType'
+import router from '@ohos.router'; // 引入路由管理器
 
 @Component
 export default struct IndexShelf {
@@ -33,7 +34,12 @@ export default struct IndexShelf {
         }
         .padding({left:15})
         Row({space:15}){
-          Image($r('app.media.search')).width('8%')
+          Image($r('app.media.search')).width('8%').onClick(()=>{
+            console.log('test')
+            router.pushUrl({
+              url: 'pages/search/SearchBook'
+            });
+          })
           Image($r('app.media.more')).width('8%')
             .bindMenu([
             {
