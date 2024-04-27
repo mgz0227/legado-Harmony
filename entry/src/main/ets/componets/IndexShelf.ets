@@ -134,14 +134,16 @@ export default struct IndexTop {
           if (this.currentIndex === 0){
             novelPage().zIndex(0)
           } else if(this.currentIndex === 1) {
-            Text('漫画').width('100%').height('100%').backgroundColor('rgba(255, 255, 255, 0.8)').align(Alignment.Top).zIndex(1)
+            Text('漫画').width('100%').backgroundColor('rgba(255, 255, 255, 0.8)').align(Alignment.Top).zIndex(1)
           } else if(this.currentIndex === 2) {
-            Text('有书声').width('100%').height('100%').backgroundColor('rgba(255, 255, 255, 0.8)').align(Alignment.Top).zIndex(1)
+            Text('有书声').width('100%').backgroundColor('rgba(255, 255, 255, 0.8)').align(Alignment.Top).zIndex(2)
           }
-        }.padding(15)
+        }
+        .padding(15)
       }
       .scrollBar(BarState.Off)
     }
+    .height('80%')
     .width('100%')
 
   }
