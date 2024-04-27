@@ -3,6 +3,19 @@
     {
       "name": "start_window_background",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "search_launch",
+      "value": "#ADADAD"
+    },
+    {
+      "name": "search_history",
+      "value": "#F5F5F5"
+    }
+  ,
+    {
+      "name": "test",
+      "value": "#FFFF0000"
     }
   ]
 }
