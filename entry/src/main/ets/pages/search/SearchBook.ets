@@ -5,7 +5,7 @@ import { Ranking } from './Search_Ranking'
 struct SearchBook {
   @State SearchValue: string =""
   scroller: Scroller = new Scroller()
-  @State  historyBookNames: String[] = ["仙逆", "一念永恒", "吞噬星空", "凡人修仙传", "夜的命名术", "夜的命名术", "一念永恒", "一念永恒", "一念永恒", "一念永恒", "一念永恒"]
+  @State  historyBookNames: String[] = ["仙逆","一念永恒","一念永恒","一念永恒", "一念永恒", "吞噬星空", "凡人修仙传", "夜的命名术", "夜的命名术", "一念永恒", "一念永恒", "一念永恒", "一念永恒", "一念永恒"]
   @State rankingList: String[] = ["小说热搜榜", "漫画热搜榜", "听书热搜榜"]
   @State rotateImages: number=0;
   @State rotateState: boolean=false;
@@ -43,7 +43,7 @@ struct SearchBook {
 
           Image("/common/images/search_del.svg").width(24).height(24).fillColor($r("app.color.search_launch"))
         }
-      }.width("100%").margin({ top: 20 }).clip(true);
+      }.width("100%").margin({ top: 20 });
 
       //历史记录
       Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap }) {
@@ -54,20 +54,20 @@ struct SearchBook {
             .margin({ right: 10, bottom: 10 })
             .fontSize(13)
         })
-      }.width("100%").height(100)
+      }.width("100%").height(this.rotateState?180:100)
       .margin({ top: 10 }).clip(true);
 
       //排行榜
-      Scroll(this.scroller) {
-        Row({ space: 20 }) {
-          ForEach(this.rankingList, (item) => {
-            //排行榜内容组件
-            Ranking()
-          })
-        }.width("50%").height("80%").alignItems(VerticalAlign.Top).margin({ top: 20 })
-      }
-      .scrollable(ScrollDirection.Horizontal)
-      .width(1700)
+      // Scroll(this.scroller) {
+      //   Row({ space: 20 }) {
+      //     ForEach(this.rankingList, (item) => {
+      //       //排行榜内容组件
+      //       Ranking()
+      //     })
+      //   }.width("50%").height("80%").alignItems(VerticalAlign.Top).margin({ top: 20 })
+      // }
+      // .scrollable(ScrollDirection.Horizontal)
+      // .width(1700)
     }.margin(20)
 
   }
