@@ -1,4 +1,5 @@
 import { Ranking } from './Search_Ranking'
+import router from '@ohos.router'
 
 @Entry
 @Component
@@ -12,11 +13,17 @@ struct SearchBook {
   build() {
     Column() {
       //顶部搜索框
-      Row({ space: 20 }) {
+      Row({ space: 15 }) {
+        Image($r('app.media.return_left'))
+          .width(25)
+          .height(25)
+          .onClick(()=>{
+            router.back()
+          })
         Search({ value: this.SearchValue, placeholder: '搜索书名或作者', icon: "/common/images/search.svg" })
-          .width("80%")
+          .width("70%")
           .height(40);
-        Text("取消").width("15%").height(40).fontWeight(600)
+        Text("取消").width("10%").height(40).fontWeight(600)
       }.width("100%").height(40)
       //搜索历史
       Row({ space: 90 }) {
@@ -68,7 +75,7 @@ struct SearchBook {
       // }
       // .scrollable(ScrollDirection.Horizontal)
       // .width(1700)
-    }.margin(20)
+    }.margin(15)
 
   }
 }

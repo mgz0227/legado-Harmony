@@ -1,6 +1,7 @@
 {
   "src": [
     "pages/Index",
-    "pages/welcomePage"
+    "pages/welcomePage",
+    "pages/search/SearchBook"
   ]
 }
