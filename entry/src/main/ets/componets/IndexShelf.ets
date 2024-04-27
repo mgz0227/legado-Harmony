@@ -1,15 +1,19 @@
+import cartoonPage from '../pages/view/bookShelf/cartoonPage'
 import novelPage from '../pages/view/bookShelf/novelPage'
 import BookMark from './head/BookMark'
 import BookType from './head/BookType'
+
+import soundPage from '../pages/view/bookShelf/soundPage'
 import IndexSearchType from './head/IndexSearchType'
 
 @Component
-export default struct IndexTop {
+export default struct IndexShelf {
 
   @State currentIndex: number = 0
   THEME_NAMES: string[] = ['更新目录', '添加本地', 'WebDav 书籍']
   @State searchValue:string = '最近阅读'
   @State bookType:string = '全部'
+  @State title:string = '最近阅读'
   build() {
     Column() {
       Flex({
@@ -62,29 +66,31 @@ export default struct IndexTop {
       .width('100%')
 
       Column(){
-        Row({space:16}){
-          IndexSearchType({title:'最近阅读',searchValue:this.searchValue})
-            .onClick(()=> {
-              this.searchValue = '最近阅读'
-            })
-          IndexSearchType({title:'浏览历史',searchValue:this.searchValue})
-            .onClick(()=> {
-              this.searchValue = '浏览历史'
-            })
-          IndexSearchType({title:'文件夹',searchValue:this.searchValue})
-            .onClick(()=> {
-              this.searchValue = '文件夹'
-            })
-          IndexSearchType({title:'宫格',searchValue:this.searchValue})
-            .onClick(()=> {
-              this.searchValue = '宫格'
-            })
-          Divider().vertical(true).height(15).color('#182431').opacity(0.5)
-          IndexSearchType({title:'管理',searchValue:this.searchValue})
-            .onClick(()=> {
-              this.searchValue = '管理'
-            })
+        Scroll(){
+          Row({space:16}){
+            IndexSearchType({title:this.title,searchValue:this.searchValue})
+
+            IndexSearchType({title:'浏览历史',searchValue:this.searchValue})
+              .onClick(()=> {
+                this.searchValue = '浏览历史'
+              })
+            IndexSearchType({title:'文件夹',searchValue:this.searchValue})
+              .onClick(()=> {
+                this.searchValue = '文件夹'
+              })
+            IndexSearchType({title:'宫格',searchValue:this.searchValue})
+              .onClick(()=> {
+                this.searchValue = '宫格'
+              })
+            Divider().vertical(true).height(15).color('#989797').opacity(0.5).strokeWidth(1)
+            IndexSearchType({title:'管理',searchValue:this.searchValue})
+              .onClick(()=> {
+                this.searchValue = '管理'
+              })
+          }
         }
+        .scrollBar(BarState.Off)
+        .scrollable(ScrollDirection.Horizontal)
       }
       .padding(15)
 
@@ -107,18 +113,34 @@ export default struct IndexTop {
             BookType({title:'书单',bookType:this.bookType}).onClick(()=>{
               this.bookType = '书单'
             })
-            BookType({title:'玄幻',bookType:this.bookType}).onClick(()=>{
-              this.bookType = '玄幻'
-            })
-            BookType({title:'修仙',bookType:this.bookType}).onClick(()=>{
-              this.bookType = '修仙'
-            })
-            BookType({title:'女同',bookType:this.bookType}).onClick(()=>{
-              this.bookType = '女同'
-            })
-            BookType({title:'军事',bookType:this.bookType}).onClick(()=>{
-              this.bookType = '军事'
-            })
+            if (this.currentIndex === 0){
+              BookType({title:'玄幻',bookType:this.bookType}).onClick(()=>{
+                this.bookType = '玄幻'
+              })
+              BookType({title:'修仙',bookType:this.bookType}).onClick(()=>{
+                this.bookType = '修仙'
+              })
+              BookType({title:'女同',bookType:this.bookType}).onClick(()=>{
+                this.bookType = '女同'
+              })
+              BookType({title:'军事',bookType:this.bookType}).onClick(()=>{
+                this.bookType = '军事'
+              })
+            } else if(this.currentIndex === 1){
+              BookType({title:'国漫',bookType:this.bookType}).onClick(()=>{
+                this.bookType = '国漫'
+              })
+              BookType({title:'日漫',bookType:this.bookType}).onClick(()=>{
+                this.bookType = '日漫'
+              })
+            } else if(this.currentIndex === 2){
+              BookType({title:'广播',bookType:this.bookType}).onClick(()=>{
+                this.bookType = '广播'
+              })
+              BookType({title:'深夜电台',bookType:this.bookType}).onClick(()=>{
+                this.bookType = '深夜电台'
+              })
+            }
           }
         }
         .padding({left:15,right:15})
@@ -134,9 +156,9 @@ export default struct IndexTop {
           if (this.currentIndex === 0){
             novelPage().zIndex(0)
           } else if(this.currentIndex === 1) {
-            Text('漫画').width('100%').backgroundColor('rgba(255, 255, 255, 0.8)').align(Alignment.Top).zIndex(1)
+            cartoonPage().zIndex(1)
           } else if(this.currentIndex === 2) {
-            Text('有书声').width('100%').backgroundColor('rgba(255, 255, 255, 0.8)').align(Alignment.Top).zIndex(2)
+            soundPage().zIndex(2)
           }
         }
         .padding(15)
