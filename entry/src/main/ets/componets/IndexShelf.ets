@@ -11,7 +11,7 @@ import router from '@ohos.router'; // 引入路由管理器
 export default struct IndexShelf {
 
   @State currentIndex: number = 0
-  THEME_NAMES: string[] = ['更新目录', '添加本地', 'WebDav 书籍']
+  THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单','批量管理']
   @State searchValue:string = '最近阅读'
   @State bookType:string = '全部'
   @State title:string = '最近阅读'
