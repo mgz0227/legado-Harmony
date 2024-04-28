@@ -3,6 +3,7 @@ import BookInfo from './BookInfo'
 
 @Component
 export default struct novelPage{
+  @Prop searchValue:string
   bookList:BookList[] = [
       new BookList('仙人消失之后','会说话的肘子·未读过','更新至·第340章 镇压',$r('app.media.cover_list'))
     ,new BookList('仙人消失之后','会说话的肘子·未读过','更新至·第340章 镇压',$r('app.media.cover_list'))
@@ -21,7 +22,7 @@ export default struct novelPage{
       {space:10}
     ){
       ForEach(this.bookList,(item:BookList) => {
-        BookInfo({title:item.title,describe:item.describe,chapter:item.chapter,bookImage:item.bookImage})
+        BookInfo({title:item.title,describe:item.describe,chapter:item.chapter,bookImage:item.bookImage,searchValue:this.searchValue})
       })
 
       Divider().vertical(false)

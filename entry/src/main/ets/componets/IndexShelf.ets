@@ -42,25 +42,35 @@ export default struct IndexShelf {
           })
           Image($r('app.media.more')).width('8%')
             .bindMenu([
-            {
-              value: this.THEME_NAMES[0],
-              action: () => {
-                this.changeTheme(0)
+              {
+                icon: $r('app.media.import_svg'),
+                value: this.THEME_NAMES[0],
+                action: () => {
+                  this.changeTheme(0)
+                }
+              },
+              {
+                icon:$r('app.media.down_svg'),
+                value: this.THEME_NAMES[1],
+                action: () => {
+                  this.changeTheme(1)
+                }
+              },
+              {
+                icon: $r('app.media.import_book_svg'),
+                value: this.THEME_NAMES[2],
+                action: () => {
+                  this.changeTheme(2)
+                }
+              },
+              {
+                icon: $r('app.media.batch_svg'),
+                value: this.THEME_NAMES[3],
+                action: () => {
+                  this.changeTheme(3)
+                }
               }
-            },
-            {
-              value: this.THEME_NAMES[1],
-              action: () => {
-                this.changeTheme(1)
-              }
-            },
-            {
-              value: this.THEME_NAMES[2],
-              action: () => {
-                this.changeTheme(2)
-              }
-            }
-          ])
+            ])
         }.margin({right:20 })
 
       }
@@ -71,11 +81,15 @@ export default struct IndexShelf {
       .height('10%')
       .width('100%')
 
-      Column(){
+      Flex(
+        {
+          alignItems: ItemAlign.Center,
+          justifyContent:FlexAlign.Start
+        }
+      ){
         Scroll(){
           Row({space:16}){
             IndexSearchType({title:this.title,searchValue:this.searchValue})
-
             IndexSearchType({title:'浏览历史',searchValue:this.searchValue})
               .onClick(()=> {
                 this.searchValue = '浏览历史'
@@ -102,7 +116,8 @@ export default struct IndexShelf {
 
       Flex(
         {
-          alignItems: ItemAlign.Center
+          alignItems: ItemAlign.Center,
+          justifyContent:FlexAlign.SpaceBetween
         }
       ) {
         Scroll(){
@@ -149,22 +164,24 @@ export default struct IndexShelf {
             }
           }
         }
-        .padding({left:15,right:15})
         .scrollBar(BarState.Off)
         .scrollable(ScrollDirection.Horizontal)
-        Column(){
-         Image($r('app.media.more_search')).width(25).height(25)
-        }
-      }
+        Row(){
+          Image($r('app.media.more_search')).width(25).height(25)
+
+        }.width(
+          '10%'
+        )
+      }.margin({left:15})
 
       Scroll(){
         Stack({alignContent:Alignment.Center}) {
           if (this.currentIndex === 0){
-            novelPage().zIndex(0)
+            novelPage({searchValue:this.searchValue}).zIndex(0)
           } else if(this.currentIndex === 1) {
-            cartoonPage().zIndex(1)
+            cartoonPage({searchValue:this.searchValue}).zIndex(1)
           } else if(this.currentIndex === 2) {
-            soundPage().zIndex(2)
+            soundPage({searchValue:this.searchValue}).zIndex(2)
           }
         }
         .padding(15)
