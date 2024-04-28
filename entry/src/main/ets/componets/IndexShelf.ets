@@ -169,11 +169,9 @@ export default struct IndexShelf {
         }
         .padding(15)
       }
+      .height('80%')
       .scrollBar(BarState.Off)
     }
-    .height('80%')
-    .width('100%')
-
   }
 
   @Builder TabBuilderImage(index: number, name: string) {

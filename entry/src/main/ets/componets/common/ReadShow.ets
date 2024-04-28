@@ -42,14 +42,15 @@ export default struct ReadShow {
             .fontColor('#FF6600')
             .backgroundColor(Color.White)
         }
-        .padding({left:55,right:15})
+        .padding({left:55,right:30})
         Image($r('app.media.Outlined')).width(15).height(15)
           .onClick(() => {
+            console.log('test')
             this.showReadShow = !this.showReadShow
+            console.log(this.showReadShow + '')
           })
       }
       .borderRadius(10)
-
     }
     .alignItems(HorizontalAlign.Start)
     .borderRadius(10)
