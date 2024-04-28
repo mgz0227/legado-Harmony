@@ -5,7 +5,7 @@ import BookInfo from './BookInfo'
  */
 @Component
 export default struct soundPage{
-
+  @Prop searchValue:string
   cartoonList:BookList[] = [
     new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
     new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
@@ -27,7 +27,7 @@ export default struct soundPage{
       {space:10}
     ){
       ForEach(this.cartoonList,(item:BookList) => {
-        BookInfo({title:item.title,describe:item.describe,chapter:item.chapter,bookImage:item.bookImage})
+        BookInfo({title:item.title,describe:item.describe,chapter:item.chapter,bookImage:item.bookImage,searchValue:this.searchValue})
       })
       Divider().vertical(false)
       Row(){
