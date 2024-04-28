@@ -1,4 +1,4 @@
-
+import { Attribute } from '../../common/utils/Attribute'
 
 
 @Entry
@@ -29,7 +29,7 @@ struct MyCenter {
   build() {
     Column(){
 
-      Blank(20)
+      Blank(Attribute.Header)
 
       //夜间模式图标
       Row(){
@@ -54,7 +54,8 @@ struct MyCenter {
           Text("云盘登录")
             .fontColor("rgba(0, 0, 0, 0.45)")
             .border({width:1,color:"rgba(0, 0, 0, 0.45)",radius:25})
-            .padding({ top:5,left:10,right:10,bottom:5 }).onClick(this.cloudDisk_onclick)
+            .fontSize(14)
+            .padding({ top:5,left:20,right:20,bottom:5 }).onClick(this.cloudDisk_onclick)
         }
       }.justifyContent(FlexAlign.SpaceBetween).width("100%").onClick(this.night_onclick)
 
@@ -91,7 +92,7 @@ struct MyCenter {
       Column({space:15}){
         ForEach(this.end_list,(item:DataItems)=>{
           Row({space:10}){
-            Image(item.icon).size({width:22,height:22})
+            Image(item.icon).size({width:22,height:22}).interpolation(ImageInterpolation.High)
             Text(item.title).fontSize(16).width("75%" )
             Image($r("app.media.right")).size({width:25,height:25})
           }.width("100%").height(30).justifyContent(FlexAlign.SpaceBetween)
@@ -101,6 +102,10 @@ struct MyCenter {
       .borderRadius(10)
       Blank(300)
     }.padding(20).backgroundColor("rgb(245, 245, 245)")
+    .linearGradient({
+      direction: GradientDirection.Bottom, // 渐变方向
+      colors: [["rgb(254, 203, 169)", 0.0], ["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
+    })
 
   }
 
