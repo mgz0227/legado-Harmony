@@ -1,3 +1,4 @@
+import ReadShow from '../componets/common/ReadShow'
 import { MainScrollBar, NavItem } from '../componets/dataList/type'
 import BookShelf from './view/BookShelf'
 import Find from './view/Find'
@@ -7,8 +8,16 @@ import Subscription from './view/Subscription'
 @Entry
 @Component
 struct Main {
-
+  @State showReadShow:boolean = true
   @State currentTabIndex: number = 0
+  @State isShow: boolean = true
+
+  onPageShow(): void {
+    setTimeout(()=>{
+      this.showReadShow = false
+      this.isShow = false
+    },5000)
+  }
 
   @Builder TabBuilder(index = 0, name: string,icon_select: Resource,unselected: Resource) {
     Flex({
@@ -18,7 +27,7 @@ struct Main {
     }){
       Image(this.currentTabIndex === index?icon_select:unselected).width(25).height(25)
       Text(name).fontSize(11).fontColor(Color.Black).margin(5).fontColor(this.currentTabIndex === index ?'rgb(255,119, 50)' : '#000000')
-    }
+    }.padding({top:10})
   }
 
   nav : NavItem[] = [
@@ -55,6 +64,7 @@ struct Main {
                   MyHome()
                 }
               }
+              .scrollBar(BarState.Off)
             }
           }.tabBar(
             this.TabBuilder(item.index,item.title,item.selectImg,item.unselected)
@@ -65,6 +75,9 @@ struct Main {
       .onChange((index) => {
         this.currentTabIndex = index
       })
+      if (this.showReadShow){
+        ReadShow({showReadShow:this.showReadShow}).offset({y:-200})
+      }
     }
   }
 }
