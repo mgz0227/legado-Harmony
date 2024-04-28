@@ -1,3 +1,5 @@
+import delDialogExample from '../../../componets/common/delDialog'
+
 @Component
 /**
  * 书签
@@ -15,6 +17,36 @@ export default struct BookInfo{
   @Prop searchValue:string
 
   @State isJoin:boolean = false
+
+  @State isDel:boolean = false
+
+  //弹窗
+  bookInfoDel: CustomDialogController | null = new CustomDialogController({
+    builder: delDialogExample({
+      cancel: ()=> { this.onCancel() },
+      confirm: ()=> { this.onAccept() }
+    }),
+    cancel: this.exitApp,
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    // offset: { dx: 0, dy: '-40%' },
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
+
+  onCancel() {
+    console.info('取消')
+  }
+
+  onAccept() {
+    console.info('确定')
+  }
+
+  exitApp() {
+    console.info('点外围取消')
+  }
+
 
   build() {
 
@@ -61,6 +93,11 @@ export default struct BookInfo{
           Row(){
            Image($r('app.media.delete_svg')).width(17).fillColor('rgba(0, 0, 0, 0.6)')
           }
+          .onClick(()=>{
+            if (this.bookInfoDel != null) {
+              this.bookInfoDel.open()
+            }
+          })
           .padding({right:5})
           Row(){
             Row({space:5}){
@@ -81,6 +118,5 @@ export default struct BookInfo{
     .padding(10)
     .borderRadius(10)
     .backgroundColor('rgba(244,244,244,0.8)')
-
   }
 }

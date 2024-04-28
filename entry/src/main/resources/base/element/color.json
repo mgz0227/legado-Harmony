@@ -16,6 +16,10 @@
     {
       "name": "test",
       "value": "#FFFF0000"
+    },
+    {
+      "name": "theme_color",
+      "value": "#FF6600"
     }
   ]
 }
