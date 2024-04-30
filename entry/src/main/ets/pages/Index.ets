@@ -2,7 +2,7 @@ import ReadShow from '../componets/common/ReadShow'
 import { MainScrollBar, NavItem } from '../componets/dataList/type'
 import BookShelf from './view/BookShelf'
 import Find from './view/Find'
-import MyHome from './view/MyHome'
+import MyCenter from './view/myCenter/MyCenter'
 import Subscription from './view/Subscription'
 
 @Entry
@@ -60,11 +60,12 @@ struct Main {
                   Find()
                 } else if (item.index === 2){
                   Subscription()
-                } else if (item.index === 3){
-                  MyHome()
                 }
               }
               .scrollBar(BarState.Off)
+              if (item.index === 3){
+                MyCenter()
+              }
             }
           }.tabBar(
             this.TabBuilder(item.index,item.title,item.selectImg,item.unselected)

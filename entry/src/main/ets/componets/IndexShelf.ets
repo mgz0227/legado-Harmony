@@ -230,7 +230,8 @@ export default struct IndexShelf {
         }
         .padding({left:10,right:10})
       }
-      .height(this.searchValue==='浏览历史'?'80%':'75%')
+      .align(Alignment.TopStart)
+      .height(this.searchValue==='浏览历史'?'83%':'78%')
       .scrollBar(BarState.Off)
     }
   }

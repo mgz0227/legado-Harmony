@@ -1,9 +1,7 @@
-import { Attribute } from '../../common/utils/Attribute'
+import { Attribute } from '../../../common/utils/Attribute'
 
-
-@Entry
 @Component
-struct MyCenter {
+export default struct MyCenter {
 
   @State reading_time:number = 0
   @State head_list:DataItems[]=[

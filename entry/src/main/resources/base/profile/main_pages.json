@@ -2,7 +2,6 @@
   "src": [
     "pages/Index",
     "pages/welcomePage",
-    "pages/search/SearchBook",
-    "pages/myCenter/MyCenter"
+    "pages/search/SearchBook"
   ]
 }
