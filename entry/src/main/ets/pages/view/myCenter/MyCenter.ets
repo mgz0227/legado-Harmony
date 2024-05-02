@@ -1,11 +1,7 @@
-import { Attribute } from '../../common/utils/Attribute'
-import router from '@ohos.router'
-import { HashMap } from '@kit.ArkTS'
+import { Attribute } from '../../../common/utils/Attribute'
 
-
-@Entry
 @Component
-export struct MyCenter {
+export default struct MyCenter {
 
   @State reading_time:number = 0
   @State head_list:DataItems[]=[
@@ -27,15 +23,7 @@ export struct MyCenter {
     new DataItems("清理缓存","3",$r("app.media.MyCenter_clean_icon")),
     new DataItems("我的设置","4",$r("app.media.MyCenter_setUp_icon")),
   ]
-  @State webDavStatus:Number=0
 
-
-  onPageShow(){
-    let arrayParams=router.getParams() as Record<string,string>
-    if(arrayParams!=null){
-      this.webDavStatus=parseInt(arrayParams["webDavStatus"])
-    }
-  }
   build() {
     Column(){
 
@@ -61,7 +49,7 @@ export struct MyCenter {
         }.alignItems(HorizontalAlign.Start).width("45%")
         //云盘登录
         Row(){
-          Text(this.webDavStatus==1?"查看云盘":"云盘登录")
+          Text("云盘登录")
             .fontColor("rgba(0, 0, 0, 0.45)")
             .border({width:1,color:"rgba(0, 0, 0, 0.45)",radius:25})
             .fontSize(14)
@@ -120,7 +108,6 @@ export struct MyCenter {
   }
 
 
-
   //切换夜间模式
   night_onclick(){
 
@@ -132,9 +119,7 @@ export struct MyCenter {
 
   //跳转云盘登录
   cloudDisk_onclick(){
-    router.pushUrl({
-      url: 'pages/myCenter/WebDav'
-    })
+
   }
 
 }

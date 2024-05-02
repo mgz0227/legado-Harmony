@@ -61,11 +61,11 @@ struct Main {
                 } else if (item.index === 2){
                   Subscription()
                 }
-                else if (item.index === 3){
-                  MyCenter()
-                }
               }
               .scrollBar(BarState.Off)
+              if (item.index === 3){
+                MyCenter()
+              }
             }
           }.tabBar(
             this.TabBuilder(item.index,item.title,item.selectImg,item.unselected)
