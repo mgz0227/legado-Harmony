@@ -1,5 +1,6 @@
 import ReadShow from '../componets/common/ReadShow'
 import { MainScrollBar, NavItem } from '../componets/dataList/type'
+import { MyCenter } from './myCenter/MyCenter'
 import BookShelf from './view/BookShelf'
 import Find from './view/Find'
 import MyCenter from './view/myCenter/MyCenter'
@@ -60,6 +61,8 @@ struct Main {
                   Find()
                 } else if (item.index === 2){
                   Subscription()
+                } else if (item.index === 3){
+                  MyCenter()
                 }
               }
               .scrollBar(BarState.Off)
