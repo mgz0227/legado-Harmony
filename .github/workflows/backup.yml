@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout main branch
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         ref: main
 
@@ -23,7 +23,7 @@ jobs:
       working-directory: ${{ github.workspace }}
 
     - name: Upload backup to Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: backup
         path: backup/
