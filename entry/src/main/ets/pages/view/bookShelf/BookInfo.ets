@@ -89,7 +89,7 @@ export default struct BookInfo{
         .alignItems(HorizontalAlign.Start)
         .onClick(()=>{
           router.pushUrl({
-            url: 'pages/BookDetailPage',
+            url: 'pages/view/BookDetailPage',
             params: {
               bookId: '1',
               bookName: '大奉打更人',
