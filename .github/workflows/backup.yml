@@ -28,7 +28,7 @@ jobs:
         run: |
           git checkout -b backup || git checkout backup
           mkdir -p backups
-          mv ../main_backup_$datetime.tar.gz backups/
+          mv main_backup_$datetime.tar.gz backups/
           git add -A
           git commit -m "Auto backup main branch code"
           git push origin backup
