@@ -20,6 +20,10 @@
     {
       "name": "theme_color",
       "value": "#FF6600"
+    },
+    {
+      "name": "book_detail_background",
+      "value": "#2a5d5d"
     }
   ]
 }
