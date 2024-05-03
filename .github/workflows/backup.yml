@@ -1,29 +1,29 @@
-name: Backup Master Branch
+name: Backup Main Branch
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   backup:
-    name: Backup Master Branch
+    name: Backup Main Branch
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Master Branch
+      - name: Checkout Main Branch
         uses: actions/checkout@v2
         with:
-          ref: master
+          ref: main
 
       - name: Create Backup Directory
-        run: mkdir -p backups/master
+        run: mkdir -p backups/main
 
-      - name: Copy Master Branch Code
-        run: cp -r * backups/master
+      - name: Copy Main Branch Code
+        run: cp -r * backups/main
 
-      - name: Archive Master Branch Code
+      - name: Archive Main Branch Code
         run: |
           datetime=$(date '+%Y-%m-%d_%H-%M-%S')
-          tar -zcf master_backup_$datetime.tar.gz -C backups/master .
+          tar -zcf main_backup_$datetime.tar.gz -C backups/main .
 
       - name: Configure Git
         run: |
@@ -35,8 +35,8 @@ jobs:
           git checkout -b backup || git checkout backup
           git rm -rf .
           git add -A
-          git commit -m "Auto backup master branch code"
+          git commit -m "Auto backup main branch code"
           git push origin backup
 
-      - name: Switch Back to Master Branch
-        run: git checkout master
+      - name: Switch Back to Main Branch
+        run: git checkout main
