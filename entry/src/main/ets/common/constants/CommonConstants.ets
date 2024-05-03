@@ -181,4 +181,18 @@ export default class CommonConstants {
    * Common layout weight.
    */
   static readonly COMMON_LAYOUT_WEIGHT: number = 1;
+  /**
+   * 标题栏图标大小
+   */
+  static readonly TITLE_IMG_SIZE: number = 25;
+  /**
+   * 百分比
+   */
+  static readonly PERCENT_94: string = '94%';
+  static readonly PERCENT_90: string = '90%';
+  /**
+   * space间距
+   */
+  static readonly SPACE_10: number = 10;
+  static readonly SPACE_20: number = 20;
 }
