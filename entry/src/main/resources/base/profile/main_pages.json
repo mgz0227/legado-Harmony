@@ -4,6 +4,6 @@
     "pages/welcomePage",
     "pages/search/SearchBook",
     "pages/view/myCenter/WebDav",
-    "pages/BookDetailPage"
+    "pages/view/BookDetailPage"
   ]
 }

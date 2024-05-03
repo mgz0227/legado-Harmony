@@ -1,8 +1,8 @@
-import CommonConstants from '../common/constants/CommonConstants'
-import ReadRecordItem from '../componets/bookDetail/ReadRecordItem'
-import TagIndex from '../componets/bookDetail/TagIndex'
+import CommonConstants from '../../common/constants/CommonConstants'
+import ReadRecordItem from '../../componets/bookDetail/ReadRecordItem'
+import TagIndex from '../../componets/bookDetail/TagIndex'
 import { SwipeRefresher } from '@kit.ArkUI'
-
+import router from '@ohos.router'
 /**
  * 标题图片样式
  */
@@ -25,6 +25,10 @@ import { SwipeRefresher } from '@kit.ArkUI'
 struct BookDetailPage {
   @State isShow: boolean = true;
   @State currentIndex: number = 0;
+  onPageShow(): void {
+    console.log(JSON.stringify(router.getParams()))
+  }
+
   /**
    * Panel
    */
@@ -134,6 +138,9 @@ struct BookDetailPage {
         Row({space: 12}) {
           Image($r("app.media.ic_public_return_left"))
             .titleImageStyle()
+            .onClick(()=>{
+              router.back()
+            })
           Text('书籍详情')
             .fontColor(Color.White)
             .fontSize(16)
