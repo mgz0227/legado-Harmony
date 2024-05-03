@@ -33,12 +33,10 @@ jobs:
       - name: Add Backup Branch
         run: |
           git checkout -b backup || git checkout backup
-          git add .
+          git rm -rf .
+          git add -A
           git commit -m "Auto backup master branch code"
           git push origin backup
 
-      - name: Upload Backup Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: master_backup_$datetime
-          path: master_backup_$datetime.tar.gz
+      - name: Switch Back to Master Branch
+        run: git checkout master
