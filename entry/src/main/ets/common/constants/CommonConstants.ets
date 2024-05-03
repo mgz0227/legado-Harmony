@@ -181,4 +181,38 @@ export default class CommonConstants {
    * Common layout weight.
    */
   static readonly COMMON_LAYOUT_WEIGHT: number = 1;
+  /**
+   * 标题栏图标大小
+   */
+  static readonly TITLE_IMG_SIZE: number = 24;
+  /**
+   * 小说封面大小
+   */
+  static readonly NOVEL_IMG_WIDTH: number = 76;
+  static readonly NOVEL_IMG_HEIGHT: number = 102;
+  /**
+   * 小说详情封面高度
+   */
+  static readonly NOVEL_DETAIL_IMG_HEIGHT: number = 128;
+  /**
+   * 小说详情页作者图标大小
+   */
+  static readonly NOVEL_DETAIL_AUTHOR_IMG_SIZE: number = 16;
+  /**
+   * 小说详情页字体大小
+   */
+  static readonly FONT_NOVEL_DETAIL_TITLE_SIZE: number = 20;
+  static readonly FONT_NOVEL_DETAIL_AUTHOR_SIZE: number = 12;
+  static readonly FONT_NOVEL_DETAIL_TAG_SIZE: number = 10;
+  static readonly FONT_NOVEL_DETAIL_INFO_SIZE: number = 14;
+  /**
+   * 百分比
+   */
+  static readonly PERCENT_94: string = '94%';
+  static readonly PERCENT_90: string = '90%';
+  /**
+   * space间距
+   */
+  static readonly SPACE_10: number = 10;
+  static readonly SPACE_20: number = 20;
 }

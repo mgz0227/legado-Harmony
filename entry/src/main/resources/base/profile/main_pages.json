@@ -3,7 +3,7 @@
     "pages/Index",
     "pages/welcomePage",
     "pages/search/SearchBook",
-    "pages/view/myCenter/MyCenter",
-    "pages/view/myCenter/WebDav"
+    "pages/view/myCenter/WebDav",
+    "pages/BookDetailPage"
   ]
 }
