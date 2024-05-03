@@ -25,8 +25,8 @@ jobs:
 
       - name: Configure Git
         run: |
-          git config --global user.email "actions@github.com"
-          git config --global user.name "GitHub Actions"
+          git config --local user.email "miaogongzi0227@gmail.com"
+          git config --local user.name "mgz0227"
 
       - name: Add Backup Branch
         run: |
