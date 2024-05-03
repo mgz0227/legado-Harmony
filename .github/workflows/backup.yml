@@ -8,8 +8,6 @@ jobs:
   backup:
     name: Backup Main Branch
     runs-on: ubuntu-latest
-    env:
-      BACKUP_DATETIME: ${{ steps.datetime.outputs.datetime }}
     steps:
       - name: Checkout Main Branch
         uses: actions/checkout@v2
@@ -19,9 +17,10 @@ jobs:
       - name: Get Current Datetime
         id: datetime
         run: echo "::set-output name=datetime::$(date '+%Y-%m-%d_%H-%M-%S')"
-
+      
       - name: Archive Main Branch Code
         run: |
+          BACKUP_DATETIME=$(echo "${{ steps.datetime.outputs.datetime }}")
           git archive --format=tar.gz --output=main_backup_${BACKUP_DATETIME}.tar.gz HEAD
 
       - name: Configure Git
@@ -33,6 +32,7 @@ jobs:
         run: |
           git checkout -b backup || git checkout backup
           mkdir -p backups
+          BACKUP_DATETIME=$(echo "${{ steps.datetime.outputs.datetime }}")
           mv main_backup_${BACKUP_DATETIME}.tar.gz backups/
           git add -A
           git commit -m "Auto backup main branch code"
