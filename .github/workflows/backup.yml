@@ -14,16 +14,10 @@ jobs:
         with:
           ref: main
 
-      - name: Create Backup Directory
-        run: mkdir -p backups/main
-
-      - name: Copy Main Branch Code
-        run: cp -r * backups/main
-
       - name: Archive Main Branch Code
         run: |
           datetime=$(date '+%Y-%m-%d_%H-%M-%S')
-          tar -zcf main_backup_$datetime.tar.gz -C backups/main .
+          git archive --format=tar.gz --output=main_backup_$datetime.tar.gz HEAD
 
       - name: Configure Git
         run: |
@@ -33,7 +27,8 @@ jobs:
       - name: Add Backup Branch
         run: |
           git checkout -b backup || git checkout backup
-          git rm -rf .
+          mkdir -p backups
+          mv ../main_backup_$datetime.tar.gz backups/
           git add -A
           git commit -m "Auto backup main branch code"
           git push origin backup
