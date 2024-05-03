@@ -26,8 +26,8 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: backup
-        path: backup/main_backup_$(bash -c 'echo $(date +"%Y%m%d").tar.gz')
-
+        path: backup/
+        
     - name: Set up Git
       run: |
         git config --local user.email "miaogongzi0227@gmail.com"
