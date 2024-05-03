@@ -2,37 +2,46 @@ name: Backup Main Branch
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   backup:
     name: Backup Main Branch
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
-        
+
       - name: Create Backup Directory
         run: mkdir -p backups/main
-        
+
       - name: Copy Main Branch Code
-        run: cp -r * backups/main
-        
+        run: |
+          if [ -d "backups/main" ]; then
+            cp -r !(backups) backups/main
+          else
+            cp -r * backups/main
+          fi
+
       - name: Archive Main Branch Code
-        run: tar -zcf main_backup.tar.gz -C backups/main .
-        
-      - name: Commit and Push Backup
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "Auto backup main branch code"
-          branch: backup
-          author_name: GitHub Actions
-          author_email: actions@users.noreply.github.com
-          
-      - name: Push Backup Archive
+        run: |
+          datetime=$(date '+%Y-%m-%d_%H-%M-%S')
+          tar -zcf main_backup_$datetime.tar.gz -C backups/main .
+
+      - name: Configure Git
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+      - name: Add Backup Branch
+        run: |
+          git checkout -b backup || git checkout backup
+          git add .
+          git commit -m "Auto backup main branch code"
+          git push origin backup
+
+      - name: Upload Backup Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: main_backup
-          path: main_backup.tar.gz
+          name: main_backup_$datetime
+          path: main_backup_$datetime.tar.gz
