@@ -1,4 +1,4 @@
-name: Backup Main Branch
+name: Upload Backup
 
 on:
   push:
@@ -6,13 +6,11 @@ on:
       - main
 
 jobs:
-  backup:
+  upload_backup:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout main branch
       uses: actions/checkout@v2
-      with:
-        ref: main
 
     - name: Archive main branch as tar.gz
       run: |
@@ -21,13 +19,13 @@ jobs:
 
     - name: Set up Git
       run: |
-        git config --global user.email "miaogongzi0227@gmail.com"
-        git config --global user.name "mgz0227"
+        git config --local user.email "miaogongzi0227@gmail.com"
+        git config --local user.name "mgz0227"
 
     - name: Create and push backup branch
-      uses: ad-m/github-push-action@v0.6.0
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: backup
-        directory: ./
-        force: true
+      run: |
+        git branch -D backup || true
+        git checkout -b backup
+        git add main_backup_$(date +"%Y%m%d").tar.gz
+        git commit -m "Backup main branch as of $(date +"%Y-%m-%d")"
+        git push origin backup
