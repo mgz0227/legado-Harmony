@@ -14,9 +14,6 @@ jobs:
       with:
         ref: main
 
-    - name: Create backup directory
-      run: mkdir -p backup
-
     - name: Archive main branch as tar.gz
       run: |
         tar -czf main_backup_$(date +"%Y%m%d").tar.gz *
