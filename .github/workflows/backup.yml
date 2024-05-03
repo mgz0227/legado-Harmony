@@ -20,13 +20,9 @@ jobs:
       working-directory: ${{ github.workspace }}
 
     - name: Create and push backup branch
-      env:
-        GITHUB_TOKEN: ${{ secrets.HARMONY_BACKUP }}
-      run: |
-        git config --local user.email "miaogongzi0227@gmail.com"
-        git config --local user.name "mgz0227"
-        git branch -D backup || true
-        git checkout -b backup
-        git add main_backup_$(date +"%Y%m%d").tar.gz
-        git commit -m "Backup main branch as of $(date +"%Y-%m-%d")"
-        git push origin backup
+      uses: ad-m/github-push-action@v0.6.0
+      with:
+        github_token: ${{ secrets.HARMONY_BACKUP }}
+        branch: backup
+        directory: ./
+        force: true
