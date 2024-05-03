@@ -26,7 +26,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: backup
-        path: backup/backup/
+        path:  ${{ github.workspace }}/backup/*.tar.gz
         
     - name: Set up Git
       run: |
