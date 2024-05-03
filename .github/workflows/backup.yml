@@ -19,11 +19,15 @@ jobs:
         tar -czf main_backup_$(date +"%Y%m%d").tar.gz *
       working-directory: ${{ github.workspace }}
 
-    - name: Create and push backup branch
+    - name: Configure Git
       run: |
         git config --local user.email "miaogongzi0227@gmail.com"
         git config --local user.name "mgz0227"
-        git branch -D backup || true
+
+    - name: Create and push backup branch
+      env:
+        GITHUB_TOKEN: ${{ secrets.HARMONY_BACKUP }}
+      run: |
         git checkout -b backup
         git add main_backup_$(date +"%Y%m%d").tar.gz
         git commit -m "Backup main branch as of $(date +"%Y-%m-%d")"
