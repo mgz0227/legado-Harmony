@@ -38,7 +38,7 @@ jobs:
           git commit -m "Auto backup main branch code"
           git push origin backup
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.HARMONY_BACKUP }}
 
       - name: Switch Back to Main Branch
         run: git checkout main
