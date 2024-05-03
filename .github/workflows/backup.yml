@@ -1,4 +1,4 @@
-name: Upload Backup
+name: Backup Main Branch
 
 on:
   push:
@@ -6,15 +6,20 @@ on:
       - main
 
 jobs:
-  upload_backup:
+  backup:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout main branch
       uses: actions/checkout@v2
+      with:
+        ref: main
+
+    - name: Create backup directory
+      run: mkdir -p backup
 
     - name: Archive main branch as tar.gz
       run: |
-        tar -czf main_backup_$(date +"%Y%m%d").tar.gz *
+        tar -czf backup/main_backup_$(date +"%Y%m%d").tar.gz *
       working-directory: ${{ github.workspace }}
 
     - name: Set up Git
@@ -26,6 +31,6 @@ jobs:
       run: |
         git branch -D backup || true
         git checkout -b backup
-        git add main_backup_$(date +"%Y%m%d").tar.gz
+        git add backup/main_backup_$(date +"%Y%m%d").tar.gz
         git commit -m "Backup main branch as of $(date +"%Y-%m-%d")"
         git push origin backup
