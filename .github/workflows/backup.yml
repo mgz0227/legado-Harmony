@@ -33,10 +33,3 @@ jobs:
         git config --local user.email "miaogongzi0227@gmail.com"
         git config --local user.name "mgz0227"
 
-    - name: Create and push backup branch
-      run: |
-        git branch -D backup || true
-        git checkout -b backup
-        git add backup/main_backup_$(date +"%Y%m%d").tar.gz
-        git commit -m "Backup main branch as of $(date +"%Y-%m-%d")"
-        git push origin backup
