@@ -1,35 +1,29 @@
-name: Backup Main Branch
+name: Backup Master Branch
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   backup:
-    name: Backup Main Branch
+    name: Backup Master Branch
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout Master Branch
         uses: actions/checkout@v2
+        with:
+          ref: master
 
       - name: Create Backup Directory
-        run: |
-          if [ ! -d "backups/main" ]; then
-            mkdir -p backups/main
-          fi
+        run: mkdir -p backups/master
 
-      - name: Copy Main Branch Code
-        run: |
-          if [ -d "backups/main" ]; then
-            cp -r !(backups) backups/main
-          else
-            cp -r * backups/main
-          fi
+      - name: Copy Master Branch Code
+        run: cp -r * backups/master
 
-      - name: Archive Main Branch Code
+      - name: Archive Master Branch Code
         run: |
           datetime=$(date '+%Y-%m-%d_%H-%M-%S')
-          tar -zcf main_backup_$datetime.tar.gz -C backups/main .
+          tar -zcf master_backup_$datetime.tar.gz -C backups/master .
 
       - name: Configure Git
         run: |
@@ -40,11 +34,11 @@ jobs:
         run: |
           git checkout -b backup || git checkout backup
           git add .
-          git commit -m "Auto backup main branch code"
+          git commit -m "Auto backup master branch code"
           git push origin backup
 
       - name: Upload Backup Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: main_backup_$datetime
-          path: main_backup_$datetime.tar.gz
+          name: master_backup_$datetime
+          path: master_backup_$datetime.tar.gz
