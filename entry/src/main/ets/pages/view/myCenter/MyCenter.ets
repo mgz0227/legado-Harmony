@@ -1,4 +1,5 @@
 import { Attribute } from '../../../common/utils/Attribute'
+import router from '@ohos.router'
 
 @Component
 export default struct MyCenter {
@@ -119,7 +120,11 @@ export default struct MyCenter {
 
   //跳转云盘登录
   cloudDisk_onclick(){
-
+    router.pushUrl(
+      {
+        url:'pages/view/myCenter/WebDav'
+      }
+    )
   }
 
 }
