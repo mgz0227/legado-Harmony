@@ -1,40 +1,30 @@
-name: Backup main branch
+name: Backup Main Branch
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  backup_main_branch:
-    name: Backup main branch
+  backup:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout main branch
-        uses: actions/checkout@v2
-        with:
-          ref: main
-      
-      - name: Backup main branch as tar.gz
-        run: |
-          git archive --format=tar.gz --output=main_backup_$(date +"%Y%m%d%H%M%S").tar.gz main
-          mkdir -p backups
-          mv main_backup_*.tar.gz backups/
-        shell: bash
+    - name: Checkout main branch
+      uses: actions/checkout@v2
+      with:
+        ref: main
 
-      - name: Push main branch backup to backup branch
-        run: |
-          git config --local user.email "miaogongzi0227@gmail.com"
-          git config --local user.name "mgz0227"
-          
-          git remote add backup_origin https://github.com/mgz0227/legado-Harmony.git
-          git fetch backup_origin
-          
-          git checkout -b backup_branch backup_origin/backup || git checkout -b backup_branch
-          
-          mv backups/main_backup_*.tar.gz ./
-          git add main_backup_*.tar.gz
-          git commit -m "Backup main branch at $(date)"
-          git push backup_origin backup_branch
-          
-          git checkout main
-        shell: bash
+    - name: Archive main branch as tar.gz
+      run: |
+        tar -czf main_backup_$(date +"%Y%m%d").tar.gz *
+      working-directory: ${{ github.workspace }}
+
+    - name: Create and push backup branch
+      run: |
+        git config --local user.email "miaogongzi0227@gmail.com"
+        git config --local user.name "mgz0227"
+        git branch -D backup || true
+        git checkout -b backup
+        git add main_backup_$(date +"%Y%m%d").tar.gz
+        git commit -m "Backup main branch as of $(date +"%Y-%m-%d")"
+        git push origin backup
