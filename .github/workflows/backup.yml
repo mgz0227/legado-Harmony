@@ -19,14 +19,14 @@ jobs:
 
     - name: Archive main branch as tar.gz
       run: |
-        tar -czf backup/main_backup_$(date +"%Y%m%d").tar.gz *
+        tar -czf main_backup_$(date +"%Y%m%d").tar.gz *
       working-directory: ${{ github.workspace }}
 
     - name: Upload backup to Artifact
       uses: actions/upload-artifact@v4
       with:
         name: backup
-        path:  ${{ github.workspace }}/backup/*.tar.gz
+        path:  ${{ github.workspace }}/*.tar.gz
         
     - name: Set up Git
       run: |
