@@ -13,7 +13,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Create Backup Directory
-        run: mkdir -p backups/main
+        run: |
+          if [ ! -d "backups/main" ]; then
+            mkdir -p backups/main
+          fi
 
       - name: Copy Main Branch Code
         run: |
