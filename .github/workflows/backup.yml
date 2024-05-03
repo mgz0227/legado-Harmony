@@ -26,7 +26,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: backup
-        path: backup/
+        path: backup/backup/
         
     - name: Set up Git
       run: |
