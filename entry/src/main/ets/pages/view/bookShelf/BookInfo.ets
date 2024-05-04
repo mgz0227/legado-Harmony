@@ -19,7 +19,9 @@ export default struct BookInfo{
 
   @State isJoin:boolean = false
 
-  @State isDel:boolean = false
+  onDelete: () => void = () => {
+
+  }
 
   //弹窗
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
@@ -41,7 +43,7 @@ export default struct BookInfo{
   }
 
   onAccept() {
-    console.info('确定')
+    this.onDelete()
   }
 
   exitApp() {

@@ -8,7 +8,7 @@ export default struct soundPage{
   @Prop searchValue:string
   @Link @Watch('onIsClearChange') isClear:boolean
   @Prop currentIndex:number
-
+  @State lastIndex:number = 9999
   @State cartoonList:BookList[] = [
     new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
     new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
@@ -31,6 +31,18 @@ export default struct soundPage{
     }
   }
 
+  removeListByIndex(index:number){
+    if (this.lastIndex === index) {
+      return
+    }
+    this.lastIndex = index
+    this.cartoonList.splice(index,1)
+    //防止快速点击删除
+    setTimeout(()=>{
+      this.lastIndex = 9999
+    },500)
+  }
+
   build() {
     if (this.cartoonList === null || this.cartoonList.length === 0) {
       Column() {
@@ -42,13 +54,14 @@ export default struct soundPage{
         { space: 10 }
       ) {
 
-        ForEach(this.cartoonList, (item: BookList) => {
+        ForEach(this.cartoonList, (item: BookList,index:number) => {
           BookInfo({
             title: item.title,
             describe: item.describe,
             chapter: item.chapter,
             bookImage: item.bookImage,
-            searchValue: this.searchValue
+            searchValue: this.searchValue,
+            onDelete:(): void=>this.removeListByIndex(index)
           })
         })
         Divider().vertical(false)
