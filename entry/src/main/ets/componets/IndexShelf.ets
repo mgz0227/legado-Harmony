@@ -27,6 +27,7 @@ export default struct IndexShelf {
 
   onAccept() {
     console.info('确定')
+    this.isClear = true
   }
   onCancel() {
     console.info('取消')
@@ -37,9 +38,10 @@ export default struct IndexShelf {
 
   @State currentIndex: number = 0
   THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单','批量管理']
-  @State searchValue:string = '浏览历史'
+  @State searchValue:string = '最近阅读'
   @State bookType:string = '全部'
   @State title:string = '最近阅读'
+  @State isClear:boolean = false
   build() {
     Column() {
       Flex({
@@ -221,11 +223,11 @@ export default struct IndexShelf {
       Scroll(){
         Stack({alignContent:Alignment.Center}) {
           if (this.currentIndex === 0){
-            novelPage({searchValue:this.searchValue}).zIndex(0)
+            novelPage({searchValue:this.searchValue,currentIndex:0,isClear:this.isClear}).zIndex(0)
           } else if(this.currentIndex === 1) {
-            cartoonPage({searchValue:this.searchValue}).zIndex(1)
+            cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear}).zIndex(1)
           } else if(this.currentIndex === 2) {
-            soundPage({searchValue:this.searchValue}).zIndex(2)
+            soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear}).zIndex(2)
           }
         }
         .padding({left:10,right:10})
