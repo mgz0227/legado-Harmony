@@ -1,22 +1,24 @@
 import { BookList } from '../../../componets/dataList/bookList'
 import BookInfo from './BookInfo'
+import { ifaa } from '@kit.OnlineAuthenticationKit'
 
 @Component
 export default struct novelPage{
   @Prop searchValue:string
   @Link @Watch('onIsClearChange') isClear:boolean
   @Prop currentIndex:number
+  @State lastIndex:number = 9999
   @State bookList:BookList[] = [
-      new BookList('仙人消失之后','会说话的肘子·未读过','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过','更新至·第340章 镇压',$r('app.media.cover_list'))
+      new BookList('仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('仙人消失之后','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('仙人消失之后','会说话的肘子·未读过3','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('仙人消失之后','会说话的肘子·未读过4','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('仙人消失之后','会说话的肘子·未读过5','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('仙人消失之后','会说话的肘子·未读过6','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('仙人消失之后','会说话的肘子·未读过7','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('仙人消失之后','会说话的肘子·未读过8','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('仙人消失之后','会说话的肘子·未读过9','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('仙人消失之后','会说话的肘子·未读过10','更新至·第340章 镇压',$r('app.media.cover_list'))
   ]
   //监听isClear变化
   onIsClearChange() {
@@ -25,6 +27,19 @@ export default struct novelPage{
       this.isClear = false
     }
   }
+
+  removeListByIndex(index:number){
+    if (this.lastIndex === index) {
+      return
+    }
+    this.lastIndex = index
+    this.bookList.splice(index,1)
+    //防止快速点击删除
+    setTimeout(()=>{
+      this.lastIndex = 9999
+    },500)
+  }
+
 
   build() {
     if (this.bookList === null || this.bookList.length === 0) {
@@ -37,13 +52,14 @@ export default struct novelPage{
         { space: 10 }
       ) {
 
-        ForEach(this.bookList, (item: BookList) => {
+        ForEach(this.bookList, (item: BookList,index:number) => {
           BookInfo({
             title: item.title,
             describe: item.describe,
             chapter: item.chapter,
             bookImage: item.bookImage,
-            searchValue: this.searchValue
+            searchValue: this.searchValue,
+            onDelete:(): void=>this.removeListByIndex(index)
           })
         })
 

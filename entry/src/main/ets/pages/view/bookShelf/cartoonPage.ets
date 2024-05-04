@@ -8,6 +8,7 @@ export default struct cartoonPage{
   @Prop searchValue:string
   @Link @Watch('onIsClearChange') isClear:boolean
   @Prop currentIndex:number
+  @State lastIndex:number = 9999
   @State cartoonList:BookList[] = [
     new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1')),
     new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1')),
@@ -24,6 +25,18 @@ export default struct cartoonPage{
     }
   }
 
+  removeListByIndex(index:number){
+    if (this.lastIndex === index) {
+      return
+    }
+    this.lastIndex = index
+    this.cartoonList.splice(index,1)
+    //防止快速点击删除
+    setTimeout(()=>{
+      this.lastIndex = 9999
+    },500)
+  }
+
   build() {
     if (this.cartoonList === null || this.cartoonList.length === 0) {
       Column() {
@@ -35,13 +48,14 @@ export default struct cartoonPage{
         { space: 10 }
       ) {
 
-        ForEach(this.cartoonList, (item: BookList) => {
+        ForEach(this.cartoonList, (item: BookList,index: number) => {
           BookInfo({
             title: item.title,
             describe: item.describe,
             chapter: item.chapter,
             bookImage: item.bookImage,
-            searchValue: this.searchValue
+            searchValue: this.searchValue,
+            onDelete:(): void=>this.removeListByIndex(index)
           })
         })
 
