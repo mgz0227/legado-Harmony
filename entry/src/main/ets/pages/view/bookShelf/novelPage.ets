@@ -1,6 +1,7 @@
 import { BookList } from '../../../componets/dataList/bookList'
 import BookInfo from './BookInfo'
 import { ifaa } from '@kit.OnlineAuthenticationKit'
+import { promptAction } from '@kit.ArkUI'
 
 @Component
 export default struct novelPage{
@@ -9,7 +10,7 @@ export default struct novelPage{
   @Prop currentIndex:number
   @State lastIndex:number = 9999
   @State bookList:BookList[] = [
-      new BookList('仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'))
+      new BookList('仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'),true)
     ,new BookList('仙人消失之后','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list'))
     ,new BookList('仙人消失之后','会说话的肘子·未读过3','更新至·第340章 镇压',$r('app.media.cover_list'))
     ,new BookList('仙人消失之后','会说话的肘子·未读过4','更新至·第340章 镇压',$r('app.media.cover_list'))
@@ -25,6 +26,10 @@ export default struct novelPage{
     if (this.currentIndex === 0 && this.isClear) {
       this.bookList = []
       this.isClear = false
+      promptAction.showToast({
+        message: '清空成功',
+        duration: 1000,
+      })
     }
   }
 
@@ -34,6 +39,10 @@ export default struct novelPage{
     }
     this.lastIndex = index
     this.bookList.splice(index,1)
+    promptAction.showToast({
+      message: '删除成功',
+      duration: 1000,
+    })
     //防止快速点击删除
     setTimeout(()=>{
       this.lastIndex = 9999
@@ -58,6 +67,7 @@ export default struct novelPage{
             describe: item.describe,
             chapter: item.chapter,
             bookImage: item.bookImage,
+            isJoin:item.isJoin,
             searchValue: this.searchValue,
             onDelete:(): void=>this.removeListByIndex(index)
           })

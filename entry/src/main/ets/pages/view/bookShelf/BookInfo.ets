@@ -1,5 +1,6 @@
 import delDialogExample from '../../../componets/common/delDialog'
 import router from '@ohos.router'
+import { promptAction } from '@kit.ArkUI'
 
 @Component
 /**
@@ -17,7 +18,7 @@ export default struct BookInfo{
 
   @Prop searchValue:string
 
-  @State isJoin:boolean = false
+  @Prop isJoin:boolean
 
   onDelete: () => void = () => {
 
@@ -119,12 +120,19 @@ export default struct BookInfo{
               Image(this.isJoin?$r("app.media.add_check"):$r("app.media.add_shelf")).width(this.isJoin?15:10).height(this.isJoin?15:10)
                 .fillColor('rgba(0, 0, 0, 0.9)')
               Text('书架').fontSize(10).fontColor('rgba(0, 0, 0, 0.45)')
-            } .padding({ left:15,right:15,bottom:5,top:5 })
+            }.padding({ left:15,right:15,bottom:5,top:5 })
           }
           .backgroundColor(this.isJoin?'rgba(174,174,174,0.2)':'')
           .borderColor('rgb(174,174,174)')
           .borderWidth(this.isJoin?0:1)
           .borderRadius(50)
+          .onClick(()=>{
+            this.isJoin = !this.isJoin
+            promptAction.showToast({
+              message: this.isJoin?'已加入书架':'已移出书架',
+              duration: 1000,
+            })
+          })
         }
         .justifyContent(FlexAlign.Start)
         .alignItems(HorizontalAlign.End)

@@ -1,5 +1,7 @@
 import { BookList } from '../../../componets/dataList/bookList'
 import BookInfo from './BookInfo'
+import { promptAction } from '@kit.ArkUI'
+
 /**
  * 漫画
  */
@@ -22,6 +24,10 @@ export default struct cartoonPage{
     if (this.currentIndex === 1 && this.isClear) {
       this.cartoonList = []
       this.isClear = false
+      promptAction.showToast({
+        message: '清空成功',
+        duration: 1000,
+      })
     }
   }
 
@@ -31,6 +37,10 @@ export default struct cartoonPage{
     }
     this.lastIndex = index
     this.cartoonList.splice(index,1)
+    promptAction.showToast({
+      message: '删除成功',
+      duration: 1000,
+    })
     //防止快速点击删除
     setTimeout(()=>{
       this.lastIndex = 9999

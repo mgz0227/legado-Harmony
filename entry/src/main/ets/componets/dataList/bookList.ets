@@ -10,6 +10,11 @@ export class BookList {
   describe:string
 
   /**
+   * 是否加入书架
+   */
+  isJoin:boolean
+
+  /**
    * 章节
    */
   chapter:string
@@ -21,9 +26,9 @@ export class BookList {
 
 
 
-
-  constructor( title:string,describe:string , chapter:string,  bookImage:Resource) {
+  constructor( title:string,describe:string , chapter:string,  bookImage:Resource,isJoin:boolean = false) {
     this.title = title
+    this.isJoin = isJoin
     this.describe = describe
     this.chapter = chapter
     this.bookImage = bookImage
