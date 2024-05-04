@@ -6,7 +6,9 @@ import BookInfo from './BookInfo'
 @Component
 export default struct cartoonPage{
   @Prop searchValue:string
-  cartoonList:BookList[] = [
+  @Link @Watch('onIsClearChange') isClear:boolean
+  @Prop currentIndex:number
+  @State cartoonList:BookList[] = [
     new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1')),
     new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1')),
     new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1')),
@@ -15,20 +17,40 @@ export default struct cartoonPage{
     new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1')),
     new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1'))
   ]
-
-  @State TypeSearch:number = 0
-  build() {
-    Column(
-      {space:10}
-    ){
-      ForEach(this.cartoonList,(item:BookList) => {
-        BookInfo({title:item.title,describe:item.describe,chapter:item.chapter,bookImage:item.bookImage,searchValue:this.searchValue})
-      })
-      Divider().vertical(false)
-      Row(){
-        Text('END').fontColor('rgba(84, 84, 84, 0.30)').fontWeight(500)
-      }
+  onIsClearChange() {
+    if (this.currentIndex === 1 && this.isClear) {
+      this.cartoonList = []
+      this.isClear = false
     }
-    .backgroundColor('rgba(255,250,247,0.8)')
+  }
+
+  build() {
+    if (this.cartoonList === null || this.cartoonList.length === 0) {
+      Column() {
+        Image($r('app.media.no_record')).width(200).height(200)
+        Text('暂无浏览记录').fontSize(12).fontColor('rgba(96, 96, 96, 0.8)').fontWeight(500)
+      }.margin({ top: 120 })
+    } else {
+      Column(
+        { space: 10 }
+      ) {
+
+        ForEach(this.cartoonList, (item: BookList) => {
+          BookInfo({
+            title: item.title,
+            describe: item.describe,
+            chapter: item.chapter,
+            bookImage: item.bookImage,
+            searchValue: this.searchValue
+          })
+        })
+
+        Divider().vertical(false)
+        Row() {
+          Text('END').fontColor('rgba(84, 84, 84, 0.30)').fontWeight(500)
+        }
+      }
+      .backgroundColor('rgba(255,250,247,0.8)')
+    }
   }
 }
