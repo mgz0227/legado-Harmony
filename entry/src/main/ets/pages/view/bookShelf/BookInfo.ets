@@ -20,6 +20,8 @@ export default struct BookInfo{
 
   @Prop isJoin:boolean
 
+  @Prop isShowCheck:boolean
+
   onDelete: () => void = () => {
 
   }
@@ -103,7 +105,14 @@ export default struct BookInfo{
           })
         })
       }
-
+      if (this.isShowCheck) {
+        Row() {
+          Checkbox({
+            name: this.title
+          })
+        }
+        .padding({ left: 15, right: 15, bottom: 5, top: 5 })
+      }
       if (this.searchValue === '浏览历史'){
         Column({space:15}){
           Row(){

@@ -94,6 +94,7 @@ export default struct novelPage{
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
                 searchValue: this.searchValue,
+                isShowCheck:this.isShowCheck,
                 onDelete:(): void=>this.removeListByIndex(index)
               })
             })

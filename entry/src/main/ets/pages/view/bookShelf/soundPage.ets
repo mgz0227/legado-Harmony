@@ -98,6 +98,7 @@ export default struct soundPage{
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
                 searchValue: this.searchValue,
+                isShowCheck:this.isShowCheck,
                 onDelete:(): void=>this.removeListByIndex(index)
               })
             })
