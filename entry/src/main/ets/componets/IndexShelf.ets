@@ -38,10 +38,19 @@ export default struct IndexShelf {
 
   @State currentIndex: number = 0
   THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单','批量管理']
+  EXHIBIT_NAMES: string[] = ['列表', '宫格']
+  GROUP_NAMES:string[] = ['标签', '文件夹']
+  @State EXHIBIT:string = '宫格'
+  @State GROUP:string = '标签'
   @State searchValue:string = '最近阅读'
   @State bookType:string = '全部'
   @State title:string = '最近阅读'
   @State isClear:boolean = false
+  @State isRefreshing: boolean = false
+  @State counter: number = 0
+  @State RefreshingTitle:string = '松开刷新'
+  @State isShowCheck:boolean = false
+
   build() {
     Column() {
       Flex({
@@ -115,31 +124,28 @@ export default struct IndexShelf {
         }
       ){
         Scroll(){
-          Row({space:16}){
-            IndexSearchType({title:this.title,searchValue:this.searchValue})
-            IndexSearchType({title:'浏览历史',searchValue:this.searchValue})
-              .onClick(()=> {
-                this.searchValue = '浏览历史'
-              })
-            if (this.searchValue !== '浏览历史') {
-              IndexSearchType({ title: '文件夹', searchValue: this.searchValue })
-                .onClick(() => {
-                  this.searchValue = '文件夹'
+          Flex({
+            alignItems: ItemAlign.Center,
+            justifyContent: FlexAlign.SpaceBetween
+          }){
+            Row({space:15}){
+              IndexSearchType({title:this.title,searchValue:this.searchValue})
+              IndexSearchType({title:'浏览历史',searchValue:this.searchValue})
+                .onClick(()=> {
+                  this.searchValue = '浏览历史'
+                  this.isShowCheck = false
                 })
-              IndexSearchType({ title: '宫格', searchValue: this.searchValue })
-                .onClick(() => {
-                  this.searchValue = '宫格'
-                })
-              Divider()
-                .vertical(true)
-                .height(15)
-                .color('#989797')
-                .opacity(0.5)
-                .strokeWidth(1)
-              IndexSearchType({ title: '管理', searchValue: this.searchValue })
-                .onClick(() => {
-                  this.searchValue = '管理'
-                })
+              if (this.searchValue !== '浏览历史') {
+                this.GroupBuilder()
+                this.ExhibitBuilder()
+                Text('管理')
+                  .fontColor('rgba(0,0,0,0.5)')
+                  .fontSize(15)
+                  .fontWeight(400)
+                  .onClick(()=>{
+                    this.isShowCheck = !this.isShowCheck
+                  })
+              }
             }
           }
         }
@@ -219,22 +225,74 @@ export default struct IndexShelf {
         )
       }.margin({ left: 15,bottom:10})
     }
-
-      Scroll(){
-        Stack({alignContent:Alignment.Center}) {
-          if (this.currentIndex === 0){
-            novelPage({searchValue:this.searchValue,currentIndex:0,isClear:this.isClear}).zIndex(0)
-          } else if(this.currentIndex === 1) {
-            cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear}).zIndex(1)
-          } else if(this.currentIndex === 2) {
-            soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear}).zIndex(2)
+      Refresh({ refreshing: $$this.isRefreshing,builder:this.refreshComponent}) {
+        Scroll(){
+          Stack({alignContent:Alignment.Center}) {
+            if (this.currentIndex === 0){
+              novelPage({searchValue:this.searchValue,currentIndex:0,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(0)
+            } else if(this.currentIndex === 1) {
+              cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(1)
+            } else if(this.currentIndex === 2) {
+              soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(2)
+            }
           }
+          .padding({left:10,right:10})
         }
-        .padding({left:10,right:10})
-      }
-      .align(Alignment.TopStart)
-      .height(this.searchValue==='浏览历史'?'83%':'78%')
-      .scrollBar(BarState.Off)
+        .align(Alignment.TopStart)
+        .height(this.searchValue==='浏览历史'?'83%':'78%')
+        .scrollBar(BarState.Off)
+      }.onStateChange((refreshStatus: RefreshStatus) =>{
+        if (refreshStatus === 1 || refreshStatus === 2) {
+          this.RefreshingTitle = '松开刷新'
+        } else{
+          this.RefreshingTitle = '刷新中...'
+        }
+      })
+      .onRefreshing(()=>{
+        setTimeout(() => {
+          this.counter++
+          this.isRefreshing = false
+        }, 1000)
+
+      })
+    }
+  }
+
+  @Builder ExhibitBuilder() {
+    Row({space:10}){
+      ForEach(this.EXHIBIT_NAMES, (item:string) => {
+        if (item !== this.EXHIBIT) {
+          IndexSearchType({ title: item, searchValue: this.searchValue })
+            .onClick(() => {
+              this.EXHIBIT = item
+            })
+          Divider()
+            .vertical(true)
+            .height(15)
+            .color('#989797')
+            .opacity(0.5)
+            .strokeWidth(1)
+        }
+      })
+    }
+  }
+
+  @Builder GroupBuilder() {
+    Row({space:10}){
+      ForEach(this.GROUP_NAMES, (item:string) => {
+        if (item !== this.GROUP) {
+          IndexSearchType({ title: item, searchValue: this.searchValue })
+            .onClick(() => {
+              this.GROUP = item
+            })
+          Divider()
+            .vertical(true)
+            .height(15)
+            .color('#989797')
+            .opacity(0.5)
+            .strokeWidth(1)
+        }
+      })
     }
   }
 
@@ -242,6 +300,18 @@ export default struct IndexShelf {
     Column() {
       Image($r('app.media.SUB_theme'))
     }.width('100%')
+  }
+
+  @Builder
+  refreshComponent()
+  {
+    Row()
+    {
+      if (this.RefreshingTitle !== '松开刷新'){
+        LoadingProgress().height(30)
+      }
+      Text(this.RefreshingTitle).fontSize(16).margin({left:20})
+    }
   }
 
   changeTheme(themeNum: number) {
