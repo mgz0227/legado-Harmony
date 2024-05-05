@@ -1,14 +1,16 @@
 import { BookList } from '../../../componets/dataList/bookList'
 import BookInfo from './BookInfo'
-import { ifaa } from '@kit.OnlineAuthenticationKit'
 import { promptAction } from '@kit.ArkUI'
+import BookInfoGrid from './BookInfoGrid'
 
 @Component
 export default struct novelPage{
   @Prop searchValue:string
+  @Prop isShowCheck:boolean
   @Link @Watch('onIsClearChange') isClear:boolean
   @Prop currentIndex:number
   @State lastIndex:number = 9999
+  @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
   @State bookList:BookList[] = [
       new BookList('仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'),true)
     ,new BookList('仙人消失之后','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list'))
@@ -31,6 +33,11 @@ export default struct novelPage{
         duration: 1000,
       })
     }
+  }
+
+  //监听EXHIBIT变化
+  onIsEXHIBITChange() {
+    console.log(this.EXHIBIT)
   }
 
   removeListByIndex(index:number){
@@ -58,27 +65,47 @@ export default struct novelPage{
       }.margin({ top: 120 })
     } else {
       Column(
-        { space: 10 }
-      ) {
-
-        ForEach(this.bookList, (item: BookList,index:number) => {
-          BookInfo({
-            title: item.title,
-            describe: item.describe,
-            chapter: item.chapter,
-            bookImage: item.bookImage,
-            isJoin:item.isJoin,
-            searchValue: this.searchValue,
-            onDelete:(): void=>this.removeListByIndex(index)
-          })
-        })
-
+        {space:10}
+      ){
+        if (this.EXHIBIT === '宫格') {
+          Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
+            ForEach(this.bookList, (item: BookList,index:number) => {
+              BookInfoGrid({
+                title: item.title + this.EXHIBIT,
+                describe: item.describe,
+                chapter: item.chapter,
+                bookImage: item.bookImage,
+                isJoin:item.isJoin,
+                searchValue: this.searchValue,
+                isShowCheck:this.isShowCheck,
+                onDelete:(): void=>this.removeListByIndex(index)
+              }).width('33%')
+            })
+          }
+        } else {
+          Column(
+            { space: 10 }
+          ) {
+            ForEach(this.bookList, (item: BookList,index:number) => {
+              BookInfo({
+                title: item.title,
+                describe: item.describe,
+                chapter: item.chapter,
+                bookImage: item.bookImage,
+                isJoin:item.isJoin,
+                searchValue: this.searchValue,
+                onDelete:(): void=>this.removeListByIndex(index)
+              })
+            })
+          }
+          .backgroundColor('rgba(255,250,247,0.8)')
+        }
         Divider().vertical(false)
         Row() {
           Text('END').fontColor('rgba(84, 84, 84, 0.30)').fontWeight(500)
         }
       }
-      .backgroundColor('rgba(255,250,247,0.8)')
+
     }
   }
 }
