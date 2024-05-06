@@ -69,7 +69,7 @@ export default struct BookInfoGrid{
           }
           .borderRadius(10)
           .backgroundColor(this.isShowCheck ?'rgba(0, 0, 0, 0.3)':'')
-          .width(90).height(120)
+          .width(100).height(120)
         }
        /* if (this.searchValue === '浏览历史'){
           Flex({
@@ -111,10 +111,9 @@ export default struct BookInfoGrid{
         }*/
       }
       .borderRadius(10)
-      .width(90).height(120)
+      .width(100).height(120)
       .backgroundImage(this.bookImage)
-      .backgroundImageSize({width:90,height:120})
-
+      .backgroundImageSize({width:100,height:120})
       Text(this.title)
         .fontSize(15)
         .fontWeight(700)
