@@ -41,8 +41,8 @@ export default struct IndexShelf {
   THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单','批量管理']
   EXHIBIT_NAMES: string[] = ['列表', '宫格']
   GROUP_NAMES:string[] = ['标签', '文件夹']
-  @State EXHIBIT:string = '宫格'
-  @State GROUP:string = '文件夹'
+  @State EXHIBIT:string = '列表'
+  @State GROUP:string = '标签'
   @State searchValue:string = '最近阅读'
   @State bookType:string = '全部'
   @State title:string = '最近阅读'
@@ -140,12 +140,18 @@ export default struct IndexShelf {
                 this.GroupBuilder()
                 this.ExhibitBuilder()
                 Text('管理')
+                  .onClick(()=>{
+                    router.pushUrl({
+                      url:'pages/view/BookManagePage',
+                      params: {
+                        currentIndex:this.currentIndex,
+                        EXHIBIT:this.EXHIBIT
+                      }
+                    })
+                  })
                   .fontColor('rgba(0,0,0,0.5)')
                   .fontSize(15)
                   .fontWeight(400)
-                  .onClick(()=>{
-                    this.isShowCheck = !this.isShowCheck
-                  })
               }
             }
           }
@@ -231,7 +237,13 @@ export default struct IndexShelf {
           Stack({alignContent:Alignment.Center}) {
             if (this.GROUP === '标签'){
               if (this.currentIndex === 0){
-                novelPage({searchValue:this.searchValue,currentIndex:0,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(0)
+                novelPage({
+                  searchValue:this.searchValue
+                ,currentIndex:0,isClear:this.isClear
+                ,EXHIBIT:this.EXHIBIT
+                ,isShowCheck:this.isShowCheck
+                })
+                  .zIndex(0)
               } else if(this.currentIndex === 1) {
                 cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(1)
               } else if(this.currentIndex === 2) {

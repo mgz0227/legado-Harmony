@@ -65,6 +65,7 @@ export default struct BookInfoGrid{
             Checkbox({
               name: this.title
             })
+              .selectedColor($r('app.color.theme_color'))
               .unselectedColor('rgba(255, 255, 255, 0.6)')
           }
           .borderRadius(10)
@@ -139,7 +140,6 @@ export default struct BookInfoGrid{
         .maxLines(1)
     }
     .padding({ left:8,right:8,bottom:5,top:5 })
-    .backgroundColor('rgba(244,244,244,0.8)')
     .onClick(()=>{
       router.pushUrl({
         url: 'pages/view/BookDetailPage',

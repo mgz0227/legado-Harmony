@@ -93,6 +93,7 @@ export default struct cartoonPage{
                 isJoin:item.isJoin,
                 searchValue: this.searchValue,
                 isShowCheck:this.isShowCheck,
+                checkBookList:[],
                 onDelete:(): void=>this.removeListByIndex(index)
               })
             })
