@@ -65,7 +65,7 @@ export default struct cartoonPage{
       Column(
         {space:10}
       ){
-        if (this.EXHIBIT === '宫格') {
+        if (this.EXHIBIT === '宫格' && this.searchValue !== '浏览历史') {
           Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
             ForEach(this.cartoonList, (item: BookList,index:number) => {
               BookInfoGrid({
