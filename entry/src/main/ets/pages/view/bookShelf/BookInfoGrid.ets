@@ -71,7 +71,7 @@ export default struct BookInfoGrid{
           .backgroundColor(this.isShowCheck ?'rgba(0, 0, 0, 0.3)':'')
           .width(90).height(120)
         }
-        if (this.searchValue === '浏览历史'){
+       /* if (this.searchValue === '浏览历史'){
           Flex({
             justifyContent:FlexAlign.SpaceBetween,
             alignItems: ItemAlign.End
@@ -108,7 +108,7 @@ export default struct BookInfoGrid{
           .borderRadius(10)
           .backgroundColor(this.searchValue === '浏览历史'?'rgba(0, 0, 0, 0.3)':'')
           .width(90).height(120)
-        }
+        }*/
       }
       .borderRadius(10)
       .width(90).height(120)

@@ -67,7 +67,7 @@ export default struct novelPage{
       Column(
         {space:10}
       ){
-        if (this.EXHIBIT === '宫格') {
+        if (this.EXHIBIT === '宫格' && this.searchValue !== '浏览历史') {
           Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
             ForEach(this.bookList, (item: BookList,index:number) => {
               BookInfoGrid({
