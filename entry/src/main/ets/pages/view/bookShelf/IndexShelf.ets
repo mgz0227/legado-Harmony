@@ -238,10 +238,11 @@ export default struct IndexShelf {
             if (this.GROUP === '标签'){
               if (this.currentIndex === 0){
                 novelPage({
-                  searchValue:this.searchValue
-                ,currentIndex:0,isClear:this.isClear
-                ,EXHIBIT:this.EXHIBIT
-                ,isShowCheck:this.isShowCheck
+                  searchValue:this.searchValue,
+                  currentIndex:0,
+                  isClear:this.isClear,
+                  EXHIBIT:this.EXHIBIT,
+                  isShowCheck:this.isShowCheck
                 })
                   .zIndex(0)
               } else if(this.currentIndex === 1) {

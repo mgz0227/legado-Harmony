@@ -10,7 +10,7 @@ export default struct novelPage{
   @Link @Watch('onIsClearChange') isClear:boolean
   @Prop currentIndex:number
   @State lastIndex:number = 9999
-  @Prop allCheck:boolean = false
+  @Prop allCheck:boolean
   // @Link @Watch('isChangeManageDelete') manageDelete:boolean
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
   @State checkBookList:BookList[] = []
