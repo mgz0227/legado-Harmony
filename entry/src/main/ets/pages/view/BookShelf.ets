@@ -1,5 +1,5 @@
 import ReadShow from '../../componets/common/ReadShow'
-import IndexShelf from '../../componets/IndexShelf'
+import IndexShelf from './bookShelf/IndexShelf'
 
 @Component
 export default struct BookShelf {

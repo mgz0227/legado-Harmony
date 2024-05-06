@@ -1,12 +1,13 @@
-import cartoonPage from '../pages/view/bookShelf/cartoonPage'
-import novelPage from '../pages/view/bookShelf/novelPage'
-import BookMark from './head/BookMark'
-import BookType from './head/BookType'
+import cartoonPage from './cartoonPage'
+import novelPage from './novelPage'
+import BookMark from '../../../componets/head/BookMark'
+import BookType from '../../../componets/head/BookType'
 
-import soundPage from '../pages/view/bookShelf/soundPage'
-import IndexSearchType from './head/IndexSearchType'
+import soundPage from './soundPage'
+import IndexSearchType from '../../../componets/head/IndexSearchType'
 import router from '@ohos.router'; // 引入路由管理器
-import delDialogExample from './common/delDialog'
+import delDialogExample from '../../../componets/common/delDialog'
+import BookFolder from './BookFolder'
 
 @Component
 export default struct IndexShelf {
@@ -41,7 +42,7 @@ export default struct IndexShelf {
   EXHIBIT_NAMES: string[] = ['列表', '宫格']
   GROUP_NAMES:string[] = ['标签', '文件夹']
   @State EXHIBIT:string = '宫格'
-  @State GROUP:string = '标签'
+  @State GROUP:string = '文件夹'
   @State searchValue:string = '最近阅读'
   @State bookType:string = '全部'
   @State title:string = '最近阅读'
@@ -50,7 +51,6 @@ export default struct IndexShelf {
   @State counter: number = 0
   @State RefreshingTitle:string = '松开刷新'
   @State isShowCheck:boolean = false
-
   build() {
     Column() {
       Flex({
@@ -132,6 +132,7 @@ export default struct IndexShelf {
               IndexSearchType({title:this.title,searchValue:this.searchValue})
               IndexSearchType({title:'浏览历史',searchValue:this.searchValue})
                 .onClick(()=> {
+                  this.GROUP = '标签'
                   this.searchValue = '浏览历史'
                   this.isShowCheck = false
                 })
@@ -228,12 +229,16 @@ export default struct IndexShelf {
       Refresh({ refreshing: $$this.isRefreshing,builder:this.refreshComponent}) {
         Scroll(){
           Stack({alignContent:Alignment.Center}) {
-            if (this.currentIndex === 0){
-              novelPage({searchValue:this.searchValue,currentIndex:0,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(0)
-            } else if(this.currentIndex === 1) {
-              cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(1)
-            } else if(this.currentIndex === 2) {
-              soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(2)
+            if (this.GROUP === '标签'){
+              if (this.currentIndex === 0){
+                novelPage({searchValue:this.searchValue,currentIndex:0,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(0)
+              } else if(this.currentIndex === 1) {
+                cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(1)
+              } else if(this.currentIndex === 2) {
+                soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(2)
+              }
+            } else {
+               BookFolder()
             }
           }
           .padding({left:10,right:10})
