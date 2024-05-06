@@ -118,7 +118,9 @@ export default struct BookInfo{
         Row() {
           Checkbox({
             name: this.title
-          }).select(this.allCheck)
+          })
+            .selectedColor($r('app.color.theme_color'))
+            .select(this.allCheck)
             .onClick(()=>{
               this.allCheck = !this.allCheck
               if (this.allCheck) {
