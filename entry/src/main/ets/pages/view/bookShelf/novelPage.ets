@@ -10,7 +10,10 @@ export default struct novelPage{
   @Link @Watch('onIsClearChange') isClear:boolean
   @Prop currentIndex:number
   @State lastIndex:number = 9999
+  @Prop allCheck:boolean = false
+  // @Link @Watch('isChangeManageDelete') manageDelete:boolean
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
+  @State checkBookList:BookList[] = []
   @State bookList:BookList[] = [
       new BookList('仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'),true)
     ,new BookList('仙人消失之后','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list'))
@@ -34,6 +37,25 @@ export default struct novelPage{
       })
     }
   }
+
+  // isChangeManageDelete() {
+  //   if (this.manageDelete) {
+  //     if (this.checkBookList === null || this.checkBookList.length === 0) {
+  //       promptAction.showToast({
+  //         message: '请选择要删除的内容',
+  //         duration: 1000,
+  //       })
+  //       this.manageDelete = false
+  //       return
+  //     }
+  //     this.bookList = []
+  //     console.log('删除')
+  //     this.manageDelete = false
+  //   }
+  // }
+  // isChangeBookList() {
+  //   console.log(this.checkBookList + '')
+  // }
 
   //监听EXHIBIT变化
   onIsEXHIBITChange() {
@@ -63,6 +85,7 @@ export default struct novelPage{
         Image($r('app.media.no_record')).width(200).height(200)
         Text('暂无浏览记录').fontSize(12).fontColor('rgba(96, 96, 96, 0.6)').fontWeight(500).padding(5)
       }.margin({ top: 120 })
+
     } else {
       Column(
         {space:10}
@@ -95,6 +118,8 @@ export default struct novelPage{
                 isJoin:item.isJoin,
                 searchValue: this.searchValue,
                 isShowCheck:this.isShowCheck,
+                allCheck:this.allCheck,
+                checkBookList:this.checkBookList,
                 onDelete:(): void=>this.removeListByIndex(index)
               })
             })

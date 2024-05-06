@@ -1,6 +1,7 @@
 import delDialogExample from '../../../componets/common/delDialog'
 import router from '@ohos.router'
-import { promptAction } from '@kit.ArkUI'
+import { MarginType, promptAction } from '@kit.ArkUI'
+import { BookList } from '../../../componets/dataList/bookList'
 
 @Component
 /**
@@ -21,6 +22,10 @@ export default struct BookInfo{
   @Prop isJoin:boolean
 
   @Prop isShowCheck:boolean
+
+  @Prop allCheck:boolean = false
+
+  @Link checkBookList:BookList[]
 
   onDelete: () => void = () => {
 
@@ -53,6 +58,10 @@ export default struct BookInfo{
     console.info('点外围取消')
   }
 
+  inputBookList(){
+    this.checkBookList.push(new BookList(this.title,this.describe,this.chapter,this.bookImage,this.isJoin))
+    console.log(JSON.stringify(this.checkBookList))
+  }
 
   build() {
 
@@ -109,7 +118,13 @@ export default struct BookInfo{
         Row() {
           Checkbox({
             name: this.title
-          })
+          }).select(this.allCheck)
+            .onClick(()=>{
+              this.allCheck = !this.allCheck
+              if (this.allCheck) {
+                this.inputBookList()
+              }
+            })
         }
         .padding({ left: 15, right: 15, bottom: 5, top: 5 })
       }
@@ -149,6 +164,5 @@ export default struct BookInfo{
     }
     .padding(10)
     .borderRadius(10)
-    .backgroundColor('rgba(244,244,244,0.8)')
   }
 }
