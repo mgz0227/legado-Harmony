@@ -54,7 +54,7 @@ struct BookManagePage {
               isClear:this.isClear,
               EXHIBIT:this.EXHIBIT,
               isShowCheck:true,
-              allCheck:this.allCheck,
+              allCheck:this.allCheck
               // manageDelete:this.manageDelete
             })
           } else if(this.currentIndex === 1) {
