@@ -1,7 +1,7 @@
 import router from '@ohos.router';
-import cartoonPage from './bookShelf/cartoonPage';
-import novelPage from './bookShelf/novelPage';
-import soundPage from './bookShelf/soundPage';
+import bookListManage from '../../componets/bookManage/bookListManage';
+import { BookList } from '../../componets/dataList/bookList';
+
 class routerParams {
   currentIndex:number
   EXHIBIT:string
@@ -18,17 +18,63 @@ class routerParams {
 struct BookManagePage {
   @State currentIndex: number = (router.getParams() as routerParams).currentIndex
   @State EXHIBIT: string = (router.getParams() as routerParams).EXHIBIT
-
   @State isClear:boolean = false
-  @State isManage:boolean = true
-
   @State allCheck:boolean = false
+  @State checkNumber:number = 0
+  @State showBookList:BookList[] = []
 
-  @State manageDelete:boolean = false
+  @State bookList:BookList[] = [
+    new BookList('1','仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'),true)
+    ,new BookList('2','仙人消失之后','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('3','仙人消失之后','会说话的肘子·未读过3','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('4','仙人消失之后','会说话的肘子·未读过4','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('5','仙人消失之后','会说话的肘子·未读过5','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('6','仙人消失之后','会说话的肘子·未读过6','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('7','仙人消失之后','会说话的肘子·未读过7','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('8','仙人消失之后','会说话的肘子·未读过8','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('9','仙人消失之后','会说话的肘子·未读过9','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('10','仙人消失之后','会说话的肘子·未读过10','更新至·第340章 镇压',$r('app.media.cover_list'))
+  ]
 
+  @State cartoonList:BookList[] = [
+    new BookList('1','极主夫道','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list1'),true)
+    ,new BookList('2','极主夫道','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('3','极主夫道','会说话的肘子·未读过3','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('4','极主夫道','会说话的肘子·未读过4','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('5','极主夫道','会说话的肘子·未读过5','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('6','极主夫道','会说话的肘子·未读过6','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('7','极主夫道','会说话的肘子·未读过7','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('8','极主夫道','会说话的肘子·未读过8','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('9','极主夫道','会说话的肘子·未读过9','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('10','极主夫道','会说话的肘子·未读过10','更新至·第340章 镇压',$r('app.media.cover_list1'))
+  ]
+
+  @State soundList:BookList[] = [
+    new BookList('1','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('2','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('3','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('4','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('5','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('6','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('7','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('8','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('9','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('10','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('11','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('12','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'))
+  ]
+
+  onCurrentIndexChange(){
+    if (this.currentIndex === 0) {
+      this.showBookList = this.bookList
+    } else if(this.currentIndex === 1){
+      this.showBookList = this.cartoonList
+    } else if(this.currentIndex === 2){
+      this.showBookList = this.soundList
+    }
+  }
   onPageShow(): void {
-    console.log(this.currentIndex + '')
-    console.log(this.EXHIBIT + '')
+    this.onCurrentIndexChange()
   }
   build() {
     Column() {
@@ -45,31 +91,17 @@ struct BookManagePage {
       .width("100%")
 
       this.headTitle()
-      Flex(){
+      Flex({
+        justifyContent:FlexAlign.Center
+      }){
         Scroll(){
-          if (this.currentIndex === 0){
-            novelPage({
-              searchValue:'最近阅读',
-              currentIndex:0,
-              isClear:this.isClear,
-              EXHIBIT:this.EXHIBIT,
-              isShowCheck:true,
-              allCheck:this.allCheck
-              // manageDelete:this.manageDelete
-            })
-          } else if(this.currentIndex === 1) {
-            cartoonPage({searchValue:'最近阅读',
-              currentIndex:1,
-              isClear:this.isClear,
-              EXHIBIT:this.EXHIBIT,
-              isShowCheck:true})
-          } else if(this.currentIndex === 2) {
-            soundPage({searchValue:'最近阅读',
-              currentIndex:2,
-              isClear:this.isClear,
-              EXHIBIT:this.EXHIBIT,
-              isShowCheck:true})
-          }
+          bookListManage({
+            isClear:this.isClear,
+            EXHIBIT:this.EXHIBIT,
+            allCheck:this.allCheck,
+            showBookList:this.showBookList,
+            checkNumber:this.checkNumber
+          })
         }
         .height('80%')
         .align(Alignment.TopStart)
@@ -100,7 +132,7 @@ struct BookManagePage {
       .alignItems(HorizontalAlign.Start)
       .width('33%')
       Column(){
-        Text(`已选1项目`).fontSize(20).fontWeight(600)
+        Text(`已选${this.checkNumber}项目`).fontSize(20).fontWeight(600)
       }.width('33%')
       Column(){
         Text('完成').fontSize(16)
@@ -142,7 +174,7 @@ struct BookManagePage {
         Image($r('app.media.delete_svg')).width(20)
         Text('删除').fontSize(14).fontWeight(500)
       }.onClick(()=>{
-        this.manageDelete = true
+        this.isClear = true
       })
     }
     .height('10%')

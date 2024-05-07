@@ -9,19 +9,21 @@ import BookInfoGrid from './BookInfoGrid'
 @Component
 export default struct cartoonPage{
   @Prop searchValue:string
-  @Prop isShowCheck:boolean
   @Link @Watch('onIsClearChange') isClear:boolean
   @Prop currentIndex:number
-  @State lastIndex:number = 9999
+  @State lastIndex:string = '9999'
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
   @State cartoonList:BookList[] = [
-    new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1')),
-    new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1')),
-    new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1')),
-    new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1')),
-    new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1')),
-    new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1')),
-    new BookList('极主夫道','会说话的肘子','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    new BookList('1','极主夫道','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list1'),true)
+    ,new BookList('2','极主夫道','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('3','极主夫道','会说话的肘子·未读过3','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('4','极主夫道','会说话的肘子·未读过4','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('5','极主夫道','会说话的肘子·未读过5','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('6','极主夫道','会说话的肘子·未读过6','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('7','极主夫道','会说话的肘子·未读过7','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('8','极主夫道','会说话的肘子·未读过8','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('9','极主夫道','会说话的肘子·未读过9','更新至·第340章 镇压',$r('app.media.cover_list1'))
+    ,new BookList('10','极主夫道','会说话的肘子·未读过10','更新至·第340章 镇压',$r('app.media.cover_list1'))
   ]
   onIsClearChange() {
     if (this.currentIndex === 1 && this.isClear) {
@@ -39,19 +41,19 @@ export default struct cartoonPage{
     console.log(this.EXHIBIT)
   }
 
-  removeListByIndex(index:number){
-    if (this.lastIndex === index) {
+  removeListByIndex(bookId:string){
+    if (this.lastIndex === bookId) {
       return
     }
-    this.lastIndex = index
-    this.cartoonList.splice(index,1)
+    this.lastIndex = bookId
+    this.cartoonList = this.cartoonList.filter(book => book.bookId !== bookId);
     promptAction.showToast({
       message: '删除成功',
       duration: 1000,
     })
     //防止快速点击删除
     setTimeout(()=>{
-      this.lastIndex = 9999
+      this.lastIndex = '9999'
     },500)
   }
 
@@ -75,8 +77,7 @@ export default struct cartoonPage{
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
                 searchValue: this.searchValue,
-                isShowCheck:this.isShowCheck,
-                onDelete:(): void=>this.removeListByIndex(index)
+                onDelete:(): void=>this.removeListByIndex(item.bookId)
               }).width('33%')
             })
           }
@@ -92,9 +93,7 @@ export default struct cartoonPage{
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
                 searchValue: this.searchValue,
-                isShowCheck:this.isShowCheck,
-                checkBookList:[],
-                onDelete:(): void=>this.removeListByIndex(index)
+                onDelete:(): void=>this.removeListByIndex(item.bookId)
               })
             })
           }

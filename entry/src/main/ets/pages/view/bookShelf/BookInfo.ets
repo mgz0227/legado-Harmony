@@ -21,12 +21,6 @@ export default struct BookInfo{
 
   @Prop isJoin:boolean
 
-  @Prop isShowCheck:boolean
-
-  @Prop allCheck:boolean = false
-
-  @Link checkBookList:BookList[]
-
   onDelete: () => void = () => {
 
   }
@@ -56,11 +50,6 @@ export default struct BookInfo{
 
   exitApp() {
     console.info('点外围取消')
-  }
-
-  inputBookList(){
-    this.checkBookList.push(new BookList(this.title,this.describe,this.chapter,this.bookImage,this.isJoin))
-    console.log(JSON.stringify(this.checkBookList))
   }
 
   build() {
@@ -114,22 +103,7 @@ export default struct BookInfo{
           })
         })
       }
-      if (this.isShowCheck) {
-        Row() {
-          Checkbox({
-            name: this.title
-          })
-            .selectedColor($r('app.color.theme_color'))
-            .select(this.allCheck)
-            .onClick(()=>{
-              this.allCheck = !this.allCheck
-              if (this.allCheck) {
-                this.inputBookList()
-              }
-            })
-        }
-        .padding({ left: 15, right: 15, bottom: 5, top: 5 })
-      }
+
       if (this.searchValue === '浏览历史'){
         Column({space:15}){
           Row(){

@@ -50,7 +50,6 @@ export default struct IndexShelf {
   @State isRefreshing: boolean = false
   @State counter: number = 0
   @State RefreshingTitle:string = '松开刷新'
-  @State isShowCheck:boolean = false
   build() {
     Column() {
       Flex({
@@ -134,7 +133,6 @@ export default struct IndexShelf {
                 .onClick(()=> {
                   this.GROUP = '标签'
                   this.searchValue = '浏览历史'
-                  this.isShowCheck = false
                 })
               if (this.searchValue !== '浏览历史') {
                 this.GroupBuilder()
@@ -241,14 +239,13 @@ export default struct IndexShelf {
                   searchValue:this.searchValue,
                   currentIndex:0,
                   isClear:this.isClear,
-                  EXHIBIT:this.EXHIBIT,
-                  isShowCheck:this.isShowCheck
+                  EXHIBIT:this.EXHIBIT
                 })
                   .zIndex(0)
               } else if(this.currentIndex === 1) {
-                cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(1)
+                cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(1)
               } else if(this.currentIndex === 2) {
-                soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT,isShowCheck:this.isShowCheck}).zIndex(2)
+                soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(2)
               }
             } else {
                BookFolder()

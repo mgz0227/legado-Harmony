@@ -6,25 +6,21 @@ import BookInfoGrid from './BookInfoGrid'
 @Component
 export default struct novelPage{
   @Prop searchValue:string
-  @Prop isShowCheck:boolean
   @Link @Watch('onIsClearChange') isClear:boolean
   @Prop currentIndex:number
-  @State lastIndex:number = 9999
-  @Prop allCheck:boolean
-  // @Link @Watch('isChangeManageDelete') manageDelete:boolean
+  @State lastIndex:string = '9999'
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
-  @State checkBookList:BookList[] = []
   @State bookList:BookList[] = [
-      new BookList('仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'),true)
-    ,new BookList('仙人消失之后','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过3','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过4','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过5','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过6','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过7','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过8','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过9','更新至·第340章 镇压',$r('app.media.cover_list'))
-    ,new BookList('仙人消失之后','会说话的肘子·未读过10','更新至·第340章 镇压',$r('app.media.cover_list'))
+    new BookList('1','仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'),true)
+    ,new BookList('2','仙人消失之后','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('3','仙人消失之后','会说话的肘子·未读过3','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('4','仙人消失之后','会说话的肘子·未读过4','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('5','仙人消失之后','会说话的肘子·未读过5','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('6','仙人消失之后','会说话的肘子·未读过6','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('7','仙人消失之后','会说话的肘子·未读过7','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('8','仙人消失之后','会说话的肘子·未读过8','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('9','仙人消失之后','会说话的肘子·未读过9','更新至·第340章 镇压',$r('app.media.cover_list'))
+    ,new BookList('10','仙人消失之后','会说话的肘子·未读过10','更新至·第340章 镇压',$r('app.media.cover_list'))
   ]
   //监听isClear变化
   onIsClearChange() {
@@ -62,19 +58,19 @@ export default struct novelPage{
     console.log(this.EXHIBIT)
   }
 
-  removeListByIndex(index:number){
-    if (this.lastIndex === index) {
+  removeListByIndex(bookId:string){
+    if (this.lastIndex === bookId) {
       return
     }
-    this.lastIndex = index
-    this.bookList.splice(index,1)
+    this.lastIndex = bookId
+    this.bookList = this.bookList.filter(book => book.bookId !== bookId);
     promptAction.showToast({
       message: '删除成功',
       duration: 1000,
     })
     //防止快速点击删除
     setTimeout(()=>{
-      this.lastIndex = 9999
+      this.lastIndex = '9999'
     },500)
   }
 
@@ -100,8 +96,7 @@ export default struct novelPage{
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
                 searchValue: this.searchValue,
-                isShowCheck:this.isShowCheck,
-                onDelete:(): void=>this.removeListByIndex(index)
+                onDelete:(): void=>this.removeListByIndex(item.bookId)
               }).width('33%')
             })
           }
@@ -117,10 +112,7 @@ export default struct novelPage{
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
                 searchValue: this.searchValue,
-                isShowCheck:this.isShowCheck,
-                allCheck:this.allCheck,
-                checkBookList:this.checkBookList,
-                onDelete:(): void=>this.removeListByIndex(index)
+                onDelete:(): void=>this.removeListByIndex(item.bookId)
               })
             })
           }
