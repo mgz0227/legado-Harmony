@@ -24,6 +24,10 @@
     {
       "name": "book_detail_background",
       "value": "#2a5d5d"
+    },
+    {
+      "name": "search_book_fontColor",
+      "value": "#00000073"
     }
   ]
 }
