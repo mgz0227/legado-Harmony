@@ -4,34 +4,33 @@ import { promptAction } from '@kit.ArkUI'
 import BookInfoGrid from './BookInfoGrid'
 
 /**
- * 漫画
+ * 有书声
  */
 @Component
 export default struct soundPage{
   @Prop searchValue:string
-  @Prop isShowCheck:boolean
   @Link @Watch('onIsClearChange') isClear:boolean
   @Prop currentIndex:number
-  @State lastIndex:number = 9999
+  @State lastIndex:string = '9999'
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
-  @State cartoonList:BookList[] = [
-    new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
-    new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
-    new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
-    new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
-    new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
-    new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
-    new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
-    new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
-    new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
-    new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
-    new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
-    new BookList('三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'))
+  @State soundList:BookList[] = [
+    new BookList('1','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('2','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('3','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('4','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('5','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('6','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('7','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('8','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('9','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('10','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('11','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2')),
+    new BookList('12','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'))
   ]
   //监听isClear变化
   onIsClearChange() {
     if (this.currentIndex === 2 && this.isClear) {
-      this.cartoonList = []
+      this.soundList = []
       this.isClear = false
       promptAction.showToast({
         message: '清空成功',
@@ -45,24 +44,24 @@ export default struct soundPage{
     console.log(this.EXHIBIT)
   }
 
-  removeListByIndex(index:number){
-    if (this.lastIndex === index) {
+  removeListByIndex(bookId:string){
+    if (this.lastIndex === bookId) {
       return
     }
-    this.lastIndex = index
-    this.cartoonList.splice(index,1)
+    this.lastIndex = bookId
+    this.soundList = this.soundList.filter(book => book.bookId !== bookId);
     promptAction.showToast({
       message: '删除成功',
       duration: 1000,
     })
     //防止快速点击删除
     setTimeout(()=>{
-      this.lastIndex = 9999
+      this.lastIndex = '9999'
     },500)
   }
 
   build() {
-    if (this.cartoonList === null || this.cartoonList.length === 0) {
+    if (this.soundList === null || this.soundList.length === 0) {
       Column() {
         Image($r('app.media.no_record')).width(200).height(200)
         Text('暂无浏览记录').fontSize(12).fontColor('rgba(96, 96, 96, 0.6)').fontWeight(500).padding(5)
@@ -73,7 +72,7 @@ export default struct soundPage{
       ){
         if (this.EXHIBIT === '宫格' && this.searchValue !== '浏览历史') {
           Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
-            ForEach(this.cartoonList, (item: BookList,index:number) => {
+            ForEach(this.soundList, (item: BookList,index:number) => {
               BookInfoGrid({
                 title: item.title + this.EXHIBIT,
                 describe: item.describe,
@@ -81,8 +80,7 @@ export default struct soundPage{
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
                 searchValue: this.searchValue,
-                isShowCheck:this.isShowCheck,
-                onDelete:(): void=>this.removeListByIndex(index)
+                onDelete:(): void=>this.removeListByIndex(item.bookId)
               }).width('33%')
             })
           }
@@ -90,7 +88,7 @@ export default struct soundPage{
           Column(
             { space: 10 }
           ) {
-            ForEach(this.cartoonList, (item: BookList,index:number) => {
+            ForEach(this.soundList, (item: BookList,index:number) => {
               BookInfo({
                 title: item.title,
                 describe: item.describe,
@@ -98,9 +96,7 @@ export default struct soundPage{
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
                 searchValue: this.searchValue,
-                isShowCheck:this.isShowCheck,
-                checkBookList:[],
-                onDelete:(): void=>this.removeListByIndex(index)
+                onDelete:(): void=>this.removeListByIndex(item.bookId)
               })
             })
           }
