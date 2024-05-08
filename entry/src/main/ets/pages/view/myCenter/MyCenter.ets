@@ -1,28 +1,31 @@
 import { Attribute } from '../../../common/utils/Attribute'
 import router from '@ohos.router'
+import { WebdavService } from './WebdavService'
+import { promptAction } from '@kit.ArkUI'
 
+@Entry
 @Component
 export default struct MyCenter {
 
   @State reading_time:number = 0
   @State head_list:DataItems[]=[
-    new DataItems("读过","20"),
-    new DataItems("读完","20"),
-    new DataItems("书签","20"),
-    new DataItems("勋章","20"),
+    new DataItems("读过",20),
+    new DataItems("读完",20),
+    new DataItems("书签",20),
+    new DataItems("勋章",20),
   ]
   @State center_list:DataItems[]=[
-    new DataItems("云盘备份","1",$r("app.media.MyCenter_cloud_icon")),
-    new DataItems("书源管理","2",$r("app.media.MyCenter_book_icon")),
-    new DataItems("主题","3",$r("app.media.MyCenter_theme_icon")),
-    new DataItems("净化","4",$r("app.media.MyCenter_purify_icon")),
+    new DataItems("云盘备份",1,$r("app.media.MyCenter_cloud_icon")),
+    new DataItems("书源管理",2,$r("app.media.MyCenter_book_icon")),
+    new DataItems("主题",3,$r("app.media.MyCenter_theme_icon")),
+    new DataItems("净化",4,$r("app.media.MyCenter_purify_icon")),
   ]
 
   @State end_list:DataItems[]=[
-    new DataItems("帮助中心","1",$r("app.media.MyCenter_help_icon")),
-    new DataItems("关于阅读","2",$r("app.media.MyCenter_about_icon")),
-    new DataItems("清理缓存","3",$r("app.media.MyCenter_clean_icon")),
-    new DataItems("我的设置","4",$r("app.media.MyCenter_setUp_icon")),
+    new DataItems("帮助中心",1,$r("app.media.MyCenter_help_icon")),
+    new DataItems("关于阅读",2,$r("app.media.MyCenter_about_icon")),
+    new DataItems("清理缓存",3,$r("app.media.MyCenter_clean_icon")),
+    new DataItems("我的设置",4,$r("app.media.MyCenter_setUp_icon")),
   ]
 
   build() {
@@ -78,16 +81,25 @@ export default struct MyCenter {
           Column({space:5}){
             Image(item.icon).size({width:20,height:20})
             Text(item.title).fontSize(12).fontColor("rgba(121, 119, 119, 1.00)")
-          }.width("18%").height(70).justifyContent(FlexAlign.Center)
+          }
+          .width("18%")
+          .height(70)
+          .justifyContent(FlexAlign.Center)
+          .onClick(()=>this.centerOnclick(item.value))
         })
       }.width("100%").height(70)
       .justifyContent(FlexAlign.SpaceBetween)
       .padding({left:10,right:10})
       .backgroundColor(Color.White)
       .borderRadius(10)
-      Blank(30)
+      Blank(20)
 
+      //web服务
 
+      WebdavService()
+      Blank(20)
+
+      //帮助 关于 清理缓存 设置
       Column({space:15}){
         ForEach(this.end_list,(item:DataItems)=>{
           Row({space:10}){
@@ -100,7 +112,8 @@ export default struct MyCenter {
       .backgroundColor(Color.White)
       .borderRadius(10)
       Blank(300)
-    }.padding(20).backgroundColor("rgb(245, 245, 245)")
+    }.padding(20)
+    .backgroundColor("rgb(245, 245, 245)")
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
       colors: [["rgb(254, 203, 169)", 0.0], ["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
@@ -117,27 +130,41 @@ export default struct MyCenter {
   avatar_onclick(){
 
   }
+  //云盘,书源,主题,净化点击事件
+  centerOnclick(value:number|string){
+    switch (value){
+      case 1:
+
+      case 2:
+
+      case 3:
+
+      case 4:
+    }
+  }
 
   //跳转云盘登录
   cloudDisk_onclick(){
-    router.pushUrl(
-      {
-        url:'pages/view/myCenter/WebDav'
-      }
-    )
+    this.pushUrl('pages/view/myCenter/WebDav')
   }
 
+
+  pushUrl(url:string){
+    router.pushUrl({
+        url:url
+      })
+  }
 }
 
 export class DataItems{
 
     title:string
 
-    value:String|number
+    value:number
 
     icon:ResourceStr
 
-    constructor(title:string='',value:String|number='',icon:ResourceStr=''){
+    constructor(title:string='',value:number=0,icon:ResourceStr=''){
       this.title=title;
       this.value=value;
       this.icon=icon;
