@@ -18,13 +18,25 @@ export default struct BookInfoManage{
 
   @Prop isJoin:boolean
 
-  @Prop @Watch('isCheckChange')allCheck:boolean = false
+  @Prop isTop:boolean
+
+  @Prop @Watch('isCheckChange')allCheck:boolean
 
   @Link checkBookList:BookList[]
 
+  @Link @Watch('isTopChange')changeTop:boolean
+
+  isTopChange(){
+    this.allCheck = false
+  }
+
   isCheckChange(){
     if (this.allCheck) {
-      this.checkBookList.push(new BookList(this.bookId,this.title,this.describe,this.chapter,this.bookImage,this.isJoin))
+      //判断bookId是否有存在
+      if (this.checkBookList.some(book => book.bookId === this.bookId)) {
+        return
+      }
+      this.checkBookList.push(new BookList(this.bookId,this.title,this.describe,this.chapter,this.bookImage,new Date(),this.isJoin,true))
     } else {
       this.checkBookList = this.checkBookList.filter(book => book.bookId !== this.bookId);
     }
@@ -41,7 +53,17 @@ export default struct BookInfoManage{
       Row({
         space:20
       }){
-        Image(this.bookImage).width(60).height(80)
+        Flex({
+          alignItems: ItemAlign.End,
+
+        }){
+          if (this.isTop){
+            Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
+              .backgroundColor('rgba(0, 0, 0, 0.45)')
+          }
+        }
+        .align(Alignment.Bottom) .width(60).height(80).backgroundImage(this.bookImage).backgroundImageSize({width:60,height:80})
+
         Column({
           space:24
         })
