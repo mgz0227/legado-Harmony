@@ -8,19 +8,14 @@
 <img width="125" height="125" src="https://github.com/gedoor/legado/raw/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="legado"/>  
   
 Legado / 开源阅读
-<br>
-<a href="https://gedoor.github.io" target="_blank">gedoor.github.io</a> / <a href="https://www.legado.top/" target="_blank">legado.top</a>
-<br>
-Legado is a free and open source novel reader for Android.
+
+Legado is a free and open source novel reader for Harmony OS.
 </div>
+
 
 [![](https://img.shields.io/badge/-Contents:-696969.svg)](#contents) [![](https://img.shields.io/badge/-Function-F5F5F5.svg)](#Function-主要功能-) [![](https://img.shields.io/badge/-Community-F5F5F5.svg)](#Community-交流社区-) [![](https://img.shields.io/badge/-API-F5F5F5.svg)](#API-) [![](https://img.shields.io/badge/-Other-F5F5F5.svg)](#Other-其他-) [![](https://img.shields.io/badge/-Grateful-F5F5F5.svg)](#Grateful-感谢-) [![](https://img.shields.io/badge/-Interface-F5F5F5.svg)](#Interface-界面-)
 
->新用户？
->
->软件不提供内容，需要您自己手动添加，例如导入书源等。
->看看 [官方帮助文档](https://www.yuque.com/legado/wiki)，也许里面就有你要的答案。
-
+# 开发人员详见：[Contributors](https://github.com/mgz0227/legado-Harmony/graphs/contributors)
 # Function-主要功能 [![](https://img.shields.io/badge/-Function-F5F5F5.svg)](#Function-主要功能-)
 [English](English.md)
 
@@ -56,10 +51,8 @@ Legado is a free and open source novel reader for Android.
 ##### 免责声明
 https://gedoor.github.io/Disclaimer
 
-##### 阅读3.0
+##### Harmony阅读
 * [书源规则](https://mgz0227.github.io/The-tutorial-of-Legado/)
-* [更新日志](/app/src/main/assets/updateLog.md)
-* [帮助文档](/app/src/main/assets/web/help/md/appHelp.md)
 * [web端书架](https://github.com/gedoor/legado_web_bookshelf)
 * [web端源编辑](https://github.com/gedoor/legado_web_source_editor)
 
@@ -67,22 +60,7 @@ https://gedoor.github.io/Disclaimer
     <img src="https://img.shields.io/badge/-返回顶部-orange.svg" alt="#" align="right">
 </a>
 
-# Grateful-感谢 [![](https://img.shields.io/badge/-Grateful-F5F5F5.svg)](#Grateful-感谢-)
-> * org.jsoup:jsoup
-> * cn.wanghaomiao:JsoupXpath
-> * com.jayway.jsonpath:json-path
-> * com.github.gedoor:rhino-android
-> * com.squareup.okhttp3:okhttp
-> * com.github.bumptech.glide:glide
-> * org.nanohttpd:nanohttpd
-> * org.nanohttpd:nanohttpd-websocket
-> * cn.bingoogolapple:bga-qrcode-zxing
-> * com.jaredrummler:colorpicker
-> * org.apache.commons:commons-text
-> * io.noties.markwon:core
-> * io.noties.markwon:image-glide
-> * com.hankcs:hanlp
-> * com.positiondev.epublib:epublib-core
+
 <a href="#readme">
     <img src="https://img.shields.io/badge/-返回顶部-orange.svg" alt="#" align="right">
 </a>

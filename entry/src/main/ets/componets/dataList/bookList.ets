@@ -1,4 +1,6 @@
 export class BookList {
+
+  bookId:string
   /**
    * 标题
    */
@@ -26,7 +28,8 @@ export class BookList {
 
 
 
-  constructor( title:string,describe:string , chapter:string,  bookImage:Resource,isJoin:boolean = false) {
+  constructor(bookId:string, title:string,describe:string , chapter:string,  bookImage:Resource,isJoin:boolean = false) {
+    this.bookId = bookId
     this.title = title
     this.isJoin = isJoin
     this.describe = describe

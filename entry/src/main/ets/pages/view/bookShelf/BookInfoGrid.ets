@@ -20,8 +20,6 @@ export default struct BookInfoGrid{
 
   @Prop isJoin:boolean
 
-  @Prop isShowCheck:boolean
-
   onDelete: () => void = () => {
 
   }
@@ -57,59 +55,7 @@ export default struct BookInfoGrid{
   build() {
     Column() {
       Column(){
-        if (this.isShowCheck){
-          Flex({
-            alignItems: ItemAlign.End,
-            justifyContent:FlexAlign.End
-          }){
-            Checkbox({
-              name: this.title
-            })
-              .selectedColor($r('app.color.theme_color'))
-              .unselectedColor('rgba(255, 255, 255, 0.6)')
-          }
-          .borderRadius(10)
-          .backgroundColor(this.isShowCheck ?'rgba(0, 0, 0, 0.3)':'')
-          .width(100).height(120)
-        }
-       /* if (this.searchValue === '浏览历史'){
-          Flex({
-            justifyContent:FlexAlign.SpaceBetween,
-            alignItems: ItemAlign.End
-          }){
-            Row(){
-              Row({space:5}){
-                Image(this.isJoin?$r("app.media.add_check"):$r("app.media.add_shelf")).width(10).height(10)
-                  .fillColor('rgb(255, 255, 255)')
-                Text('书架').fontSize(8).fontColor('rgb(255, 255, 255)')
-              }.padding({ left:8,right:8,bottom:5,top:5 })
-            }
-            .margin({bottom:3})
-            .backgroundColor(this.isJoin?'rgba(255, 255, 255,0.5)':'')
-            .borderColor('rgb(255, 255, 255)')
-            .borderWidth(this.isJoin?0:1)
-            .borderRadius(50)
-            .onClick(()=>{
-              this.isJoin = !this.isJoin
-              promptAction.showToast({
-                message: this.isJoin?'已加入书架':'已移出书架',
-                duration: 1000,
-              })
-            })
 
-            Image($r('app.media.delete_svg')).width(17).fillColor('rgb(255, 255, 255)')
-              .margin({bottom:3})
-              .onClick(()=>{
-                if (this.bookInfoDel != null) {
-                  this.bookInfoDel.open()
-                }
-              })
-          }
-          .padding({left:5,right:5})
-          .borderRadius(10)
-          .backgroundColor(this.searchValue === '浏览历史'?'rgba(0, 0, 0, 0.3)':'')
-          .width(90).height(120)
-        }*/
       }
       .borderRadius(10)
       .width(100).height(120)
