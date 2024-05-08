@@ -17,13 +17,25 @@ export default struct BookInfoGridManage{
 
   @Prop isJoin:boolean
 
-  @Prop @Watch('isCheckChange')allCheck:boolean = false
+  @Prop isTop:boolean
+
+  @Prop @Watch('isCheckChange')allCheck:boolean
 
   @Link checkBookList:BookList[]
 
+  @Link @Watch('isTopChange')changeTop:boolean
+
+  isTopChange(){
+    this.allCheck = false
+  }
+
   isCheckChange(){
     if (this.allCheck) {
-      this.checkBookList.push(new BookList(this.bookId,this.title,this.describe,this.chapter,this.bookImage,this.isJoin))
+      //判断bookId是否有存在
+      if (this.checkBookList.some(book => book.bookId === this.bookId)) {
+        return
+      }
+      this.checkBookList.push(new BookList(this.bookId,this.title,this.describe,this.chapter,this.bookImage,new Date(),this.isJoin,true))
     } else {
       this.checkBookList = this.checkBookList.filter(book => book.bookId !== this.bookId);
     }

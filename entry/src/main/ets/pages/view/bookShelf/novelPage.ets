@@ -11,7 +11,7 @@ export default struct novelPage{
   @State lastIndex:string = '9999'
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
   @State bookList:BookList[] = [
-    new BookList('1','仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'),true)
+    new BookList('1','仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'))
     ,new BookList('2','仙人消失之后','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list'))
     ,new BookList('3','仙人消失之后','会说话的肘子·未读过3','更新至·第340章 镇压',$r('app.media.cover_list'))
     ,new BookList('4','仙人消失之后','会说话的肘子·未读过4','更新至·第340章 镇压',$r('app.media.cover_list'))

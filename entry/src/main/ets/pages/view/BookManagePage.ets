@@ -1,7 +1,7 @@
 import router from '@ohos.router';
 import bookListManage from '../../componets/bookManage/bookListManage';
 import { BookList } from '../../componets/dataList/bookList';
-
+import {showMessage} from '../../componets/common/promptShow'
 class routerParams {
   currentIndex:number
   EXHIBIT:string
@@ -16,15 +16,24 @@ class routerParams {
 @Entry
 @Component
 struct BookManagePage {
-  @State currentIndex: number = (router.getParams() as routerParams).currentIndex
-  @State EXHIBIT: string = (router.getParams() as routerParams).EXHIBIT
+  @State currentIndex: number = 0
+    // (router.getParams() as routerParams).currentIndex
+  @State EXHIBIT: string = '列表'
+    // (router.getParams() as routerParams).EXHIBIT
   @State isClear:boolean = false
   @State allCheck:boolean = false
-  @State checkNumber:number = 0
+  @State @Watch('changeCheckNumber')checkNumber:number = 0
   @State showBookList:BookList[] = []
+  @State changeTop:boolean = false
+
+  changeCheckNumber(){
+    if (this.checkNumber !== 0 && this.checkNumber === this.showBookList.length) {
+        this.allCheck = true
+    }
+  }
 
   @State bookList:BookList[] = [
-    new BookList('1','仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'),true)
+    new BookList('1','仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'))
     ,new BookList('2','仙人消失之后','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list'))
     ,new BookList('3','仙人消失之后','会说话的肘子·未读过3','更新至·第340章 镇压',$r('app.media.cover_list'))
     ,new BookList('4','仙人消失之后','会说话的肘子·未读过4','更新至·第340章 镇压',$r('app.media.cover_list'))
@@ -37,7 +46,7 @@ struct BookManagePage {
   ]
 
   @State cartoonList:BookList[] = [
-    new BookList('1','极主夫道','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list1'),true)
+    new BookList('1','极主夫道','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list1'))
     ,new BookList('2','极主夫道','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list1'))
     ,new BookList('3','极主夫道','会说话的肘子·未读过3','更新至·第340章 镇压',$r('app.media.cover_list1'))
     ,new BookList('4','极主夫道','会说话的肘子·未读过4','更新至·第340章 镇压',$r('app.media.cover_list1'))
@@ -72,7 +81,21 @@ struct BookManagePage {
     } else if(this.currentIndex === 2){
       this.showBookList = this.soundList
     }
+    this.showBookSort()
   }
+  //showBookList根据isTop字段排序true最上面
+  showBookSort() {
+    this.showBookList.sort((a, b) => {
+      if (a.isTop && !b.isTop) {
+        return -1
+      } else if (!a.isTop && b.isTop) {
+        return 1
+      } else {
+        return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+      }
+    })
+  }
+
   onPageShow(): void {
     this.onCurrentIndexChange()
   }
@@ -100,7 +123,8 @@ struct BookManagePage {
             EXHIBIT:this.EXHIBIT,
             allCheck:this.allCheck,
             showBookList:this.showBookList,
-            checkNumber:this.checkNumber
+            checkNumber:this.checkNumber,
+            changeTop:this.changeTop
           })
         }
         .height('80%')
@@ -120,12 +144,11 @@ struct BookManagePage {
   @Builder headTitle(){
     Flex(
       {
-
         alignItems:ItemAlign.Center
       }
     ){
       Column(){
-        Text(!this.allCheck?'全选':'取消全选').fontSize(16).onClick(()=>{
+        Text(!this.allCheck?'全选':'取消选择').fontSize(16).onClick(()=>{
           this.allCheck = !this.allCheck
         })
       }
@@ -136,7 +159,9 @@ struct BookManagePage {
       }.width('33%')
       Column(){
         Text('完成').fontSize(16)
-      }
+      }.onClick(()=>{
+        this.allCheck = false
+      })
       .alignItems(HorizontalAlign.End)
       .width('33%')
     }
@@ -156,6 +181,13 @@ struct BookManagePage {
         Image($r('app.media.pip_to_top')).width(14)
         Text('置顶').fontSize(14).fontWeight(500)
       }
+      .onClick(()=>{
+        if (this.checkNumber === 0) {
+          showMessage('请选择要置顶的内容')
+          return
+        }
+        this.changeTop = true
+      })
       Column({
         space:5
       }){
