@@ -55,14 +55,13 @@ export default struct BookInfoManage{
       }){
         Flex({
           alignItems: ItemAlign.End,
-
         }){
           if (this.isTop){
             Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
               .backgroundColor('rgba(0, 0, 0, 0.45)')
           }
         }
-        .align(Alignment.Bottom) .width(60).height(80).backgroundImage(this.bookImage).backgroundImageSize({width:60,height:80})
+        .align(Alignment.Bottom).width(60).height(80).backgroundImage(this.bookImage).backgroundImageSize({width:60,height:80})
 
         Column({
           space:24

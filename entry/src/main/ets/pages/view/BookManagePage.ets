@@ -16,10 +16,8 @@ class routerParams {
 @Entry
 @Component
 struct BookManagePage {
-  @State currentIndex: number = 0
-    // (router.getParams() as routerParams).currentIndex
-  @State EXHIBIT: string = '列表'
-    // (router.getParams() as routerParams).EXHIBIT
+  @State currentIndex: number = (router.getParams() as routerParams).currentIndex
+  @State EXHIBIT: string = (router.getParams() as routerParams).EXHIBIT
   @State isClear:boolean = false
   @State allCheck:boolean = false
   @State @Watch('changeCheckNumber')checkNumber:number = 0
