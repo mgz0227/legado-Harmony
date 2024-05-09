@@ -1,6 +1,6 @@
 
 @CustomDialog
-export default struct delDialogExample {
+export default struct confirmDialogExample {
 
   controller?: CustomDialogController
   // 若尝试在CustomDialog中传入多个其他的Controller，以实现在CustomDialog中打开另一个或另一些CustomDialog，那么此处需要将指向自己的controller放在所有controller的后面
@@ -12,7 +12,7 @@ export default struct delDialogExample {
 
   build() {
     Column() {
-      Text(`确认${this.title}吗？` ).fontWeight(600).fontSize(20).margin({ top: 20, bottom: 10 })
+      Text(`确定${this.title}吗？` ).fontWeight(600).maxLines(1).minFontSize(12).maxFontSize(20).margin({ top: 20, bottom: 10 })
       Row({space:24}) {
         Text('取消')
           .onClick(() => {

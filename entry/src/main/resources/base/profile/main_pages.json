@@ -5,6 +5,6 @@
     "pages/view/search/SearchBook",
     "pages/view/myCenter/WebDav",
     "pages/view/BookDetailPage",
-    "pages/view/BookManagePage"
+    "pages/view/bookShelf/Manage/BookManagePage"
   ]
 }

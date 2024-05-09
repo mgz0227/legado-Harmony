@@ -1,7 +1,6 @@
-import delDialogExample from '../../../componets/common/delDialog'
+import confirmDialogExample from '../../../componets/common/confirmDialog'
 import router from '@ohos.router'
-import { MarginType, promptAction } from '@kit.ArkUI'
-import { BookList } from '../../../componets/dataList/bookList'
+import { promptAction } from '@kit.ArkUI'
 
 @Component
 /**
@@ -27,7 +26,7 @@ export default struct BookInfo{
 
   //弹窗
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
-    builder: delDialogExample({
+    builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
       confirm: ()=> { this.onAccept() }
     }),

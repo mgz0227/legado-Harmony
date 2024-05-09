@@ -28,6 +28,8 @@ export class BookList {
    */
   bookImage:Resource
 
+  bookType:string
+
   /**
    * 是否置顶
    */
@@ -35,13 +37,14 @@ export class BookList {
 
   topUpdateTime:Date
 
-  constructor(bookId:string, title:string,describe:string , chapter:string,  bookImage:Resource, topUpdateTime:Date = new Date(),isJoin:boolean = false,isTop:boolean = false) {
+  constructor(bookId:string, title:string,describe:string , chapter:string,  bookImage:Resource,bookType:string ='玄幻', topUpdateTime:Date = new Date(),isJoin:boolean = false,isTop:boolean = false) {
     this.bookId = bookId
     this.title = title
     this.isJoin = isJoin
     this.describe = describe
     this.chapter = chapter
     this.bookImage = bookImage
+    this.bookType = bookType
     this.isTop = isTop
     this.topUpdateTime = topUpdateTime
   }

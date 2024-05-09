@@ -1,5 +1,4 @@
-import { BookList } from '../dataList/bookList'
-import { JSON } from '@kit.ArkTS'
+import { BookList } from '../../../../../componets/dataList/bookList'
 
 @Component
 /**
@@ -36,7 +35,7 @@ export default struct BookInfoManage{
       if (this.checkBookList.some(book => book.bookId === this.bookId)) {
         return
       }
-      this.checkBookList.push(new BookList(this.bookId,this.title,this.describe,this.chapter,this.bookImage,new Date(),this.isJoin,true))
+      this.checkBookList.push(new BookList(this.bookId,this.title,this.describe,this.chapter,this.bookImage,'',new Date(),this.isJoin,this.isTop))
     } else {
       this.checkBookList = this.checkBookList.filter(book => book.bookId !== this.bookId);
     }
