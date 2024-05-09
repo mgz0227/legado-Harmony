@@ -3,6 +3,7 @@ import { promptAction } from '@kit.ArkUI'
 import BookInfoManage from './BookInfoManage'
 import BookInfoGridManage from './BookInfoGridManage'
 import delDialogExample from '../common/delDialog'
+import {showMessage} from '../common/promptShow'
 
 @Component
 export default struct bookListManage{
@@ -12,15 +13,52 @@ export default struct bookListManage{
   @State @Watch('isChangeBookList')checkBookList:BookList[] = []
   @Link showBookList:BookList[]
   @Link checkNumber:number
+  @Link @Watch('isTopChange') changeTop:boolean
 
+  isTopChange(){
+    if (this.changeTop){
+      //将checkBookList选中的内容,showBookList有就更新字段isTop为true
+      //将checkBookList倒序
+
+      if (this.checkBookList.length === this.showBookList.length) {
+          this.checkBookList.reverse()
+          this.showBookList = this.checkBookList
+      } else {
+        for (let index = 0; index < this.checkBookList.length; index++) {
+          for (let j = 0; j < this.showBookList.length; j++) {
+            if (this.checkBookList[index].bookId === this.showBookList[j].bookId) {
+              this.showBookList[j].topUpdateTime = this.checkBookList[index].topUpdateTime
+              this.showBookList[j].isTop = true
+              break
+            }
+          }
+        }
+      }
+      showMessage('置顶成功')
+      this.changeTop = false
+      this.allCheck = false
+      this.checkBookList = []
+      this.showBookSort()
+    }
+  }
+
+  //showBookList根据isTop字段true且围绕topUpdateTime时间字段进行排序
+  showBookSort() {
+    this.showBookList.sort((a, b) => {
+      if (a.isTop && !b.isTop) {
+        return -1
+      } else if (!a.isTop && b.isTop) {
+        return 1
+      } else {
+        return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+      }
+    })
+  }
 
   //监听isClear变化
   onIsClearChange() {
     if (this.checkBookList === null || this.checkBookList.length === 0) {
-      promptAction.showToast({
-        message: '请选择要删除的内容',
-        duration: 1000,
-      })
+      showMessage('请选择要删除的内容')
       this.isClear = false
       return
     }
@@ -35,7 +73,6 @@ export default struct bookListManage{
     }
     console.log(JSON.stringify(this.showBookList))
     this.isClear = false
-    this.allCheck = false
     this.checkBookList = []
     promptAction.showToast({
       message: '删除成功',
@@ -94,12 +131,14 @@ export default struct bookListManage{
             ForEach(this.showBookList, (item: BookList,index:number) => {
               BookInfoGridManage({
                 bookId:item.bookId,
-                title: item.title + this.EXHIBIT,
+                title: item.title,
                 describe: item.describe,
                 chapter: item.chapter,
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
+                isTop:item.isTop,
                 allCheck:this.allCheck,
+                changeTop:this.changeTop,
                 checkBookList:this.checkBookList
               }).width('33%')
             })
@@ -116,7 +155,9 @@ export default struct bookListManage{
                 chapter: item.chapter,
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
+                isTop:item.isTop,
                 allCheck:this.allCheck,
+                changeTop:this.changeTop,
                 checkBookList:this.checkBookList
               })
             })
