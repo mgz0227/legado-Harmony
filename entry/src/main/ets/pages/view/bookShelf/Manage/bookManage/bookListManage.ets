@@ -1,28 +1,28 @@
-import { BookList } from '../dataList/bookList'
+import { BookList } from '../../../../../componets/dataList/bookList'
 import { promptAction } from '@kit.ArkUI'
 import BookInfoManage from './BookInfoManage'
 import BookInfoGridManage from './BookInfoGridManage'
-import delDialogExample from '../common/delDialog'
-import {showMessage} from '../common/promptShow'
+import confirmDialogExample from '../../../../../componets/common/confirmDialog'
+import {showMessage} from '../../../../../componets/common/promptShow'
 
 @Component
 export default struct bookListManage{
   @Link @Watch('onIsClearChange') isClear:boolean
   @Link allCheck:boolean
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
-  @State @Watch('isChangeBookList')checkBookList:BookList[] = []
+  @Link @Watch('isChangeBookList')checkBookList:BookList[]
   @Link showBookList:BookList[]
   @Link checkNumber:number
   @Link @Watch('isTopChange') changeTop:boolean
 
   isTopChange(){
     if (this.changeTop){
-      //将checkBookList选中的内容,showBookList有就更新字段isTop为true
-      //将checkBookList倒序
-
       if (this.checkBookList.length === this.showBookList.length) {
           this.checkBookList.reverse()
           this.showBookList = this.checkBookList
+        for (let index = 0; index < this.showBookList.length; index++) {
+          this.showBookList[index].isTop = true
+        }
       } else {
         for (let index = 0; index < this.checkBookList.length; index++) {
           for (let j = 0; j < this.showBookList.length; j++) {
@@ -90,7 +90,7 @@ export default struct bookListManage{
 
   //弹窗
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
-    builder: delDialogExample({
+    builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
       confirm: ()=> { this.onAccept() }
     }),
