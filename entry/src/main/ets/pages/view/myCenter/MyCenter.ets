@@ -2,30 +2,31 @@ import { Attribute } from '../../../common/utils/Attribute'
 import router from '@ohos.router'
 import { WebdavService } from './WebdavService'
 import { promptAction } from '@kit.ArkUI'
+import { dataItem } from '../../../componets/dataList/dataItem'
 
 @Entry
 @Component
 export default struct MyCenter {
 
   @State reading_time:number = 0
-  @State head_list:DataItems[]=[
-    new DataItems("读过",20),
-    new DataItems("读完",20),
-    new DataItems("书签",20),
-    new DataItems("勋章",20),
+  @State head_list:dataItem[]=[
+    new dataItem("读过",20),
+    new dataItem("读完",20),
+    new dataItem("书签",20),
+    new dataItem("勋章",20),
   ]
-  @State center_list:DataItems[]=[
-    new DataItems("云盘备份",1,$r("app.media.MyCenter_cloud_icon")),
-    new DataItems("书源管理",2,$r("app.media.MyCenter_book_icon")),
-    new DataItems("主题",3,$r("app.media.MyCenter_theme_icon")),
-    new DataItems("净化",4,$r("app.media.MyCenter_purify_icon")),
+  @State center_list:dataItem[]=[
+    new dataItem("云盘备份",1,$r("app.media.MyCenter_cloud_icon")),
+    new dataItem("书源管理",2,$r("app.media.MyCenter_book_icon")),
+    new dataItem("主题",3,$r("app.media.MyCenter_theme_icon")),
+    new dataItem("净化",4,$r("app.media.MyCenter_purify_icon")),
   ]
 
-  @State end_list:DataItems[]=[
-    new DataItems("帮助中心",1,$r("app.media.MyCenter_help_icon")),
-    new DataItems("关于阅读",2,$r("app.media.MyCenter_about_icon")),
-    new DataItems("清理缓存",3,$r("app.media.MyCenter_clean_icon")),
-    new DataItems("我的设置",4,$r("app.media.MyCenter_setUp_icon")),
+  @State end_list:dataItem[]=[
+    new dataItem("帮助中心",1,$r("app.media.MyCenter_help_icon")),
+    new dataItem("关于阅读",2,$r("app.media.MyCenter_about_icon")),
+    new dataItem("清理缓存",3,$r("app.media.MyCenter_clean_icon")),
+    new dataItem("我的设置",4,$r("app.media.MyCenter_setUp_icon")),
   ]
 
   build() {
@@ -65,7 +66,7 @@ export default struct MyCenter {
 
       // 统计数据
       Row(){
-        ForEach(this.head_list,(item:DataItems)=>{
+        ForEach(this.head_list,(item:dataItem)=>{
           Column({space:5}){
             Text(item.value.toString()).fontSize(20).fontWeight(800)
             Text(item.title).fontSize(14).fontWeight(800)
@@ -77,7 +78,7 @@ export default struct MyCenter {
 
       //云盘 书源 主题 净化设置
       Row({space:10}){
-        ForEach(this.center_list,(item:DataItems)=>{
+        ForEach(this.center_list,(item:dataItem)=>{
           Column({space:5}){
             Image(item.icon).size({width:20,height:20})
             Text(item.title).fontSize(12).fontColor("rgba(121, 119, 119, 1.00)")
@@ -101,7 +102,7 @@ export default struct MyCenter {
 
       //帮助 关于 清理缓存 设置
       Column({space:15}){
-        ForEach(this.end_list,(item:DataItems)=>{
+        ForEach(this.end_list,(item:dataItem)=>{
           Row({space:10}){
             Image(item.icon).size({width:22,height:22}).interpolation(ImageInterpolation.High)
             Text(item.title).fontSize(16).width("75%" )
@@ -134,12 +135,17 @@ export default struct MyCenter {
   centerOnclick(value:number|string){
     switch (value){
       case 1:
-
+        promptAction.showToast({
+          message: '请点击右上角，完成云盘登录',
+          duration: 1000,
+        })
+        break
       case 2:
-
+        break
       case 3:
-
+        break
       case 4:
+        break
     }
   }
 
@@ -156,17 +162,3 @@ export default struct MyCenter {
   }
 }
 
-export class DataItems{
-
-    title:string
-
-    value:number
-
-    icon:ResourceStr
-
-    constructor(title:string='',value:number=0,icon:ResourceStr=''){
-      this.title=title;
-      this.value=value;
-      this.icon=icon;
-    }
-}
