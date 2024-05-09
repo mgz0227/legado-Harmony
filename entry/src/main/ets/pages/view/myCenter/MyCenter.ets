@@ -151,14 +151,9 @@ export default struct MyCenter {
 
   //跳转云盘登录
   cloudDisk_onclick(){
-    this.pushUrl('pages/view/myCenter/WebDav')
-  }
-
-
-  pushUrl(url:string){
     router.pushUrl({
-        url:url
-      })
+      url: 'pages/view/myCenter/WebDav'
+    })
   }
 }
 
