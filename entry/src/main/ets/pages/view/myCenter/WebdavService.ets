@@ -1,5 +1,8 @@
 import { serviceList } from '../../../componets/dataList/serviceList'
-import { font } from '@kit.ArkUI'
+import { font, promptAction } from '@kit.ArkUI'
+import { pasteboard } from '@kit.BasicServicesKit'
+import { serviceDialog } from './serviceDialog'
+
 
 @Component
 export struct WebdavService {
@@ -13,6 +16,8 @@ export struct WebdavService {
 
   private settings: RenderingContextSettings = new RenderingContextSettings(true)
   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings)
+  @State serviceDialogStatus:boolean=false
+
 
   @Builder canvas(color:ResourceColor,X:number,Y:number){
     Canvas(this.context)
@@ -31,13 +36,15 @@ export struct WebdavService {
         Row({space:10}){
           Image($r("app.media.pc_icon")).size({width:20,height:20})
           Text("web服务").fontWeight(600)
-          Image($r("app.media.doubt")).size({width:20,height:20})
+          Image($r("app.media.doubt")).size({width:20,height:20}).onClick(()=>{
+            this.bookInfoDel?.open()
+          })
         }
         Row(){
           Toggle({type:ToggleType.Switch,isOn:$$this.webDavStatus})
             .onChange((isOn: boolean) => {
               this.webDavStatus=isOn
-            }).selectedColor("#F60")
+            }).selectedColor("#F60").hoverEffect(HoverEffect.None)
         }
       }.width("100%").justifyContent(FlexAlign.SpaceBetween)
 
@@ -62,12 +69,20 @@ export struct WebdavService {
             .borderRadius(12)
         })
       }
-
-
+      //复制地址
       Row({space:20}){
-        Text(this.address).fontColor("rgba(0, 0, 0, 0.45)").fontSize(14).width("70%")
-        Text("|").fontColor("rgba(0, 0, 0, 0.45)").fontSize(14)
-        Text("复制").fontColor("#FF6600").fontSize(14).fontWeight(600)
+        Text(this.address)
+          .fontColor("rgba(0, 0, 0, 0.45)")
+          .fontSize(14)
+          .width("70%")
+        Text("|")
+          .fontColor("rgba(0, 0, 0, 0.45)")
+          .fontSize(14)
+        Text("复制")
+          .fontColor("#FF6600")
+          .fontSize(14)
+          .fontWeight(600)
+          .onClick(()=>{this.copy(this.address)})
       }
       .width(280)
       .height(40)
@@ -89,4 +104,32 @@ export struct WebdavService {
       familySrc: $rawfile("DingTalkJinBuTi.ttf") // font文件与pages目录同级
     })
   }
+  //复制方法
+  copy(value:string){
+    let pasteData: pasteboard.PasteData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN,value);
+    const systemPasteboard = pasteboard.getSystemPasteboard()
+    systemPasteboard.setData(pasteData)
+    promptAction.showToast({
+      message: '复制成功',
+      duration: 1000,
+    })
+  }
+  //弹窗关闭
+  exitApp() {
+    this.serviceDialogStatus = false
+  }
+
+  //弹窗
+  bookInfoDel: CustomDialogController | null = new CustomDialogController({
+    builder: serviceDialog({
+      title:"帮助说明",
+      value:"打开后请复制下方链接，用电脑浏览器访问，并确认手机和电脑连接在同一WiFi下"
+    }),
+    cancel: this.exitApp,
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    offset:{dx:0,dy:20},
+    customStyle: true
+  })
+
 }
