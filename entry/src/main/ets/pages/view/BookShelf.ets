@@ -9,6 +9,5 @@ export default struct BookShelf {
       IndexShelf()
     }
     .backgroundColor('rgba(255, 255, 255, 0.8)')
-    .height('100%')
   }
 }
