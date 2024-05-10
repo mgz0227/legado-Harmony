@@ -29,10 +29,11 @@ struct Main {
       alignItems:ItemAlign.Center,
       justifyContent:FlexAlign.Center
     }){
-      Image(this.currentTabIndex === index?icon_select:unselected).width(25).height(25)
+      Image(this.currentTabIndex === index?icon_select:unselected).height(25)
       Text(name).fontSize(11).margin(5).fontColor(this.currentTabIndex === index ?'rgb(255,119, 50)' : '#000000')
     }
-    .padding({top:12})
+    .margin({top:4})
+    .height("100%")
   }
 
   nav : NavItem[] = [
@@ -77,6 +78,7 @@ struct Main {
           )
         })
       }
+
       .padding({bottom:this.bottomRectHeight})
       .backgroundColor('rgba(214, 213, 213, 0.7)')
       .onChange((index) => {
