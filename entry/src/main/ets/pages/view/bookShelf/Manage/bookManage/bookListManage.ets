@@ -4,6 +4,7 @@ import BookInfoManage from './BookInfoManage'
 import BookInfoGridManage from './BookInfoGridManage'
 import confirmDialogExample from '../../../../../componets/common/confirmDialog'
 import {showMessage} from '../../../../../componets/common/promptShow'
+import { delBookListByBookId, updateBookListData } from '../../../../../storage/bookListData'
 
 @Component
 export default struct bookListManage{
@@ -14,8 +15,10 @@ export default struct bookListManage{
   @Link showBookList:BookList[]
   @Link checkNumber:number
   @Link @Watch('isTopChange') changeTop:boolean
+  @Prop shelfType:number
 
   isTopChange(){
+    console.log('置顶操作中')
     if (this.changeTop){
       if (this.checkBookList.length === this.showBookList.length) {
           this.checkBookList.reverse()
@@ -37,6 +40,8 @@ export default struct bookListManage{
       showMessage('置顶成功')
       this.changeTop = false
       this.allCheck = false
+      //更新缓存
+      updateBookListData(this.shelfType,this.showBookList)
       this.checkBookList = []
       this.showBookSort()
     }
@@ -69,6 +74,7 @@ export default struct bookListManage{
 
   deleteBook() {
     for (let index = 0; index < this.checkBookList.length; index++) {
+     delBookListByBookId(this.shelfType, this.checkBookList[index].bookId)
      this.showBookList = this.showBookList.filter(book => book.bookId !== this.checkBookList[index].bookId);
     }
     console.log(JSON.stringify(this.showBookList))

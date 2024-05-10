@@ -2,6 +2,8 @@ import { BookList } from '../../../componets/dataList/bookList'
 import BookInfo from './BookInfo'
 import { promptAction } from '@kit.ArkUI'
 import BookInfoGrid from './BookInfoGrid'
+import CommonConstants from '../../../common/constants/CommonConstants'
+import { delBookListAll, delBookListByBookId } from '../../../storage/bookListData'
 
 /**
  * 有书声
@@ -13,24 +15,12 @@ export default struct soundPage{
   @Prop currentIndex:number
   @State lastIndex:string = '9999'
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
-  @State soundList:BookList[] = [
-    new BookList('1','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'),'玄幻'),
-    new BookList('2','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'),'玄幻'),
-    new BookList('3','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'),'玄幻'),
-    new BookList('4','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'),'玄幻'),
-    new BookList('5','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'),'玄幻'),
-    new BookList('6','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'),'玄幻'),
-    new BookList('7','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'),'玄幻'),
-    new BookList('8','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'),'玄幻'),
-    new BookList('9','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'),'玄幻'),
-    new BookList('10','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'),'玄幻')
-
-
-  ]
+  @StorageLink(CommonConstants.KEY_SOUND_BOOK_DATA)
+  soundList:BookList[] = []
   //监听isClear变化
   onIsClearChange() {
     if (this.currentIndex === 2 && this.isClear) {
-      this.soundList = []
+      delBookListAll(2)
       this.isClear = false
       promptAction.showToast({
         message: '清空成功',
@@ -49,7 +39,7 @@ export default struct soundPage{
       return
     }
     this.lastIndex = bookId
-    this.soundList = this.soundList.filter(book => book.bookId !== bookId);
+    delBookListByBookId(2, bookId)
     promptAction.showToast({
       message: '删除成功',
       duration: 1000,

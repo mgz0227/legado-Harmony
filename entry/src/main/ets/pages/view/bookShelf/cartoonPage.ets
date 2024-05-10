@@ -2,6 +2,8 @@ import { BookList } from '../../../componets/dataList/bookList'
 import BookInfo from './BookInfo'
 import { promptAction } from '@kit.ArkUI'
 import BookInfoGrid from './BookInfoGrid'
+import CommonConstants from '../../../common/constants/CommonConstants'
+import { delBookListAll, delBookListByBookId } from '../../../storage/bookListData'
 
 /**
  * 漫画
@@ -13,21 +15,11 @@ export default struct cartoonPage{
   @Prop currentIndex:number
   @State lastIndex:string = '9999'
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
-  @State cartoonList:BookList[] = [
-    new BookList('1','极主夫道','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list1'),'玄幻')
-    ,new BookList('2','极主夫道','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list1'),'玄幻')
-    ,new BookList('3','极主夫道','会说话的肘子·未读过3','更新至·第340章 镇压',$r('app.media.cover_list1'),'玄幻')
-    ,new BookList('4','极主夫道','会说话的肘子·未读过4','更新至·第340章 镇压',$r('app.media.cover_list1'),'玄幻')
-    ,new BookList('5','极主夫道','会说话的肘子·未读过5','更新至·第340章 镇压',$r('app.media.cover_list1'),'玄幻')
-    ,new BookList('6','极主夫道','会说话的肘子·未读过6','更新至·第340章 镇压',$r('app.media.cover_list1'),'玄幻')
-    ,new BookList('7','极主夫道','会说话的肘子·未读过7','更新至·第340章 镇压',$r('app.media.cover_list1'),'玄幻')
-    ,new BookList('8','极主夫道','会说话的肘子·未读过8','更新至·第340章 镇压',$r('app.media.cover_list1'),'玄幻')
-    ,new BookList('9','极主夫道','会说话的肘子·未读过9','更新至·第340章 镇压',$r('app.media.cover_list1'),'玄幻')
-    ,new BookList('10','极主夫道','会说话的肘子·未读过10','更新至·第340章 镇压',$r('app.media.cover_list1'),'玄幻')
-  ]
+  @StorageLink(CommonConstants.KEY_CARTOON_BOOK_DATA)
+  cartoonList:BookList[] = []
   onIsClearChange() {
     if (this.currentIndex === 1 && this.isClear) {
-      this.cartoonList = []
+      delBookListAll(1)
       this.isClear = false
       promptAction.showToast({
         message: '清空成功',
@@ -46,7 +38,7 @@ export default struct cartoonPage{
       return
     }
     this.lastIndex = bookId
-    this.cartoonList = this.cartoonList.filter(book => book.bookId !== bookId);
+    delBookListByBookId(1, bookId)
     promptAction.showToast({
       message: '删除成功',
       duration: 1000,
