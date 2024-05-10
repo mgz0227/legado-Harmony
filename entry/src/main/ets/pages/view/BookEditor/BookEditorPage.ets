@@ -243,7 +243,13 @@ struct BookEditorPage {
             Text('书名').fontColor(this.TitleTextColor).fontSize(12)
             Flex({justifyContent: FlexAlign.Start, alignItems: ItemAlign.Center})
             {
-              Text(this.BookEditor.getBookName()).fontSize(12).fontColor(this.TextColor).margin({left:16})
+              inputComponent({
+                TEXT:this.BookEditor.getBookName(),
+                Height:32,
+                FontSize:12,
+                FontColor:this.TextColor
+              })
+              // Text(this.BookEditor.getBookName()).fontSize(12).fontColor(this.TextColor).margin({left:16})
             }
             .borderRadius(5)
             .backgroundColor('#0a000000')
@@ -256,7 +262,13 @@ struct BookEditorPage {
             Text('作者').fontColor(this.TitleTextColor).fontSize(12)
             Flex({justifyContent: FlexAlign.Start, alignItems: ItemAlign.Center})
             {
-              Text(this.BookEditor.getBookAuthor()).fontSize(12).fontColor(this.TextColor).margin({left:16})
+              inputComponent({
+                TEXT:this.BookEditor.getBookAuthor(),
+                Height:32,
+                FontSize:12,
+                FontColor:this.TextColor
+              })
+              // Text(this.BookEditor.getBookAuthor()).fontSize(12).fontColor(this.TextColor).margin({left:16})
             }
             .borderRadius(5)
             .backgroundColor('#0a000000')
@@ -273,7 +285,12 @@ struct BookEditorPage {
       Flex({direction:FlexDirection.Column, justifyContent:FlexAlign.SpaceBetween}){
         Text('封面地址').fontSize(12)
         Flex({justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center}){
-          Text(this.BookIconUrl).fontSize(14)
+          inputComponent({
+            TEXT:this.BookEditor.getBookIconUrl(),
+            Height:32,
+            FontSize:14,
+            FontColor:this.TextColor
+          })
         }
         .height(38)
         .borderRadius(5)
@@ -324,13 +341,20 @@ struct BookEditorPage {
 
         List(){
           ListItem(){
-            Text(this.BookSynopsis)
-              .fontSize(14)
-              .fontColor(this.TextColor)
-              .lineHeight(22)
-              .textAlign(TextAlign.JUSTIFY)
-              .fontWeight(400)
-          }.padding(16)
+            inputComponent({
+              TEXT:this.BookEditor.getBookSynopsis(),
+              textAlign:Alignment.TopStart,
+              Height:296,
+              FontSize:14,
+              FontColor:this.TextColor
+            })
+            // Text(this.BookSynopsis)
+            //   .fontSize(14)
+            //   .fontColor(this.TextColor)
+            //   .lineHeight(22)
+            //   .textAlign(TextAlign.JUSTIFY)
+            //   .fontWeight(400)
+          }
         }
         .width(320)
         .height(296)
