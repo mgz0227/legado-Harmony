@@ -5,15 +5,18 @@ import {showMessage} from '../../../../componets/common/promptShow'
 import CommonConstants from '../../../../common/constants/CommonConstants';
 import addBookTypeDialog from '../../../../componets/common/addBookTypeDialog';
 import confirmDialogExample from '../../../../componets/common/confirmDialog';
-import catalogMove from '../../../../componets/panel/catalogMove';
-import { updateBookListData } from '../../../../storage/bookListData';
+import { initBookListData, updateBookListData } from '../../../../storage/bookListData';
+import { folderList } from '../../../../componets/dataList/folderList';
+import BookFolderManages from './bookManage/BookFolderManages';
 
 class routerParams {
   currentIndex:number
   EXHIBIT:string
-  constructor(currentIndex:number,EXHIBIT:string) {
+  GROUPName:string
+  constructor(currentIndex:number,EXHIBIT:string,GROUPName:string) {
     this.currentIndex = currentIndex
     this.EXHIBIT = EXHIBIT
+    this.GROUPName = GROUPName
   }
 }
 /**
@@ -22,6 +25,10 @@ class routerParams {
 @Entry
 @Component
 struct BookManagePage {
+  // @State currentIndex: number = 0
+  // @State EXHIBIT: string = '列表'
+  // @State GROUPName:string = '文件夹' //标签
+  @State GROUPName:string = (router.getParams() as routerParams).GROUPName
   @State currentIndex: number = (router.getParams() as routerParams).currentIndex
   @State EXHIBIT: string = (router.getParams() as routerParams).EXHIBIT
   @State isClear:boolean = false
@@ -30,6 +37,8 @@ struct BookManagePage {
   @State showBookList:BookList[] = []
   @State changeTop:boolean = false
   @State isShow:boolean = false
+
+
 
   @State bookType:string = ''
 
@@ -44,6 +53,8 @@ struct BookManagePage {
   changeCheckBookList(){
     if (this.checkBookList.length !== 0) {
       this.checkBookList.every(book => book.isTop)?this.topTitle = '取消置顶':this.topTitle = '置顶'
+    } else if (this.folderCheckList.length !== 0) {
+      this.folderCheckList.every(folder => folder.isTop)?this.topTitle = '取消置顶':this.topTitle = '置顶'
     } else {
       this.topTitle = '置顶'
     }
@@ -99,13 +110,28 @@ struct BookManagePage {
   @StorageProp(CommonConstants.KEY_SOUND_BOOK_DATA)
   soundList:BookList[] = []
 
+
+  @State novelPageList:folderList[] = [
+    new folderList(1,'玄幻',12,$r('app.media.folder_test'),'玄幻','宿命之环等3本有更新'),
+    new folderList(2,'都市',13,$r('app.media.folder_test'),'都市'),
+    new folderList(3,'仙侠',12,$r('app.media.folder_test'),'仙侠'),
+    new folderList(4,'武侠',12,$r('app.media.folder_test'),'武侠'),
+    new folderList(5,'奇幻',12,$r('app.media.folder_test'),'奇幻'),
+    new folderList(6,'科幻',12,$r('app.media.folder_test'),'科幻'),
+    new folderList(7,'历史',12,$r('app.media.folder_test'),'历史'),
+    new folderList(8,'游戏',12,$r('app.media.folder_test'),'游戏'),
+    new folderList(9,'悬疑',12,$r('app.media.folder_test'),'悬疑')
+  ]
+
   onCurrentIndexChange(){
-    if (this.currentIndex === 0) {
+    if (this.currentIndex === 0 && this.GROUPName !== '文件夹') {
       this.showBookList = this.bookList
-    } else if(this.currentIndex === 1){
+    } else if(this.currentIndex === 1 && this.GROUPName !== '文件夹'){
       this.showBookList = this.cartoonList
-    } else if(this.currentIndex === 2){
+    } else if(this.currentIndex === 2 && this.GROUPName !== '文件夹'){
       this.showBookList = this.soundList
+    } else {
+      this.showBookList = []
     }
     this.showBookSort()
   }
@@ -123,7 +149,14 @@ struct BookManagePage {
   }
 
   onPageShow(): void {
+    // initBookListData()
     this.onCurrentIndexChange()
+  }
+  // @State folderCheckNumber:number = 0
+  @State @Watch('folderCheckNumber')folderCheckList:folderList[] = []
+  folderCheckNumber(){
+    this.checkNumber = this.folderCheckList.length
+    this.changeCheckBookList()
   }
   build() {
     Column() {
@@ -144,16 +177,28 @@ struct BookManagePage {
         justifyContent:FlexAlign.Center
       }){
         Scroll(){
-          bookListManage({
-            isClear:this.isClear,
-            EXHIBIT:this.EXHIBIT,
-            allCheck:this.allCheck,
-            showBookList:this.showBookList,
-            checkNumber:this.checkNumber,
-            changeTop:this.changeTop,
-            checkBookList:this.checkBookList,
-            shelfType:this.currentIndex
-          })
+          if (this.GROUPName === '文件夹'){
+            BookFolderManages({
+              isClear:this.isClear,
+              allCheck:this.allCheck,
+              folderList:this.novelPageList,
+              folderCheckList:this.folderCheckList,
+              changeTop:this.changeTop,
+              EXHIBIT:this.EXHIBIT
+            })
+          } else {
+            bookListManage({
+              isClear:this.isClear,
+              EXHIBIT:this.EXHIBIT,
+              allCheck:this.allCheck,
+              showBookList:this.showBookList,
+              checkNumber:this.checkNumber,
+              changeTop:this.changeTop,
+              checkBookList:this.checkBookList,
+              shelfType:this.currentIndex
+            })
+          }
+
         }
         .height('80%')
         .align(Alignment.TopStart)
@@ -216,7 +261,11 @@ struct BookManagePage {
         }
         if(this.topTitle === '置顶'){
           console.log('置顶')
-          this.changeTop = true
+          if (this.GROUPName === '文件夹') {
+            this.isTopChange()
+          } else {
+            this.changeTop = true
+          }
         } else {
           this.cancelShowTop()
         }
@@ -261,16 +310,28 @@ struct BookManagePage {
 
   cancelShowTop(){
     //循环遍历checkBookList当bookId和showBookList中的bookId相同时，将showBookList isTop改为false
-    for (let i = 0; i < this.checkBookList.length; i++) {
-      for (let j = 0; j < this.showBookList.length; j++) {
-        if (this.checkBookList[i].bookId === this.showBookList[j].bookId) {
-          this.showBookList[j].isTop = false
-          break
+    if (this.GROUPName === '文件夹') {
+      for (let i = 0; i < this.folderCheckList.length; i++) {
+        for (let j = 0; j < this.novelPageList.length; j++) {
+          if (this.folderCheckList[i].id === this.novelPageList[j].id) {
+            this.novelPageList[j].isTop = false
+            break
+          }
         }
       }
+      this.folderCheckList = []
+    } else {
+      for (let i = 0; i < this.checkBookList.length; i++) {
+        for (let j = 0; j < this.showBookList.length; j++) {
+          if (this.checkBookList[i].bookId === this.showBookList[j].bookId) {
+            this.showBookList[j].isTop = false
+            break
+          }
+        }
+      }
+      this.checkBookList = []
+      updateBookListData(this.currentIndex,this.showBookList)
     }
-    updateBookListData(this.currentIndex,this.showBookList)
-    this.checkBookList = []
     this.changeTop = true
     showMessage('取消置顶成功')
   }
@@ -380,7 +441,6 @@ struct BookManagePage {
       for (let j = 0; j < this.showBookList.length; j++) {
         if (this.checkBookList[i].bookId === this.showBookList[j].bookId) {
           this.showBookList[j].bookType = this.clickBookType
-          console.log(JSON.stringify( this.showBookList[j]))
           break
         }
       }
@@ -391,5 +451,46 @@ struct BookManagePage {
     this.isShow = false
     this.changeTop = true
     showMessage('移动成功')
+  }
+
+  isTopChange(){
+    console.log('置顶操作中')
+    if (this.folderCheckList.length === this.novelPageList.length) {
+      this.folderCheckList.reverse()
+      this.novelPageList = this.folderCheckList
+      for (let index = 0; index < this.folderCheckList.length; index++) {
+        this.novelPageList[index].isTop = true
+      }
+    } else {
+      for (let index = 0; index < this.folderCheckList.length; index++) {
+        for (let j = 0; j < this.novelPageList.length; j++) {
+          if (this.folderCheckList[index].id === this.novelPageList[j].id) {
+            this.novelPageList[j].topUpdateTime = new Date()
+            this.novelPageList[j].isTop = true
+            break
+          }
+        }
+      }
+    }
+    showMessage('置顶成功')
+    this.changeTop = false
+    this.allCheck = false
+    //更新缓存
+    // updateBookListData(this.currentIndex,this.showBookList)
+    // this.checkBookList = []
+    this.folderCheckList = []
+    this.showFolderSort()
+  }
+
+  showFolderSort() {
+    this.novelPageList.sort((a, b) => {
+      if (a.isTop && !b.isTop) {
+        return -1
+      } else if (!a.isTop && b.isTop) {
+        return 1
+      } else {
+        return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+      }
+    })
   }
 }

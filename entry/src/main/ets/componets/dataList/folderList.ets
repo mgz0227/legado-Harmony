@@ -2,6 +2,8 @@
  * 文件夹
  */
 export class folderList {
+
+  id:number
   /**
    * 标题
    */
@@ -32,14 +34,21 @@ export class folderList {
    */
   isTop:boolean
 
+  newUpdateBook:string
+
+  topUpdateTime:Date
 
 
-  constructor(title:string,countNumber:number,bookImage:Resource,bookType:string,isTop:boolean = false,describe:string = '') {
+
+  constructor(id:number,title:string,countNumber:number,bookImage:Resource,bookType:string,newUpdateBook:string = '',isTop:boolean = false,describe:string = '', topUpdateTime:Date = new Date()) {
+    this.id = id
     this.title = title
     this.bookType = bookType
     this.isTop = isTop
     this.describe = describe
     this.countNumber = countNumber
     this.bookImage = bookImage
+    this.newUpdateBook = newUpdateBook
+    this.topUpdateTime = topUpdateTime
   }
 }
