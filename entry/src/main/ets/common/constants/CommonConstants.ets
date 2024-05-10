@@ -215,4 +215,11 @@ export default class CommonConstants {
    */
   static readonly SPACE_10: number = 10;
   static readonly SPACE_20: number = 20;
+
+  /**
+   * 小说AppStorage存储key
+   */
+  static readonly KEY_NOVEL_BOOK_DATA:string = 'KEY_NOVEL_BOOK_DATA'
+  static readonly KEY_SOUND_BOOK_DATA:string = 'KEY_SOUND_BOOK_DATA'
+  static readonly KEY_CARTOON_BOOK_DATA:string = 'KEY_CARTOON_BOOK_DATA'
 }

@@ -1,5 +1,6 @@
 import ReadShow from '../componets/common/ReadShow'
 import { MainScrollBar, NavItem } from '../componets/dataList/type'
+import { initBookListData } from '../storage/bookListData'
 import BookShelf from './view/BookShelf'
 import Find from './view/Find'
 import MyCenter from './view/myCenter/MyCenter'
@@ -13,6 +14,7 @@ struct Main {
   @State isShow: boolean = true
 
   onPageShow(): void {
+    // initBookListData()
     setTimeout(()=>{
       this.showReadShow = false
       this.isShow = false

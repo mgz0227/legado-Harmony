@@ -1,6 +1,7 @@
 import confirmDialogExample from '../../../componets/common/confirmDialog'
 import router from '@ohos.router'
 import { promptAction } from '@kit.ArkUI'
+import { updateBookListData } from '../../../storage/bookListData'
 
 @Component
 /**
@@ -19,6 +20,8 @@ export default struct BookInfo{
   @Prop searchValue:string
 
   @Prop isJoin:boolean
+
+  @Prop isTop:boolean
 
   onDelete: () => void = () => {
 
@@ -62,7 +65,15 @@ export default struct BookInfo{
       Row({
         space:20
       }){
-        Image(this.bookImage).width(60).height(80)
+        Flex({
+          alignItems: ItemAlign.End,
+        }){
+          if (this.isTop){
+            Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
+              .backgroundColor('rgba(0, 0, 0, 0.45)')
+          }
+        }
+        .align(Alignment.Bottom).width(60).height(80).backgroundImage(this.bookImage).backgroundImageSize({width:60,height:80})
         Column({
           space:24
         })
