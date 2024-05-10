@@ -1,26 +1,14 @@
 import confirmDialogExample from '../../../componets/common/confirmDialog'
 import router from '@ohos.router'
-import { promptAction } from '@kit.ArkUI'
+import { BookList } from '../../../componets/dataList/bookList'
 
 @Component
 /**
  * 书签_宫格
  */
 export default struct BookInfoGrid{
-  //标题
-  @Prop title:string
-  //描述
-  @Prop describe:string
-  //章节
-  @Prop chapter:string
-  //图片
-  @Prop bookImage:Resource
 
-  @Prop searchValue:string
-
-  @Prop isJoin:boolean
-
-  @Prop isTop:boolean
+  @Prop bookData:BookList
 
   onDelete: () => void = () => {
 
@@ -64,7 +52,7 @@ export default struct BookInfoGrid{
           Flex({
             alignItems: ItemAlign.End,
           }){
-            if (this.isTop){
+            if (this.bookData.isTop){
               Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(5).margin({left:1,bottom:1}).borderRadius({ bottomLeft:10,bottomRight:5,topRight:5,topLeft:5 })
                 .backgroundColor('rgba(0, 0, 0, 0.45)')
             }
@@ -75,9 +63,9 @@ export default struct BookInfoGrid{
       }
       .borderRadius(10)
       .width(100).height(120)
-      .backgroundImage(this.bookImage)
+      .backgroundImage(this.bookData.bookImage)
       .backgroundImageSize({width:100,height:120})
-      Text(this.title)
+      Text(this.bookData.title)
         .fontSize(15)
         .fontWeight(700)
         .textOverflow({
@@ -93,7 +81,7 @@ export default struct BookInfoGrid{
       //   .ellipsisMode(EllipsisMode.END)
       //   .fontWeight(500)
       //   .maxLines(1)
-      Text(this.chapter).fontSize(12).fontColor('rgb(174,174,174)')
+      Text(this.bookData.chapter).fontSize(12).fontColor('rgb(174,174,174)')
         .textOverflow({
           overflow:TextOverflow.Ellipsis
         })

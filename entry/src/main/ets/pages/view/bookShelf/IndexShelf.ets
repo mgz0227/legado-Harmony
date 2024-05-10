@@ -143,7 +143,8 @@ export default struct IndexShelf {
                       url:'pages/view/bookShelf/Manage/BookManagePage',
                       params: {
                         currentIndex:this.currentIndex,
-                        EXHIBIT:this.EXHIBIT
+                        EXHIBIT:this.EXHIBIT,
+                        GROUPName:this.GROUP
                       }
                     })
                   })
@@ -248,7 +249,9 @@ export default struct IndexShelf {
                 soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(2)
               }
             } else {
-               BookFolder()
+               BookFolder({
+                 EXHIBIT:this.EXHIBIT
+               })
             }
           }
           .padding({left:10,right:10})
