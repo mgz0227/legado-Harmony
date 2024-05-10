@@ -1,3 +1,5 @@
+import { data } from '@kit.TelephonyKit'
+
 export class BookList {
 
   bookId:string
@@ -26,14 +28,24 @@ export class BookList {
    */
   bookImage:Resource
 
+  bookType:string
 
+  /**
+   * 是否置顶
+   */
+  isTop:boolean
 
-  constructor(bookId:string, title:string,describe:string , chapter:string,  bookImage:Resource,isJoin:boolean = false) {
+  topUpdateTime:Date
+
+  constructor(bookId:string, title:string,describe:string , chapter:string,  bookImage:Resource,bookType:string ='玄幻', topUpdateTime:Date = new Date(),isJoin:boolean = false,isTop:boolean = false) {
     this.bookId = bookId
     this.title = title
     this.isJoin = isJoin
     this.describe = describe
     this.chapter = chapter
     this.bookImage = bookImage
+    this.bookType = bookType
+    this.isTop = isTop
+    this.topUpdateTime = topUpdateTime
   }
 }

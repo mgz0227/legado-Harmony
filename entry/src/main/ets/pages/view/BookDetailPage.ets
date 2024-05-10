@@ -20,15 +20,62 @@ import router from '@ohos.router'
   .height(24)
   .color('#40ffffff')
 }
+/**
+ * 加入书架dialog
+ */
+@CustomDialog
+struct AddBookShelfDialog {
+  controller?: CustomDialogController;
+  build() {
+    Row() {
+      Image($r('app.media.ic_public_confirm'))
+        .width(24)
+        .height(24)
+        .fillColor('#FFFFFF')
+      Text('加入书架成功')
+        .fontSize(14)
+        .fontWeight(400)
+        .lineHeight(22)
+        .fontColor('#FFFFFF')
+      Blank()
+      Text('移入分组')
+        .fontSize(14)
+        .fontWeight(400)
+        .lineHeight(22)
+        .fontColor('#FF9500')
+    }
+    .height(56)
+    .width(CommonConstants.FULL_WIDTH)
+    .padding({left: 20, right: 20, top: 16, bottom: 16})
+    .backgroundColor('#333333')
+  }
+}
 @Entry
 @Component
 struct BookDetailPage {
   @State isShow: boolean = true;
   @State currentIndex: number = 0;
+  // 是否加入书架
+  @State isAddBookShelf: boolean = false;
   onPageShow(): void {
     console.log(JSON.stringify(router.getParams()))
   }
-
+  // 加入书架dialog
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: AddBookShelfDialog(),
+    cornerRadius: 8,
+    offset: {dx: 0, dy: -100}
+  })
+  // 加入书架函数
+  addBookShelf() {
+    this.dialogController.open();
+    this.isAddBookShelf = true;
+    // 1s后关闭dialog
+    let timeoutID = setTimeout(() => {
+      this.dialogController.close();
+    }, 1000);
+    clearTimeout(timeoutID);
+  }
   /**
    * Panel
    */
@@ -71,13 +118,16 @@ struct BookDetailPage {
         this.currentIndex = index;
       })
       Row({space: 20}) {
-        Button('加入书架')
+        Button(this.isAddBookShelf ? '已加书架' :'加入书架')
           .padding({left: 32, right: 32, top: 8, bottom: 8})
           .width(150)
           .height(40)
           .borderRadius(200)
           .backgroundColor('#1fff6600')
           .fontColor('#FF6600')
+          .onClick(() => {
+            this.addBookShelf();
+          })
         Button('立即阅读')
           .padding({left: 32, right: 32, top: 8, bottom: 8})
           .width(150)
@@ -151,6 +201,11 @@ struct BookDetailPage {
         Row({space: 24}) {
           Image($r('app.media.ic_public_edit'))
             .titleImageStyle()
+            .onClick(() => {
+              router.pushUrl({
+                url: '/pages/view/BookEditor/BookEditorPage'
+              })
+            })
           Image($r('app.media.ic_public_share'))
             .titleImageStyle()
           Image($r('app.media.more'))

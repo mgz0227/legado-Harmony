@@ -6,13 +6,13 @@ import BookType from '../../../componets/head/BookType'
 import soundPage from './soundPage'
 import IndexSearchType from '../../../componets/head/IndexSearchType'
 import router from '@ohos.router'; // 引入路由管理器
-import delDialogExample from '../../../componets/common/delDialog'
+import confirmDialogExample from '../../../componets/common/confirmDialog'
 import BookFolder from './BookFolder'
 
 @Component
 export default struct IndexShelf {
   IndexShelf: CustomDialogController | null = new CustomDialogController({
-    builder: delDialogExample({
+    builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
       confirm: ()=> { this.onAccept() },
       title: '清空'
@@ -69,13 +69,13 @@ export default struct IndexShelf {
         }
         .padding({ left: 15 })
 
-        Row({ space: 15 }) {
-          Image($r('app.media.search')).width('8%').onClick(() => {
+        Row({ space: 16 }) {
+          Image($r('app.media.search')).width(24).onClick(() => {
             router.pushUrl({
-              url: 'pages/search/SearchBook'
+              url: 'pages/view/search/SearchBook'
             });
           })
-          Image($r('app.media.more')).width('8%')
+          Image($r('app.media.more')).width(24)
             .bindMenu([
               {
                 icon: $r('app.media.import_svg'),
@@ -140,7 +140,7 @@ export default struct IndexShelf {
                 Text('管理')
                   .onClick(()=>{
                     router.pushUrl({
-                      url:'pages/view/BookManagePage',
+                      url:'pages/view/bookShelf/Manage/BookManagePage',
                       params: {
                         currentIndex:this.currentIndex,
                         EXHIBIT:this.EXHIBIT

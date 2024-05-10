@@ -1,26 +1,69 @@
-import { BookList } from '../dataList/bookList'
+import { BookList } from '../../../../../componets/dataList/bookList'
 import { promptAction } from '@kit.ArkUI'
 import BookInfoManage from './BookInfoManage'
 import BookInfoGridManage from './BookInfoGridManage'
-import delDialogExample from '../common/delDialog'
+import confirmDialogExample from '../../../../../componets/common/confirmDialog'
+import {showMessage} from '../../../../../componets/common/promptShow'
+import { delBookListByBookId, updateBookListData } from '../../../../../storage/bookListData'
 
 @Component
 export default struct bookListManage{
   @Link @Watch('onIsClearChange') isClear:boolean
   @Link allCheck:boolean
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
-  @State @Watch('isChangeBookList')checkBookList:BookList[] = []
+  @Link @Watch('isChangeBookList')checkBookList:BookList[]
   @Link showBookList:BookList[]
   @Link checkNumber:number
+  @Link @Watch('isTopChange') changeTop:boolean
+  @Prop shelfType:number
 
+  isTopChange(){
+    console.log('置顶操作中')
+    if (this.changeTop){
+      if (this.checkBookList.length === this.showBookList.length) {
+          this.checkBookList.reverse()
+          this.showBookList = this.checkBookList
+        for (let index = 0; index < this.showBookList.length; index++) {
+          this.showBookList[index].isTop = true
+        }
+      } else {
+        for (let index = 0; index < this.checkBookList.length; index++) {
+          for (let j = 0; j < this.showBookList.length; j++) {
+            if (this.checkBookList[index].bookId === this.showBookList[j].bookId) {
+              this.showBookList[j].topUpdateTime = this.checkBookList[index].topUpdateTime
+              this.showBookList[j].isTop = true
+              break
+            }
+          }
+        }
+      }
+      showMessage('置顶成功')
+      this.changeTop = false
+      this.allCheck = false
+      //更新缓存
+      updateBookListData(this.shelfType,this.showBookList)
+      this.checkBookList = []
+      this.showBookSort()
+    }
+  }
+
+  //showBookList根据isTop字段true且围绕topUpdateTime时间字段进行排序
+  showBookSort() {
+    this.showBookList.sort((a, b) => {
+      if (a.isTop && !b.isTop) {
+        return -1
+      } else if (!a.isTop && b.isTop) {
+        return 1
+      } else {
+        return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+      }
+    })
+  }
 
   //监听isClear变化
   onIsClearChange() {
     if (this.checkBookList === null || this.checkBookList.length === 0) {
-      promptAction.showToast({
-        message: '请选择要删除的内容',
-        duration: 1000,
-      })
+      showMessage('请选择要删除的内容')
       this.isClear = false
       return
     }
@@ -31,11 +74,11 @@ export default struct bookListManage{
 
   deleteBook() {
     for (let index = 0; index < this.checkBookList.length; index++) {
+     delBookListByBookId(this.shelfType, this.checkBookList[index].bookId)
      this.showBookList = this.showBookList.filter(book => book.bookId !== this.checkBookList[index].bookId);
     }
     console.log(JSON.stringify(this.showBookList))
     this.isClear = false
-    this.allCheck = false
     this.checkBookList = []
     promptAction.showToast({
       message: '删除成功',
@@ -53,7 +96,7 @@ export default struct bookListManage{
 
   //弹窗
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
-    builder: delDialogExample({
+    builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
       confirm: ()=> { this.onAccept() }
     }),
@@ -94,12 +137,14 @@ export default struct bookListManage{
             ForEach(this.showBookList, (item: BookList,index:number) => {
               BookInfoGridManage({
                 bookId:item.bookId,
-                title: item.title + this.EXHIBIT,
+                title: item.title,
                 describe: item.describe,
                 chapter: item.chapter,
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
+                isTop:item.isTop,
                 allCheck:this.allCheck,
+                changeTop:this.changeTop,
                 checkBookList:this.checkBookList
               }).width('33%')
             })
@@ -116,7 +161,9 @@ export default struct bookListManage{
                 chapter: item.chapter,
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
+                isTop:item.isTop,
                 allCheck:this.allCheck,
+                changeTop:this.changeTop,
                 checkBookList:this.checkBookList
               })
             })
