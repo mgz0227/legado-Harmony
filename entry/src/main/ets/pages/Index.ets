@@ -12,6 +12,8 @@ struct Main {
   @State showReadShow:boolean = true
   @State currentTabIndex: number = 0
   @State isShow: boolean = true
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageLink('topRectHeight') topRectHeight: number = 0
 
   onPageShow(): void {
     // initBookListData()
@@ -75,7 +77,7 @@ struct Main {
           )
         })
       }
-      .padding({bottom:14})
+      .padding({bottom:this.bottomRectHeight})
       .backgroundColor('rgba(214, 213, 213, 0.7)')
       .onChange((index) => {
         this.currentTabIndex = index
@@ -84,5 +86,7 @@ struct Main {
         ReadShow({showReadShow:this.showReadShow}).offset({y:-150})
       }
     }
+    .width("100%")
+    .height("100%")
   }
 }
