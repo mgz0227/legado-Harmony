@@ -11,26 +11,22 @@ export default struct inputComponent {
   @Prop FontColor:string | Color
   @Prop Width:number
   @Prop Height:number
+  @Prop textAlign:Alignment = Alignment.Start
   build() {
-    Column() {
-      TextInput({ text: this.text, placeholder:this.TEXT ,controller: this.controller })
+      TextArea({ text: this.text, placeholder:this.TEXT, controller: this.controller })
+        .align(this.textAlign)
         .placeholderColor(this.FontColor)
-        .placeholderFont({ size: this.FontSize, weight: 200})
-        .caretColor(Color.Blue)
+        .placeholderFont({ size: this.FontSize})
+        .caretColor('#F60')
         .fontColor(Color.Black)
         .width(this.Width)
         .height(this.Height)
         .backgroundColor('#00ffffff')
-        .height(1000)
         .inputFilter('[a-z]', (e) => {
           console.log(JSON.stringify(e))
         })
         .onChange((value: string) => {
           this.text = value
         })
-    }
-    .onAppear(()=>{
-      this.text = this.TEXT
-    })
   }
 }
