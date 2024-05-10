@@ -4,6 +4,7 @@
     "pages/welcomePage",
     "pages/view/search/SearchBook",
     "pages/view/myCenter/WebDav",
+    "pages/view/myCenter/MySetPage",
     "pages/view/BookDetailPage",
     "pages/view/bookShelf/Manage/BookManagePage"
   ]
