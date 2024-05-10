@@ -79,12 +79,29 @@ export const updateBookListData = (shelfTye:number,list:BookList[])=>{
   for (let index = 0; index < list.length; index++) {
     for (let j = 0; j < bookListData.length; j++) {
       if (bookListData[j].bookId === list[index].bookId) {
+        //如果bookListData[j]的里面的内容都全等于list[index]不做操作
+        if (JSON.stringify(bookListData[j]) === JSON.stringify(list[index])) {
+          break
+        }
         bookListData[j] = list[index]
         break
       }
     }
   }
-  AppStorage.set(KEY,bookListData)
+  AppStorage.set(KEY,shortDateList(bookListData))
+}
+
+function shortDateList(showBookList:BookList[]){
+  showBookList.sort((a, b) => {
+    if (a.isTop && !b.isTop) {
+      return -1
+    } else if (!a.isTop && b.isTop) {
+      return 1
+    } else {
+      return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+    }
+  })
+  return showBookList
 }
 
 function getBookListData(shelfTye:number){

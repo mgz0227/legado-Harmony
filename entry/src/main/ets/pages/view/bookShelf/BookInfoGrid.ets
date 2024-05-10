@@ -20,6 +20,8 @@ export default struct BookInfoGrid{
 
   @Prop isJoin:boolean
 
+  @Prop isTop:boolean
+
   onDelete: () => void = () => {
 
   }
@@ -55,7 +57,21 @@ export default struct BookInfoGrid{
   build() {
     Column() {
       Column(){
-
+        Flex({
+          alignItems: ItemAlign.End,
+          justifyContent:FlexAlign.End
+        }){
+          Flex({
+            alignItems: ItemAlign.End,
+          }){
+            if (this.isTop){
+              Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(5).margin({left:1,bottom:1}).borderRadius({ bottomLeft:10,bottomRight:5,topRight:5,topLeft:5 })
+                .backgroundColor('rgba(0, 0, 0, 0.45)')
+            }
+          }
+          .align(Alignment.Bottom)
+        }
+        .width(100).height(120)
       }
       .borderRadius(10)
       .width(100).height(120)

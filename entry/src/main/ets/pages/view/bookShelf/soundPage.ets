@@ -70,6 +70,7 @@ export default struct soundPage{
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
                 searchValue: this.searchValue,
+                isTop:item.isTop,
                 onDelete:(): void=>this.removeListByIndex(item.bookId)
               }).width('33%')
             })
@@ -86,6 +87,7 @@ export default struct soundPage{
                 bookImage: item.bookImage,
                 isJoin:item.isJoin,
                 searchValue: this.searchValue,
+                isTop:item.isTop,
                 onDelete:(): void=>this.removeListByIndex(item.bookId)
               })
             })

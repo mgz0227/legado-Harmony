@@ -385,6 +385,7 @@ struct BookManagePage {
         }
       }
     }
+    updateBookListData(this.currentIndex,this.showBookList)
     this.clickBookType = ''
     this.checkBookList = []
     this.isShow = false
