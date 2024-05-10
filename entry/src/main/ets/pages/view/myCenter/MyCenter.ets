@@ -36,7 +36,7 @@ export default struct MyCenter {
 
       //夜间模式图标
       Row(){
-          Image($r("app.media.night_icon")).size({width:30,height:30}).interpolation(ImageInterpolation.Medium)
+        Image($r("app.media.night_icon")).size({width:30,height:30}).interpolation(ImageInterpolation.Medium)
       }.justifyContent(FlexAlign.End).width("100%").onClick(this.night_onclick)
 
       Blank(30)
@@ -108,6 +108,7 @@ export default struct MyCenter {
             Text(item.title).fontSize(16).width("75%" )
             Image($r("app.media.right")).size({width:25,height:25})
           }.width("100%").height(30).justifyContent(FlexAlign.SpaceBetween)
+          .onClick(()=>this.endOnclick(item.value))
         })
       }.padding(20)
       .backgroundColor(Color.White)
@@ -149,6 +150,22 @@ export default struct MyCenter {
     }
   }
 
+  //帮助中心,关于阅读,清理缓存,我的设置点击事件
+  endOnclick(value:number|string){
+    switch (value){
+      case 1:
+        break;
+      case 2:
+        break;
+      case 3:
+        break;
+      case 4:
+        router.pushUrl({
+          url: 'pages/view/myCenter/MySetPage'
+        })
+    }
+  }
+
   //跳转云盘登录
   cloudDisk_onclick(){
     router.pushUrl({
@@ -156,4 +173,3 @@ export default struct MyCenter {
     })
   }
 }
-
