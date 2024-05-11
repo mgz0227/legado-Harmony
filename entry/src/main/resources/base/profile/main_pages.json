@@ -6,6 +6,8 @@
     "pages/view/myCenter/WebDav",
     "pages/view/myCenter/MySetPage",
     "pages/view/BookDetailPage",
-    "pages/view/bookShelf/Manage/BookManagePage"
+    "pages/view/bookShelf/Manage/BookManagePage",
+    "pages/view/myCenter/clearCache",
+    "pages/view/myCenter/cloudDisk"
   ]
 }
