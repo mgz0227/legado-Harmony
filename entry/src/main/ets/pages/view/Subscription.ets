@@ -6,12 +6,7 @@ export default struct Subscription {
   build(){
     Column(){
       IndexSubscription()
-
     }
     .backgroundColor('F3F4F8')
-    // .border({
-    //   width:1,
-    //   color:Color.Blue
-    // })
   }
 }
