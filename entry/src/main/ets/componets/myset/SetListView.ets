@@ -25,7 +25,7 @@ export struct SetListView{
         }.width('75%')
 
       }else {
-        Text(this.setList.value).fontSize(16)
+        Text(this.setList.value).fontSize(16).id('text')
       }
 
 
@@ -38,9 +38,8 @@ export struct SetListView{
         if (this.setList.showArrow){
           Image($r("app.media.right")).size({width:25,height:25})
         }else {
-          Toggle({ type: ToggleType.Switch, isOn: this.setList.toggleStatus}).onChange((isOn:boolean)=>{
-            this.setList.toggleStatus = isOn;
-          })
+          Toggle({ type: ToggleType.Switch, isOn: this.setList.toggleStatus})
+            .selectedColor("#F60").hoverEffect(HoverEffect.None)
         }
       }.alignItems(VerticalAlign.Center)
 
@@ -51,5 +50,8 @@ export struct SetListView{
     .justifyContent(FlexAlign.SpaceBetween)
     .alignItems(VerticalAlign.Center)
     .borderRadius({topLeft:this.topLeft,topRight:this.topRight,bottomLeft:this.bottomLeft,bottomRight:this.bottomRight})
+    .onChildTouchTest((touchinfo) => {//将事件交给text处理，text不处理将由自己处理
+      return { id:'text',strategy: TouchTestStrategy.FORWARD }
+    })
   }
 }
