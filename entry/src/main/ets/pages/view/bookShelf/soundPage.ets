@@ -6,7 +6,7 @@ import CommonConstants from '../../../common/constants/CommonConstants'
 import { delBookListAll, delBookListByBookId } from '../../../storage/bookListData'
 
 /**
- * 有书声
+ * 有声书
  */
 @Component
 export default struct soundPage{

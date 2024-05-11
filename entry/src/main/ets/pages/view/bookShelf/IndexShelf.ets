@@ -63,7 +63,7 @@ export default struct IndexShelf {
           BookMark({ title: '漫画', index: 1, currentIndex: this.currentIndex }).onClick(() => {
             this.currentIndex = 1
           })
-          BookMark({ title: '有书声', index: 2, currentIndex: this.currentIndex }).onClick(() => {
+          BookMark({ title: '有声书', index: 2, currentIndex: this.currentIndex }).onClick(() => {
             this.currentIndex = 2
           })
         }

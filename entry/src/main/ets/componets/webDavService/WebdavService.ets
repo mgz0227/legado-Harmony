@@ -31,11 +31,11 @@ export struct WebdavService {
   }
   build() {
     Column({space:15}){
-      //web服务开关
+      //Web服务开关
       Row(){
         Row({space:10}){
           Image($r("app.media.pc_icon")).size({width:20,height:20})
-          Text("web服务").fontWeight(600)
+          Text("Web服务").fontWeight(600)
           Image($r("app.media.doubt")).size({width:20,height:20}).onClick(()=>{
             this.bookInfoDel?.open()
           })
