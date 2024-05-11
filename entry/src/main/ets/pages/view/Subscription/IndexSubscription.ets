@@ -4,7 +4,7 @@
 export default struct IndexSubscription {
   MoreList: string[] = ['粘贴导入', '网络导入', '本地导入', '新建订阅', '新建分组', '批量管理']
   @State SearchValue: string = ""
-  ButtonList: string[] = ['起点中文网']
+  ButtonList: string[] = ['起点中文网','test']
 
   build() {
     Column() {
@@ -114,48 +114,53 @@ struct SubscriptionCard {
         bottom: 12
       })
 
-      Row({ space: 20 }) {
-        ForEach(this.ButtonList, (item: string) => {
-          Button() {
-            Row({ space: 12 }) {
-              // Ellipse图片临时用，修改后记得删除
-              Image($r('app.media.Ellipse'))
-                .width(30)
-                .height(30)
-              Text(item)
+        Flex({
+          direction: FlexDirection.Row, wrap: FlexWrap.Wrap, alignContent: FlexAlign.Center,
+          justifyContent: FlexAlign.Start
+        }) {
+            ForEach(this.ButtonList, (item: string) => {
+              Button() {
+                Row({ space: 12 }) {
+                  // Ellipse图片临时用，修改后记得删除
+                  Image($r('app.media.Ellipse'))
+                    .width(30)
+                    .height(30)
+                  Text(item)
+                }
+              }
+              .onClick(() => {
+
+              })
+              .type(ButtonType.Normal)
+              .backgroundColor("#FFFFFF")
+              .width(154)
+              .height(54)
+              .margin({ left:15, bottom: 10 })
+              .border({
+                radius: 12
+              })
+            })
+
+            //添加网址按钮
+            Button() {
+              Row({ space: 12 }) {
+                Image($r('app.media.addURL'))
+                  .width(30)
+                  .height(30)
+                Text("添加网址")
+                  .fontColor("#000000")
+                  .opacity(0.45)
+              }
             }
-          }
-          .onClick(() => {
-
-          })
-          .type(ButtonType.Normal)
-          .backgroundColor("#FFFFFF")
-          .width("46%")
-          .height(54)
-          .border({
-            radius: 12
-          })
-        })
-
-        Button() {
-          Row({ space: 12 }) {
-            Image($r('app.media.addURL'))
-              .width(30)
-              .height(30)
-            Text("添加网址")
-              .fontColor("#000000")
-              .opacity(0.45)
-          }
+            .type(ButtonType.Normal)
+            .backgroundColor("#FFFFFF")
+            .width(154)
+            .height(54)
+            .margin({ left:15, bottom: 10 })
+            .border({
+              radius: 12
+            })
         }
-        .type(ButtonType.Normal)
-        .backgroundColor("#FFFFFF")
-        .width("46%")
-        .height(54)
-        .border({
-          radius: 12
-        })
-      }
-      .width("88%")
     }
     .margin({
       bottom: 24
@@ -211,11 +216,12 @@ struct SubscriptionCard {
 
     })
     .margin({ left:5, bottom: 10 })
-    .width("23%").height(70)
+    .width(85).height(70)
     // .backgroundColor('rgba(0, 0, 0,0.06)')
     .padding({
       top:8,
     })
   }
 }
+
 
