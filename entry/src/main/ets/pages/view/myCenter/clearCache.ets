@@ -1,5 +1,5 @@
 import { dataItem } from '../../../componets/dataList/dataItem'
-import { serviceDialog } from './serviceDialog'
+import { serviceDialog } from '../../../componets/webDavService/serviceDialog'
 
 @Entry
 @Component

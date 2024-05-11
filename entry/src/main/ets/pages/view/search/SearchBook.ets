@@ -1,8 +1,8 @@
 
 import { SearchHead } from '../../../componets/search/SearchHead'
-import { SearchHistory } from './SearchHistory'
-import { SearchDetails } from './SearchDetails'
-import { SearchRefresh } from './SearchRefresh'
+import { SearchHistory } from '../../../componets/search/SearchHistory'
+import { SearchDetails } from '../../../componets/search/SearchDetails'
+import { SearchRefresh } from '../../../componets/search/SearchRefresh'
 
 @Entry
 @Component

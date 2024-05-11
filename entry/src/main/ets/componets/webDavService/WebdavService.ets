@@ -1,4 +1,4 @@
-import { serviceList } from '../../../componets/dataList/serviceList'
+import { serviceList } from '../dataList/serviceList'
 import { font, promptAction } from '@kit.ArkUI'
 import { pasteboard } from '@kit.BasicServicesKit'
 import { serviceDialog } from './serviceDialog'

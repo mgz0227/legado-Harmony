@@ -1,6 +1,6 @@
 import { Attribute } from '../../../common/utils/Attribute'
 import router from '@ohos.router'
-import { WebdavService } from './WebdavService'
+import { WebdavService } from '../../../componets/webDavService/WebdavService'
 import { promptAction } from '@kit.ArkUI'
 import { dataItem } from '../../../componets/dataList/dataItem'
 
@@ -58,8 +58,8 @@ export default struct MyCenter {
             .fontColor("rgba(0, 0, 0, 0.45)")
             .border({width:1,color:"rgba(0, 0, 0, 0.45)",radius:25})
             .fontSize(14)
-            .padding({ top:5,left:20,right:20,bottom:5 }).onClick(this.cloudDisk_onclick)
-        }
+            .padding({ top:5,left:20,right:20,bottom:5 })
+        }.onClick(()=>{this.cloudDisk_onclick()})
       }.justifyContent(FlexAlign.SpaceBetween).width("100%").onClick(this.night_onclick)
 
       Blank(30)

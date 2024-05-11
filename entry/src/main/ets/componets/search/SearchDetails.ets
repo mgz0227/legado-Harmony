@@ -1,4 +1,4 @@
-import { SearchBook } from '../../../componets/dataList/SearchBook'
+import { SearchBook } from '../dataList/SearchBook'
 import { SearchBookList } from './SearchBookList'
 import { common } from '@kit.AbilityKit'
 import { util } from '@kit.ArkTS'
