@@ -63,13 +63,7 @@ export default struct cartoonPage{
           Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
             ForEach(this.cartoonList, (item: BookList,index:number) => {
               BookInfoGrid({
-                title: item.title + this.EXHIBIT,
-                describe: item.describe,
-                chapter: item.chapter,
-                bookImage: item.bookImage,
-                isJoin:item.isJoin,
-                searchValue: this.searchValue,
-                isTop:item.isTop,
+                bookData:item,
                 onDelete:(): void=>this.removeListByIndex(item.bookId)
               }).width('33%')
             })
@@ -80,13 +74,9 @@ export default struct cartoonPage{
           ) {
             ForEach(this.cartoonList, (item: BookList,index:number) => {
               BookInfo({
-                title: item.title,
-                describe: item.describe,
-                chapter: item.chapter,
-                bookImage: item.bookImage,
-                isJoin:item.isJoin,
+                bookData:item,
+                currentIndex:this.currentIndex,
                 searchValue: this.searchValue,
-                isTop:item.isTop,
                 onDelete:(): void=>this.removeListByIndex(item.bookId)
               })
             })

@@ -1,4 +1,4 @@
-import { SearchBook } from '../../../componets/dataList/SearchBook'
+import { SearchBook } from '../dataList/SearchBook'
 
 @Component
 export struct SearchBookItem {

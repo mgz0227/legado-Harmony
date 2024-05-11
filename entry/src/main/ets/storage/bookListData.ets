@@ -91,6 +91,18 @@ export const updateBookListData = (shelfTye:number,list:BookList[])=>{
   AppStorage.set(KEY,shortDateList(bookListData))
 }
 
+export const updateDateListById = (index:number, isJoin:boolean, bookId:string)=>{
+  let bookListData =  getBookListData(index)
+  //如何bookId存在，则更新字段isJoin
+  for (let i = 0; i < bookListData.length; i++) {
+    if (bookListData[i].bookId === bookId) {
+      bookListData[i].isJoin = isJoin
+      break
+    }
+  }
+  AppStorage.set(KEY,shortDateList(bookListData))
+}
+
 function shortDateList(showBookList:BookList[]){
   showBookList.sort((a, b) => {
     if (a.isTop && !b.isTop) {

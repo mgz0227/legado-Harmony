@@ -1,27 +1,19 @@
 import confirmDialogExample from '../../../componets/common/confirmDialog'
 import router from '@ohos.router'
 import { promptAction } from '@kit.ArkUI'
-import { updateBookListData } from '../../../storage/bookListData'
+import { updateDateListById } from '../../../storage/bookListData'
+import { BookList } from '../../../componets/dataList/bookList'
 
 @Component
 /**
  * 书签
  */
 export default struct BookInfo{
-  //标题
-  @Prop title:string
-  //描述
-  @Prop describe:string
-  //章节
-  @Prop chapter:string
-  //图片
-  @Prop bookImage:Resource
-
   @Prop searchValue:string
 
-  @Prop isJoin:boolean
+  @Prop currentIndex:number
 
-  @Prop isTop:boolean
+  @Prop bookData:BookList
 
   onDelete: () => void = () => {
 
@@ -68,27 +60,27 @@ export default struct BookInfo{
         Flex({
           alignItems: ItemAlign.End,
         }){
-          if (this.isTop){
+          if (this.bookData.isTop){
             Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
               .backgroundColor('rgba(0, 0, 0, 0.45)')
           }
         }
-        .align(Alignment.Bottom).width(60).height(80).backgroundImage(this.bookImage).backgroundImageSize({width:60,height:80})
+        .align(Alignment.Bottom).width(60).height(80).backgroundImage(this.bookData.bookImage).backgroundImageSize({width:60,height:80})
         Column({
           space:24
         })
         {
-          Text(this.title)
+          Text(this.bookData.title)
             .fontWeight(700)
           Column(){
-            Text(this.describe).fontSize(12).fontColor('rgb(174,174,174)')
+            Text(this.bookData.describe).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
               })
               .ellipsisMode(EllipsisMode.END)
               .fontWeight(500)
               .maxLines(1)
-            Text(this.chapter).fontSize(12).fontColor('rgb(174,174,174)')
+            Text(this.bookData.chapter).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
               })
@@ -127,19 +119,20 @@ export default struct BookInfo{
           .padding({right:5})
           Row(){
             Row({space:5}){
-              Image(this.isJoin?$r("app.media.add_check"):$r("app.media.add_shelf")).width(this.isJoin?15:10).height(this.isJoin?15:10)
+              Image(this.bookData.isJoin?$r("app.media.add_check"):$r("app.media.add_shelf")).width(this.bookData.isJoin?15:10).height(this.bookData.isJoin?15:10)
                 .fillColor('rgba(0, 0, 0, 0.9)')
               Text('书架').fontSize(10).fontColor('rgba(0, 0, 0, 0.45)')
             }.padding({ left:15,right:15,bottom:5,top:5 })
           }
-          .backgroundColor(this.isJoin?'rgba(174,174,174,0.2)':'')
+          .backgroundColor(this.bookData.isJoin?'rgba(174,174,174,0.2)':'')
           .borderColor('rgb(174,174,174)')
-          .borderWidth(this.isJoin?0:1)
+          .borderWidth(this.bookData.isJoin?0:1)
           .borderRadius(50)
           .onClick(()=>{
-            this.isJoin = !this.isJoin
+            this.bookData.isJoin = !this.bookData.isJoin
+            updateDateListById(this.currentIndex, this.bookData.isJoin, this.bookData.bookId)
             promptAction.showToast({
-              message: this.isJoin?'已加入书架':'已移出书架',
+              message: this.bookData.isJoin?'已加入书架':'已移出书架',
               duration: 1000,
             })
           })
