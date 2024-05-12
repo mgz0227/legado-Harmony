@@ -10,17 +10,20 @@ export struct SetHead{
 
 
   build() {
-    Flex({alignItems:ItemAlign.Center}){
+    Flex({alignItems:ItemAlign.End}){
       Image($r('app.media.return_left'))
         .height(15)
         .onClick(()=>{
           router.back();
         })
 
-      Text(this.titleName).width('80%').textAlign(TextAlign.Center).fontWeight(600)
+      Text(this.titleName).width('80%').textAlign(TextAlign.Center)
+        .fontSize(16)
+        .fontColor(Color.Black)
+        .fontWeight(600)
 
       Text(this.rightString).width('10%').textAlign(TextAlign.Center)
-    }.padding(20)
+    }.padding({top:12,bottom:12})
 
   }
 }

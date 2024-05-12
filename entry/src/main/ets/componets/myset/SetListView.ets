@@ -20,8 +20,8 @@ export struct SetListView{
 
       if (this.setList.bottomText != null && this.setList.bottomText.length > 0){
         Column(){
-          Text(this.setList.value).fontSize(16).margin({bottom:10}).width('100%')
-          Text(this.setList.bottomText).fontSize(13).fontColor('#8C8C8C').width('100%')
+          Text(this.setList.value).fontSize(14).margin({bottom:10}).width('100%')
+          Text(this.setList.bottomText).fontSize(12).fontColor('#8C8C8C').width('100%')
         }.width('75%')
 
       }else {
@@ -32,7 +32,7 @@ export struct SetListView{
 
       Row(){
         if (this.setList.rightText != null && this.setList.rightText.length > 0){
-          Text(this.setList.rightText).fontSize(13).fontColor('#8C8C8C')
+          Text(this.setList.rightText).fontSize(12).fontColor('#8C8C8C')
         }
 
         if (this.setList.showArrow){
@@ -46,7 +46,7 @@ export struct SetListView{
 
     }.width("100%")
     .backgroundColor(Color.White)
-    .padding(20)
+    .padding({ left:20,right:20,top:12,bottom:12 })
     .justifyContent(FlexAlign.SpaceBetween)
     .alignItems(VerticalAlign.Center)
     .borderRadius({topLeft:this.topLeft,topRight:this.topRight,bottomLeft:this.bottomLeft,bottomRight:this.bottomRight})

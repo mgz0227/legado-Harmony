@@ -1,4 +1,5 @@
 import MySetConstants from '../../../common/constants/MySetConstants'
+import { Attribute } from '../../../common/utils/Attribute'
 import { SetList, SetGroupList } from '../../../componets/dataList/SetListGroup'
 import { SetHead } from '../../../componets/myset/SetHead'
 import { SetListView } from '../../../componets/myset/SetListView'
@@ -6,11 +7,8 @@ import { SetListView } from '../../../componets/myset/SetListView'
 @Entry
 @Component
 struct MySetPage{
-  private select: number = 10
-  private tempNum: number = 10
-  private fruits: string[] = getRandomStringArray()
-  @State private isShowSheet: boolean = false
-
+  @State private isShowPreDon: boolean = false
+  @State private isShowLanguage: boolean = false
 
   @StorageLink(MySetConstants.SET_REFRESH) setRefresh: boolean = true
   @StorageLink(MySetConstants.SET_JUMP) setJump: boolean = true
@@ -20,6 +18,14 @@ struct MySetPage{
   @StorageLink(MySetConstants.SET_AWAKEN) setAwaken: boolean = true
   @StorageLink(MySetConstants.SET_HEAD) setHead: boolean = true
   @StorageLink(MySetConstants.SET_SEARCH) setSearch: boolean = true
+  @StorageLink(MySetConstants.SET_PRE_DOWNLOAD) select: number = 10
+  @StorageLink(MySetConstants.SET_LANGUAGE) selectLanguage: string = '跟随系统'
+
+  private tempNum: number = 10
+  private preDow: string = '预先下载'+this.select+'章正文'
+  private fruits: string[] = getRandomStringArray()
+
+  @State languageList: string[] = ['跟随系统','简体中文','繁体中文','英文']
 
 
 
@@ -32,7 +38,7 @@ struct MySetPage{
 
   @State cacheSetList: SetList[]=[
     new SetList(true,'书籍保存位置',true,'','打开软件时自动更新书籍',MySetConstants.SET_BOOK_SAVE),
-    new SetList(true,'预下载',true,'预先下载10章正文','',MySetConstants.SET_PRE_DOWNLOAD),
+    new SetList(true,'预下载',true,this.preDow,'',MySetConstants.SET_PRE_DOWNLOAD),
     new SetList(true,'图片缓存',true,'当前最大缓存50MB','',MySetConstants.SET_IMG_CACHE),
     new SetList(false,'图片抗锯齿',this.setImgAnti,'','',MySetConstants.SET_IMG_ANTI)
   ]
@@ -61,19 +67,22 @@ struct MySetPage{
   @Builder itemHead(text: string) {
     // 分组设置头部组件
     Text(text)
-      .fontSize(14)
+      .fontSize(12)
       .fontColor('#8C8C8C')
       .backgroundColor('#F5F5F5')
       .width('100%')
-      .padding({left:40,right:40,top:10,bottom:10})
+      .padding({left:40,right:40,top:16,bottom:8})
   }
 
 
   build() {
     Column(){
-      SetHead({titleName:'我的设置'}).height('5%').margin({top:10})
 
-      List({space:10}){
+      Blank(40)
+
+      SetHead({titleName:'我的设置'}).height(48).padding({left:20})
+
+      List(){
 
         ForEach(this.setGroupList,(group:SetGroupList)=>{
           //分组头部
@@ -102,40 +111,49 @@ struct MySetPage{
 
       }.width('100%')
       .height('100%')
-      .padding({bottom:40})
+      .layoutWeight(1)
+      .scrollBar(BarState.Off)
     }.backgroundColor('#F5F5F5')
-    // 通过选定的半模态接口，绑定模态展示界面，style中包含两个参数，一个是设置半模态的高度，不设置时默认高度是Large，一个是是否显示控制条DragBar，默认是true显示控制条
-    .bindSheet($$this.isShowSheet, this.preDowSheet(), {
-      height: 300,
+    .bindSheet($$this.isShowLanguage, this.languageSheet(), {
+      height: 288,
       dragBar: false,
       showClose: false,
     })
+    // 通过选定的半模态接口，绑定模态展示界面，style中包含两个参数，一个是设置半模态的高度，不设置时默认高度是Large，一个是是否显示控制条DragBar，默认是true显示控制条
+    .bindSheet($$this.isShowPreDon, this.preDowSheet(), {
+      height: 288,
+      dragBar: false,
+      showClose: false,
+    })
+
 
   }
 
 
 
-  // 通过@Builder构建半模态展示界面
+  // 通过@Builder构建预下载半模态展示界面
   @Builder preDowSheet() {
     Column() {
       Row(){
         // 分组设置头部组件
         Text('取消')
-          .fontSize(16)
+          .fontSize(14)
           .padding({left:20})
-          .onClick(()=>{this.isShowSheet = false})
+          .onClick(()=>{this.isShowPreDon = false})
 
         Text('预下载')
-          .fontSize(18)
+          .fontSize(16)
 
         Text('确定')
-          .fontSize(16)
+          .fontSize(14)
           .padding({right:20})
           .onClick(()=>{
-            this.isShowSheet = false
+            this.isShowPreDon = false
             this.select = this.tempNum
+            this.preDow = '预先下载'+this.select+'章正文'
+            this.cacheSetList[1].rightText = this.preDow
           })
-      }.width('100%').height(50).justifyContent(FlexAlign.SpaceBetween)
+      }.width('100%').height(56).justifyContent(FlexAlign.SpaceBetween)
       Column() {
         TextPicker({ range: this.fruits, selected: this.select })
           .onChange((value: string | string[], index: number | number[]) => {
@@ -143,14 +161,33 @@ struct MySetPage{
               this.tempNum = index
             }
           })
-          .disappearTextStyle({color: Color.Black, font: {size: 15, weight: FontWeight.Normal}})
-          .textStyle({color: Color.Black, font: {size: 15, weight: FontWeight.Normal}})
+          .disappearTextStyle({color: Color.Black, font: {size: 14, weight: FontWeight.Normal}})
+          .textStyle({color: Color.Black, font: {size: 14, weight: FontWeight.Normal}})
           .selectedTextStyle({color: Color.Red, font: {size: 16, weight: FontWeight.Bolder}})
-          .margin({top: 20})
       }.width('100%').height('100%')
     }
     .width('100%')
-    .height('100%')
+    .height(288)
+    .backgroundColor(Color.White)
+  }
+
+  // 通过@Builder构建半模态展示界面
+  @Builder languageSheet() {
+    Column() {
+      Text('预下载')
+        .fontSize(16)
+        .textAlign(TextAlign.Center)
+        .width('100%').height(56)
+      ForEach(this.languageList,(value:string)=>{
+        Text(value)
+          .fontSize(16)
+          .textAlign(TextAlign.Start)
+          .width('100%').height(56)
+      })
+
+    }
+    .width('100%')
+    .height(288)
     .backgroundColor(Color.White)
   }
 
@@ -195,7 +232,7 @@ struct MySetPage{
       case MySetConstants.SET_BOOK_SAVE:
         break;
       case MySetConstants.SET_PRE_DOWNLOAD:
-        this.isShowSheet = !this.isShowSheet;
+        this.isShowPreDon = !this.isShowPreDon;
         break;
       case MySetConstants.SET_IMG_CACHE:
         break;
@@ -206,6 +243,7 @@ struct MySetPage{
       case MySetConstants.SET_USER_AGENT:
         break;
       case MySetConstants.SET_LANGUAGE:
+        this.isShowLanguage = !this.isShowLanguage;
         break;
     }
   }
