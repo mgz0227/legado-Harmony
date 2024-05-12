@@ -85,7 +85,7 @@ struct Main {
         this.currentTabIndex = index
       })
       if (this.showReadShow){
-        ReadShow({showReadShow:this.showReadShow}).offset({y:-150})
+        ReadShow({showReadShow:this.showReadShow}).offset({y:-150 - this.bottomRectHeight})
       }
     }
     .width("100%")

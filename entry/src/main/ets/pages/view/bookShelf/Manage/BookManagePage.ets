@@ -319,6 +319,7 @@ struct BookManagePage {
           }
         }
       }
+      this.showFolderSort()
       this.folderCheckList = []
     } else {
       for (let i = 0; i < this.checkBookList.length; i++) {
