@@ -27,7 +27,7 @@ class routerParams {
 struct BookManagePage {
   // @State currentIndex: number = 0
   // @State EXHIBIT: string = '列表'
-  // @State GROUPName:string = '文件夹' //标签
+  // @State GROUPName:string = '标签' //标签
   @State GROUPName:string = (router.getParams() as routerParams).GROUPName
   @State currentIndex: number = (router.getParams() as routerParams).currentIndex
   @State EXHIBIT: string = (router.getParams() as routerParams).EXHIBIT
@@ -38,11 +38,15 @@ struct BookManagePage {
   @State changeTop:boolean = false
   @State isShow:boolean = false
 
+  @State isAddShelfShow:boolean = false
+
 
 
   @State bookType:string = ''
 
   @State BooTypeList:string[] = ['玄幻','修真', '都市', '穿越', '网游', '科幻', '历史']
+
+  @State ShelfList:string[] = ['玄幻神作', '精品小说,亲自品鉴', '冷门小说不容错过']
 
   @State clickBookType:string = ''
 
@@ -149,7 +153,7 @@ struct BookManagePage {
   }
 
   onPageShow(): void {
-    // initBookListData()
+    initBookListData()
     this.onCurrentIndexChange()
   }
   // @State folderCheckNumber:number = 0
@@ -278,12 +282,37 @@ struct BookManagePage {
       }.onClick(()=>{
         this.isShow = true
       })
+      .bindSheet($$this.isShow,this.catalogMove(), {
+        height:300,
+        showClose: false,
+        dragBar: false,
+        blurStyle:BlurStyle.COMPONENT_ULTRA_THIN,
+        maskColor: 'rgba(0,0,0,0.6)',
+        onDisappear:()=>{
+          this.clickBookType = ''
+          console.log('隐藏')
+        }
+      })
       Column({
         space:5
       }){
         Image($r('app.media.add_shelf_book')).width(17)
         Text('加入书单').fontSize(14).fontWeight(500)
       }
+      .onClick(()=>{
+        this.isAddShelfShow = true
+      })
+      .bindSheet($$this.isAddShelfShow,this.catalogAddShelf(), {
+        height:300,
+        showClose: false,
+        dragBar: false,
+        blurStyle:BlurStyle.COMPONENT_ULTRA_THIN,
+        maskColor: 'rgba(0,0,0,0.6)',
+        onDisappear:()=>{
+          this.clickBookType = ''
+          console.log('隐藏')
+        }
+      })
       Column({
         space:5
       }){
@@ -293,17 +322,6 @@ struct BookManagePage {
         this.isClear = true
       })
     }
-    .bindSheet($$this.isShow,this.catalogMove(), {
-      height:300,
-      showClose: false,
-      dragBar: false,
-      blurStyle:BlurStyle.COMPONENT_ULTRA_THIN,
-      maskColor: 'rgba(0,0,0,0.6)',
-      onDisappear:()=>{
-        this.clickBookType = ''
-        console.log('隐藏')
-      }
-    })
     .height('10%')
     .padding(20)
   }
@@ -342,8 +360,11 @@ struct BookManagePage {
   @Builder catalogMove() {
     Column() {
       Column(){
-        Text('移动分组').fontSize(16).fontWeight(700)
+        Text('移动分组').fontSize(16).fontWeight(700).lineHeight(24)
+
       }.padding({right:20,left:20,top:12,bottom:12})
+
+      Divider().strokeWidth(0.5)
       Scroll(){
         Flex({
           direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center,
@@ -358,6 +379,7 @@ struct BookManagePage {
       }
       .height('65%')
       .scrollBar(BarState.Off)
+      Divider().strokeWidth(0.5)
       Column() {
         Text('取消').fontSize(16).fontWeight(400)
           .lineHeight(24)
@@ -374,6 +396,110 @@ struct BookManagePage {
     }
     .width(CommonConstants.FULL_WIDTH)
     .height(CommonConstants.FULL_HEIGHT)
+  }
+
+  @Builder catalogAddShelf() {
+    Column() {
+      Column(){
+        Text('加入书单').fontSize(16).fontWeight(700).lineHeight(24)
+      }.padding({right:20,left:20,top:12,bottom:12})
+      Divider().strokeWidth(0.5)
+      Flex(){
+        this.ColumnTitle('')
+      }
+      Scroll(){
+        Column(){
+          ForEach(this.ShelfList,(item:string)=>{
+            this.ColumnTitle(item)
+          })
+        }
+      }
+      .align(Alignment.Start)
+      .height('45%')
+      .scrollBar(BarState.Off)
+      Divider().strokeWidth(1)
+      Row({
+        space:20
+      }) {
+        Column(){
+          Text('取消').fontSize(16).fontWeight(400).fontColor($r('app.color.theme_color'))
+            .lineHeight(24)
+            .padding({left:32,right:32,bottom:12,top:12})
+        }
+        .width('50%')
+        .borderRadius(20)
+        .alignItems(HorizontalAlign.Center)
+        .backgroundColor('rgba(255, 102, 0, 0.12)')
+        Column(){
+          Text('确定').fontSize(16).fontWeight(400).fontColor(Color.White)
+            .lineHeight(24)
+            .padding({left:32,right:32,bottom:12,top:12})
+        }
+        .width('50%')
+        .borderRadius(20)
+        .alignItems(HorizontalAlign.Center)
+        .backgroundColor($r('app.color.theme_color'))
+      }
+      .onClick(()=>{
+        this.isAddShelfShow = false
+      })
+      .padding({
+        left: 32,
+        right:32,
+        top: 16
+      })
+    }
+    .width(CommonConstants.FULL_WIDTH)
+    .height(CommonConstants.FULL_HEIGHT)
+  }
+
+  @Builder ColumnTitle(title:string) {
+    Column() {
+      if (title === ''){
+
+
+        Flex({
+          justifyContent:FlexAlign.SpaceBetween,
+          alignItems:ItemAlign.Center
+        }){
+          Row({
+            space:12
+          }){
+            Image($r('app.media.add')).width(24).fillColor($r('app.color.theme_color'))
+            Text('新建书单').fontSize(14).fontColor($r('app.color.theme_color')).fontWeight(400).lineHeight(22)
+          }
+        }
+      } else {
+       Flex({
+         justifyContent:FlexAlign.SpaceBetween,
+         alignItems:ItemAlign.Center
+       }){
+         Row({
+           space:12
+         }){
+           Image($r('app.media.shelf')).width(24)
+           Text(title).fontSize(14).fontWeight(400).lineHeight(22).textOverflow({
+             overflow:TextOverflow.Ellipsis
+           }).ellipsisMode(EllipsisMode.END).maxLines(1)
+         }
+
+         if (false) {
+           Image($r('app.media.ic_public_return_right')).width(24).height(24)
+         } else {
+           Text('已在书单').fontSize(12).fontWeight(400).lineHeight(20).fontColor('rgba(0, 0, 0, 0.45)')
+         }
+       }
+      }
+    }
+    .onClick(()=>{
+
+    })
+    .padding({
+      left:20,
+      right:20,
+      top:12,
+      bottom:12
+    })
   }
 
   @Builder title(title:string) {
