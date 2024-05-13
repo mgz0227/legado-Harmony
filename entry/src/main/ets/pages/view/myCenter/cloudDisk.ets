@@ -52,32 +52,35 @@ struct CloudDisk {
 
 
   build() {
-      Column({space:20}) {
+      Column() {
         //标题栏
-        cloudTitle()
+        cloudTitle({title:"云备份"})
         //备份图片及按钮
-        Column({space:40}){
+        Column(){
           Column(){
             Image($r("app.media.cloud_refresh"))
-              .size({width:70,height:70})
+              .size({width:68,height:68})
               .margin({bottom:60})
               .rotate({angle:this.refresh})
               .onClick(()=>{
                 // this.cloud_refresh()
               })
           }
+          .margin({top:42,bottom:42})
           .backgroundImage($r("app.media.cloud"))
-          .size({width:250,height:180})
+          .size({width:264,height:206})
           .backgroundImageSize({width:"100%",height:"100%"})
           .justifyContent(FlexAlign.Center)
           Text("上次备份时间："+this.backups_time).fontSize(14).fontColor("rgba(0, 0, 0, 0.45)")
+
           //备份按钮
           Button({ type: ButtonType.Capsule, stateEffect: true }) {
             this.backups_botton()
           }
+          .margin({top:32,bottom:42})
           .backgroundColor("rgb(255, 102, 0)")
           .onClick(()=>{this.backups_onClick()})
-        }.margin({top:20,bottom:20})
+        }
         //备份设置
         Column({space:10}){
           ForEach(this.backups_list,(item:dataItem)=>{
@@ -86,11 +89,13 @@ struct CloudDisk {
         }.stateStyles({
           normal: this.setStyle,
         })
+
         Column(){
           this.backups_item(new dataItem("数据恢复",4,"",1))
         }.stateStyles({
           normal: this.setStyle,
         })
+        .margin({top:16})
       }.stateStyles({
         normal: this.pageStyle,
       })

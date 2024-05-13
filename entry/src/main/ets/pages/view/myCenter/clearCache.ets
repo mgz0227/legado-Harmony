@@ -1,4 +1,5 @@
 import { dataItem } from '../../../componets/dataList/dataItem'
+import { cloudTitle } from '../../../componets/webDavService/cloudTitle'
 import { serviceDialog } from '../../../componets/webDavService/serviceDialog'
 
 @Entry
@@ -14,32 +15,30 @@ struct clearCache{
   @State @Watch("ClearChange") clearDialogStatus:boolean=false
   @State index:number=0
   build() {
-    Column({space:20}){
-      Row(){
-        Row(){
-          Image($r("app.media.right")).rotate({angle:180}).size({width:40,height:40})
-        }.width("40%")
-        Text("清理缓存").fontSize(20).fontWeight(600)
-      }.width("100%").justifyContent(FlexAlign.Start)
-
+    Column({space:12}){
+      //标题栏
+      cloudTitle({title:"清理缓存"})
       Column(){
         ForEach(this.clearList,(item:dataItem,index:number)=>{
           Row({space:10}){
-            Text(item.title).width("60%").fontSize(18)
-            Text(item.value+"MB").fontSize(16).fontColor("rgba(0, 0, 0, 0.45)")
+            Text(item.title).width("65%").fontSize(14).lineHeight(22)
+            Text(item.value+"MB").fontSize(12).lineHeight(20).fontColor("rgba(0, 0, 0, 0.45)")
             Image($r("app.media.right"))
-              .size({width:30,height:30})
+              .size({width:24,height:24})
               .clickEffect({level:ClickEffectLevel.LIGHT, scale: 0.5})
-          }.width("90%").padding({top:12,bottom:12}).onClick(()=>{
+          }.width("100%").padding({top:12,bottom:12})
+          .justifyContent(FlexAlign.End)
+          .onClick(()=>{
             this.index=index
             this.clearDialogStatus=true
           })
+
         })
       }
       .backgroundColor(Color.White)
-      .padding({ left:20,right:20,top:10,bottom:10 })
+      .padding({ left:20,right:20 })
       .borderRadius(15)
-    }.padding(10).backgroundColor("rgb(245, 245, 245)").width("100%").height("100%")
+    }.padding({left:20,right:20}).backgroundColor("rgb(245, 245, 245)").width("100%").height("100%")
   }
 
 

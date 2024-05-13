@@ -47,13 +47,12 @@ export struct WebdavService {
             }).selectedColor("#F60").hoverEffect(HoverEffect.None)
         }
       }.width("100%").justifyContent(FlexAlign.SpaceBetween)
-
       //wifi 阅读 写源
       Row({space:10}){
         ForEach(this.List,(item:serviceList)=>{
           Column({space:5}){
             Text(item.name)
-              .fontSize(13)
+              .fontSize(12)
               .fontColor("rgba(121, 119, 119, 1.00)")
               .width("100%")
               .fontWeight(500)
@@ -93,7 +92,7 @@ export struct WebdavService {
     }
     .width(320)
     .backgroundColor("#FFF")
-    .padding({top:10,bottom:20,left:10,right:10})
+    .padding({top:16,bottom:16,left:20,right:20})
 
     .borderRadius(10)
   }
