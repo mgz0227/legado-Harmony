@@ -8,6 +8,7 @@ import confirmDialogExample from '../../../../componets/common/confirmDialog';
 import { initBookListData, updateBookListData } from '../../../../storage/bookListData';
 import { folderList } from '../../../../componets/dataList/folderList';
 import BookFolderManages from './bookManage/BookFolderManages';
+import newBookShelf from './bookManage/newBookShelf';
 
 class routerParams {
   currentIndex:number
@@ -46,7 +47,7 @@ struct BookManagePage {
 
   @State BooTypeList:string[] = ['玄幻','修真', '都市', '穿越', '网游', '科幻', '历史']
 
-  @State ShelfList:string[] = ['玄幻神作', '精品小说,亲自品鉴', '冷门小说不容错过']
+  @State ShelfList:string[] = ['玄幻神作', '精品小说,亲自品鉴', '冷门小说不容错过','冷门小说不容错过']
 
   @State clickBookType:string = ''
 
@@ -153,7 +154,7 @@ struct BookManagePage {
   }
 
   onPageShow(): void {
-    initBookListData()
+    // initBookListData()
     this.onCurrentIndexChange()
   }
   // @State folderCheckNumber:number = 0
@@ -162,7 +163,22 @@ struct BookManagePage {
     this.checkNumber = this.folderCheckList.length
     this.changeCheckBookList()
   }
+  @State showNumber:number = 0
   build() {
+    Column(){
+      if (this.showNumber === 0){
+       this.bookManage()
+     } else if(this.showNumber === 1){
+       newBookShelf({
+         showNumber:this.showNumber,
+         isAddShelfShow:this.isAddShelfShow
+       })
+     } else if (this.showNumber === 2){
+
+      }
+    }
+  }
+  @Builder bookManage(){
     Column() {
       Blank(20)
       Row({ space: 15 }) {
@@ -283,7 +299,7 @@ struct BookManagePage {
         this.isShow = true
       })
       .bindSheet($$this.isShow,this.catalogMove(), {
-        height:300,
+        height:330,
         showClose: false,
         dragBar: false,
         blurStyle:BlurStyle.COMPONENT_ULTRA_THIN,
@@ -303,7 +319,7 @@ struct BookManagePage {
         this.isAddShelfShow = true
       })
       .bindSheet($$this.isAddShelfShow,this.catalogAddShelf(), {
-        height:300,
+        height:330,
         showClose: false,
         dragBar: false,
         blurStyle:BlurStyle.COMPONENT_ULTRA_THIN,
@@ -414,10 +430,9 @@ struct BookManagePage {
           })
         }
       }
-      .align(Alignment.Start)
       .height('45%')
       .scrollBar(BarState.Off)
-      Divider().strokeWidth(1)
+      Divider().strokeWidth(0.5)
       Row({
         space:20
       }) {
@@ -456,8 +471,6 @@ struct BookManagePage {
   @Builder ColumnTitle(title:string) {
     Column() {
       if (title === ''){
-
-
         Flex({
           justifyContent:FlexAlign.SpaceBetween,
           alignItems:ItemAlign.Center
@@ -467,7 +480,9 @@ struct BookManagePage {
           }){
             Image($r('app.media.add')).width(24).fillColor($r('app.color.theme_color'))
             Text('新建书单').fontSize(14).fontColor($r('app.color.theme_color')).fontWeight(400).lineHeight(22)
-          }
+          }.onClick(()=>{
+            this.showNumber = 1
+          })
         }
       } else {
        Flex({
