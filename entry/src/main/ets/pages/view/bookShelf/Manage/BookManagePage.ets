@@ -329,6 +329,18 @@ struct BookManagePage {
           console.log('隐藏')
         }
       })
+      if (this.GROUPName === '文件夹'){
+        Column({
+          space:5
+        }){
+          Image($r('app.media.hide')).width(19)
+          Text('隐藏分组').fontSize(14).fontWeight(500)
+        }
+        .onClick(()=>{
+
+        })
+      }
+
       Column({
         space:5
       }){
