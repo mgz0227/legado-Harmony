@@ -1,6 +1,6 @@
 import { promptAction } from '@kit.ArkUI';
 import { dataItem } from '../../../componets/dataList/dataItem';
-import { cloudTitle } from '../../../componets/webDavService/cloudTitle';
+import { myCenterTitle } from '../../../componets/myCenter/myCenterTitle';
 
 @Entry
 @Component
@@ -54,7 +54,7 @@ struct CloudDisk {
   build() {
       Column() {
         //标题栏
-        cloudTitle({title:"云备份"})
+        myCenterTitle({title:"云备份"})
         //备份图片及按钮
         Column(){
           Column(){

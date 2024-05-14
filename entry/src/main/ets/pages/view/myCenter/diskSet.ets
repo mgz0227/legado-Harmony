@@ -1,8 +1,8 @@
 import { ColumnModifier } from '../../../common/utils/ComponetModifier';
 import { dataItem } from '../../../componets/dataList/dataItem';
-import { myCenterInputDialog } from '../../../componets/myCenter/myCenterInputDialog';
-import { cloudTitle } from '../../../componets/webDavService/cloudTitle';
-import { serviceDialog } from '../../../componets/webDavService/serviceDialog';
+
+import { myCenterTitle } from '../../../componets/myCenter/myCenterTitle';
+
 import { diskComponet } from './diskComponet';
 
 @Entry
@@ -83,7 +83,7 @@ struct DiskSet {
   build() {
     Column() {
       //标题栏
-      cloudTitle({title:"备份设置"})
+      myCenterTitle({title:"备份设置"})
 
       Column(){
         diskComponet({

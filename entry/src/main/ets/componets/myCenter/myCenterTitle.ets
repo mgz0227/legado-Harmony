@@ -1,7 +1,7 @@
 import { router } from '@kit.ArkUI'
 
 @Component
-export struct cloudTitle{
+export struct myCenterTitle{
 
   @Prop title:string
 
