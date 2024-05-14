@@ -43,7 +43,10 @@ struct VersionLogPage {
       this.versionCard("V5.1.1", "2024/5/9", this.List)
     }
     .height("100%")
-    .padding(20)
+    .padding({
+      left:20,
+      right:20
+    })
     .backgroundColor("rgb(245, 245, 245)")
   }
 

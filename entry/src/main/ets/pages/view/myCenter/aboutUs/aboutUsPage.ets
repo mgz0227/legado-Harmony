@@ -64,16 +64,22 @@ struct AboutUsPage {
   endUrl_list(value: number | string) {
     switch (value) {
       case 0:
-      //todo 用户隐私与协议
+        //用户隐私与协议
+        router.pushUrl({
+          url: "pages/view/myCenter/aboutUs/PrivacyAgreementPage"
+        })
         break
       case 1:
-      //todo 开源许可
+        //开源许可
+        router.pushUrl({
+          url: "pages/view/myCenter/aboutUs/OpenSourceLicense"
+        })
         break
       case 2:
-      //todo 免责声明
+        //免责声明 Disclaimer
         break
       case 3:
-      //todo 崩溃日志
+        //todo 崩溃日志
         break
     }
   }
