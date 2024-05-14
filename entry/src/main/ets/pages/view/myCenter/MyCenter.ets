@@ -32,8 +32,14 @@ export default struct MyCenter {
   build() {
     Column(){
 
-      //夜间模式图标
-      Row(){
+      //右上角模式图标
+      Row({space:10}){
+        //设置图标
+        Image($r("app.media.myCenter_set_icon")).size({width:30,height:30}).interpolation(ImageInterpolation.Medium)
+          .onClick(()=>{
+            this.toMySetPage()
+          })
+          //夜间模式图标
         Image($r("app.media.night_icon")).size({width:30,height:30}).interpolation(ImageInterpolation.Medium)
       }.justifyContent(FlexAlign.End).width("100%").onClick(this.night_onclick)
 
@@ -168,12 +174,14 @@ export default struct MyCenter {
       case 3:
         break;
       case 4:
-        router.pushUrl({
-          url: 'pages/view/myCenter/MySetPage'
-        })
+
     }
   }
-
+  toMySetPage(){
+    router.pushUrl({
+      url: 'pages/view/myCenter/MySetPage'
+    })
+  }
   //跳转云盘登录
   cloudDisk_onclick(){
     router.pushUrl({
