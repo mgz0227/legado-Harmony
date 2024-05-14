@@ -51,6 +51,7 @@ struct clearCache{
   }
 
   onAccept(index:number) {
+    console.log(index.toString());
     this.clear(index)
     this.clearDialogStatus = false
   }

@@ -31,7 +31,7 @@ struct CloudDisk {
       }else{
         Image($r("app.media.right"))
           .size({width:30,height:30})
-          .onClick(()=>{this.backup_set(item.value)})
+          .onClick(()=>{this.backup_set(parseInt(item.value.toString()))})
       }
     }
     .width("100%")

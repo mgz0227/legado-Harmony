@@ -8,6 +8,7 @@
     "pages/view/BookDetailPage",
     "pages/view/bookShelf/Manage/BookManagePage",
     "pages/view/myCenter/clearCache",
-    "pages/view/myCenter/cloudDisk"
+    "pages/view/myCenter/cloudDisk",
+    "pages/view/myCenter/diskSet"
   ]
 }

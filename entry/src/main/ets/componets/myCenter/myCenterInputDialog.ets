@@ -1,18 +1,18 @@
 
 
 @CustomDialog
-export struct serviceDialog{
+export struct myCenterInputDialog{
 
   controller?: CustomDialogController
-  // 若尝试在CustomDialog中传入多个其他的Controller，以实现在CustomDialog中打开另一个或另一些CustomDialog，那么此处需要将指向自己的controller放在所有controller的后面
+
   cancel: () => void = () => {
   }
   confirm: () => void = () => {
   }
 
   @Prop title:string = ''
-  @Prop value:string=""
-  @Prop type:string="text"
+  @Link value:string
+  @Prop placeholder:string=""
   @Builder button(title:string,color:Array<ResourceStr|Color>,confirm: () => void){
     Text(title)
       .onClick(() => {
@@ -27,27 +27,36 @@ export struct serviceDialog{
       .backgroundColor(color[1])
   }
 
-
   build() {
-    Column({space:15}) {
-      Text(this.title)
-        .fontWeight(600)
-        .fontSize(16)
-      if(this.type=="text"){
-        Text(this.value)
+    Column({space:24}) {
+      Column({space:16}){
+        Text(this.title)
           .fontWeight(600)
-          .fontSize(14)
-          .size({width:"80%"})
-          .fontColor("rgba(0, 0, 0, 0.45)")
-          .textAlign(TextAlign.Center)
-          .lineHeight(25)
+          .fontSize(16)
+        TextInput({text:this.value,placeholder:this.placeholder})
+          .fontSize(14).lineHeight(22)
+          .width(196).padding({left:20,right:20,top:8,bottom:8})
+          .onChange((value:string)=>{
+            this.value=value
+          })
+          .cancelButton({
+            style : CancelButtonStyle.CONSTANT,
+            icon:{
+              size:14,
+              src:$r("app.media.clear_input_icon"),
+              color: "rgba(0, 0, 0, 0.45)"
+            }
+          })
       }
-      Row({space:24}) {
+
+
+      Row({space:12}) {
         this.button("取消",[$r('app.color.theme_color'),'rgba(255,120,0,0.12)'],this.cancel)
         this.button("确定",[Color.White,$r('app.color.theme_color')],this.confirm)
-      }.padding({top:10})
-    }.padding({top:20,bottom:20})
-    .width(270)
+      }
+    }.padding(24)
+    .width(284)
+    .height(190)
     .backgroundColor("rgba(255, 255, 255, 1)")
     .borderRadius(15)
   }
