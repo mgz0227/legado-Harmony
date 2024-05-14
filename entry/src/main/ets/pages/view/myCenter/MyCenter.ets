@@ -16,23 +16,21 @@ export default struct MyCenter {
     new dataItem("勋章",20),
   ]
   @State center_list:dataItem[]=[
-    new dataItem("云盘备份",1,$r("app.media.MyCenter_cloud_icon")),
-    new dataItem("书源管理",2,$r("app.media.MyCenter_book_icon")),
-    new dataItem("主题",3,$r("app.media.MyCenter_theme_icon")),
+    new dataItem("备份",1,$r("app.media.MyCenter_cloud_icon")),
+    new dataItem("主题",2,$r("app.media.MyCenter_book_icon")),
+    new dataItem("书源",3,$r("app.media.MyCenter_theme_icon")),
     new dataItem("净化",4,$r("app.media.MyCenter_purify_icon")),
   ]
 
   @State end_list:dataItem[]=[
     new dataItem("帮助中心",1,$r("app.media.MyCenter_help_icon")),
-    new dataItem("关于阅读",2,$r("app.media.MyCenter_about_icon")),
+    new dataItem("关于我们",2,$r("app.media.MyCenter_about_icon")),
     new dataItem("清理缓存",3,$r("app.media.MyCenter_clean_icon")),
-    new dataItem("我的设置",4,$r("app.media.MyCenter_setUp_icon")),
+    new dataItem("文件管理",4,$r("app.media.MyCenter_setUp_icon")),
   ]
 
   build() {
     Column(){
-
-      Blank(Attribute.Header)
 
       //夜间模式图标
       Row(){
@@ -44,76 +42,86 @@ export default struct MyCenter {
       //头像及云盘登录
       Row(){
         //头像
-        Image($r("app.media.user_avatar")).size({width:60,height:60})
+        Image($r("app.media.user_avatar")).size({width:54,height:54})
           .borderRadius(60)
           .interpolation(ImageInterpolation.Medium).onClick(this.avatar_onclick)
         //昵称及阅读时长
-        Column({space :10}){
-          Text("夏目友人").fontSize(18).fontWeight(600)
-          Text("今日阅读"+this.reading_time+"分钟").fontSize(14).fontColor("rgba(0, 0, 0, 0.45)")
-        }.alignItems(HorizontalAlign.Start).width("45%")
+        Column({space :8}){
+          Text("夏目友人").fontSize(16).fontWeight(600).lineHeight(24)
+          Text("今日阅读"+this.reading_time+"分钟").fontSize(12).fontColor("rgba(0, 0, 0, 0.45)")
+            .lineHeight(20)
+        }.alignItems(HorizontalAlign.Start).width("45%").height("100%")
+
+        .justifyContent(FlexAlign.SpaceBetween)
         //云盘登录
         Row(){
           Text("云盘登录")
             .fontColor("rgba(0, 0, 0, 0.45)")
-            .border({width:1,color:"rgba(0, 0, 0, 0.45)",radius:25})
-            .fontSize(14)
-            .padding({ top:5,left:20,right:20,bottom:5 })
+            .fontSize(12)
+            .width(48)
+            .height(22)
         }.onClick(()=>{this.cloudDisk_onclick()})
-      }.justifyContent(FlexAlign.SpaceBetween).width("100%").onClick(this.night_onclick)
 
-      Blank(30)
+        .border({width:1,color:"rgba(0, 0, 0, 0.45)",radius:25})
+        .padding({ top:4,left:14,right:14,bottom:4 }).borderWidth(1)
+      }.justifyContent(FlexAlign.SpaceBetween).width("100%").height(54).onClick(this.night_onclick)
+
+      Blank(24)
 
       // 统计数据
       Row(){
         ForEach(this.head_list,(item:dataItem)=>{
           Column({space:5}){
-            Text(item.value.toString()).fontSize(20).fontWeight(800)
-            Text(item.title).fontSize(14).fontWeight(800)
+            Text(item.value.toString()).fontSize(20).fontWeight(400)
+            Text(item.title).fontSize(10).fontWeight(500)
           }
         })
       }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left:20,right:20})
 
-      Blank(30)
+      Blank(16)
 
       //云盘 书源 主题 净化设置
-      Row({space:10}){
+      Row(){
         ForEach(this.center_list,(item:dataItem)=>{
-          Column({space:5}){
-            Image(item.icon).size({width:20,height:20})
+          Column({space:4}){
+            Image(item.icon).size({width:24,height:24})
             Text(item.title).fontSize(12).fontColor("rgba(121, 119, 119, 1.00)")
           }
-          .width("18%")
-          .height(70)
+          .width(80)
+          .height(48)
           .justifyContent(FlexAlign.Center)
           .onClick(()=>this.centerOnclick(item.value))
         })
-      }.width("100%").height(70)
+      }.width("100%")
       .justifyContent(FlexAlign.SpaceBetween)
-      .padding({left:10,right:10})
+      .padding({top:16,bottom:16})
       .backgroundColor(Color.White)
       .borderRadius(10)
-      Blank(20)
+      Blank(16)
 
       //web服务
 
       WebdavService()
-      Blank(20)
+      Blank(16)
 
       //帮助 关于 清理缓存 设置
-      Column({space:15}){
+      Column(){
         ForEach(this.end_list,(item:dataItem)=>{
           Row({space:10}){
-            Image(item.icon).size({width:22,height:22}).interpolation(ImageInterpolation.High)
-            Text(item.title).fontSize(16).width("75%" )
-            Image($r("app.media.right")).size({width:25,height:25})
-          }.width("100%").height(30).justifyContent(FlexAlign.SpaceBetween)
+            Image(item.icon).size({width:20,height:20}).interpolation(ImageInterpolation.High)
+            Text(item.title).fontSize(14).width("75%" )
+            Image($r("app.media.right")).size({width:24,height:24})
+          }.width(280)
+          .height(48)
+          .padding({top:12,bottom:12})
           .onClick(()=>this.endOnclick(item.value))
         })
-      }.padding(20)
+      }
       .backgroundColor(Color.White)
       .borderRadius(10)
-      Blank(300)
+      .justifyContent(FlexAlign.SpaceBetween)
+      .size({width:320,height:192})
+      Blank(200)
     }.padding(20)
     .backgroundColor("rgb(245, 245, 245)")
     .linearGradient({
@@ -156,6 +164,10 @@ export default struct MyCenter {
       case 1:
         break;
       case 2:
+        // 关于我们
+        router.pushUrl({
+          url: 'pages/view/myCenter/aboutUs/aboutUsPage'
+        })
         break;
       case 3:
         break;
