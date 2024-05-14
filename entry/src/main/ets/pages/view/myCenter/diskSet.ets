@@ -3,7 +3,7 @@ import { dataItem } from '../../../componets/dataList/dataItem';
 
 import { myCenterTitle } from '../../../componets/myCenter/myCenterTitle';
 
-import { diskComponet } from './diskComponet';
+import { diskComponet } from '../../../componets/myCenter/diskComponet';
 
 @Entry
 @Component

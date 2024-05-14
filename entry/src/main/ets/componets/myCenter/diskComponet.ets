@@ -1,5 +1,5 @@
-import { dataItem } from '../../../componets/dataList/dataItem'
-import { myCenterInputDialog } from '../../../componets/myCenter/myCenterInputDialog'
+import { dataItem } from '../dataList/dataItem'
+import { myCenterInputDialog } from './myCenterInputDialog'
 @Component
 export struct diskComponet{
   @ObjectLink deviceName:dataItem
