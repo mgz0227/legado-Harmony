@@ -9,6 +9,11 @@
     "pages/view/bookShelf/Manage/BookManagePage",
     "pages/view/myCenter/clearCache",
     "pages/view/myCenter/cloudDisk",
-    "pages/view/myCenter/diskSet"
+    "pages/view/myCenter/diskSet",
+    "pages/view/myCenter/aboutUs/aboutUsPage",
+    "pages/view/myCenter/aboutUs/versionLogPage",
+    "pages/view/myCenter/aboutUs/PrivacyAgreementPage",
+    "pages/view/myCenter/aboutUs/OpenSourceLicensePage",
+    "pages/view/myCenter/aboutUs/DisclaimerPage"
   ]
 }

@@ -170,6 +170,10 @@ export default struct MyCenter {
       case 1:
         break;
       case 2:
+        // 关于我们
+        router.pushUrl({
+          url: 'pages/view/myCenter/aboutUs/aboutUsPage'
+        })
         break;
       case 3:
         break;
