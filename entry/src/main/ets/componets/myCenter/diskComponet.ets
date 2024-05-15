@@ -16,15 +16,16 @@ export struct diskComponet{
           .visibility(this.deviceName.icon!=""?Visibility.Visible:Visibility.None)
       }.width("40%")
       Row({space:5}){
-        Flex({direction:FlexDirection.RowReverse}){
-          Text(this.deviceName.value.toString())
+        Row(){
+          Text(this.fillingString(this.deviceName.value.toString()))
             .fontSize(12)
             .lineHeight(20)
             .fontColor("rgba(0, 0, 0, 0.45)")
             .textOverflow({overflow:TextOverflow.Ellipsis})
             .maxLines(1)
-            .ellipsisMode(this.deviceName.status?EllipsisMode.START:EllipsisMode.END)
-        }.width(124).margin({bottom:3})
+            .width("100%")
+            .textAlign(TextAlign.End)
+        }.width(100).margin({bottom:3})
         ImageSpan($r("app.media.right"))
           .size({width:24,height:24})
           .verticalAlign(ImageSpanAlignment.BOTTOM)
@@ -75,5 +76,13 @@ export struct diskComponet{
   })
   aboutToAppear(): void {
 
+  }
+
+  fillingString(value:string):string{
+    let val=""
+    for (let index = 0; index < value.length; index++) {
+      val=val+value[index]+"\u200B"
+    }
+    return val
   }
 }

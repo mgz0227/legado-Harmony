@@ -50,7 +50,7 @@ struct DiskSet {
           .visibility(item.icon!=""?Visibility.Visible:Visibility.None)
       }.width("40%")
       Row({space:5}){
-        Flex({direction:FlexDirection.RowReverse}){
+        Flex({direction:item.status?FlexDirection.RowReverse:FlexDirection.Row}){
           Text(item.value.toString())
             .fontSize(12)
             .lineHeight(20)

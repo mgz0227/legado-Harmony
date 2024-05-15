@@ -1,4 +1,4 @@
-import { promptAction } from '@kit.ArkUI';
+import { promptAction, router } from '@kit.ArkUI';
 import { dataItem } from '../../../componets/dataList/dataItem';
 import { myCenterTitle } from '../../../componets/myCenter/myCenterTitle';
 
@@ -116,8 +116,9 @@ struct CloudDisk {
   backup_set(index:number){
     switch (index){
       case 2:
-        break;
-      case 3:
+        router.pushUrl({
+          url:"pages/view/myCenter/diskSet"
+        })
         break;
       case 3:
         break;
