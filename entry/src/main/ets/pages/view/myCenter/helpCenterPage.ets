@@ -4,7 +4,7 @@ import { router } from '@kit.ArkUI';
 @Component
 struct HelpCenterPage {
   @State SearchValue: string = ""
-  @State ShowMoreQuestions: boolean = true
+  @State ShowMoreQuestions: boolean = false
   @State MoreQuestionsIndex: number = 0
   @State questionsList: Array<string> = ["热门问题", "校验问题", "书源问题", "订阅问题", "xx问题"]
   @State questionsShowList: Array<string> = [
