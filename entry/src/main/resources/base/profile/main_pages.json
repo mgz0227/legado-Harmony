@@ -14,6 +14,7 @@
     "pages/view/myCenter/aboutUs/versionLogPage",
     "pages/view/myCenter/aboutUs/PrivacyAgreementPage",
     "pages/view/myCenter/aboutUs/OpenSourceLicensePage",
-    "pages/view/myCenter/aboutUs/DisclaimerPage"
+    "pages/view/myCenter/aboutUs/DisclaimerPage",
+    "pages/view/myCenter/helpCenterPage"
   ]
 }
