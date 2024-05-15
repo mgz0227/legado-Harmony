@@ -138,7 +138,7 @@ struct BookDetailPage {
       .width(CommonConstants.FULL_WIDTH)
       .height(64)
     }
-    .padding({left: 20, right: 20})
+    .padding({left: 20, right: 20, bottom: 12})
     .width(CommonConstants.FULL_WIDTH)
     .height(CommonConstants.FULL_HEIGHT)
     .borderRadius(16)
