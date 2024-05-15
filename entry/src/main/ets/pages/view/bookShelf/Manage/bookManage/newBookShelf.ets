@@ -1,10 +1,48 @@
+/**
+ * 新建书单
+ */
+import confirmDialogExample from '../../../../../componets/common/confirmDialog'
+import { BookList } from '../../../../../componets/dataList/bookList'
+
 @Component
 export default struct newBookShelf{
   @Link showNumber:number
   @Link isAddShelfShow:boolean
   @StorageLink('topRectHeight') topRectHeight: number = 0
-
+  @Link addCheckShelf:BookList[]
   @State TextValue:string = ''
+  @State deByBookId:string = ''
+  bookInfoDel: CustomDialogController | null = new CustomDialogController({
+    builder: confirmDialogExample({
+      cancel: ()=> { this.onCancel() },
+      confirm: ()=> { this.onAccept() }
+    }),
+    cancel: this.exitApp,
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
+
+  onCancel() {
+    // this.isClear = false
+  }
+
+  onAccept() {
+    this.deleteBookShelf()
+  }
+
+  deleteBookShelf() {
+    this.addCheckShelf=this.addCheckShelf.filter((item:BookList)=>{
+      return item.bookId!=this.deByBookId
+    })
+  }
+
+  exitApp() {
+    // this.isClear = false
+  }
+
   build() {
     Flex({
       justifyContent:FlexAlign.SpaceBetween,
@@ -12,7 +50,7 @@ export default struct newBookShelf{
     }
     ){
      Column(){
-       Blank(this.topRectHeight)
+       Blank(20)
        Column({
          space:24
        }) {
@@ -25,7 +63,7 @@ export default struct newBookShelf{
              .height(25)
              .fillColor('rgba(0, 0, 0, 0.88)')
              .onClick(()=>{
-               this.isAddShelfShow=true
+               // this.isAddShelfShow=true
                this.showNumber=0
              })
            Column(){
@@ -41,8 +79,16 @@ export default struct newBookShelf{
              Text('有些书，不搞宣传，不搞推荐，默默的写完一本，然后掩埋在书海里无人问津，只待有缘人发现')
                .fontSize(14).fontWeight(500).lineHeight(26).fontColor('rgba(0, 0, 0, 0.88)')
                .margin({top:12})
-             this.BookShelfInfo()
-
+              Scroll(){
+                Column(){
+                  ForEach(this.addCheckShelf,(item:BookList)=>{
+                    this.BookShelfInfo(item)
+                  })
+                }
+              }
+              .align(Alignment.TopStart)
+              .scrollBar(BarState.Off)
+              .height('78%')
            }
            .alignItems(HorizontalAlign.Start)
          }
@@ -56,7 +102,7 @@ export default struct newBookShelf{
         justifyContent:FlexAlign.Center
       }){
         this.newFooter()
-      }.padding({bottom:this.bottomRectHeight})
+      }.padding({bottom:this.bottomRectHeight}).backgroundColor(Color.White)
     }
 
   }
@@ -80,14 +126,15 @@ export default struct newBookShelf{
       .height(38)
       .borderRadius(20)
       .backgroundColor('rgba(0, 0, 0, 0.04)')
-
+      .onClick(()=>{
+        this.showNumber=2
+      })
       Flex({
         justifyContent:FlexAlign.Center,
         alignItems:ItemAlign.Center
       }){
         Text('确定').fontSize(16).fontWeight(500).fontColor(Color.White)
       }
-
       .borderRadius(20)
       .width('50%')
       .height(38)
@@ -95,7 +142,7 @@ export default struct newBookShelf{
     }.padding({top:12,bottom:12,left:20,right:20})
   }
 
-  @Builder BookShelfInfo(){
+  @Builder BookShelfInfo(book:BookList){
     Column() {
       Row({
         space: 12
@@ -122,21 +169,26 @@ export default struct newBookShelf{
           space:5
         }) {
           Row(){
-            Text('开局长生万古，苟到天荒地老').fontSize(16).fontWeight(500).lineHeight(24)
+            Text(book.title).fontSize(16).fontWeight(500).lineHeight(24)
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
               })
               .ellipsisMode(EllipsisMode.END)
               .maxLines(1).width('70%')
-            Image($r('app.media.close')).width(12)
+            Image($r('app.media.close')).width(12).onClick(()=>{
+              //根据bookId删除addCheckShelf
+              this.deByBookId = book.bookId
+              this.bookInfoDel?.open()
+            })
           }
-          Text('这个世界，有儒;有道；有佛书;有妖;有术士。警校毕业的许七安幽幽醒来，发现自己将要远赴')
+          Text(book.describe)
             .fontSize(12)
             .lineHeight(20)
             .fontColor('rgba(0, 0, 0, 0.45)')
             .textOverflow({
               overflow:TextOverflow.Ellipsis
             })
+            .height(50)
             .ellipsisMode(EllipsisMode.END)
             .maxLines(2).width('75%')
           Row({
@@ -159,9 +211,9 @@ export default struct newBookShelf{
             }.fontStyles()
           }
         }
-        .padding({bottom:8})
+
         .alignItems(HorizontalAlign.Start)
-      }.width('100%')
+      }.width('100%').padding(10)
       Column(){
         TextArea({placeholder:'添加推荐理由',text:$$this.TextValue}).padding(10).borderRadius(8)
       }.padding({top:12,bottom:5})
