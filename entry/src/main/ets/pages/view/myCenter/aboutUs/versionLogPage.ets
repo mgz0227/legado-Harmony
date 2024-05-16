@@ -3,6 +3,8 @@ import { router } from '@kit.ArkUI';
 @Entry
 @Component
 struct VersionLogPage {
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageLink('topRectHeight') topRectHeight: number = 0
   @State List: Array<string> = [
     '更新了书架1',
     '更新了书架2',
@@ -48,6 +50,7 @@ struct VersionLogPage {
     }
     .height("100%")
     .padding({
+      top:this.topRectHeight,
       left:20,
       right:20
     })

@@ -3,6 +3,9 @@ import { router } from '@kit.ArkUI';
 @Entry
 @Component
 struct OpenSourceLicensePage {
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageLink('topRectHeight') topRectHeight: number = 0
+
   build() {
     Column({ space: 16 }) {
       Flex() {
@@ -41,6 +44,7 @@ struct OpenSourceLicensePage {
     }
     .height("100%")
     .padding({
+      top:this.topRectHeight,
       left: 20,
       right: 20
     })
