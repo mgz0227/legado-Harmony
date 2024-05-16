@@ -10,6 +10,7 @@ import { folderList } from '../../../../componets/dataList/folderList';
 import BookFolderManages from './bookManage/BookFolderManages';
 import newBookShelf from './bookManage/newBookShelf';
 import newAddShelf from './bookManage/newAddShelf';
+import hideDialogExample from '../../../../componets/common/hideDialog';
 
 class routerParams {
   currentIndex:number
@@ -345,7 +346,11 @@ struct BookManagePage {
           Text('隐藏分组').fontSize(14).fontWeight(500)
         }
         .onClick(()=>{
-
+          if (this.folderCheckList.length === 0) {
+            showMessage('请选择要隐藏的选项')
+            return
+          }
+          this.clickHideDialog?.open()
         })
       }
 
@@ -360,6 +365,48 @@ struct BookManagePage {
     }
     .height('10%')
     .padding(20)
+  }
+  showFolderType(){
+    console.log(JSON.stringify(this.folderCheckList))
+    for (let i = 0; i < this.folderCheckList.length; i++) {
+      for (let j = 0; j < this.novelPageList.length; j++) {
+        if (this.folderCheckList[i].id === this.novelPageList[j].id) {
+          this.novelPageList[j].isShow = true
+          console.log(JSON.stringify(this.novelPageList[j]))
+          break
+        }
+      }
+    }
+    this.allCheck = false
+    this.folderCheckList = []
+    this.showFolderSort()
+    showMessage('隐藏成功')
+  }
+
+  //是否确认移动分组
+  clickBookTypeDialog: CustomDialogController | null = new CustomDialogController({
+    builder: hideDialogExample({
+      cancel: ()=> { this.clickBookCancel() },
+      confirm: ()=> { this.clickBookAccept() }
+    }),
+    cancel: this.clickExitDialog,
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
+
+  clickBookCancel() {
+    this.clickBookType = ''
+  }
+
+  clickBookAccept() {
+    this.mobileBookType()
+  }
+
+  clickExitDialog() {
+    this.clickBookType = ''
   }
 
   cancelShowTop(){
@@ -570,14 +617,14 @@ struct BookManagePage {
     })
   }
 
-  //是否确认移动分组
-  clickBookTypeDialog: CustomDialogController | null = new CustomDialogController({
-    builder: confirmDialogExample({
-      cancel: ()=> { this.clickBookCancel() },
-      confirm: ()=> { this.clickBookAccept() },
-      title:`移动到${this.clickBookType}`
+  //是否隐藏分组
+  clickHideDialog: CustomDialogController | null = new CustomDialogController({
+    builder: hideDialogExample({
+      cancel: ()=> { this.clickHideCancel() },
+      confirm: ()=> { this.clickHideAccept() },
+      title:``
     }),
-    cancel: this.clickExitDialog,
+    cancel: this.hideDialog,
     autoCancel: true,
     alignment: DialogAlignment.Center,
     gridCount: 4,
@@ -585,16 +632,17 @@ struct BookManagePage {
     cornerRadius: 25,
   })
 
-  clickBookCancel() {
-    this.clickBookType = ''
+  clickHideCancel() {
+
   }
 
-  clickBookAccept() {
-    this.mobileBookType()
+  clickHideAccept() {
+    this.showFolderType()
+
   }
 
-  clickExitDialog() {
-    this.clickBookType = ''
+  hideDialog() {
+
   }
 
   mobileBookType(){
