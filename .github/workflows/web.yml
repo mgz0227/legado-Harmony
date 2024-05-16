@@ -53,8 +53,12 @@ jobs:
         run: |
           pnpm i
           pnpm build
-          version="v$(date -d "8 hour" -u +3.%y.%m%d%H)"
+          version="v$(date -u +3.%y.%m%d%H)"
           echo "APP_VER=$version" >> $GITHUB_ENV
+          rm -rf /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/vue
+          mkdir -p /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/vue
+          mv dist/* /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/vue/
+
 
       - name: push changes
         if: ${{ github.event_name != 'pull_request' && github.repository == env.UPSTREAM_REPOSITORY }}
