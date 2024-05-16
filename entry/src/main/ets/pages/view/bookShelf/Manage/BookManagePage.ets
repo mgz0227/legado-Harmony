@@ -9,6 +9,7 @@ import { initBookListData, updateBookListData } from '../../../../storage/bookLi
 import { folderList } from '../../../../componets/dataList/folderList';
 import BookFolderManages from './bookManage/BookFolderManages';
 import newBookShelf from './bookManage/newBookShelf';
+import newAddShelf from './bookManage/newAddShelf';
 
 class routerParams {
   currentIndex:number
@@ -28,7 +29,7 @@ class routerParams {
 struct BookManagePage {
   // @State currentIndex: number = 0
   // @State EXHIBIT: string = '列表'
-  // @State GROUPName:string = '标签' //标签
+  // @State GROUPName:string = '文件夹' //标签
   @State GROUPName:string = (router.getParams() as routerParams).GROUPName
   @State currentIndex: number = (router.getParams() as routerParams).currentIndex
   @State EXHIBIT: string = (router.getParams() as routerParams).EXHIBIT
@@ -164,17 +165,24 @@ struct BookManagePage {
     this.changeCheckBookList()
   }
   @State showNumber:number = 0
+  @State addCheckShelf:BookList[] = [
+    new BookList('1','开局长生万古，苟到天荒地老','这个世界，有儒;有道；有佛书;有妖;有术士。警校毕业的许七安幽幽醒来，发现自己将要远赴','更新至·第340章 镇压',$r('app.media.shelf_book'),'玄幻')]
   build() {
     Column(){
       if (this.showNumber === 0){
        this.bookManage()
      } else if(this.showNumber === 1){
        newBookShelf({
+         addCheckShelf:this.addCheckShelf,
          showNumber:this.showNumber,
          isAddShelfShow:this.isAddShelfShow
        })
      } else if (this.showNumber === 2){
-
+        newAddShelf({
+          addCheckShelf:this.addCheckShelf,
+          showNumber:this.showNumber,
+          isAddShelfShow:this.isAddShelfShow
+        })
       }
     }
   }

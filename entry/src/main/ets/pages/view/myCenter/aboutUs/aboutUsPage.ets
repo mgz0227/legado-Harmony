@@ -1,5 +1,5 @@
 import { dataItem } from 'ets/componets/dataList/dataItem'
-import router from '@ohos.router'
+import { router } from '@kit.ArkUI';
 
 @Entry
 @Component
@@ -72,11 +72,14 @@ struct AboutUsPage {
       case 1:
         //开源许可
         router.pushUrl({
-          url: "pages/view/myCenter/aboutUs/OpenSourceLicense"
+          url: "pages/view/myCenter/aboutUs/OpenSourceLicensePage"
         })
         break
       case 2:
-        //免责声明 Disclaimer
+        //免责声明
+        router.pushUrl({
+          url: "pages/view/myCenter/aboutUs/DisclaimerPage"
+        })
         break
       case 3:
         //todo 崩溃日志
@@ -87,24 +90,28 @@ struct AboutUsPage {
   build() {
     Scroll() {
       Column({ space: 16 }) {
-        Row() {
-          Image($r("app.media.return_left"))
-            .position({ x: 0 })
-            .size({ width: 24, height: 24 })
-            .interpolation(ImageInterpolation.Medium)
-            .onClick(() => {
-              router.back()
-            })
-          Blank(20)
-          Text("关于我们")
-            .lineHeight(24)
-            .font({
-              size: 16,
-              weight: 500,
-              style: FontStyle.Normal,
-              // family: "PingFang SC"
-            })
-          Blank(20)
+        Flex() {
+          Column() {
+            Image($r("app.media.return_left"))
+              .size({ width: 24, height: 24 })
+              .interpolation(ImageInterpolation.Medium)
+              .onClick(() => {
+                router.back()
+              })
+          }
+          .alignItems(HorizontalAlign.Start)
+          .width('33%')
+
+          Column() {
+            Text(`关于我们`)
+              .lineHeight(24)
+              .font({
+                family: "PingFang SC",
+                size: 16,
+                weight: 500,
+                style: FontStyle.Normal,
+              })
+          }.width('33%')
         }
         .padding({
           top: 12,
