@@ -3,6 +3,8 @@ import { router } from '@kit.ArkUI';
 @Entry
 @Component
 struct DisclaimerPage {
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageLink('topRectHeight') topRectHeight: number = 0
   build() {
     Column({ space: 16 }) {
       Flex() {
@@ -49,6 +51,7 @@ struct DisclaimerPage {
     }
     .height("100%")
     .padding({
+      top:this.topRectHeight,
       left: 20,
       right: 20
     })
