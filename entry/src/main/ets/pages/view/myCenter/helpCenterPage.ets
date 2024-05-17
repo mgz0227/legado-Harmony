@@ -5,10 +5,9 @@ import { router } from '@kit.ArkUI';
 struct HelpCenterPage {
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('topRectHeight') topRectHeight: number = 0
-
   @State SearchValue: string = ""
-  @State ShowMoreQuestions: boolean = false
   @State MoreQuestionsIndex: number = 0
+  @State MoreQuestionsRightWidth: number | string = 0
   @State questionsList: Array<string> = ["热门问题", "校验问题", "书源问题", "订阅问题", "xx问题"]
   @State questionsShowList: Array<string> = [
     "1、为什么第一次安装好后什么都没有？",
@@ -38,61 +37,66 @@ struct HelpCenterPage {
     "如何进行云备份",
     "如何导入本地书籍"
   ]
+  scroller: Scroller = new Scroller()
 
   build() {
-      Column() {
-        Flex({
-          direction: FlexDirection.Column,
-          alignItems: ItemAlign.Start,
-          justifyContent: FlexAlign.Start
-        }) {
-          // 顶部固定内容
-          Flex() {
-            Column() {
-              Image($r("app.media.return_left"))
-                .size({ width: 24, height: 24 })
-                .interpolation(ImageInterpolation.Medium)
-                .onClick(() => {
-                  router.back()
-                })
-            }
-            .alignItems(HorizontalAlign.Start)
-            .width('33%')
-
-            Column() {
-              Text(`帮助中心`)
-                .lineHeight(24)
-                .font({
-                  family: "PingFang SC",
-                  size: 16,
-                  weight: 500,
-                  style: FontStyle.Normal,
-                })
-            }.width('33%')
+    Column() {
+      Flex({
+        direction: FlexDirection.Column,
+        alignItems: ItemAlign.Start,
+        justifyContent: FlexAlign.Start
+      }) {
+        // 顶部固定内容
+        Flex() {
+          Column() {
+            Image($r("app.media.return_left"))
+              .size({ width: 24, height: 24 })
+              .interpolation(ImageInterpolation.Medium)
+              .onClick(() => {
+                router.back()
+              })
           }
-          .padding({
-            top: 12,
-            bottom: 12,
-          })
-          .height(48)
-          .width("100%")
+          .alignItems(HorizontalAlign.Start)
+          .width('33%')
 
-          Search({ value: this.SearchValue, placeholder: '搜索问题关键词', icon: "/common/images/search.svg" })
-            .width("100%")
-            .height(40)
-          // .onChange(this.onChange)
-          // .onSubmit(this.onSubmit)
+          Column() {
+            Text(`帮助中心`)
+              .lineHeight(24)
+              .font({
+                family: "PingFang SC",
+                size: 16,
+                weight: 500,
+                style: FontStyle.Normal,
+              })
+          }.width('33%')
         }
         .padding({
-          left: 20,
-          right: 20
+          top: 12,
+          bottom: 12,
         })
-        .height(110)
+        .height(48)
+        .width("100%")
 
-        if (!this.ShowMoreQuestions) {
+        Search({ value: this.SearchValue, placeholder: '搜索问题关键词', icon: "/common/images/search.svg" })
+          .width("100%")
+          .height(40)
+        // .onChange(this.onChange)
+        // .onSubmit(this.onSubmit)
+      }
+      .padding({
+        left: 20,
+        right: 20
+      })
+      .height(110)
+
+      Scroll(this.scroller) {
+        Flex({
+          direction: FlexDirection.Row,
+        }) {
           Flex({
             direction: FlexDirection.Column,
           }) {
+            // 帮助中心左页
             Column() {
               Row() {
                 Text("猜你想问")
@@ -121,7 +125,7 @@ struct HelpCenterPage {
                     .interpolation(ImageInterpolation.Medium)
                 }
                 .onClick(() => {
-                  this.ShowMoreQuestions = !this.ShowMoreQuestions
+                  this.scroller.scrollEdge(Edge.End)
                 })
               }
               .width("100%")
@@ -237,18 +241,51 @@ struct HelpCenterPage {
             left: 20,
             right: 20
           })
-        } else {
-          // 点击 更多问题 的页面显示
-          Row() {
-            SideBarContainer(SideBarContainerType.Overlay) {
-              Column() {
-                ForEach(this.MoreQuestionsSideBarList, (item: string, index) => {
-                  Row() {
-                    if (this.MoreQuestionsIndex == index) {
-                      Line({ width: 3, height: 16 })
-                        .backgroundColor('#FF6600')
+
+          Column() {
+            // 帮助中心右页，点击 更多问题 的页面显示
+            Row() {
+              SideBarContainer(SideBarContainerType.Overlay) {
+                Column() {
+                  ForEach(this.MoreQuestionsSideBarList, (item: string, index) => {
+                    Row() {
+                      if (this.MoreQuestionsIndex == index) {
+                        Line({ width: 3, height: 16 })
+                          .backgroundColor('#FF6600')
+                      }
+                      Text(item)
+                        .lineHeight(22)
+                        .font({
+                          family: "PingFang SC",
+                          size: 14,
+                          weight: 500,
+                          style: FontStyle.Normal,
+                        })
+                        .width("100%")
+                        .textAlign(TextAlign.Center)
                     }
+                    .height(48)
+                    .width("100%")
+                    .backgroundColor(this.MoreQuestionsIndex == index ? "#F5F5F5" : "white")
+                    .onClick(() => {
+                      this.MoreQuestionsIndex = index
+                    })
+                  })
+                }
+              }
+              .showControlButton(false)
+              .width("24.4%") // 88/360
+              .borderRadius({
+                topRight: 12,
+                bottomRight: 12
+              })
+
+              // 右侧内容显示
+              Column() {
+                ForEach(this.MoreQuestionsItemList, (item: string, index) => {
+                  Row() {
                     Text(item)
+                      .width(200)
                       .lineHeight(22)
                       .font({
                         family: "PingFang SC",
@@ -256,68 +293,43 @@ struct HelpCenterPage {
                         weight: 500,
                         style: FontStyle.Normal,
                       })
-                      .width("100%")
-                      .textAlign(TextAlign.Center)
+                    Blank(20)
+                    Image($r("app.media.right"))
+                      .width(24)
+                      .height(24)
+                      .opacity(0.45)
+                      .interpolation(ImageInterpolation.Medium)
                   }
-                  .height(48)
-                  .width("100%")
-                  .backgroundColor(this.MoreQuestionsIndex == index ? "#F5F5F5" : "white")
-                  .onClick(() => {
-                    this.MoreQuestionsIndex = index
+                  .padding({
+                    top: 12,
+                    bottom: 12
                   })
+                  .width("100%")
                 })
               }
-            }
-            .showControlButton(false)
-            .width(88)
-            .borderRadius({
-              topRight: 12,
-              bottomRight: 12
-            })
-
-            // 右侧内容显示
-            Column() {
-              ForEach(this.MoreQuestionsItemList, (item: string, index) => {
-                Row() {
-                  Text(item)
-                    .width(200)
-                    .lineHeight(22)
-                    .font({
-                      family: "PingFang SC",
-                      size: 14,
-                      weight: 500,
-                      style: FontStyle.Normal,
-                    })
-                  Blank(20)
-                  Image($r("app.media.right"))
-                    .width(24)
-                    .height(24)
-                    .opacity(0.45)
-                    .interpolation(ImageInterpolation.Medium)
-                }
-                .padding({
-                  top: 12,
-                  bottom: 12
-                })
-                .width("100%")
+              .padding({
+                left: 16,
+                right: 16
               })
-            }
-            .padding({
-              left: 16,
-              right: 16
-            })
-            .height("100%")
-            .width(272) // 360-88
+              .height("100%")
+              .width("75.6%") // (360-88)/360
 
+            }
+            .width("100%")
+            .height(432)
           }
-          .width("100%")
-          .height(432)
+
         }
+        .width("200%")
       }
-      .height("100%")
-      .backgroundColor("#F5F5F5")
+      .scrollBar(BarState.Off)
+      .scrollable(ScrollDirection.Horizontal)
+      .scrollSnap({ snapAlign: ScrollSnapAlign.START, snapPagination: "100%" })
+    }
+    .height("100%")
+    .backgroundColor("#F5F5F5")
     .padding({
-      top:this.topRectHeight
+      top: this.topRectHeight
     })
   }
 
