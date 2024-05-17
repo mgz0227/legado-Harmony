@@ -16,17 +16,17 @@ export default struct MyCenter {
     new dataItem("勋章",20),
   ]
   @State center_list:dataItem[]=[
-    new dataItem("备份",1,$r("app.media.MyCenter_cloud_icon")),
-    new dataItem("主题",2,$r("app.media.MyCenter_book_icon")),
-    new dataItem("书源",3,$r("app.media.MyCenter_theme_icon")),
-    new dataItem("净化",4,$r("app.media.MyCenter_purify_icon")),
+    new dataItem("备份",1,$r("app.media.my_center_cloud_icon")),
+    new dataItem("主题",2,$r("app.media.my_center_book_icon")),
+    new dataItem("书源",3,$r("app.media.my_center_theme_icon")),
+    new dataItem("净化",4,$r("app.media.my_center_purify_icon")),
   ]
 
   @State end_list:dataItem[]=[
-    new dataItem("帮助中心",1,$r("app.media.MyCenter_help_icon")),
-    new dataItem("关于我们",2,$r("app.media.MyCenter_about_icon")),
-    new dataItem("清理缓存",3,$r("app.media.MyCenter_clean_icon")),
-    new dataItem("文件管理",4,$r("app.media.MyCenter_setUp_icon")),
+    new dataItem("帮助中心",1,$r("app.media.my_center_help_icon")),
+    new dataItem("关于我们",2,$r("app.media.my_center_about_icon")),
+    new dataItem("清理缓存",3,$r("app.media.my_center_clean_icon")),
+    new dataItem("文件管理",4,$r("app.media.my_center_file_icon")),
   ]
 
   build() {
@@ -35,7 +35,7 @@ export default struct MyCenter {
       //右上角模式图标
       Row({space:10}){
         //设置图标
-        Image($r("app.media.myCenter_set_icon")).size({width:30,height:30}).interpolation(ImageInterpolation.Medium)
+        Image($r("app.media.my_center_set_icon")).size({width:30,height:30}).interpolation(ImageInterpolation.Medium)
           .onClick(()=>{
             this.toMySetPage()
           })
