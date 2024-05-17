@@ -12,11 +12,12 @@ export default struct BookFolderManages {
   @Prop changeTop:boolean
   @Link folderList:folderList[]
   @Prop EXHIBIT:string
-
+  @State delCache:boolean = false
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
-      confirm: ()=> { this.onAccept() }
+      confirm: ()=> { this.onAccept() },
+      delCache:this.delCache
     }),
     cancel: this.exitApp,
     autoCancel: true,

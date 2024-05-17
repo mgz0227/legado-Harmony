@@ -12,10 +12,12 @@ export default struct newBookShelf{
   @Link addCheckShelf:BookList[]
   @State TextValue:string = ''
   @State deByBookId:string = ''
+  @State delCache:boolean = false
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
-      confirm: ()=> { this.onAccept() }
+      confirm: ()=> { this.onAccept() },
+      delCache:this.delCache
     }),
     cancel: this.exitApp,
     autoCancel: true,

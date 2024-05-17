@@ -9,10 +9,21 @@ export default struct confirmDialogExample {
   confirm: () => void = () => {
   }
   @Prop title:string = '删除'
+  @Link delCache:boolean
+  @Prop isShowCache:boolean = false
 
   build() {
     Column() {
       Text(`确定${this.title}吗？` ).fontWeight(600).maxLines(1).minFontSize(12).maxFontSize(20).margin({ top: 20, bottom: 10 })
+      if (this.isShowCache){
+        Row({
+          space:8
+        }){
+          Checkbox().selectedColor($r('app.color.theme_color')).select(this.delCache)
+          Text('同时删除本地缓存')
+            .fontColor('rgba(0, 0, 0, 0.45)').fontSize(14).fontWeight(400).lineHeight(22)
+        }
+      }
       Row({space:24}) {
         Text('取消')
           .onClick(() => {
@@ -37,6 +48,6 @@ export default struct confirmDialogExample {
           .fontColor(Color.White)
           .backgroundColor($r('app.color.theme_color'))
       }.padding({top:20,bottom:20})
-    }.width(200)
+    }
   }
 }
