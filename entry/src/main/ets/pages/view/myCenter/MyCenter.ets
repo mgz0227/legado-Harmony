@@ -168,6 +168,10 @@ export default struct MyCenter {
   endOnclick(value:number|string){
     switch (value){
       case 1:
+        // 帮助中心
+        router.pushUrl({
+          url: 'pages/view/myCenter/helpCenterPage'
+        })
         break;
       case 2:
         // 关于我们

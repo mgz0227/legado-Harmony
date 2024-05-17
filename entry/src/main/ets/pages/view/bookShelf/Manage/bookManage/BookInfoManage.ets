@@ -42,7 +42,6 @@ export default struct BookInfoManage{
   }
 
   build() {
-
     Flex(
       {
         alignItems:ItemAlign.Center,

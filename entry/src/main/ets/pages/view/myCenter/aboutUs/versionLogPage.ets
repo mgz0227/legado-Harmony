@@ -1,8 +1,10 @@
-import router from '@ohos.router'
+import { router } from '@kit.ArkUI';
 
 @Entry
 @Component
 struct VersionLogPage {
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageLink('topRectHeight') topRectHeight: number = 0
   @State List: Array<string> = [
     '更新了书架1',
     '更新了书架2',
@@ -13,28 +15,32 @@ struct VersionLogPage {
 
   build() {
     Column({ space: 16 }) {
-      Row() {
-        Image($r("app.media.return_left"))
-          .position({ x: 0})
-          .size({ width: 24, height: 24 })
-          .interpolation(ImageInterpolation.Medium)
-          .onClick(() => {
-            router.back()
-          })
-        Blank(20)
-        Text("版本更新日志")
-          .lineHeight(24)
-          .font({
-            family: "PingFang SC",
-            size: 16,
-            weight: 500,
-            style:FontStyle.Normal,
-          })
-        Blank(20)
+      Flex() {
+        Column() {
+          Image($r("app.media.return_left"))
+            .size({ width: 24, height: 24 })
+            .interpolation(ImageInterpolation.Medium)
+            .onClick(() => {
+              router.back()
+            })
+        }
+        .alignItems(HorizontalAlign.Start)
+        .width('33%')
+
+        Column() {
+          Text(`版本更新日志`)
+            .lineHeight(24)
+            .font({
+              family: "PingFang SC",
+              size: 16,
+              weight: 500,
+              style: FontStyle.Normal,
+            })
+        }.width('33%')
       }
       .padding({
-        top:12,
-        bottom:12,
+        top: 12,
+        bottom: 12,
       })
       .height(48)
       .width("100%")
@@ -44,6 +50,7 @@ struct VersionLogPage {
     }
     .height("100%")
     .padding({
+      top:this.topRectHeight,
       left:20,
       right:20
     })

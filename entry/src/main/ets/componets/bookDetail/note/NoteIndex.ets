@@ -73,6 +73,7 @@ export default struct NoteIndex {
             }
           })
         }
+        .scrollBar(BarState.Off)
       }
       .width(CommonConstants.FULL_WIDTH)
       .height(CommonConstants.FULL_HEIGHT)

@@ -1,7 +1,7 @@
 import { folderList } from '../componets/dataList/folderList'
 
 export const novelPageList:folderList[] = [
-  new folderList(1,'玄幻',12,$r('app.media.folder_test'),'玄幻','宿命之环等3本有更新'),
+  new folderList(1,'玄幻',12,$r('app.media.folder_test'),'玄幻','宿命之环等3本有更新',true),
   new folderList(2,'都市',13,$r('app.media.folder_test'),'都市'),
   new folderList(3,'仙侠',12,$r('app.media.folder_test'),'仙侠'),
   new folderList(4,'武侠',12,$r('app.media.folder_test'),'武侠'),

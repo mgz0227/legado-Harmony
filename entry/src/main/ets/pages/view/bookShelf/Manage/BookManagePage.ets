@@ -9,6 +9,8 @@ import { initBookListData, updateBookListData } from '../../../../storage/bookLi
 import { folderList } from '../../../../componets/dataList/folderList';
 import BookFolderManages from './bookManage/BookFolderManages';
 import newBookShelf from './bookManage/newBookShelf';
+import newAddShelf from './bookManage/newAddShelf';
+import hideDialogExample from '../../../../componets/common/hideDialog';
 
 class routerParams {
   currentIndex:number
@@ -28,7 +30,7 @@ class routerParams {
 struct BookManagePage {
   // @State currentIndex: number = 0
   // @State EXHIBIT: string = '列表'
-  // @State GROUPName:string = '标签' //标签
+  // @State GROUPName:string = '文件夹' //标签
   @State GROUPName:string = (router.getParams() as routerParams).GROUPName
   @State currentIndex: number = (router.getParams() as routerParams).currentIndex
   @State EXHIBIT: string = (router.getParams() as routerParams).EXHIBIT
@@ -164,17 +166,24 @@ struct BookManagePage {
     this.changeCheckBookList()
   }
   @State showNumber:number = 0
+  @State addCheckShelf:BookList[] = [
+    new BookList('1','开局长生万古，苟到天荒地老','这个世界，有儒;有道；有佛书;有妖;有术士。警校毕业的许七安幽幽醒来，发现自己将要远赴','更新至·第340章 镇压',$r('app.media.shelf_book'),'玄幻')]
   build() {
     Column(){
       if (this.showNumber === 0){
        this.bookManage()
      } else if(this.showNumber === 1){
        newBookShelf({
+         addCheckShelf:this.addCheckShelf,
          showNumber:this.showNumber,
          isAddShelfShow:this.isAddShelfShow
        })
      } else if (this.showNumber === 2){
-
+        newAddShelf({
+          addCheckShelf:this.addCheckShelf,
+          showNumber:this.showNumber,
+          isAddShelfShow:this.isAddShelfShow
+        })
       }
     }
   }
@@ -337,7 +346,11 @@ struct BookManagePage {
           Text('隐藏分组').fontSize(14).fontWeight(500)
         }
         .onClick(()=>{
-
+          if (this.folderCheckList.length === 0) {
+            showMessage('请选择要隐藏的选项')
+            return
+          }
+          this.clickHideDialog?.open()
         })
       }
 
@@ -352,6 +365,48 @@ struct BookManagePage {
     }
     .height('10%')
     .padding(20)
+  }
+  showFolderType(){
+    console.log(JSON.stringify(this.folderCheckList))
+    for (let i = 0; i < this.folderCheckList.length; i++) {
+      for (let j = 0; j < this.novelPageList.length; j++) {
+        if (this.folderCheckList[i].id === this.novelPageList[j].id) {
+          this.novelPageList[j].isShow = true
+          console.log(JSON.stringify(this.novelPageList[j]))
+          break
+        }
+      }
+    }
+    this.allCheck = false
+    this.folderCheckList = []
+    this.showFolderSort()
+    showMessage('隐藏成功')
+  }
+
+  //是否确认移动分组
+  clickBookTypeDialog: CustomDialogController | null = new CustomDialogController({
+    builder: hideDialogExample({
+      cancel: ()=> { this.clickBookCancel() },
+      confirm: ()=> { this.clickBookAccept() }
+    }),
+    cancel: this.clickExitDialog,
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
+
+  clickBookCancel() {
+    this.clickBookType = ''
+  }
+
+  clickBookAccept() {
+    this.mobileBookType()
+  }
+
+  clickExitDialog() {
+    this.clickBookType = ''
   }
 
   cancelShowTop(){
@@ -562,14 +617,14 @@ struct BookManagePage {
     })
   }
 
-  //是否确认移动分组
-  clickBookTypeDialog: CustomDialogController | null = new CustomDialogController({
-    builder: confirmDialogExample({
-      cancel: ()=> { this.clickBookCancel() },
-      confirm: ()=> { this.clickBookAccept() },
-      title:`移动到${this.clickBookType}`
+  //是否隐藏分组
+  clickHideDialog: CustomDialogController | null = new CustomDialogController({
+    builder: hideDialogExample({
+      cancel: ()=> { this.clickHideCancel() },
+      confirm: ()=> { this.clickHideAccept() },
+      title:``
     }),
-    cancel: this.clickExitDialog,
+    cancel: this.hideDialog,
     autoCancel: true,
     alignment: DialogAlignment.Center,
     gridCount: 4,
@@ -577,16 +632,17 @@ struct BookManagePage {
     cornerRadius: 25,
   })
 
-  clickBookCancel() {
-    this.clickBookType = ''
+  clickHideCancel() {
+
   }
 
-  clickBookAccept() {
-    this.mobileBookType()
+  clickHideAccept() {
+    this.showFolderType()
+
   }
 
-  clickExitDialog() {
-    this.clickBookType = ''
+  hideDialog() {
+
   }
 
   mobileBookType(){
