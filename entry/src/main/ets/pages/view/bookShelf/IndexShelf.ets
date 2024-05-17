@@ -1,13 +1,13 @@
 import cartoonPage from './cartoonPage'
 import novelPage from './novelPage'
 import BookMark from '../../../componets/head/BookMark'
-import BookType from '../../../componets/head/BookType'
 
 import soundPage from './soundPage'
 import IndexSearchType from '../../../componets/head/IndexSearchType'
 import router from '@ohos.router'; // 引入路由管理器
 import confirmDialogExample from '../../../componets/common/confirmDialog'
 import BookFolder from './BookFolder'
+import groupTypeComponent from '../../../componets/group/GroupType'
 
 @Component
 export default struct IndexShelf {
@@ -52,6 +52,7 @@ export default struct IndexShelf {
   @State isRefreshing: boolean = false
   @State counter: number = 0
   @State RefreshingTitle:string = '松开刷新'
+  @State groupCoverShow:boolean = true
   build() {
     Column() {
       Flex({
@@ -174,65 +175,12 @@ export default struct IndexShelf {
       .padding(15)
 
       if (this.searchValue !== '浏览历史'){
-      Flex(
-        {
-          alignItems: ItemAlign.Center,
-          justifyContent: FlexAlign.SpaceBetween
-        }
-      ) {
-        Scroll() {
-          Row({ space: 10 }) {
-            BookType({ title: '全部', bookType: this.bookType }).onClick(() => {
-              this.bookType = '全部'
-            })
-            BookType({ title: '未分组', bookType: this.bookType }).onClick(() => {
-              this.bookType = '未分组'
-            })
-            BookType({ title: '本地', bookType: this.bookType }).onClick(() => {
-              this.bookType = '本地'
-            })
-            BookType({ title: '书单', bookType: this.bookType }).onClick(() => {
-              this.bookType = '书单'
-            })
-            if (this.currentIndex === 0) {
-              BookType({ title: '玄幻', bookType: this.bookType }).onClick(() => {
-                this.bookType = '玄幻'
-              })
-              BookType({ title: '修仙', bookType: this.bookType }).onClick(() => {
-                this.bookType = '修仙'
-              })
-              BookType({ title: '女同', bookType: this.bookType }).onClick(() => {
-                this.bookType = '女同'
-              })
-              BookType({ title: '军事', bookType: this.bookType }).onClick(() => {
-                this.bookType = '军事'
-              })
-            } else if (this.currentIndex === 1) {
-              BookType({ title: '国漫', bookType: this.bookType }).onClick(() => {
-                this.bookType = '国漫'
-              })
-              BookType({ title: '日漫', bookType: this.bookType }).onClick(() => {
-                this.bookType = '日漫'
-              })
-            } else if (this.currentIndex === 2) {
-              BookType({ title: '广播', bookType: this.bookType }).onClick(() => {
-                this.bookType = '广播'
-              })
-              BookType({ title: '深夜电台', bookType: this.bookType }).onClick(() => {
-                this.bookType = '深夜电台'
-              })
-            }
-          }
-        }
-        .scrollBar(BarState.Off)
-        .scrollable(ScrollDirection.Horizontal)
-        Row(){
-          Image($r('app.media.more_search')).width(25).height(25)
-        }.width(
-          '10%'
-        )
-      }.margin({ left: 15,bottom:10})
-    }
+        groupTypeComponent({
+          bookType:this.bookType,
+          currentIndex:this.currentIndex,
+          groupCoverShow:this.groupCoverShow
+        })
+      }
       Refresh({ refreshing: $$this.isRefreshing,builder:this.refreshComponent}) {
         Scroll(){
           Stack({alignContent:Alignment.Center}) {
