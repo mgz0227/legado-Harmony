@@ -1,9 +1,12 @@
 import { dataItem } from 'ets/componets/dataList/dataItem'
+import VersionUpdateCustomDialog from 'ets/componets/aboutUs/VersionUpdate'
 import { router } from '@kit.ArkUI';
 
 @Entry
 @Component
 struct AboutUsPage {
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageLink('topRectHeight') topRectHeight: number = 0
   @State isShowQQ: boolean = false
   @State version: string = "V4.1.13"
   @State first_list: dataItem[] = [
@@ -11,14 +14,12 @@ struct AboutUsPage {
     new dataItem("更新日志", 2),
     new dataItem("开发人员", 3),
   ];
-
   @State middle_list: dataItem[] = [
     new dataItem("QQ群", 1),
     new dataItem("邮件", 2),
     new dataItem("Discord", 3),
     new dataItem("电报", 4),
   ]
-
   @State end_list: dataItem[] = [
     new dataItem("用户隐私与协议", 1),
     new dataItem("开源许可", 2),
@@ -26,13 +27,22 @@ struct AboutUsPage {
     new dataItem("崩溃日志", 4),
   ]
 
+  // 升级弹窗
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: VersionUpdateCustomDialog({}),
+    cornerRadius: 16,
+    gridCount: 3,
+    alignment: DialogAlignment.Center,
+  })
+
   firstUrl_list(value: number | string) {
     switch (value) {
       case 0:
-      //todo 升级弹窗
+      // 升级弹窗
+        this.dialogController.open()
         break
       case 1:
-      //更新日志
+      // 更新日志
         router.pushUrl({
           url: "pages/view/myCenter/aboutUs/versionLogPage"
         })
@@ -46,17 +56,17 @@ struct AboutUsPage {
   middleUrl_list(value: number | string) {
     switch (value) {
       case 0:
-        //QQ群
+      //QQ群
         this.isShowQQ = true
         break
       case 1:
-        //todo 邮件
+      //todo 邮件
         break
       case 2:
-        //todo Discord
+      //todo Discord
         break
       case 3:
-        //todo 电报
+      //todo 电报
         break
     }
   }
@@ -64,25 +74,25 @@ struct AboutUsPage {
   endUrl_list(value: number | string) {
     switch (value) {
       case 0:
-        //用户隐私与协议
+      //用户隐私与协议
         router.pushUrl({
           url: "pages/view/myCenter/aboutUs/PrivacyAgreementPage"
         })
         break
       case 1:
-        //开源许可
+      //开源许可
         router.pushUrl({
           url: "pages/view/myCenter/aboutUs/OpenSourceLicensePage"
         })
         break
       case 2:
-        //免责声明
+      //免责声明
         router.pushUrl({
           url: "pages/view/myCenter/aboutUs/DisclaimerPage"
         })
         break
       case 3:
-        //todo 崩溃日志
+      //todo 崩溃日志
         break
     }
   }
@@ -141,7 +151,12 @@ struct AboutUsPage {
         this.middleClick(this.middle_list, "app.media.right", null, "middle")
         this.middleClick(this.end_list, "app.media.right", null, "end")
       }
-      .padding(20)
+      .padding({
+        left:20,
+        right:20,
+        top:this.topRectHeight,
+        bottom:this.bottomRectHeight
+      })
       .backgroundColor("rgb(245, 245, 245)")
     }
   }
@@ -161,7 +176,7 @@ struct AboutUsPage {
         .opacity(0.45)
     }
     .padding(12)
-    .width(96)
+    .width("33%")
     .height(70)
     .borderRadius(12)
     .backgroundColor(Color.White)
