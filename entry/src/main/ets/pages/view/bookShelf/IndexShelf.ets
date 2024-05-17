@@ -11,11 +11,13 @@ import BookFolder from './BookFolder'
 
 @Component
 export default struct IndexShelf {
+  @State delCache:boolean = false
   IndexShelf: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
       confirm: ()=> { this.onAccept() },
-      title: '清空'
+      title: '清空',
+      delCache:this.delCache
     }),
     cancel: this.exitApp,
     autoCancel: true,
