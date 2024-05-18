@@ -104,7 +104,7 @@ export default struct groupTypePanel{
             .selectedColor("#F60").hoverEffect(HoverEffect.None)
             .onChange(()=>{
               updateAppData(this.APP_INDEX_SCROLLABLE)
-              showMessage(this.APP_INDEX_SCROLLABLE?'开启标签锁':'关闭标签锁')
+              showMessage(this.APP_INDEX_SCROLLABLE?'标签栏锁已开启':'标签栏已解锁')
             })
         }.alignItems(VerticalAlign.Bottom).justifyContent(FlexAlign.End)
       }

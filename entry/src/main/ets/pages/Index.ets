@@ -41,7 +41,7 @@ struct Main {
           console.log('onAction' + event.repeat)
           if (event.repeat) {
             updateAppData(!this.APP_INDEX_SCROLLABLE)
-            showMessage(this.APP_INDEX_SCROLLABLE?'开启标签锁':'关闭标签锁')}}))
+            showMessage(this.APP_INDEX_SCROLLABLE?'标签栏锁已开启':'标签栏已解锁')}}))
     .width('100%')
     .margin({top:4})
     .height("100%")
