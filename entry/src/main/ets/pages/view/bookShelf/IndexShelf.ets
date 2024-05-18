@@ -173,56 +173,61 @@ export default struct IndexShelf {
         }
       }
       .padding(15)
-
-      if (this.searchValue !== '浏览历史'){
-        groupTypeComponent({
-          bookType:this.bookType,
-          currentIndex:this.currentIndex,
-          groupCoverShow:this.groupCoverShow
-        })
-      }
-      Refresh({ refreshing: $$this.isRefreshing,builder:this.refreshComponent}) {
-        Scroll(){
-          Stack({alignContent:Alignment.Center}) {
-            if (this.GROUP === '标签'){
-              if (this.currentIndex === 0){
-                novelPage({
-                  searchValue:this.searchValue,
-                  currentIndex:0,
-                  isClear:this.isClear,
+      Stack(){
+        if (this.searchValue !== '浏览历史'){
+          groupTypeComponent({
+            bookType:this.bookType,
+            currentIndex:this.currentIndex,
+            groupCoverShow:this.groupCoverShow
+          }).zIndex(999)
+        }
+        Refresh({ refreshing: $$this.isRefreshing,builder:this.refreshComponent}) {
+          Scroll(){
+            Stack({alignContent:Alignment.Center}) {
+              if (this.GROUP === '标签'){
+                if (this.currentIndex === 0){
+                  novelPage({
+                    searchValue:this.searchValue,
+                    currentIndex:0,
+                    isClear:this.isClear,
+                    EXHIBIT:this.EXHIBIT
+                  })
+                    .zIndex(0)
+                } else if(this.currentIndex === 1) {
+                  cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(1)
+                } else if(this.currentIndex === 2) {
+                  soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(2)
+                }
+              } else {
+                BookFolder({
                   EXHIBIT:this.EXHIBIT
                 })
-                  .zIndex(0)
-              } else if(this.currentIndex === 1) {
-                cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(1)
-              } else if(this.currentIndex === 2) {
-                soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(2)
               }
-            } else {
-               BookFolder({
-                 EXHIBIT:this.EXHIBIT
-               })
             }
+            .padding({left:10,right:10})
           }
-          .padding({left:10,right:10})
+          .align(Alignment.TopStart)
+          .height('83%')
+          // .height(this.searchValue==='浏览历史'?'83%':'78%')
+          .scrollBar(BarState.Off)
         }
-        .align(Alignment.TopStart)
-        .height(this.searchValue==='浏览历史'?'83%':'78%')
-        .scrollBar(BarState.Off)
-      }.onStateChange((refreshStatus: RefreshStatus) =>{
-        if (refreshStatus === 1 || refreshStatus === 2) {
-          this.RefreshingTitle = '松开刷新'
-        } else{
-          this.RefreshingTitle = '刷新中...'
-        }
-      })
-      .onRefreshing(()=>{
-        setTimeout(() => {
-          this.counter++
-          this.isRefreshing = false
-        }, 1000)
+        .margin({top:this.searchValue==='浏览历史'?0:30})
+        .onStateChange((refreshStatus: RefreshStatus) =>{
+          if (refreshStatus === 1 || refreshStatus === 2) {
+            this.RefreshingTitle = '松开刷新'
+          } else{
+            this.RefreshingTitle = '刷新中...'
+          }
+        })
+        .onRefreshing(()=>{
+          setTimeout(() => {
+            this.counter++
+            this.isRefreshing = false
+          }, 1000)
 
-      })
+        })
+      }.alignContent(Alignment.Top)
+
     }
   }
 

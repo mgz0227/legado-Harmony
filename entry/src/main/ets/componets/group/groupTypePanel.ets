@@ -1,109 +1,7 @@
-import BookType from '../head/BookType'
-import groupTypePanel from './groupTypePanel'
-
 @Component
-export default struct groupTypeComponent {
-  @State globalPositionY: Length = 0
-  @Link bookType: string
-  @Link currentIndex: number
+export default struct groupTypePanel{
   @Link groupCoverShow:boolean
-
   build() {
-    if (this.groupCoverShow){
-      Stack(){
-        Rect()
-          // .fillOpacity(0)
-          .height('85%')
-          .width('100%')
-          .fill('rgba(0, 0, 0, 0.45)')
-        groupTypePanel({
-          groupCoverShow:this.groupCoverShow
-        }).zIndex(9999)
-      }.alignContent(Alignment.Top)
-    } else {
-      Flex(
-        {
-          alignItems: ItemAlign.Center,
-          justifyContent: FlexAlign.SpaceBetween
-        }
-      ) {
-        Scroll() {
-          Row({ space: 10 }) {
-            BookType({ title: '全部', bookType: this.bookType }).onClick(() => {
-              this.bookType = '全部'
-            })
-            BookType({ title: '未分组', bookType: this.bookType }).onClick(() => {
-              this.bookType = '未分组'
-            })
-            BookType({ title: '本地', bookType: this.bookType }).onClick(() => {
-              this.bookType = '本地'
-            })
-            BookType({ title: '书单', bookType: this.bookType }).onClick(() => {
-              this.bookType = '书单'
-            })
-            if (this.currentIndex === 0) {
-              BookType({ title: '玄幻', bookType: this.bookType }).onClick(() => {
-                this.bookType = '玄幻'
-              })
-              BookType({ title: '修仙', bookType: this.bookType }).onClick(() => {
-                this.bookType = '修仙'
-              })
-              BookType({ title: '女同', bookType: this.bookType }).onClick(() => {
-                this.bookType = '女同'
-              })
-              BookType({ title: '军事', bookType: this.bookType }).onClick(() => {
-                this.bookType = '军事'
-              })
-            } else if (this.currentIndex === 1) {
-              BookType({ title: '国漫', bookType: this.bookType }).onClick(() => {
-                this.bookType = '国漫'
-              })
-              BookType({ title: '日漫', bookType: this.bookType }).onClick(() => {
-                this.bookType = '日漫'
-              })
-            } else if (this.currentIndex === 2) {
-              BookType({ title: '广播', bookType: this.bookType }).onClick(() => {
-                this.bookType = '广播'
-              })
-              BookType({ title: '深夜电台', bookType: this.bookType }).onClick(() => {
-                this.bookType = '深夜电台'
-              })
-            }
-          }
-        }
-        .scrollBar(BarState.Off)
-        .scrollable(ScrollDirection.Horizontal)
-        Row(){
-          Image($r('app.media.more_search')).width(25).height(25)
-        }.width(
-          '10%'
-        ).onClick(()=>{
-          this.groupCoverShow = true
-        })
-        // .bindPopup(this.groupCoverShow, {
-        //   builder: this.groupTypePanel,
-        //   placement: Placement.Bottom,
-        //   // mask:true,
-        //   radius:10,
-        //   offset: {y:-35},
-        //   // mask:{color:'rgba(0,0,0,0.45)'},
-        //   enableArrow: false,
-        //   // autoCancel:false,
-        //   width:'100%',
-        //   popupColor:Color.Transparent,
-        //   onStateChange: (e) => {
-        //     if (!e.isVisible) {
-        //       this.groupCoverShow = false;
-        //     }
-        //   }
-        // })
-      }.margin({ left: 15,bottom:10})
-    }
-
-  }
-
-  @Builder
-  groupTypePanel() {
     Column({
       space:15
     }){
@@ -160,7 +58,7 @@ export default struct groupTypeComponent {
         }.alignItems(VerticalAlign.Bottom).justifyContent(FlexAlign.End)
       }
       Scroll(){
-        if (false){
+        if (true){
           Flex({
             direction: FlexDirection.Row
           }){
@@ -192,14 +90,14 @@ export default struct groupTypeComponent {
           .padding({top:6,bottom:6})
 
         }
-      }  .scrollBar(BarState.Off)
+      }.scrollBar(BarState.Off)
       .scrollable(ScrollDirection.Horizontal)
 
     }
-    .padding({left:20,right:20,top:12})
-    .width('100%').height('30%').backgroundColor(Color.White)
+    .borderRadius({bottomLeft:20,bottomRight:20})
+    .padding({left:20,right:20,top:12,bottom:20})
+    .width('100%').backgroundColor(Color.White)
   }
-
   @Builder GroupType(){
     Row(){
       Text('分组').fontWeight(500).fontSize(12).textOverflow({
