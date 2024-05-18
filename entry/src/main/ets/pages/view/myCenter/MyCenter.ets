@@ -28,10 +28,10 @@ export default struct MyCenter {
     new dataItem("清理缓存",3,$r("app.media.my_center_clean_icon")),
     new dataItem("文件管理",4,$r("app.media.my_center_file_icon")),
   ]
-
+  @StorageLink('topRectHeight') topRectHeight: number = 0
   build() {
     Column(){
-
+      Blank(this.topRectHeight-20)
       //右上角模式图标
       Row({space:10}){
         //设置图标
