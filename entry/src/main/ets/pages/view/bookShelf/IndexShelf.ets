@@ -52,7 +52,8 @@ export default struct IndexShelf {
   @State isRefreshing: boolean = false
   @State counter: number = 0
   @State RefreshingTitle:string = '松开刷新'
-  @State groupCoverShow:boolean = false
+  @State groupCoverShow:boolean = true
+
   build() {
     Column() {
       Flex({
