@@ -20,7 +20,7 @@ struct CloudDisk {
     new dataItem("备份设置",2,"",1),
     new dataItem("备份帮助",3,"",1)
   ]
-  @State dataRecoveryStatus:boolean=true
+  @State dataRecoveryStatus:boolean=false
   @State dataRecovery_list:dataItem[]=[
     new dataItem("本地",1,"",0),
     new dataItem("手机",2,"",1),
@@ -96,7 +96,7 @@ struct CloudDisk {
               items:this.dataRecovery_list,
               bindSheetIndex:this.deviceIndex
             }).stateStyles({
-              normal: this.transitionStyles,
+              normal: this.transitionsStyles,
             })
           }else{
             cloudDisKBindSheetComponet({
@@ -237,7 +237,7 @@ struct CloudDisk {
     if(!this.backups_status){
       this.backups_status=true
       animateTo({
-        duration: 1000,
+        duration: 2000,
         curve: Curve.EaseOut,
         iterations: 2,
         playMode: PlayMode.Normal,
@@ -296,6 +296,11 @@ struct CloudDisk {
   @Styles transitionStyles():void{
     .transition(TransitionEffect.opacity(1).animation({ duration: 1000, curve: Curve.Ease }).combine(
       TransitionEffect.translate({ x: 500  })
+    ))
+  }
+  @Styles transitionsStyles():void{
+    .transition(TransitionEffect.opacity(1).animation({ duration: 1000, curve: Curve.Ease }).combine(
+      TransitionEffect.translate({ y: 500  })
     ))
   }
 }

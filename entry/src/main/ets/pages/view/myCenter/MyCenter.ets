@@ -150,9 +150,12 @@ export default struct MyCenter {
   centerOnclick(value:number|string){
     switch (value){
       case 1:
-        promptAction.showToast({
-          message: '请点击右上角，完成云盘登录',
-          duration: 1000,
+        // promptAction.showToast({
+        //   message: '请点击右上角，完成云盘登录',
+        //   duration: 1000,
+        // })
+        router.pushUrl({
+          url: 'pages/view/myCenter/cloudDisk'
         })
         break
       case 2:
