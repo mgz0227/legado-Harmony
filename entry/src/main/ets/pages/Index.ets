@@ -43,13 +43,13 @@ struct Main {
     new NavItem(3, $r('app.media.MINE_theme'),$r('app.media.MINE_line'), '我的')
   ]
 
-  @State scrollType:MainScrollBar[] = [
-    new MainScrollBar(false,new Scroller()),
-    new MainScrollBar(false,new Scroller()),
-    new MainScrollBar(false,new Scroller()),
-    new MainScrollBar(false,new Scroller()),
-    new MainScrollBar(false,new Scroller())
-  ]
+  // @State scrollType:MainScrollBar[] = [
+  //   new MainScrollBar(false,new Scroller()),
+  //   new MainScrollBar(false,new Scroller()),
+  //   new MainScrollBar(false,new Scroller()),
+  //   new MainScrollBar(false,new Scroller()),
+  //   new MainScrollBar(false,new Scroller())
+  // ]
 
   build() {
     Column() {
@@ -59,16 +59,13 @@ struct Main {
         ForEach(this.nav,(item:NavItem) => {
           TabContent() {
             Column() {
-              Scroll(this.scrollType[item.index].isScroll) {
-                if (item.index === 0){
-                  BookShelf()
-                } else if (item.index === 1){
-                  Find()
-                } else if (item.index === 2){
-                  Subscription()
-                }
+              if (item.index === 0){
+                BookShelf()
+              } else if (item.index === 1){
+                Find()
+              } else if (item.index === 2){
+                Subscription()
               }
-              .scrollBar(BarState.Off)
               if (item.index === 3){
                 MyCenter()
               }
