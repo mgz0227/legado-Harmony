@@ -90,7 +90,7 @@ export struct WebdavService {
       .padding({left:20,right:20})
       .visibility(this.webDavStatus?Visibility.Visible:Visibility.None)
     }
-    .width(320)
+    .width("100%")
     .backgroundColor("#FFF")
     .padding({top:16,bottom:16,left:20,right:20})
 

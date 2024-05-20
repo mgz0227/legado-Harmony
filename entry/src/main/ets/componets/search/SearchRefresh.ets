@@ -15,7 +15,7 @@ export struct SearchRefresh{
   build() {
     Column(){
       Refresh({refreshing:true,builder:this.refresh()}){
-        Text("玩命加载中...").fontSize(14).margin({left:20}).fontColor(this.color)
+
       }.height("10%")
         .onStateChange((refreshStatus: RefreshStatus) => {
           console.info('Refresh onStatueChange state is ' + refreshStatus)
