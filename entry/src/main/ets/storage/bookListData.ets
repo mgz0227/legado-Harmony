@@ -15,7 +15,10 @@ const novelListData:BookList[] = [
   ,new BookList('7','仙人消失之后','会说话的肘子·未读过7','更新至·第340章 镇压',$r('app.media.cover_list'),'玄幻')
   ,new BookList('8','仙人消失之后','会说话的肘子·未读过8','更新至·第340章 镇压',$r('app.media.cover_list'),'玄幻')
   ,new BookList('9','仙人消失之后','会说话的肘子·未读过9','更新至·第340章 镇压',$r('app.media.cover_list'),'玄幻')
-  ,new BookList('10','仙人消失之后','会说话的肘子·未读过10','更新至·第340章 镇压',$r('app.media.cover_list'),'玄幻')]
+  ,new BookList('10','仙人消失之后','会说话的肘子·未读过10','更新至·第340章 镇压',$r('app.media.cover_list'),'玄幻')
+  ,new BookList('11','仙人消失之后','会说话的肘子·未读过10','更新至·第340章 镇压',$r('app.media.cover_list'),'玄幻')
+
+]
 
 const soundListData:BookList[] = [
   new BookList('1','三体广播据','729声工厂 · 第一季 第五集 红岸基地','共101集 · 最终季 最终集 回归大宇宙',$r('app.media.cover_list2'),'玄幻'),

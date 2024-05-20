@@ -53,21 +53,57 @@ export default struct IndexShelf {
   @State counter: number = 0
   @State RefreshingTitle:string = '松开刷新'
   @State groupCoverShow:boolean = false
+  @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
   build() {
     Column() {
+      Blank(20)
+      Tabs({
+        barPosition:BarPosition.Start
+      }){
+        TabContent(){
+          this.book()
+        }
+
+        TabContent(){
+          this.book()
+        }
+
+        TabContent(){
+          this.book()
+        }
+      }
+      .barHeight(0)
+      .onChange((index) => {
+        console.log('index:' + index)
+        this.currentIndex = index
+      })
+      .scrollable(this.APP_INDEX_SCROLLABLE)
+    }
+    .padding({bottom:10})
+    .borderRadius({ bottomRight:5 ,bottomLeft:5})
+    .backgroundImage($r('app.media.backgroundimage'))
+    .backgroundImageSize({width:'100%',height:'10%'})
+    .width('100%')
+  }
+
+  @Builder book(){
+    Column(){
       Flex({
         justifyContent: FlexAlign.SpaceBetween,
         alignItems: ItemAlign.End
-      }) {
+      }){
         Row({ space: 20 }) {
           BookMark({ title: '小说', index: 0, currentIndex: this.currentIndex }).onClick(() => {
             this.currentIndex = 0
+            console.log(this.currentIndex + '')
           })
           BookMark({ title: '漫画', index: 1, currentIndex: this.currentIndex }).onClick(() => {
             this.currentIndex = 1
+            console.log(this.currentIndex + '')
           })
           BookMark({ title: '有声书', index: 2, currentIndex: this.currentIndex }).onClick(() => {
             this.currentIndex = 2
+            console.log(this.currentIndex + '')
           })
         }
         .padding({ left: 15 })
@@ -110,15 +146,7 @@ export default struct IndexShelf {
               }
             ])
         }.margin({right:20 })
-
       }
-      .padding({bottom:10})
-      .borderRadius({ bottomRight:5 ,bottomLeft:5})
-      .backgroundImage($r('app.media.backgroundimage'))
-      .backgroundImageSize({width:'100%'})
-      .height('10%')
-      .width('100%')
-
       Flex(
         {
           alignItems: ItemAlign.Center,
@@ -206,8 +234,8 @@ export default struct IndexShelf {
             }
             .padding({left:10,right:10})
           }
+          .height('85%')
           .align(Alignment.TopStart)
-          .height('83%')
           // .height(this.searchValue==='浏览历史'?'83%':'78%')
           .scrollBar(BarState.Off)
         }
@@ -226,8 +254,8 @@ export default struct IndexShelf {
           }, 1000)
 
         })
-      }.alignContent(Alignment.Top)
-
+      }
+      .alignContent(Alignment.Top)
     }
   }
 

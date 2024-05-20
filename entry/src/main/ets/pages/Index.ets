@@ -1,5 +1,7 @@
+import { showMessage } from '../componets/common/promptShow'
 import ReadShow from '../componets/common/ReadShow'
 import { MainScrollBar, NavItem } from '../componets/dataList/type'
+import { updateAppData } from '../storage/appData'
 import { initBookListData } from '../storage/bookListData'
 import BookShelf from './view/BookShelf'
 import Find from './view/Find'
@@ -14,7 +16,7 @@ struct Main {
   @State isShow: boolean = true
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('topRectHeight') topRectHeight: number = 0
-
+  @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = true
   onPageShow(): void {
     // initBookListData()
     setTimeout(()=>{
@@ -24,14 +26,23 @@ struct Main {
   }
 
   @Builder TabBuilder(index = 0, name: string,icon_select: Resource,unselected: Resource) {
-    Flex({
-      direction:FlexDirection.Column,
-      alignItems:ItemAlign.Center,
-      justifyContent:FlexAlign.Center
-    }){
-      Image(this.currentTabIndex === index?icon_select:unselected).height(25)
-      Text(name).fontSize(11).margin(5).fontColor(this.currentTabIndex === index ?'rgb(255,119, 50)' : '#000000')
-    }
+    Column(){
+      Flex({
+        direction:FlexDirection.Column,
+        alignItems:ItemAlign.Center,
+        justifyContent:FlexAlign.Center
+      }){
+        Image(this.currentTabIndex === index?icon_select:unselected).height(25)
+        Text(name).fontSize(11).margin(5).fontColor(this.currentTabIndex === index ?'rgb(255,119, 50)' : '#000000')
+      }
+    }.gesture(
+      LongPressGesture({ repeat: index === 0,duration:1000 })
+        .onAction((event: GestureEvent) => {
+          console.log('onAction' + event.repeat)
+          if (event.repeat) {
+            updateAppData(!this.APP_INDEX_SCROLLABLE)
+            showMessage(this.APP_INDEX_SCROLLABLE?'标签栏锁已开启':'标签栏已解锁')}}))
+    .width('100%')
     .margin({top:4})
     .height("100%")
   }
@@ -75,7 +86,7 @@ struct Main {
           )
         })
       }
-
+      .scrollable(!this.APP_INDEX_SCROLLABLE)
       .padding({bottom:this.bottomRectHeight})
       .backgroundColor('rgba(214, 213, 213, 0.7)')
       .onChange((index) => {
