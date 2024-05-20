@@ -1,4 +1,5 @@
 import { router } from '@kit.ArkUI'
+import CommonConstants from '../../common/constants/CommonConstants'
 
 @Component
 export struct myCenterTitle{
@@ -6,16 +7,18 @@ export struct myCenterTitle{
   @Prop title:string
 
   build() {
-    Row(){
+    Column(){
+      Blank(40)
       Row(){
-        Image($r("app.media.right"))
-          .rotate({angle:180})
-          .size({width:24,height:24})
-          .onClick(()=>{
-            router.back()
-          })
-      }.width("40%")
-      Text(this.title).fontSize(16).fontWeight(600).lineHeight(24)
-    }.width(320).justifyContent(FlexAlign.Start).padding({top:12,bottom:12})
+        Row(){
+          Image($r("app.media.return_left"))
+            .size({width:CommonConstants.TITLE_IMG_SIZE,height:CommonConstants.TITLE_IMG_SIZE})
+            .onClick(()=>{
+              router.back()
+            })
+        }.width("40%")
+        Text(this.title).fontSize(16).fontWeight(600).lineHeight(24)
+      }.width(320).justifyContent(FlexAlign.Start).padding({top:12,bottom:12})
+    }
   }
 }

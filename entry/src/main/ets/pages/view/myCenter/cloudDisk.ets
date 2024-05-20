@@ -47,6 +47,8 @@ struct CloudDisk {
   @State zipDataIndex:number=0
   @State deviceDataIndex:number=0
   @State isShow:boolean=false
+
+
   @Builder backups_item(item:dataItem){
     Row(){
       Text(item.title).fontSize(16)
@@ -144,6 +146,7 @@ struct CloudDisk {
   build() {
       Column() {
         //标题栏
+
         myCenterTitle({title:"云备份"})
         //备份图片及按钮
         Column(){

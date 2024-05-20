@@ -76,11 +76,13 @@ export default struct MyCenter {
 
       // 统计数据
       Row(){
-        ForEach(this.head_list,(item:dataItem)=>{
+        ForEach(this.head_list,(item:dataItem,index:number)=>{
           Column({space:5}){
             Text(item.value.toString()).fontSize(20).fontWeight(400)
             Text(item.title).fontSize(10).fontWeight(500)
-          }
+          }.onClick(()=>{
+            this.head_onclick(index)
+          })
         })
       }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left:20,right:20})
 
@@ -126,7 +128,7 @@ export default struct MyCenter {
       .backgroundColor(Color.White)
       .borderRadius(10)
       .justifyContent(FlexAlign.SpaceBetween)
-      .size({width:320,height:192})
+      .size({width:"100%",height:192})
       Blank(200)
     }.padding(20)
     .backgroundColor("rgb(245, 245, 245)")
@@ -145,6 +147,22 @@ export default struct MyCenter {
   //头像点击事件
   avatar_onclick(){
 
+  }
+  //读过点击事件
+  head_onclick(value:number){
+    switch (value){
+      case 0:
+        router.pushUrl({
+          url:"pages/view/myCenter/readStatistics"
+        })
+        break
+      case 1:
+        break
+      case 2:
+        break
+      case 3:
+        break
+    }
   }
   //云盘,书源,主题,净化点击事件
   centerOnclick(value:number|string){
