@@ -14,12 +14,6 @@ struct AboutUsPage {
     new dataItem("更新日志", 2),
     new dataItem("开发人员", 3),
   ];
-  @State middle_list: dataItem[] = [
-    new dataItem("QQ群", 1),
-    new dataItem("邮件", 2),
-    new dataItem("Discord", 3),
-    new dataItem("电报", 4),
-  ]
   @State end_list: dataItem[] = [
     new dataItem("用户隐私与协议", 1),
     new dataItem("开源许可", 2),
@@ -49,24 +43,6 @@ struct AboutUsPage {
         break
       case 2:
       //todo 开发人员
-        break
-    }
-  }
-
-  middleUrl_list(value: number | string) {
-    switch (value) {
-      case 0:
-      //QQ群
-        this.isShowQQ = true
-        break
-      case 1:
-      //todo 邮件
-        break
-      case 2:
-      //todo Discord
-        break
-      case 3:
-      //todo 电报
         break
     }
   }
@@ -134,8 +110,9 @@ struct AboutUsPage {
 
         Row({ space: 16 }) {
           this.middleBox("app.media.official_website", "官网")
-          this.middleBox("app.media.wechat_public_account", "微信公众号")
+          this.middleBox("app.media.wechat_public_account", "公众号")
           this.middleBox("app.media.channel", "QQ频道")
+          this.middleBox("app.media.QQ", "QQ群")
         }
         // QQ群的半模态框 不知道绑定在哪里，鸿蒙官方怎么想的，非要绑定一个元素？
         .bindSheet($$this.isShowQQ, this.QQDialog(), {
@@ -148,7 +125,6 @@ struct AboutUsPage {
           }
         })
 
-        this.middleClick(this.middle_list, "app.media.right", null, "middle")
         this.middleClick(this.end_list, "app.media.right", null, "end")
       }
       .padding({
@@ -157,6 +133,7 @@ struct AboutUsPage {
         top:this.topRectHeight,
         bottom:this.bottomRectHeight
       })
+      .height("100%")
       .backgroundColor("rgb(245, 245, 245)")
     }
   }
@@ -166,6 +143,7 @@ struct AboutUsPage {
     Column({ space: 2 }) {
       Image($r(`${image}`)).size({ width: 24, height: 24 })
       Text(text)
+        .maxLines(1)
         .lineHeight(20)
         .font({
           // family: "PingFang SC",
@@ -175,8 +153,11 @@ struct AboutUsPage {
         })
         .opacity(0.45)
     }
-    .padding(12)
-    .width("33%")
+    .padding({
+      top:12,
+      bottom:12
+    })
+    .width("20%")
     .height(70)
     .borderRadius(12)
     .backgroundColor(Color.White)
@@ -222,9 +203,6 @@ struct AboutUsPage {
           switch (urlList) {
             case 'first':
               this.firstUrl_list(index)
-              break
-            case 'middle':
-              this.middleUrl_list(index)
               break
             case 'end':
               this.endUrl_list(index)
