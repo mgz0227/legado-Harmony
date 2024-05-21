@@ -3,6 +3,7 @@ import router from '@ohos.router'
 import { promptAction } from '@kit.ArkUI'
 import { updateDateListById } from '../../../storage/bookListData'
 import { BookList } from '../../../componets/dataList/bookList'
+import { showMessage } from '../../../componets/common/promptShow'
 
 @Component
 /**
@@ -18,12 +19,14 @@ export default struct BookInfo{
   onDelete: () => void = () => {
 
   }
-
+  @State delCache:boolean = false
   //弹窗
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
-      confirm: ()=> { this.onAccept() }
+      confirm: ()=> { this.onAccept() },
+      delCache:this.delCache,
+      isShowCache:true
     }),
     cancel: this.exitApp,
     autoCancel: true,
@@ -141,6 +144,13 @@ export default struct BookInfo{
         .alignItems(HorizontalAlign.End)
       }
     }
+    .gesture(
+      LongPressGesture({ repeat: true,duration:500 })
+        .onAction((event: GestureEvent) => {
+          if (event.repeat) {
+            showMessage('6666')
+          }
+        }))
     .padding(10)
     .borderRadius(10)
   }

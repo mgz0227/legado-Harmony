@@ -16,26 +16,26 @@ export default struct MyCenter {
     new dataItem("勋章",20),
   ]
   @State center_list:dataItem[]=[
-    new dataItem("备份",1,$r("app.media.MyCenter_cloud_icon")),
-    new dataItem("主题",2,$r("app.media.MyCenter_book_icon")),
-    new dataItem("书源",3,$r("app.media.MyCenter_theme_icon")),
-    new dataItem("净化",4,$r("app.media.MyCenter_purify_icon")),
+    new dataItem("备份",1,$r("app.media.my_center_cloud_icon")),
+    new dataItem("主题",2,$r("app.media.my_center_book_icon")),
+    new dataItem("书源",3,$r("app.media.my_center_theme_icon")),
+    new dataItem("净化",4,$r("app.media.my_center_purify_icon")),
   ]
 
   @State end_list:dataItem[]=[
-    new dataItem("帮助中心",1,$r("app.media.MyCenter_help_icon")),
-    new dataItem("关于我们",2,$r("app.media.MyCenter_about_icon")),
-    new dataItem("清理缓存",3,$r("app.media.MyCenter_clean_icon")),
-    new dataItem("文件管理",4,$r("app.media.MyCenter_setUp_icon")),
+    new dataItem("帮助中心",1,$r("app.media.my_center_help_icon")),
+    new dataItem("关于我们",2,$r("app.media.my_center_about_icon")),
+    new dataItem("清理缓存",3,$r("app.media.my_center_clean_icon")),
+    new dataItem("文件管理",4,$r("app.media.my_center_file_icon")),
   ]
-
+  @StorageLink('topRectHeight') topRectHeight: number = 0
   build() {
     Column(){
-
+      Blank(this.topRectHeight-20)
       //右上角模式图标
       Row({space:10}){
         //设置图标
-        Image($r("app.media.myCenter_set_icon")).size({width:30,height:30}).interpolation(ImageInterpolation.Medium)
+        Image($r("app.media.my_center_set_icon")).size({width:30,height:30}).interpolation(ImageInterpolation.Medium)
           .onClick(()=>{
             this.toMySetPage()
           })
@@ -76,11 +76,13 @@ export default struct MyCenter {
 
       // 统计数据
       Row(){
-        ForEach(this.head_list,(item:dataItem)=>{
+        ForEach(this.head_list,(item:dataItem,index:number)=>{
           Column({space:5}){
             Text(item.value.toString()).fontSize(20).fontWeight(400)
             Text(item.title).fontSize(10).fontWeight(500)
-          }
+          }.onClick(()=>{
+            this.head_onclick(index)
+          })
         })
       }.justifyContent(FlexAlign.SpaceBetween).width("100%").padding({left:20,right:20})
 
@@ -126,7 +128,7 @@ export default struct MyCenter {
       .backgroundColor(Color.White)
       .borderRadius(10)
       .justifyContent(FlexAlign.SpaceBetween)
-      .size({width:320,height:192})
+      .size({width:"100%",height:192})
       Blank(200)
     }.padding(20)
     .backgroundColor("rgb(245, 245, 245)")
@@ -146,13 +148,32 @@ export default struct MyCenter {
   avatar_onclick(){
 
   }
+  //读过点击事件
+  head_onclick(value:number){
+    switch (value){
+      case 0:
+        router.pushUrl({
+          url:"pages/view/myCenter/readStatistics"
+        })
+        break
+      case 1:
+        break
+      case 2:
+        break
+      case 3:
+        break
+    }
+  }
   //云盘,书源,主题,净化点击事件
   centerOnclick(value:number|string){
     switch (value){
       case 1:
-        promptAction.showToast({
-          message: '请点击右上角，完成云盘登录',
-          duration: 1000,
+        // promptAction.showToast({
+        //   message: '请点击右上角，完成云盘登录',
+        //   duration: 1000,
+        // })
+        router.pushUrl({
+          url: 'pages/view/myCenter/cloudDisk'
         })
         break
       case 2:
@@ -180,6 +201,10 @@ export default struct MyCenter {
         })
         break;
       case 3:
+        // 清理缓存
+        router.pushUrl({
+          url: 'pages/view/myCenter/clearCache'
+        })
         break;
       case 4:
 

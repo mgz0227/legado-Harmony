@@ -1,21 +1,25 @@
 import cartoonPage from './cartoonPage'
 import novelPage from './novelPage'
 import BookMark from '../../../componets/head/BookMark'
-import BookType from '../../../componets/head/BookType'
 
 import soundPage from './soundPage'
 import IndexSearchType from '../../../componets/head/IndexSearchType'
 import router from '@ohos.router'; // 引入路由管理器
 import confirmDialogExample from '../../../componets/common/confirmDialog'
 import BookFolder from './BookFolder'
+import groupTypeComponent from '../../../componets/group/GroupType'
+import BookShelfInfo from './Shelf/BookShelfInfo'
+import ShelfBookList from './Shelf/ShelfBookList'
 
 @Component
 export default struct IndexShelf {
+  @State delCache:boolean = false
   IndexShelf: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
       confirm: ()=> { this.onAccept() },
-      title: '清空'
+      title: '清空',
+      delCache:this.delCache
     }),
     cancel: this.exitApp,
     autoCancel: true,
@@ -50,21 +54,58 @@ export default struct IndexShelf {
   @State isRefreshing: boolean = false
   @State counter: number = 0
   @State RefreshingTitle:string = '松开刷新'
+  @State groupCoverShow:boolean = false
+  @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
   build() {
     Column() {
+      Blank(20)
+      Tabs({
+        barPosition:BarPosition.Start
+      }){
+        TabContent(){
+          this.book()
+        }
+
+        TabContent(){
+          this.book()
+        }
+
+        TabContent(){
+          this.book()
+        }
+      }
+      .barHeight(0)
+      .onChange((index) => {
+        console.log('index:' + index)
+        this.currentIndex = index
+      })
+      .scrollable(this.APP_INDEX_SCROLLABLE)
+    }
+    .padding({bottom:10})
+    .borderRadius({ bottomRight:5 ,bottomLeft:5})
+    .backgroundImage($r('app.media.backgroundimage'))
+    .backgroundImageSize({width:'100%',height:'10%'})
+    .width('100%')
+  }
+
+  @Builder book(){
+    Column(){
       Flex({
         justifyContent: FlexAlign.SpaceBetween,
         alignItems: ItemAlign.End
-      }) {
+      }){
         Row({ space: 20 }) {
           BookMark({ title: '小说', index: 0, currentIndex: this.currentIndex }).onClick(() => {
             this.currentIndex = 0
+            console.log(this.currentIndex + '')
           })
           BookMark({ title: '漫画', index: 1, currentIndex: this.currentIndex }).onClick(() => {
             this.currentIndex = 1
+            console.log(this.currentIndex + '')
           })
           BookMark({ title: '有声书', index: 2, currentIndex: this.currentIndex }).onClick(() => {
             this.currentIndex = 2
+            console.log(this.currentIndex + '')
           })
         }
         .padding({ left: 15 })
@@ -107,15 +148,7 @@ export default struct IndexShelf {
               }
             ])
         }.margin({right:20 })
-
       }
-      .padding({bottom:10})
-      .borderRadius({ bottomRight:5 ,bottomLeft:5})
-      .backgroundImage($r('app.media.backgroundimage'))
-      .backgroundImageSize({width:'100%'})
-      .height('10%')
-      .width('100%')
-
       Flex(
         {
           alignItems: ItemAlign.Center,
@@ -144,7 +177,8 @@ export default struct IndexShelf {
                       params: {
                         currentIndex:this.currentIndex,
                         EXHIBIT:this.EXHIBIT,
-                        GROUPName:this.GROUP
+                        GROUPName:this.GROUP,
+                        bookTypes:this.bookType
                       }
                     })
                   })
@@ -170,109 +204,68 @@ export default struct IndexShelf {
         }
       }
       .padding(15)
-
-      if (this.searchValue !== '浏览历史'){
-      Flex(
-        {
-          alignItems: ItemAlign.Center,
-          justifyContent: FlexAlign.SpaceBetween
+      Stack(){
+        if (this.searchValue !== '浏览历史'){
+          groupTypeComponent({
+            bookType:this.bookType,
+            currentIndex:this.currentIndex,
+            groupCoverShow:this.groupCoverShow
+          }).zIndex(999)
         }
-      ) {
-        Scroll() {
-          Row({ space: 10 }) {
-            BookType({ title: '全部', bookType: this.bookType }).onClick(() => {
-              this.bookType = '全部'
-            })
-            BookType({ title: '未分组', bookType: this.bookType }).onClick(() => {
-              this.bookType = '未分组'
-            })
-            BookType({ title: '本地', bookType: this.bookType }).onClick(() => {
-              this.bookType = '本地'
-            })
-            BookType({ title: '书单', bookType: this.bookType }).onClick(() => {
-              this.bookType = '书单'
-            })
-            if (this.currentIndex === 0) {
-              BookType({ title: '玄幻', bookType: this.bookType }).onClick(() => {
-                this.bookType = '玄幻'
-              })
-              BookType({ title: '修仙', bookType: this.bookType }).onClick(() => {
-                this.bookType = '修仙'
-              })
-              BookType({ title: '女同', bookType: this.bookType }).onClick(() => {
-                this.bookType = '女同'
-              })
-              BookType({ title: '军事', bookType: this.bookType }).onClick(() => {
-                this.bookType = '军事'
-              })
-            } else if (this.currentIndex === 1) {
-              BookType({ title: '国漫', bookType: this.bookType }).onClick(() => {
-                this.bookType = '国漫'
-              })
-              BookType({ title: '日漫', bookType: this.bookType }).onClick(() => {
-                this.bookType = '日漫'
-              })
-            } else if (this.currentIndex === 2) {
-              BookType({ title: '广播', bookType: this.bookType }).onClick(() => {
-                this.bookType = '广播'
-              })
-              BookType({ title: '深夜电台', bookType: this.bookType }).onClick(() => {
-                this.bookType = '深夜电台'
-              })
-            }
-          }
-        }
-        .scrollBar(BarState.Off)
-        .scrollable(ScrollDirection.Horizontal)
-        Row(){
-          Image($r('app.media.more_search')).width(25).height(25)
-        }.width(
-          '10%'
-        )
-      }.margin({ left: 15,bottom:10})
-    }
-      Refresh({ refreshing: $$this.isRefreshing,builder:this.refreshComponent}) {
-        Scroll(){
-          Stack({alignContent:Alignment.Center}) {
-            if (this.GROUP === '标签'){
-              if (this.currentIndex === 0){
-                novelPage({
-                  searchValue:this.searchValue,
-                  currentIndex:0,
-                  isClear:this.isClear,
+        Refresh({ refreshing: $$this.isRefreshing,builder:this.refreshComponent}) {
+          Scroll(){
+            Stack({alignContent:Alignment.Center}) {
+              if (this.bookType === '书单' && this.searchValue !== '浏览历史'){
+                ShelfBookList({
                   EXHIBIT:this.EXHIBIT
                 })
-                  .zIndex(0)
-              } else if(this.currentIndex === 1) {
-                cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(1)
-              } else if(this.currentIndex === 2) {
-                soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(2)
+              } else {
+                if (this.GROUP === '标签'){
+                  if (this.currentIndex === 0){
+                    novelPage({
+                      searchValue:this.searchValue,
+                      currentIndex:0,
+                      isClear:this.isClear,
+                      EXHIBIT:this.EXHIBIT
+                    })
+                      .zIndex(0)
+                  } else if(this.currentIndex === 1) {
+                    cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(1)
+                  } else if(this.currentIndex === 2) {
+                    soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(2)
+                  }
+                } else {
+                  BookFolder({
+                    EXHIBIT:this.EXHIBIT
+                  })
+                }
               }
-            } else {
-               BookFolder({
-                 EXHIBIT:this.EXHIBIT
-               })
-            }
-          }
-          .padding({left:10,right:10})
-        }
-        .align(Alignment.TopStart)
-        .height(this.searchValue==='浏览历史'?'83%':'78%')
-        .scrollBar(BarState.Off)
-      }.onStateChange((refreshStatus: RefreshStatus) =>{
-        if (refreshStatus === 1 || refreshStatus === 2) {
-          this.RefreshingTitle = '松开刷新'
-        } else{
-          this.RefreshingTitle = '刷新中...'
-        }
-      })
-      .onRefreshing(()=>{
-        setTimeout(() => {
-          this.counter++
-          this.isRefreshing = false
-        }, 1000)
 
-      })
+            }
+            .padding({left:10,right:10})
+          }
+          .height('85%')
+          .align(Alignment.TopStart)
+          // .height(this.searchValue==='浏览历史'?'83%':'78%')
+          .scrollBar(BarState.Off)
+        }
+        .margin({top:this.searchValue==='浏览历史'?0:30})
+        .onStateChange((refreshStatus: RefreshStatus) =>{
+          if (refreshStatus === 1 || refreshStatus === 2) {
+            this.RefreshingTitle = '松开刷新'
+          } else{
+            this.RefreshingTitle = '刷新中...'
+          }
+        })
+        .onRefreshing(()=>{
+          setTimeout(() => {
+            this.counter++
+            this.isRefreshing = false
+          }, 1000)
+
+        })
+      }
+      .alignContent(Alignment.Top)
     }
   }
 

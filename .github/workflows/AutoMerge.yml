@@ -1,0 +1,40 @@
+name: Auto Merge PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '16'
+
+    - name: Auto merge PR
+      id: auto-merge
+      run: |
+        ALLOWED_USERS=("yindushenwen" "0wenfeng0" "linxunxr" "c386522459" "cradesence" "Sunny-316" "thfgjy" "stupchen" "MaoXiaoone" "ouzechang" "polo3584")
+        PR_AUTHOR=$(jq -r .pull_request.user.login < "$GITHUB_EVENT_PATH")
+
+        if [[ " ${ALLOWED_USERS[@]} " =~ " ${PR_AUTHOR} " ]]; then
+          echo "PR author ${PR_AUTHOR} is allowed. Proceeding to merge."
+          echo "MERGE=true" >> $GITHUB_ENV
+        else
+          echo "PR author ${PR_AUTHOR} is not allowed to auto-merge."
+          echo "MERGE=false" >> $GITHUB_ENV
+        fi
+
+    - name: Merge PR
+      if: env.MERGE == 'true'
+      uses: pascalgn/automerge-action@v0.16.3
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        mergeMethod: merge # 可选 merge, squash, rebase
+        branch: main # 目标分支

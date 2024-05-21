@@ -11,6 +11,7 @@ export default struct novelPage{
   @Link @Watch('onIsClearChange') isClear:boolean
   @Prop currentIndex:number
   @State lastIndex:string = '9999'
+  @Prop bookType:string
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
   @StorageProp(CommonConstants.KEY_NOVEL_BOOK_DATA)
   bookList:BookList[] = []

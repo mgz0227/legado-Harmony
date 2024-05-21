@@ -1,0 +1,61 @@
+name: BUG提交 / BUG Report
+description: Report bugs to developers
+labels: ["BUG"]
+body:
+  - type: checkboxes
+    attributes:
+      label: 确认 / Assignments
+      description: 提交issue请确保完成以下前提，否则该issue可能被忽略 / Make sure you read checkboxs below
+      options:
+        - label: 搜索现有issues，不存在相似或相关的issue / No similar or related issues
+          required: true
+        - label: 最新版依然存在此问题 / Latest beta app does not work
+          required: true
+        - label: 此问题和Xposed、Lsposed、Magisk、手机主题、浏览器插件等无关 / Make sure your machine is not touched by hook frameworks, plugins etc
+          required: true
+
+  - type: textarea
+    attributes:
+      label: 问题描述 / Describe Bugs
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 复现步骤 / How to reproduce
+    validations:
+      required: true
+  - type: checkboxes
+    attributes:
+      label: 确认 / Assignment
+      options:
+        - label: 已经提交复现所需要的附加资料 / Submit additions related with bugs
+          required: true
+  - type: textarea
+    attributes:
+      label: 其他信息 / Additions
+      placeholder: "请用```将提交的内容包裹"
+
+  - type: textarea
+    attributes:
+      label: 日志提交 / Relevant log output
+      description: 阅读日志位于我的-关于-崩溃日志、书架-右上角-日志，或者自行使用log工具抓取日志
+      placeholder: "请用```将日志内容包裹"
+
+  - type: input
+    attributes:
+      label: 阅读版本 / Legado version
+      placeholder: "1.1"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Harmony OS版本 / Harmony OS version
+      placeholder: "Harmony OS 4"
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: 机型 / Model
+      placeholder: "mate 40"
+    validations:
+      required: true
