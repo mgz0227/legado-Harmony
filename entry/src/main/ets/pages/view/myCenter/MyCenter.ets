@@ -201,6 +201,10 @@ export default struct MyCenter {
         })
         break;
       case 3:
+        // 清理缓存
+        router.pushUrl({
+          url: 'pages/view/myCenter/clearCache'
+        })
         break;
       case 4:
 

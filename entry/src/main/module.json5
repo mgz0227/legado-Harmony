@@ -4,6 +4,14 @@
     "type": "entry",
     "description": "$string:module_desc",
     "mainElement": "EntryAbility",
+    "requestPermissions":[
+      {
+        "name" : "ohos.permission.INTERNET",
+        "usedScene": {
+          "when":"inuse"
+        }
+      },
+    ],
     "deviceTypes": [
       "phone",
       "tablet"
