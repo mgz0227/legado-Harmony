@@ -11,15 +11,18 @@ import BookFolderManages from './bookManage/BookFolderManages';
 import newBookShelf from './bookManage/newBookShelf';
 import newAddShelf from './bookManage/newAddShelf';
 import hideDialogExample from '../../../../componets/common/hideDialog';
+import ShelfBookList from '../Shelf/ShelfBookList';
 
 class routerParams {
   currentIndex:number
   EXHIBIT:string
   GROUPName:string
-  constructor(currentIndex:number,EXHIBIT:string,GROUPName:string) {
+  bookTypes:string
+  constructor(currentIndex:number,EXHIBIT:string,GROUPName:string,bookTypes:string) {
     this.currentIndex = currentIndex
     this.EXHIBIT = EXHIBIT
     this.GROUPName = GROUPName
+    this.bookTypes = bookTypes
   }
 }
 /**
@@ -34,6 +37,7 @@ struct BookManagePage {
   @State GROUPName:string = (router.getParams() as routerParams).GROUPName
   @State currentIndex: number = (router.getParams() as routerParams).currentIndex
   @State EXHIBIT: string = (router.getParams() as routerParams).EXHIBIT
+  @State bookTypes: string = (router.getParams() as routerParams).bookTypes
   @State isClear:boolean = false
   @State allCheck:boolean = false
   @State @Watch('changeCheckNumber')checkNumber:number = 0
@@ -206,34 +210,47 @@ struct BookManagePage {
         justifyContent:FlexAlign.Center
       }){
         Scroll(){
-          if (this.GROUPName === '文件夹'){
-            BookFolderManages({
-              isClear:this.isClear,
-              allCheck:this.allCheck,
-              folderList:this.novelPageList,
-              folderCheckList:this.folderCheckList,
+          if (this.bookTypes === '书单'){
+            ShelfBookList({
+              EXHIBIT:this.EXHIBIT,
               changeTop:this.changeTop,
-              EXHIBIT:this.EXHIBIT
+              allCheck:this.allCheck,
+              isShowCheck:true
             })
           } else {
-            bookListManage({
-              isClear:this.isClear,
-              EXHIBIT:this.EXHIBIT,
-              allCheck:this.allCheck,
-              showBookList:this.showBookList,
-              checkNumber:this.checkNumber,
-              changeTop:this.changeTop,
-              checkBookList:this.checkBookList,
-              shelfType:this.currentIndex
-            })
+            if (this.GROUPName === '文件夹'){
+              BookFolderManages({
+                isClear:this.isClear,
+                allCheck:this.allCheck,
+                folderList:this.novelPageList,
+                folderCheckList:this.folderCheckList,
+                changeTop:this.changeTop,
+                EXHIBIT:this.EXHIBIT
+              })
+            } else {
+              bookListManage({
+                isClear:this.isClear,
+                EXHIBIT:this.EXHIBIT,
+                allCheck:this.allCheck,
+                showBookList:this.showBookList,
+                checkNumber:this.checkNumber,
+                changeTop:this.changeTop,
+                checkBookList:this.checkBookList,
+                shelfType:this.currentIndex
+              })
+            }
           }
-
         }
         .height('80%')
         .align(Alignment.TopStart)
         .scrollBar(BarState.Off)
       }
-      this.footerTitle()
+
+      if (this.bookTypes === '书单'){
+        this.footerDel()
+      } else {
+        this.footerTitle()
+      }
     }
     .padding(10)
     .backgroundColor("rgb(245, 245, 245)")
@@ -269,6 +286,18 @@ struct BookManagePage {
     }
     .padding(10)
   }
+
+  @Builder footerDel(){
+    Column(){
+      Text('删除').fontSize(16).fontWeight(500).lineHeight(24).fontColor('#EF4444')
+    }.onClick(()=>{
+        showMessage('测试删除')
+    })
+    .alignItems(HorizontalAlign.Center)
+    .height('10%')
+    .padding(20)
+  }
+
 
   @Builder footerTitle(){
     Flex(

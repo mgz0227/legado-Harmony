@@ -9,7 +9,6 @@ struct Index {
   @State name: string = '开源阅读'
   @State Tip: string = '享受阅读时光'
   onPageShow() {
-    initBookListData()
     initAppData()
     setTimeout(() => {
       // 使用路由管理器跳转到主页面
