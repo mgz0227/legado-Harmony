@@ -19,7 +19,7 @@ jobs:
     - name: Auto merge PR
       id: auto-merge
       run: |
-        ALLOWED_USERS=("user1" "user2" "user3")
+        ALLOWED_USERS=("yindushenwen" "0wenfeng0" "linxunxr" "c386522459" "cradesence" "Sunny-316" "thfgjy" "stupchen" "MaoXiaoone" "ouzechang" "polo3584")
         PR_AUTHOR=$(jq -r .pull_request.user.login < "$GITHUB_EVENT_PATH")
 
         if [[ " ${ALLOWED_USERS[@]} " =~ " ${PR_AUTHOR} " ]]; then
