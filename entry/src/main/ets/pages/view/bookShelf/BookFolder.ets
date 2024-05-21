@@ -17,9 +17,7 @@ export default struct BookFolder {
         if (this.EXHIBIT === '宫格'){
           this.bookInfoGrid(item.title,item.bookImage,item.countNumber)
         } else {
-          ForEach(novelPageList, (item: folderList,index:number) => {
-            this.bookFolderInfo(item)
-          })
+          this.bookFolderInfo(item)
         }
       })
     }

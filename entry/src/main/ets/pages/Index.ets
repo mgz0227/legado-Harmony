@@ -88,7 +88,6 @@ struct Main {
       }
       .scrollable(!this.APP_INDEX_SCROLLABLE)
       .padding({bottom:this.bottomRectHeight})
-      .backgroundColor('rgba(214, 213, 213, 0.7)')
       .onChange((index) => {
         this.currentTabIndex = index
       })

@@ -8,6 +8,8 @@ import router from '@ohos.router'; // 引入路由管理器
 import confirmDialogExample from '../../../componets/common/confirmDialog'
 import BookFolder from './BookFolder'
 import groupTypeComponent from '../../../componets/group/GroupType'
+import BookShelfInfo from './Shelf/BookShelfInfo'
+import ShelfBookList from './Shelf/ShelfBookList'
 
 @Component
 export default struct IndexShelf {
@@ -175,7 +177,8 @@ export default struct IndexShelf {
                       params: {
                         currentIndex:this.currentIndex,
                         EXHIBIT:this.EXHIBIT,
-                        GROUPName:this.GROUP
+                        GROUPName:this.GROUP,
+                        bookTypes:this.bookType
                       }
                     })
                   })
@@ -212,25 +215,32 @@ export default struct IndexShelf {
         Refresh({ refreshing: $$this.isRefreshing,builder:this.refreshComponent}) {
           Scroll(){
             Stack({alignContent:Alignment.Center}) {
-              if (this.GROUP === '标签'){
-                if (this.currentIndex === 0){
-                  novelPage({
-                    searchValue:this.searchValue,
-                    currentIndex:0,
-                    isClear:this.isClear,
-                    EXHIBIT:this.EXHIBIT
-                  })
-                    .zIndex(0)
-                } else if(this.currentIndex === 1) {
-                  cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(1)
-                } else if(this.currentIndex === 2) {
-                  soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(2)
-                }
-              } else {
-                BookFolder({
+              if (this.bookType === '书单' && this.searchValue !== '浏览历史'){
+                ShelfBookList({
                   EXHIBIT:this.EXHIBIT
                 })
+              } else {
+                if (this.GROUP === '标签'){
+                  if (this.currentIndex === 0){
+                    novelPage({
+                      searchValue:this.searchValue,
+                      currentIndex:0,
+                      isClear:this.isClear,
+                      EXHIBIT:this.EXHIBIT
+                    })
+                      .zIndex(0)
+                  } else if(this.currentIndex === 1) {
+                    cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(1)
+                  } else if(this.currentIndex === 2) {
+                    soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(2)
+                  }
+                } else {
+                  BookFolder({
+                    EXHIBIT:this.EXHIBIT
+                  })
+                }
               }
+
             }
             .padding({left:10,right:10})
           }
