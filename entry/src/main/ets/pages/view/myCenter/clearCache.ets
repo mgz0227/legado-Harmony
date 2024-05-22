@@ -1,5 +1,5 @@
 import { dataItem } from '../../../componets/dataList/dataItem'
-import { myCenterTitle } from '../../../componets/myCenter/myCenterTitle'
+import { MyCenterTitle } from '../../../componets/myCenter/MyCenterTitle'
 import { serviceDialog } from '../../../componets/webDavService/serviceDialog'
 
 @Entry
@@ -17,7 +17,7 @@ struct clearCache{
   build() {
     Column({space:12}){
       //标题栏
-      myCenterTitle({title:"清理缓存"})
+      MyCenterTitle({title:"清理缓存"})
       Column(){
         ForEach(this.clearList,(item:dataItem,index:number)=>{
           Row({space:10}){
