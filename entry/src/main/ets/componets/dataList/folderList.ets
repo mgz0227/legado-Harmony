@@ -34,13 +34,17 @@ export class folderList {
    */
   isTop:boolean
 
+  isShow:boolean
+
   newUpdateBook:string
 
   topUpdateTime:Date
 
+  isUpdateReminder:boolean
 
 
-  constructor(id:number,title:string,countNumber:number,bookImage:Resource,bookType:string,newUpdateBook:string = '',isTop:boolean = false,describe:string = '', topUpdateTime:Date = new Date()) {
+
+  constructor(id:number,title:string,countNumber:number,bookImage:Resource,bookType:string,newUpdateBook:string = '',isShow:boolean = false,isTop:boolean = false,describe:string = '', topUpdateTime:Date = new Date(),isUpdateReminder:boolean = false) {
     this.id = id
     this.title = title
     this.bookType = bookType
@@ -50,5 +54,7 @@ export class folderList {
     this.bookImage = bookImage
     this.newUpdateBook = newUpdateBook
     this.topUpdateTime = topUpdateTime
+    this.isShow = isShow
+    this.isUpdateReminder = isUpdateReminder
   }
 }

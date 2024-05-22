@@ -12,11 +12,12 @@ export default struct BookFolderManages {
   @Prop changeTop:boolean
   @Link folderList:folderList[]
   @Prop EXHIBIT:string
-
+  @State delCache:boolean = false
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
-      confirm: ()=> { this.onAccept() }
+      confirm: ()=> { this.onAccept() },
+      delCache:this.delCache
     }),
     cancel: this.exitApp,
     autoCancel: true,
@@ -71,22 +72,25 @@ export default struct BookFolderManages {
      Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
        if (this.EXHIBIT === '列表') {
          ForEach(this.folderList, (item: folderList) => {
-           BookFolderInfoManage({
-             folderList:item,
-             changeTop:this.changeTop,
-             allCheck:this.allCheck,
-             folderCheckList:this.folderCheckList
-           })
+           if (!item.isShow) {
+             BookFolderInfoManage({
+               folderList:item,
+               changeTop:this.changeTop,
+               allCheck:this.allCheck,
+               folderCheckList:this.folderCheckList
+             })
+           }
          })
-
        } else {
          ForEach(this.folderList, (item: folderList) => {
-           BookFolderGridManage({
-             folderList:item,
-             changeTop:this.changeTop,
-             allCheck:this.allCheck,
-             folderCheckList:this.folderCheckList
-           }).width('33%')
+           if (!item.isShow) {
+             BookFolderGridManage({
+               folderList:item,
+               changeTop:this.changeTop,
+               allCheck:this.allCheck,
+               folderCheckList:this.folderCheckList
+             }).width('33%')
+           }
          })
        }
      }

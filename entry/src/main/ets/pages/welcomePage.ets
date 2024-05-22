@@ -1,6 +1,7 @@
 import CommonConstants from '../common/constants/CommonConstants';
 import router from '@ohos.router'; // 引入路由管理器
 import { initBookListData } from '../storage/bookListData';
+import { initAppData } from '../storage/appData';
 
 @Entry
 @Component
@@ -8,7 +9,7 @@ struct Index {
   @State name: string = '开源阅读'
   @State Tip: string = '享受阅读时光'
   onPageShow() {
-    initBookListData()
+    initAppData()
     setTimeout(() => {
       // 使用路由管理器跳转到主页面
       router.pushUrl({

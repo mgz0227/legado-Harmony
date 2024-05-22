@@ -124,13 +124,14 @@ export default struct catalogMove{
     }
   }
 
-
+  @State delCache:boolean = false
   //是否确认移动分组
   clickBookTypeDialog: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       cancel: ()=> { this.clickBookCancel() },
       confirm: ()=> { this.clickBookAccept() },
-      title:`移动到${this.clickBookType}`
+      title:`移动到${this.clickBookType}`,
+      delCache:this.delCache
     }),
     cancel: this.clickExitDialog,
     autoCancel: true,

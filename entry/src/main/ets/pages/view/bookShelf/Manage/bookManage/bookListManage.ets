@@ -93,12 +93,14 @@ export default struct bookListManage{
   onIsEXHIBITChange() {
     console.log(this.EXHIBIT)
   }
-
+  @State delCache:boolean = false
   //弹窗
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
-      confirm: ()=> { this.onAccept() }
+      confirm: ()=> { this.onAccept() },
+      delCache:this.delCache,
+      isShowCache:true
     }),
     cancel: this.exitApp,
     autoCancel: true,

@@ -291,7 +291,9 @@ struct SubscriptionCard {
     Column() {
       Scroll() {
         Flex({
-          direction: FlexDirection.Row, wrap: FlexWrap.Wrap, alignContent: FlexAlign.Center,
+          direction: FlexDirection.Row,
+          wrap: FlexWrap.Wrap,
+          alignContent: FlexAlign.Center,
           justifyContent: FlexAlign.Start
         }) {
           ForEach(this.BooTypeList, (item: string) => {

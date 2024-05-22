@@ -1,8 +1,10 @@
 import CommonConstants from '../../common/constants/CommonConstants'
 import ReadRecordItem from '../../componets/bookDetail/ReadRecordItem'
 import TagIndex from '../../componets/bookDetail/TagIndex'
-import { SwipeRefresher } from '@kit.ArkUI'
+import { Router, SwipeRefresher } from '@kit.ArkUI'
 import router from '@ohos.router'
+import NoteIndex from '../../componets/bookDetail/note/NoteIndex'
+
 /**
  * 标题图片样式
  */
@@ -104,12 +106,7 @@ struct BookDetailPage {
         }
         .tabBar(this.catalogTab(1, '书源', 24))
         TabContent() {
-          Column() {
-            SwipeRefresher({
-              content: '目录加载中...',
-              isLoading: true
-            })
-          }
+          NoteIndex()
         }
         .tabBar(this.catalogTab(2, '笔记', 7))
       }
@@ -141,7 +138,7 @@ struct BookDetailPage {
       .width(CommonConstants.FULL_WIDTH)
       .height(64)
     }
-    .padding({left: 20, right: 20})
+    .padding({left: 20, right: 20, bottom: 12})
     .width(CommonConstants.FULL_WIDTH)
     .height(CommonConstants.FULL_HEIGHT)
     .borderRadius(16)

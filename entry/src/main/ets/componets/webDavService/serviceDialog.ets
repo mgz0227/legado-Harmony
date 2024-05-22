@@ -9,8 +9,10 @@ export struct serviceDialog{
   }
   confirm: () => void = () => {
   }
+
   @Prop title:string = ''
   @Prop value:string=""
+  @Prop type:string="text"
   @Builder button(title:string,color:Array<ResourceStr|Color>,confirm: () => void){
     Text(title)
       .onClick(() => {
@@ -24,19 +26,22 @@ export struct serviceDialog{
       .fontColor(color[0])
       .backgroundColor(color[1])
   }
+
+
   build() {
     Column({space:15}) {
       Text(this.title)
         .fontWeight(600)
         .fontSize(16)
-      Text(this.value)
-        .fontWeight(600)
-        .fontSize(14)
-        .size({width:"80%"})
-        .fontColor("rgba(0, 0, 0, 0.45)")
-        .textAlign(TextAlign.Center)
-        .lineHeight(25)
-        .visibility(this.value!=''?Visibility.Visible:Visibility.None)
+      if(this.type=="text"){
+        Text(this.value)
+          .fontWeight(600)
+          .fontSize(14)
+          .size({width:"80%"})
+          .fontColor("rgba(0, 0, 0, 0.45)")
+          .textAlign(TextAlign.Center)
+          .lineHeight(25)
+      }
       Row({space:24}) {
         this.button("取消",[$r('app.color.theme_color'),'rgba(255,120,0,0.12)'],this.cancel)
         this.button("确定",[Color.White,$r('app.color.theme_color')],this.confirm)

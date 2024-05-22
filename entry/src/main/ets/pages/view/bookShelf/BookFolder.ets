@@ -1,8 +1,7 @@
 import BookOverlay from '../../../componets/bookDetail/BookOverlay'
 import { folderList } from '../../../componets/dataList/folderList'
 import {novelPageList} from '../../../viewData/bookData'
-import BookFolderGridManage from './Manage/bookManage/BookFolderGridManage'
-import BookFolderInfoManage from './Manage/bookManage/BookFolderInfoManage'
+import FolderInfoDialog from '../dialog/FolderInfoDialog'
 
 /**
  * 文件夹
@@ -11,15 +10,15 @@ import BookFolderInfoManage from './Manage/bookManage/BookFolderInfoManage'
 export default struct BookFolder {
   @Prop EXHIBIT:string
   @State folderCheckList:folderList[] = []
+  @State isShow:boolean = false
+  @State folder:folderList = new folderList(0,'',0,$r('app.media.folder_test'),'')
   build() {
     Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
       ForEach(novelPageList, (item: folderList,index:number) => {
         if (this.EXHIBIT === '宫格'){
-          this.bookInfoGrid(item.title,item.bookImage,item.countNumber)
+          this.bookInfoGrid(item)
         } else {
-          ForEach(novelPageList, (item: folderList,index:number) => {
-            this.bookFolderInfo(item)
-          })
+          this.bookFolderInfo(item)
         }
       })
     }
@@ -28,7 +27,7 @@ export default struct BookFolder {
   }
 
 
-  @Builder bookInfoGrid(title:string,bookImage:Resource,countNumer:number){
+  @Builder bookInfoGrid(item: folderList){
     Column({
       space:5
     }) {
@@ -38,8 +37,19 @@ export default struct BookFolder {
             Column(){
 
             }
+            .gesture(
+              LongPressGesture({ repeat: true,duration:500 })
+                .onAction((event: GestureEvent) => {
+                  if (event.repeat) {
+                    if (!this.isShow) {
+                      this.folder = item
+                      this.isShow = true
+                      this.folderInfoDialog?.open()
+                    }
+                  }
+                }))
             .width(88).height(120)
-            .backgroundImage(bookImage)
+            .backgroundImage(item.bookImage)
             .backgroundImageSize({width:88,height:120})
             .zIndex(2)
 
@@ -59,7 +69,7 @@ export default struct BookFolder {
 
         Row().width(100).height(20).backgroundColor('rgba(255, 255, 255, 0.6)').borderRadius(10)
       }
-      Text(title)
+      Text(item.title)
         .fontSize(15)
         .fontWeight(700)
         .textOverflow({
@@ -67,7 +77,7 @@ export default struct BookFolder {
         })
         .ellipsisMode(EllipsisMode.END)
         .maxLines(2)
-      Text(`共${countNumer}本`).fontSize(12).fontColor('rgb(174,174,174)')
+      Text(`共${item.countNumber}本`).fontSize(12).fontColor('rgb(174,174,174)')
         .textOverflow({
           overflow:TextOverflow.Ellipsis
         })
@@ -97,6 +107,18 @@ export default struct BookFolder {
           bookHeight:80,
           isTop:folderList.isTop
         })
+          .gesture(
+          LongPressGesture({ repeat: true,duration:500 })
+            .onAction((event: GestureEvent) => {
+              if (event.repeat) {
+
+                if (!this.isShow) {
+                  this.folder = folderList
+                  this.isShow = true
+                  this.folderInfoDialog?.open()
+                }
+              }
+            }))
         Column({
           space:24
         })
@@ -131,4 +153,25 @@ export default struct BookFolder {
     .padding(10)
     .borderRadius(10)
   }
+
+
+  folderInfoDialog: CustomDialogController | null = new CustomDialogController({
+    builder: FolderInfoDialog({
+      itemData:this.folder,
+      cancel: () => {
+        this.exitDialog()
+      }
+    }),
+    cancel: this.exitDialog,
+    autoCancel: true,
+    width:'100%',
+    alignment: DialogAlignment.Bottom,
+    customStyle:true
+
+  })
+  //退出弹框
+  exitDialog(){
+    this.isShow = false
+  }
+
 }
