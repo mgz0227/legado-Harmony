@@ -364,6 +364,8 @@ export default struct IndexShelf {
         Image($r(`${image}`))
           .width(24)
       }
+      .width(48)
+      .height(48)
       .borderRadius(24)
       .borderColor("rgba(0, 0, 0, 0.15)")
       .backgroundColor("white")
@@ -386,10 +388,12 @@ export default struct IndexShelf {
     .onClick(() => {
       switch (index) {
         case 0:
-
+          router.pushUrl({
+            url: 'pages/view/bookShelf/LocalImportPage'
+          });
           break
         case 1:
-          
+
           break
         case 2:
 
