@@ -3,8 +3,33 @@ import hilog from '@ohos.hilog';
 import window from '@ohos.window';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { AbilityConstant, Want } from '@kit.AbilityKit';
+import display from '@ohos.display';
 
 export default class EntryAbility extends UIAbility {
+
+  private curBp: string = ''
+
+  // 根据当前窗口尺寸更新断点
+  private updateBreakpoint(windowWidth: number) :void{
+    // 将长度的单位由px换算为vp
+    let windowWidthVp = windowWidth / display.getDefaultDisplaySync().densityPixels
+    let newBp: string = ''
+    if (windowWidthVp < 320) {
+      newBp = 'xs'
+    } else if (windowWidthVp < 600) {
+      newBp = 'sm'
+    } else if (windowWidthVp < 840) {
+      newBp = 'md'
+    } else {
+      newBp = 'lg'
+    }
+    if (this.curBp !== newBp) {
+      this.curBp = newBp
+      // 使用状态变量记录当前断点值
+      AppStorage.setOrCreate('currentBreakpoint', this.curBp)
+    }
+  }
+
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
   }
@@ -41,6 +66,15 @@ export default class EntryAbility extends UIAbility {
       avoidArea = windowClass.getWindowAvoidArea(type);
       let topRectHeight = avoidArea.topRect.height;
       AppStorage.setOrCreate('topRectHeight', px2vp(topRectHeight));
+
+      //手机屏幕高度和宽度
+      let defaultDisplay = display.getDefaultDisplaySync()
+      let WindowHeight = defaultDisplay.height
+      let WindowWidth = defaultDisplay.width
+
+
+      AppStorage.setOrCreate('WindowHeight', px2vp(WindowHeight));
+      AppStorage.setOrCreate('WindowWidth', px2vp(WindowWidth));
 
     })
     windowStage.loadContent('pages/welcomePage', (err, data) => {
