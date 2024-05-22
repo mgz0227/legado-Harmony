@@ -9,15 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v2
 
     - name: Set up Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v2
       with:
-        node-version: '16'
+        node-version: '14'
 
-    - name: Auto merge PR
-      id: auto-merge
+    - name: Determine if PR should be merged
+      id: determine-merge
       run: |
         ALLOWED_USERS=("yindushenwen" "0wenfeng0" "linxunxr" "c386522459" "cradesence" "Sunny-316" "thfgjy" "stupchen" "MaoXiaoone" "ouzechang" "polo3584")
         PR_AUTHOR=$(jq -r .pull_request.user.login < "$GITHUB_EVENT_PATH")
@@ -28,13 +28,10 @@ jobs:
         else
           echo "PR author ${PR_AUTHOR} is not allowed to auto-merge."
           echo "MERGE=false" >> $GITHUB_ENV
-        fi
 
     - name: Merge PR
       if: env.MERGE == 'true'
-      uses: pascalgn/automerge-action@v0.16.3
+      run: |
+        gh pr merge ${{ github.event.pull_request.number }} --merge --repo ${{ github.repository }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        mergeMethod: merge # 可选 merge, squash, rebase
-        branch: main # 目标分支
