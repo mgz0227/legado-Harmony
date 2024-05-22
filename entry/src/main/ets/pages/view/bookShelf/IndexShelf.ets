@@ -48,7 +48,7 @@ export default struct IndexShelf {
   @State EXHIBIT:string = '列表'
   @State GROUP:string = '标签'
   @State searchValue:string = '最近阅读'
-  @State bookType:string = '全部'
+  @State bookType:string = '分组'
   @State title:string = '最近阅读'
   @State isClear:boolean = false
   @State isRefreshing: boolean = false
@@ -220,7 +220,7 @@ export default struct IndexShelf {
                   EXHIBIT:this.EXHIBIT
                 })
               } else {
-                if (this.GROUP === '标签'){
+                if (this.GROUP === '标签' && this.bookType !== '分组'){
                   if (this.currentIndex === 0){
                     novelPage({
                       searchValue:this.searchValue,
