@@ -13,13 +13,17 @@ import ShelfBookList from './Shelf/ShelfBookList'
 
 @Component
 export default struct IndexShelf {
-  @State delCache:boolean = false
+  @State delCache: boolean = false
   IndexShelf: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
-      cancel: ()=> { this.onCancel() },
-      confirm: ()=> { this.onAccept() },
+      cancel: () => {
+        this.onCancel()
+      },
+      confirm: () => {
+        this.onAccept()
+      },
       title: '清空',
-      delCache:this.delCache
+      delCache: this.delCache
     }),
     cancel: this.exitApp,
     autoCancel: true,
@@ -34,43 +38,47 @@ export default struct IndexShelf {
     console.info('确定')
     this.isClear = true
   }
+
   onCancel() {
     console.info('取消')
   }
+
   exitApp() {
     console.info('点外围取消')
   }
 
   @State currentIndex: number = 0
-  THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单','批量管理']
+  THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单', '批量管理']
   EXHIBIT_NAMES: string[] = ['列表', '宫格']
-  GROUP_NAMES:string[] = ['标签', '文件夹']
-  @State EXHIBIT:string = '列表'
-  @State GROUP:string = '标签'
-  @State searchValue:string = '最近阅读'
-  @State bookType:string = '全部'
-  @State title:string = '最近阅读'
-  @State isClear:boolean = false
+  GROUP_NAMES: string[] = ['标签', '文件夹']
+  @State EXHIBIT: string = '列表'
+  @State GROUP: string = '标签'
+  @State searchValue: string = '最近阅读'
+  @State bookType: string = '全部'
+  @State title: string = '最近阅读'
+  @State isClear: boolean = false
   @State isRefreshing: boolean = false
   @State counter: number = 0
-  @State RefreshingTitle:string = '松开刷新'
-  @State groupCoverShow:boolean = false
+  @State RefreshingTitle: string = '松开刷新'
+  @State groupCoverShow: boolean = false
+  @State isShowImport: boolean = false
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
+
   build() {
     Column() {
       Blank(20)
       Tabs({
-        barPosition:BarPosition.Start
-      }){
-        TabContent(){
+        barPosition: BarPosition.Start
+      }) {
+        TabContent() {
           this.book()
         }
 
-        TabContent(){
+        TabContent() {
           this.book()
         }
 
-        TabContent(){
+        TabContent() {
           this.book()
         }
       }
@@ -81,19 +89,20 @@ export default struct IndexShelf {
       })
       .scrollable(this.APP_INDEX_SCROLLABLE)
     }
-    .padding({bottom:10})
-    .borderRadius({ bottomRight:5 ,bottomLeft:5})
+    .padding({ bottom: 10 })
+    .borderRadius({ bottomRight: 5, bottomLeft: 5 })
     .backgroundImage($r('app.media.backgroundimage'))
-    .backgroundImageSize({width:'100%',height:'10%'})
+    .backgroundImageSize({ width: '100%', height: '10%' })
     .width('100%')
   }
 
-  @Builder book(){
-    Column(){
+  @Builder
+  book() {
+    Column() {
       Flex({
         justifyContent: FlexAlign.SpaceBetween,
         alignItems: ItemAlign.End
-      }){
+      }) {
         Row({ space: 20 }) {
           BookMark({ title: '小说', index: 0, currentIndex: this.currentIndex }).onClick(() => {
             this.currentIndex = 0
@@ -126,7 +135,7 @@ export default struct IndexShelf {
                 }
               },
               {
-                icon:$r('app.media.down_svg'),
+                icon: $r('app.media.down_svg'),
                 value: this.THEME_NAMES[1],
                 action: () => {
                   this.changeTheme(1)
@@ -147,23 +156,34 @@ export default struct IndexShelf {
                 }
               }
             ])
-        }.margin({right:20 })
+            .bindSheet($$this.isShowImport, this.ImportDialog(), {
+              height: 200,
+              showClose: false,
+              dragBar: false,
+              backgroundColor:"rgba(0, 0, 0, 0.15)",
+              blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
+              onDisappear: () => {
+                // this.clickBookType = ''
+              }
+            })
+        }.margin({ right: 20 })
       }
+
       Flex(
         {
           alignItems: ItemAlign.Center,
           justifyContent: FlexAlign.SpaceBetween
         }
-      ){
-        Scroll(){
+      ) {
+        Scroll() {
           Flex({
             alignItems: ItemAlign.Center,
             justifyContent: FlexAlign.SpaceBetween
-          }){
-            Row({space:15}){
-              IndexSearchType({title:this.title,searchValue:this.searchValue})
-              IndexSearchType({title:'浏览历史',searchValue:this.searchValue})
-                .onClick(()=> {
+          }) {
+            Row({ space: 15 }) {
+              IndexSearchType({ title: this.title, searchValue: this.searchValue })
+              IndexSearchType({ title: '浏览历史', searchValue: this.searchValue })
+                .onClick(() => {
                   this.GROUP = '标签'
                   this.searchValue = '浏览历史'
                 })
@@ -171,14 +191,14 @@ export default struct IndexShelf {
                 this.GroupBuilder()
                 this.ExhibitBuilder()
                 Text('管理')
-                  .onClick(()=>{
+                  .onClick(() => {
                     router.pushUrl({
-                      url:'pages/view/bookShelf/Manage/BookManagePage',
+                      url: 'pages/view/bookShelf/Manage/BookManagePage',
                       params: {
-                        currentIndex:this.currentIndex,
-                        EXHIBIT:this.EXHIBIT,
-                        GROUPName:this.GROUP,
-                        bookTypes:this.bookType
+                        currentIndex: this.currentIndex,
+                        EXHIBIT: this.EXHIBIT,
+                        GROUPName: this.GROUP,
+                        bookTypes: this.bookType
                       }
                     })
                   })
@@ -204,60 +224,71 @@ export default struct IndexShelf {
         }
       }
       .padding(15)
-      Stack(){
-        if (this.searchValue !== '浏览历史'){
+
+      Stack() {
+        if (this.searchValue !== '浏览历史') {
           groupTypeComponent({
-            bookType:this.bookType,
-            currentIndex:this.currentIndex,
-            groupCoverShow:this.groupCoverShow
+            bookType: this.bookType,
+            currentIndex: this.currentIndex,
+            groupCoverShow: this.groupCoverShow
           }).zIndex(999)
         }
-        Refresh({ refreshing: $$this.isRefreshing,builder:this.refreshComponent}) {
-          Scroll(){
-            Stack({alignContent:Alignment.Center}) {
-              if (this.bookType === '书单' && this.searchValue !== '浏览历史'){
+        Refresh({ refreshing: $$this.isRefreshing, builder: this.refreshComponent }) {
+          Scroll() {
+            Stack({ alignContent: Alignment.Center }) {
+              if (this.bookType === '书单' && this.searchValue !== '浏览历史') {
                 ShelfBookList({
-                  EXHIBIT:this.EXHIBIT
+                  EXHIBIT: this.EXHIBIT
                 })
               } else {
-                if (this.GROUP === '标签'){
-                  if (this.currentIndex === 0){
+                if (this.GROUP === '标签') {
+                  if (this.currentIndex === 0) {
                     novelPage({
-                      searchValue:this.searchValue,
-                      currentIndex:0,
-                      isClear:this.isClear,
-                      EXHIBIT:this.EXHIBIT
+                      searchValue: this.searchValue,
+                      currentIndex: 0,
+                      isClear: this.isClear,
+                      EXHIBIT: this.EXHIBIT
                     })
                       .zIndex(0)
-                  } else if(this.currentIndex === 1) {
-                    cartoonPage({searchValue:this.searchValue,currentIndex:1,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(1)
-                  } else if(this.currentIndex === 2) {
-                    soundPage({searchValue:this.searchValue,currentIndex:2,isClear:this.isClear,EXHIBIT:this.EXHIBIT}).zIndex(2)
+                  } else if (this.currentIndex === 1) {
+                    cartoonPage({
+                      searchValue: this.searchValue,
+                      currentIndex: 1,
+                      isClear: this.isClear,
+                      EXHIBIT: this.EXHIBIT
+                    }).zIndex(1)
+                  } else if (this.currentIndex === 2) {
+                    soundPage({
+                      searchValue: this.searchValue,
+                      currentIndex: 2,
+                      isClear: this.isClear,
+                      EXHIBIT: this.EXHIBIT
+                    }).zIndex(2)
                   }
                 } else {
                   BookFolder({
-                    EXHIBIT:this.EXHIBIT
+                    EXHIBIT: this.EXHIBIT
                   })
                 }
               }
 
             }
-            .padding({left:10,right:10})
+            .padding({ left: 10, right: 10 })
           }
           .height('85%')
           .align(Alignment.TopStart)
           // .height(this.searchValue==='浏览历史'?'83%':'78%')
           .scrollBar(BarState.Off)
         }
-        .margin({top:this.searchValue==='浏览历史'?0:30})
-        .onStateChange((refreshStatus: RefreshStatus) =>{
+        .margin({ top: this.searchValue === '浏览历史' ? 0 : 30 })
+        .onStateChange((refreshStatus: RefreshStatus) => {
           if (refreshStatus === 1 || refreshStatus === 2) {
             this.RefreshingTitle = '松开刷新'
-          } else{
+          } else {
             this.RefreshingTitle = '刷新中...'
           }
         })
-        .onRefreshing(()=>{
+        .onRefreshing(() => {
           setTimeout(() => {
             this.counter++
             this.isRefreshing = false
@@ -269,9 +300,10 @@ export default struct IndexShelf {
     }
   }
 
-  @Builder ExhibitBuilder() {
-    Row({space:10}){
-      ForEach(this.EXHIBIT_NAMES, (item:string) => {
+  @Builder
+  ExhibitBuilder() {
+    Row({ space: 10 }) {
+      ForEach(this.EXHIBIT_NAMES, (item: string) => {
         if (item !== this.EXHIBIT) {
           IndexSearchType({ title: item, searchValue: this.searchValue })
             .onClick(() => {
@@ -288,9 +320,10 @@ export default struct IndexShelf {
     }
   }
 
-  @Builder GroupBuilder() {
-    Row({space:10}){
-      ForEach(this.GROUP_NAMES, (item:string) => {
+  @Builder
+  GroupBuilder() {
+    Row({ space: 10 }) {
+      ForEach(this.GROUP_NAMES, (item: string) => {
         if (item !== this.GROUP) {
           IndexSearchType({ title: item, searchValue: this.searchValue })
             .onClick(() => {
@@ -307,25 +340,148 @@ export default struct IndexShelf {
     }
   }
 
-  @Builder TabBuilderImage(index: number, name: string) {
+  @Builder
+  TabBuilderImage(index: number, name: string) {
     Column() {
       Image($r('app.media.SUB_theme'))
     }.width('100%')
   }
 
   @Builder
-  refreshComponent()
-  {
-    Row()
-    {
-      if (this.RefreshingTitle !== '松开刷新'){
+  refreshComponent() {
+    Row() {
+      if (this.RefreshingTitle !== '松开刷新') {
         LoadingProgress().height(30)
       }
-      Text(this.RefreshingTitle).fontSize(16).margin({left:20})
+      Text(this.RefreshingTitle).fontSize(16).margin({ left: 20 })
+    }
+  }
+
+  @Builder
+  ImportDialog() {
+    Column() {
+      Flex({
+        direction: FlexDirection.Row,
+        wrap: FlexWrap.Wrap,
+        alignContent: FlexAlign.Center,
+        justifyContent: FlexAlign.Start
+      }) {
+        Grid() {
+          GridItem() {
+            Column({ space: 8 }) {
+              Flex() {
+                Image($r('app.media.my_center_file_icon'))
+                  .width(24)
+              }
+              .borderRadius(24)
+              .borderColor("rgba(0, 0, 0, 0.15)")
+              .backgroundColor("white")
+              .borderWidth(1)
+              .padding(12)
+
+              Text("本地导入")
+                .lineHeight(20)
+                .font({
+                  size: 12,
+                  weight: 400
+                })
+            }
+            .padding({
+              top: 16,
+              bottom: 12,
+              left: 21,
+              right: 21
+            })
+          }
+
+          GridItem() {
+            Column({ space: 8 }) {
+              Flex() {
+                Image($r('app.media.my_center_cloud_icon')).width(24)
+              }
+              .borderRadius(24)
+              .borderColor("rgba(0, 0, 0, 0.15)")
+              .backgroundColor("#FFFFFF")
+              .borderWidth(1)
+              .padding(12)
+
+              Text("网盘导入")
+                .lineHeight(20)
+                .font({
+                  size: 12,
+                  weight: 400
+                })
+            }
+            .padding({
+              top: 16,
+              bottom: 12,
+              left: 21,
+              right: 21
+            })
+          }
+
+          GridItem() {
+            Column({ space: 8 }) {
+              Flex() {
+                Image($r('app.media.official_website')).width(24)
+              }
+              .borderRadius(24)
+              .borderColor("rgba(0, 0, 0, 0.15)")
+              .backgroundColor("white")
+              .borderWidth(1)
+              .padding(12)
+
+              Text("网址导入")
+                .lineHeight(20)
+                .font({
+                  size: 12,
+                  weight: 400
+                })
+            }
+            .padding({
+              top: 16,
+              bottom: 12,
+              left: 21,
+              right: 21
+            })
+          }
+        }
+        .columnsTemplate("1fr 1fr 1fr 1fr")
+        .padding({
+          top: 12
+        })
+      }
+      .height("65%")
+
+      Divider()
+
+      Column() {
+        Text('取消').fontSize(16).fontWeight(400)
+          .lineHeight(24)
+      }
+      .onClick(() => {
+        this.isShowImport = false
+      })
+      .alignItems(HorizontalAlign.Center)
+      .padding({
+        left: 32,
+        right: 32,
+        top: 16
+      })
     }
   }
 
   changeTheme(themeNum: number) {
-
+    switch (themeNum) {
+      case 0:
+        this.isShowImport = true
+        break
+      case 1:
+        break
+      case 2:
+        break
+      case 3:
+        break
+    }
   }
 }

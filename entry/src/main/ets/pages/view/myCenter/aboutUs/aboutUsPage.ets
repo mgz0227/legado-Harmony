@@ -109,10 +109,10 @@ struct AboutUsPage {
         this.middleClick(this.first_list, "app.media.right", this.version, "first")
 
         Row({ space: 16 }) {
-          this.middleBox("app.media.official_website", "官网")
-          this.middleBox("app.media.wechat_public_account", "公众号")
-          this.middleBox("app.media.channel", "QQ频道")
-          this.middleBox("app.media.QQ", "QQ群")
+          this.middleBox(0,"app.media.official_website", "官网")
+          this.middleBox(1,"app.media.wechat_public_account", "公众号")
+          this.middleBox(2,"app.media.channel", "QQ频道")
+          this.middleBox(3,"app.media.QQ", "QQ群")
         }
         // QQ群的半模态框 不知道绑定在哪里，鸿蒙官方怎么想的，非要绑定一个元素？
         .bindSheet($$this.isShowQQ, this.QQDialog(), {
@@ -139,7 +139,7 @@ struct AboutUsPage {
   }
 
   @Builder
-  middleBox(image: string, text: string) {
+  middleBox(index:number,image: string, text: string) {
     Column({ space: 2 }) {
       Image($r(`${image}`)).size({ width: 24, height: 24 })
       Text(text)
@@ -162,7 +162,17 @@ struct AboutUsPage {
     .borderRadius(12)
     .backgroundColor(Color.White)
     .onClick(() => {
-
+      switch (index){
+        case 0:
+          break
+        case 1:
+          break
+        case 2:
+          break
+        case 3:
+          this.isShowQQ =true
+          break
+      }
     })
   }
 
