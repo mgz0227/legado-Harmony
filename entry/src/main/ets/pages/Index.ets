@@ -7,6 +7,7 @@ import BookShelf from './view/BookShelf'
 import Find from './view/Find'
 import MyCenter from './view/myCenter/MyCenter'
 import Subscription from './view/Subscription'
+import {testGetColorFunction} from '@ohos/colorLibrary'
 
 @Entry
 @Component
@@ -23,6 +24,11 @@ struct Main {
       this.showReadShow = false
       this.isShow = false
     },5000)
+  }
+
+  aboutToAppear(): void {
+    //测试颜色模块
+    testGetColorFunction();
   }
 
   @Builder TabBuilder(index = 0, name: string,icon_select: Resource,unselected: Resource) {
