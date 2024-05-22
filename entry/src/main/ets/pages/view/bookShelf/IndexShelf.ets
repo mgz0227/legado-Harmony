@@ -157,10 +157,10 @@ export default struct IndexShelf {
               }
             ])
             .bindSheet($$this.isShowImport, this.ImportDialog(), {
-              height: 200,
+              height: 220,
               showClose: false,
               dragBar: false,
-              backgroundColor:"rgba(0, 0, 0, 0.15)",
+              backgroundColor: "rgba(0, 0, 0, 0.15)",
               blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
               onDisappear: () => {
                 // this.clickBookType = ''
@@ -358,6 +358,47 @@ export default struct IndexShelf {
   }
 
   @Builder
+  ImportClickBox(index: number, image: string, text: string) {
+    Column({ space: 8 }) {
+      Flex() {
+        Image($r(`${image}`))
+          .width(24)
+      }
+      .borderRadius(24)
+      .borderColor("rgba(0, 0, 0, 0.15)")
+      .backgroundColor("white")
+      .borderWidth(1)
+      .padding(12)
+
+      Text(text)
+        .lineHeight(20)
+        .font({
+          size: 12,
+          weight: 400
+        })
+    }
+    .padding({
+      top: 16,
+      bottom: 12,
+      left: 21,
+      right: 21
+    })
+    .onClick(() => {
+      switch (index) {
+        case 0:
+
+          break
+        case 1:
+          
+          break
+        case 2:
+
+          break
+      }
+    })
+  }
+
+  @Builder
   ImportDialog() {
     Column() {
       Flex({
@@ -368,82 +409,15 @@ export default struct IndexShelf {
       }) {
         Grid() {
           GridItem() {
-            Column({ space: 8 }) {
-              Flex() {
-                Image($r('app.media.my_center_file_icon'))
-                  .width(24)
-              }
-              .borderRadius(24)
-              .borderColor("rgba(0, 0, 0, 0.15)")
-              .backgroundColor("white")
-              .borderWidth(1)
-              .padding(12)
-
-              Text("本地导入")
-                .lineHeight(20)
-                .font({
-                  size: 12,
-                  weight: 400
-                })
-            }
-            .padding({
-              top: 16,
-              bottom: 12,
-              left: 21,
-              right: 21
-            })
+            this.ImportClickBox(0, "app.media.my_center_file_icon", "本地导入")
           }
 
           GridItem() {
-            Column({ space: 8 }) {
-              Flex() {
-                Image($r('app.media.my_center_cloud_icon')).width(24)
-              }
-              .borderRadius(24)
-              .borderColor("rgba(0, 0, 0, 0.15)")
-              .backgroundColor("#FFFFFF")
-              .borderWidth(1)
-              .padding(12)
-
-              Text("网盘导入")
-                .lineHeight(20)
-                .font({
-                  size: 12,
-                  weight: 400
-                })
-            }
-            .padding({
-              top: 16,
-              bottom: 12,
-              left: 21,
-              right: 21
-            })
+            this.ImportClickBox(1, "app.media.my_center_cloud_icon", "网盘导入")
           }
 
           GridItem() {
-            Column({ space: 8 }) {
-              Flex() {
-                Image($r('app.media.official_website')).width(24)
-              }
-              .borderRadius(24)
-              .borderColor("rgba(0, 0, 0, 0.15)")
-              .backgroundColor("white")
-              .borderWidth(1)
-              .padding(12)
-
-              Text("网址导入")
-                .lineHeight(20)
-                .font({
-                  size: 12,
-                  weight: 400
-                })
-            }
-            .padding({
-              top: 16,
-              bottom: 12,
-              left: 21,
-              right: 21
-            })
+            this.ImportClickBox(2, "app.media.official_website", "网址导入")
           }
         }
         .columnsTemplate("1fr 1fr 1fr 1fr")
