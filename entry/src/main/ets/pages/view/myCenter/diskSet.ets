@@ -1,7 +1,7 @@
 import { ColumnModifier } from '../../../common/utils/ComponetModifier';
 import { dataItem } from '../../../componets/dataList/dataItem';
 
-import { myCenterTitle } from '../../../componets/myCenter/myCenterTitle';
+import { MyCenterTitle } from '../../../componets/myCenter/MyCenterTitle';
 
 import { diskComponet } from '../../../componets/myCenter/diskComponet';
 import { PublicConstants, TextConstants } from '../../../common/constants/PublicConstants';
@@ -84,7 +84,7 @@ struct DiskSet {
   build() {
     Column() {
       //标题栏
-      myCenterTitle({title:"备份设置"})
+      MyCenterTitle({title:"备份设置"})
 
       Column(){
         diskComponet({

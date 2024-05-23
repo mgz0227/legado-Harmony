@@ -1,6 +1,6 @@
 import { promptAction, router } from '@kit.ArkUI';
 import { dataItem } from '../../../componets/dataList/dataItem';
-import { myCenterTitle } from '../../../componets/myCenter/myCenterTitle';
+import { MyCenterTitle } from '../../../componets/myCenter/MyCenterTitle';
 import { cloudDisKBindSheetComponet } from '../../../componets/myCenter/cloudDisKBindSheetComponet';
 import { ColumnModifier } from '../../../common/utils/ComponetModifier';
 import { PublicConstants, TextConstants } from '../../../common/constants/PublicConstants';
@@ -148,7 +148,8 @@ struct CloudDisk {
   build() {
       Column() {
         //标题栏
-        myCenterTitle({title:"云备份"})
+
+        MyCenterTitle({title:"云备份"})
         //备份图片及按钮
         Column(){
           Column(){
