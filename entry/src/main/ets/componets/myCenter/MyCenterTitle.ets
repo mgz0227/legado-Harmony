@@ -6,6 +6,7 @@ export struct MyCenterTitle{
 
   @Prop title:string
 
+
   // 是否显示编辑按钮
   isShowEdit?:boolean = false
   // 是否显示菜单
