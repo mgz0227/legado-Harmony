@@ -1,4 +1,5 @@
 import CommonConstants from '../../common/constants/CommonConstants'
+import { PublicConstants } from '../../common/constants/PublicConstants'
 import { readBookList } from '../dataList/readBookList'
 
 
@@ -112,7 +113,7 @@ export struct readStatisticsDataList{
                    this.bookTime(book.status,book.dateTime,book.schedule,index)
                  }.padding(16).width("100%")
                  Row(){
-                   Text("删除").fontColor(Color.White)
+                   Text("删除").fontColor(PublicConstants.THEME_COLOR_WHITE)
                  }.width(70).height(110).backgroundColor(Color.Red)
                  .justifyContent(FlexAlign.Center)
                }.justifyContent(FlexAlign.End)
@@ -140,7 +141,7 @@ export struct readStatisticsDataList{
                    })
                )
              }.width(CommonConstants.FULL_WIDTH)
-             .backgroundColor(Color.White)
+             .backgroundColor(PublicConstants.THEME_COLOR_WHITE)
              .borderRadius(12)
              .margin({bottom:16})
              .clip(true)

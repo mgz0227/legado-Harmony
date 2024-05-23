@@ -3,6 +3,8 @@ import router from '@ohos.router'
 import { WebdavService } from '../../../componets/webDavService/WebdavService'
 import { promptAction } from '@kit.ArkUI'
 import { dataItem } from '../../../componets/dataList/dataItem'
+import { PublicConstants, TextConstants } from '../../../common/constants/PublicConstants'
+import { ColumnModifier } from '../../../common/utils/ComponetModifier'
 
 @Entry
 @Component
@@ -29,6 +31,7 @@ export default struct MyCenter {
     new dataItem("文件管理",4,$r("app.media.my_center_file_icon")),
   ]
   @StorageLink('topRectHeight') topRectHeight: number = 0
+  Column = new ColumnModifier()
   build() {
     Column(){
       Blank(this.topRectHeight-20)
@@ -54,7 +57,7 @@ export default struct MyCenter {
         //昵称及阅读时长
         Column({space :8}){
           Text("夏目友人").fontSize(16).fontWeight(600).lineHeight(24)
-          Text("今日阅读"+this.reading_time+"分钟").fontSize(12).fontColor("rgba(0, 0, 0, 0.45)")
+          Text("今日阅读"+this.reading_time+"分钟").fontSize(12).fontColor(TextConstants.TEXT_FONT_COLOR)
             .lineHeight(20)
         }.alignItems(HorizontalAlign.Start).width("45%").height("100%")
 
@@ -62,13 +65,13 @@ export default struct MyCenter {
         //云盘登录
         Row(){
           Text("云盘登录")
-            .fontColor("rgba(0, 0, 0, 0.45)")
+            .fontColor(TextConstants.TEXT_FONT_COLOR)
             .fontSize(12)
             .width(48)
             .height(22)
         }.onClick(()=>{this.cloudDisk_onclick()})
 
-        .border({width:1,color:"rgba(0, 0, 0, 0.45)",radius:25})
+        .border({width:1,color:TextConstants.TEXT_FONT_COLOR,radius:25})
         .padding({ top:4,left:14,right:14,bottom:4 }).borderWidth(1)
       }.justifyContent(FlexAlign.SpaceBetween).width("100%").height(54).onClick(this.night_onclick)
 
@@ -78,7 +81,7 @@ export default struct MyCenter {
       Row(){
         ForEach(this.head_list,(item:dataItem,index:number)=>{
           Column({space:5}){
-            Text(item.value.toString()).fontSize(20).fontWeight(400)
+            Text(item.value.toString()).fontSize(20).fontWeight(600)
             Text(item.title).fontSize(10).fontWeight(500)
           }.onClick(()=>{
             this.head_onclick(index)
@@ -93,7 +96,7 @@ export default struct MyCenter {
         ForEach(this.center_list,(item:dataItem)=>{
           Column({space:4}){
             Image(item.icon).size({width:24,height:24})
-            Text(item.title).fontSize(12).fontColor("rgba(121, 119, 119, 1.00)")
+            Text(item.title).fontSize(12)
           }
           .width(80)
           .height(48)
@@ -103,7 +106,7 @@ export default struct MyCenter {
       }.width("100%")
       .justifyContent(FlexAlign.SpaceBetween)
       .padding({top:16,bottom:16})
-      .backgroundColor(Color.White)
+      .backgroundColor(PublicConstants.THEME_COLOR_WHITE)
       .borderRadius(10)
       Blank(16)
 
@@ -119,19 +122,20 @@ export default struct MyCenter {
             Image(item.icon).size({width:20,height:20}).interpolation(ImageInterpolation.High)
             Text(item.title).fontSize(14).width("75%" )
             Image($r("app.media.right")).size({width:24,height:24})
-          }.width(280)
+          }.width(300)
           .height(48)
+          .justifyContent(FlexAlign.SpaceBetween)
           .padding({top:12,bottom:12})
           .onClick(()=>this.endOnclick(item.value))
         })
-      }
-      .backgroundColor(Color.White)
+      }.padding({top:5,bottom:5})
+      .backgroundColor(PublicConstants.THEME_COLOR_WHITE)
       .borderRadius(10)
       .justifyContent(FlexAlign.SpaceBetween)
-      .size({width:"100%",height:192})
+      .size({width:"100%",height:210})
       Blank(200)
-    }.padding(20)
-    .backgroundColor("rgb(245, 245, 245)")
+    }
+    .attributeModifier(this.Column)
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
       colors: [["rgb(254, 203, 169)", 0.0], ["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
@@ -148,20 +152,19 @@ export default struct MyCenter {
   avatar_onclick(){
 
   }
+
   //读过点击事件
   head_onclick(value:number){
-    switch (value){
-      case 0:
-        router.pushUrl({
-          url:"pages/view/myCenter/readStatistics"
-        })
-        break
-      case 1:
-        break
-      case 2:
-        break
-      case 3:
-        break
+    console.log("点击了"+value)
+    if(value==3){
+      //勋章
+    }else{
+      router.pushUrl({
+        url:"pages/view/myCenter/readStatistics",
+        params:{
+          value:value
+        }
+      })
     }
   }
   //云盘,书源,主题,净化点击事件
