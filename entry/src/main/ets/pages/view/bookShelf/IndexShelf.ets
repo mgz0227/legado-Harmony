@@ -238,7 +238,8 @@ export default struct IndexShelf {
             Stack({ alignContent: Alignment.Center }) {
               if (this.bookType === '书单' && this.searchValue !== '浏览历史') {
                 ShelfBookList({
-                  EXHIBIT: this.EXHIBIT
+                  EXHIBIT: this.EXHIBIT,
+                  isClear: this.isClear
                 })
               } else {
                 if (this.GROUP === '标签' && this.bookType !== '分组') {

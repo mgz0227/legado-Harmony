@@ -1,4 +1,4 @@
-import { folderList } from '../../../componets/dataList/folderList'
+import { shelfList } from '../../../componets/dataList/shelfList'
 
 class buttonList {
   id:number
@@ -14,22 +14,17 @@ class buttonList {
 
 @CustomDialog
 /**
- * 文件夹长按弹窗
+ * 书单长按弹窗
  */
-export default struct FolderInfoDialog{
+export default struct ShelfInfoDialog{
   controller?: CustomDialogController
   //推送提醒
-  @Link @Watch('itemDataFunction')itemData:folderList
+  @Link @Watch('itemDataFunction')itemData:shelfList
   @State pushReminder:boolean = false
   @State buttonListInfo:buttonList[] = [
-    new buttonList(1,'重命名',$r('app.media.edit')),
-    new buttonList(2,'置顶',$r('app.media.top')),
-    new buttonList(3,'移动至',$r('app.media.folder')),
-    new buttonList(4,'加入书单',$r('app.media.shelf')),
-    new buttonList(5,'封面样式',$r('app.media.style_icon')),
-    new buttonList(6,'隐藏分组',$r('app.media.hide')),
-    new buttonList(7,'解散分组',$r('app.media.disband')),
-    new buttonList(8,'删除',$r('app.media.ic_public_delete'))
+    new buttonList(1,'编辑',$r('app.media.edit')),
+    new buttonList(2,'分享',$r('app.media.icon_share')),
+    new buttonList(3,'删除',$r('app.media.ic_public_delete'))
   ]
   itemDataFunction(){
     console.log(JSON.stringify(this.itemData))
@@ -39,23 +34,6 @@ export default struct FolderInfoDialog{
 
   build() {
     Column(){
-      Flex({
-        justifyContent:FlexAlign.SpaceBetween,
-        alignItems:ItemAlign.Center
-      }){
-        Column(){
-          Text(this.itemData.title).fontColor('rgba(0, 0, 0, 0.88)').fontSize(16).fontWeight(500).lineHeight(24)
-          Text(`共${(this.itemData.countNumber)}本`).fontColor('rgba(0, 0, 0, 0.45)').fontWeight(400).lineHeight(20).fontSize(12)
-        }
-        Row(){
-          Text('更新提醒')
-          Toggle({ type: ToggleType.Switch, isOn: this.itemData.isUpdateReminder})
-            .selectedColor("#F60").hoverEffect(HoverEffect.None)
-            .onChange(()=>{
-              this.itemData.isUpdateReminder = !this.itemData.isUpdateReminder
-            })
-        }
-      }.padding(20)
       Divider().strokeWidth(0.5).padding({bottom:16})
       Flex({
         direction: FlexDirection.Row, wrap: FlexWrap.Wrap,
