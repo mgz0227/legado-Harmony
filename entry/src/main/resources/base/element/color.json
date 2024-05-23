@@ -28,6 +28,10 @@
     {
       "name": "search_book_fontColor",
       "value": "#00000073"
+    },
+    {
+      "name": "share_shelf_book_background",
+      "value": "#F5F5F5"
     }
   ]
 }
