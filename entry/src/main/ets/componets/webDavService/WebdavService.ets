@@ -63,7 +63,7 @@ export struct WebdavService {
             this.canvas(item.background[2],5,-30)
           }.backgroundColor(item.background[1])
             .alignItems(HorizontalAlign.End)
-            .size({width:85,height:70})
+            .size({width:95,height:70})
             .padding({top:10,bottom:10,left:10,right:12})
             .borderRadius(12)
         })
@@ -83,7 +83,7 @@ export struct WebdavService {
           .fontWeight(600)
           .onClick(()=>{this.copy(this.address)})
       }
-      .width(280)
+      .width(300)
       .height(40)
       .backgroundColor("rgba(0, 0, 0, 0.04)")
       .borderRadius(8)

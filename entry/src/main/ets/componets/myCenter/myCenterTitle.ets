@@ -8,7 +8,6 @@ export struct myCenterTitle{
 
   build() {
     Column(){
-      Blank(40)
       Row(){
         Row(){
           Image($r("app.media.return_left"))
@@ -16,9 +15,18 @@ export struct myCenterTitle{
             .onClick(()=>{
               router.back()
             })
-        }.width("40%")
-        Text(this.title).fontSize(16).fontWeight(600).lineHeight(24)
-      }.width(320).justifyContent(FlexAlign.Start).padding({top:12,bottom:12})
+        }.width("33%")
+        Row(){
+          Text(this.title).fontSize(16).fontWeight(600).lineHeight(24)
+        }.width("33%")
+        .justifyContent(FlexAlign.Center)
+        Row(){
+          Text("  ").fontSize(16).fontWeight(600).lineHeight(24)
+        }.width("33%")
+      }.width("100%")
+      .justifyContent(FlexAlign.SpaceBetween)
+      .padding({top:12,bottom:12})
+
     }
   }
 }

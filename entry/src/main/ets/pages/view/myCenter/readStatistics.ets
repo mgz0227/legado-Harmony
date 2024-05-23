@@ -6,6 +6,7 @@ import { readStatisticsDataList } from '../../../componets/myCenter/readStatisti
 import { readBookList } from '../../../componets/dataList/readBookList';
 import { readTabs } from '../../../componets/myCenter/readTabs';
 import { serviceDialog } from '../../../componets/webDavService/serviceDialog';
+import { PublicConstants } from '../../../common/constants/PublicConstants';
 
 
 @Entry
@@ -13,11 +14,16 @@ import { serviceDialog } from '../../../componets/webDavService/serviceDialog';
 struct readStatistics {
 
   Column = new ColumnModifier()
-
+  @State type:number|string=(router.getParams() as dataItem).value
   @State read_list:dataItem[]=[
     new dataItem("小说",12),
     new dataItem("漫画",12),
     new dataItem("有声书",12),
+  ]
+  @State title_list:dataItem[]=[
+    new dataItem("读过",12),
+    new dataItem("读完",12),
+    new dataItem("书签",12),
   ]
   @State read_index:number=0
   @State translateNum:number=0
@@ -41,27 +47,28 @@ struct readStatistics {
     Row(){
       Row(){
         Image($r("app.media.return_left"))
-          .size({height:20})
+          .size({width:CommonConstants.TITLE_IMG_SIZE,height:CommonConstants.TITLE_IMG_SIZE})
           .onClick(()=>{
             router.back()
           })
-      }.width("10%")
-      Text("读过")
-        .fontSize(16)
-        .fontWeight(600)
-        .lineHeight(24)
-      Text(this.delStatus?"完成":"管理")
-        .fontSize(14)
-        .fontWeight(500)
-        .lineHeight(22)
-        .fontColor("rgba(0, 0, 0, 0.45)")
-        .onClick(()=>{
-          this.delStatus=!this.delStatus
-        })
-    }.width(320).height(30)
+      }.width("33%")
+      Row(){
+        Text(this.title_list[this.type].title).fontSize(16).fontWeight(600).lineHeight(24)
+      }.width("33%")
+      .justifyContent(FlexAlign.Center)
+      Row(){
+        Text(this.delStatus?"完成":"管理")
+          .fontSize(14)
+          .fontWeight(500)
+          .lineHeight(22)
+          .fontColor("rgba(0, 0, 0, 0.45)")
+          .onClick(()=>{
+            this.delStatus=!this.delStatus
+          })
+      }.width("33%").justifyContent(FlexAlign.End)
+    }.width("100%")
     .justifyContent(FlexAlign.SpaceBetween)
-    .alignItems(VerticalAlign.Center)
-    .margin({bottom:20})
+    .padding({top:12,bottom:12})
   }
 
   @Builder delBottom(){
@@ -69,7 +76,7 @@ struct readStatistics {
         Row(){
           Text("删除").fontColor(Color.Red)
         }.height("100%")
-      }.backgroundColor(Color.White)
+      }.backgroundColor(PublicConstants.THEME_COLOR_WHITE)
       .width("100%")
       .height(50)
       .borderColor("rgba(0, 0, 0, 0.06)")
@@ -93,10 +100,6 @@ struct readStatistics {
   build() {
     Column(){
       Column(){
-        Row() {
-        }
-        .width(CommonConstants.FULL_WIDTH)
-        .height(40)
         this.head()
         readTabs({
           read_list:this.read_list
@@ -114,6 +117,7 @@ struct readStatistics {
       align: Alignment.Bottom,
       offset: { x: 0, y: 0 }
     })
+
   }
 
   //删除列表
@@ -145,4 +149,8 @@ struct readStatistics {
     offset:{dx:0,dy:20},
     customStyle: true
   })
+  aboutToAppear(): void {
+      console.log(this.type+"------")
+  }
+
 }
