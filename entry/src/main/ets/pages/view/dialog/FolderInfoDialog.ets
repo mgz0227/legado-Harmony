@@ -1,17 +1,6 @@
+import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
+import { buttonList } from '../../../componets/dataList/buttonList'
 import { folderList } from '../../../componets/dataList/folderList'
-
-class buttonList {
-  id:number
-  title:string
-  icon:Resource
-  constructor(id:number,title:string,icon:Resource){
-    this.id = id
-    this.title = title
-    this.icon = icon
-  }
-}
-
-
 @CustomDialog
 /**
  * 文件夹长按弹窗
@@ -62,7 +51,9 @@ export default struct FolderInfoDialog{
         justifyContent:FlexAlign.Start
       }){
         ForEach(this.buttonListInfo,(item:buttonList)=>{
-          this.titleBuilder(item)
+          InsideCircleIcon({
+            item:item
+          })
         })
       }
       Divider().strokeWidth(0.5).padding({bottom:16})
@@ -79,23 +70,5 @@ export default struct FolderInfoDialog{
     .borderRadius({topLeft:20,topRight:20})
     .backgroundColor(Color.White)
     .width('100%')
-  }
-
-  @Builder titleBuilder(item:buttonList) {
-    Column({
-      space:8
-    }){
-      Column(){
-        Image(item.icon)
-          .width(24).height(24).margin(12)
-      }.borderRadius(50)
-      .border({width:0.5,color:'rgba(0, 0, 0, 0.15)'})
-      Text(item.title)
-    }
-    .onClick(()=>{
-      console.log(item.id + '')
-    })
-    .padding({bottom:28})
-    .width('25%')
   }
 }

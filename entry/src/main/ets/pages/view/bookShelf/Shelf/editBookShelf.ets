@@ -1,11 +1,7 @@
-/**
- * 书单单击跳转
- */
-import confirmDialogExample from '../../../../componets/common/confirmDialog'
 import { BookList } from '../../../../componets/dataList/bookList'
-import { router } from '@kit.ArkUI'
 import { shelfList } from '../../../../componets/dataList/shelfList'
 import { showMessage } from '../../../../componets/common/promptShow'
+import shareShelfBook from '../../dialog/shareShelfBook'
 
 @CustomDialog
 @Preview
@@ -15,6 +11,7 @@ export default struct editBookShelf{
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @Prop shelf:shelfList
   @State TextValue:string = ''
+  @State isShow:boolean = false
   cancel: () => void = () => {
   }
 
@@ -26,6 +23,23 @@ export default struct editBookShelf{
       }
       console.log(JSON.stringify(this.shelf.bookList[index]))
     }
+  }
+
+
+  shareShelfBookDialog: CustomDialogController | null = new CustomDialogController({
+    builder: shareShelfBook({
+      shelf:this.shelf
+    }),
+    cancel: this.exitDialog,
+    autoCancel: true,
+    width:'100%',
+    height:'100%',
+    alignment: DialogAlignment.Bottom,
+    customStyle:true
+  })
+
+  exitDialog(){
+    this.shareShelfBookDialog?.close()
   }
 
   build() {
@@ -57,6 +71,9 @@ export default struct editBookShelf{
            }){
              Image($r('app.media.edit_black')).width(25)
              Image($r('app.media.edit_share')).width(25)
+               .onClick(()=>{
+                 this.shareShelfBookDialog?.open()
+               })
            }.justifyContent(FlexAlign.Center)
          }
          Flex({
