@@ -456,6 +456,9 @@ export default struct IndexShelf {
         this.isShowImport = true
         break
       case 1:
+        router.pushUrl({
+          url: 'pages/view/bookShelf/DownloadManagementPage'
+        });
         break
       case 2:
         break

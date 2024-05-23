@@ -65,7 +65,7 @@ struct LocalImportPage {
       }) {
         TabContent() {
           Column() {
-            this.SearchBar()
+            // this.SearchBar()
             if (this.SmartScanItemList.length > 0) {
               ForEach(this.SmartScanItemList, (item: SmartScanItem) => {
                 this.ScanShowItem(item)
@@ -93,6 +93,7 @@ struct LocalImportPage {
           .height("100%")
         }
         .padding({
+          top: 40,
           left: 20,
           right: 20
         })
@@ -100,7 +101,7 @@ struct LocalImportPage {
 
         TabContent() {
           Column() {
-            this.SearchBar()
+            // this.SearchBar()
             if (this.SmartScanItemList.length > 0) {
               ForEach(this.SmartScanItemList, (item: SmartScanItem) => {
                 this.ScanShowItem(item)
@@ -128,6 +129,7 @@ struct LocalImportPage {
           .height("100%")
         }
         .padding({
+          top: 40,
           left: 20,
           right: 20
         })
@@ -136,11 +138,25 @@ struct LocalImportPage {
       .onChange((index: number) => {
         this.currentTabIndex = index
       })
-
     }
+    .overlay(this.SearchBar(), { align: Alignment.TopStart, offset: { x: 0, y: this.topRectHeight + 55 } })
+    .width("100%")
     .padding({
       top: this.topRectHeight,
       bottom: this.bottomRectHeight
+    })
+  }
+
+  @Builder
+  SearchBar() {
+    Row() {
+      Search({ value: $$this.SearchValue, placeholder: '搜索', icon: "/common/images/search.svg" })
+        .width("100%")
+    }
+    .height(40)
+    .padding({
+      left: 20,
+      right: 20
     })
   }
 
@@ -174,13 +190,6 @@ struct LocalImportPage {
         }
       })
     }.width(140)
-  }
-
-  @Builder
-  SearchBar() {
-    Search({ value: $$this.SearchValue, placeholder: '搜索', icon: "/common/images/search.svg" })
-      .width("100%")
-      .height(40)
   }
 
   @Builder
