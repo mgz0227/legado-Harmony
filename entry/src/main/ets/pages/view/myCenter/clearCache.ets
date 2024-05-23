@@ -16,7 +16,7 @@ struct clearCache{
   ]
   @State @Watch("ClearChange") clearDialogStatus:boolean=false
   @State index:number=0
-  Column = new ColumnModifier()
+  Column = new ColumnModifier().setCustom({left:20,right:20})
   build() {
     Column({space:12}){
       //标题栏

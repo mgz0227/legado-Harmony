@@ -16,7 +16,7 @@ struct CloudDisk {
   @State backups_status:boolean=false
   //自动备份状态
   @State auto_backups_status:boolean=true
-  Columns = new ColumnModifier()
+  Columns = new ColumnModifier().setCustom({left:20,right:20})
   @State backups_list:dataItem[]=[
     new dataItem("自动备份",1,"",0),
     new dataItem("备份设置",2,"",1),
