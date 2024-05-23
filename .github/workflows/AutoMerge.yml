@@ -22,27 +22,19 @@ jobs:
         ALLOWED_USERS=("yindushenwen" "linxunxr" "c386522459" "Sunny-316" "thfgjy" "stupchen" "MaoXiaoone" "ouzechang" "polo3584" "YiQingZi")
         PR_AUTHOR=$(jq -r .pull_request.user.login < "$GITHUB_EVENT_PATH")
 
-        MERGE=false
-        for user in "${ALLOWED_USERS[@]}"; do
-          if [ "$user" == "$PR_AUTHOR" ]; then
-            MERGE=true
-            break
-          fi
-        done
-
-        echo "MERGE=$MERGE" >> $GITHUB_ENV
-        if [ "$MERGE" == "true" ]; then
+        if printf '%s\n' "${ALLOWED_USERS[@]}" | grep -qx "${PR_AUTHOR}"; then
           echo "PR author ${PR_AUTHOR} is allowed. Proceeding to merge."
+          echo "MERGE=true" >> $GITHUB_ENV
         else
           echo "PR author ${PR_AUTHOR} is not allowed to auto-merge."
-        fi
+          echo "MERGE=false" >> $GITHUB_ENV
 
     - name: Install GitHub CLI
       run: |
-        sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
-        sudo apt-add-repository https://cli.github.com/packages
-        sudo apt update
-        sudo apt install gh -y
+        curl -fsSL https://github.com/cli/cli/releases/download/v2.49.2/gh_2.49.2_linux_amd64.tar.gz -o ghcli.tar.gz
+        tar -xzf ghcli.tar.gz
+        sudo mv gh_2.49.2_linux_amd64/bin/gh /usr/local/bin/
+        gh --version
 
     - name: Merge PR
       if: env.MERGE == 'true'
