@@ -4,6 +4,7 @@ import { shelfList } from '../../../../componets/dataList/shelfList'
 import ShelfInfoDialog from '../../dialog/ShelfInfoDialog'
 import BookShelfGrid from './BookShelfGrid'
 import BookShelfInfo from './BookShelfInfo'
+import editBookShelf from './editBookShelf'
 
 /**
  * 书单
@@ -20,7 +21,6 @@ export default struct ShelfBookList {
   @State isShow:boolean = false
   @State shelfBook:shelfList = this.shelfBookList[0]
   @Link @Watch('onIsClearChange') isClear:boolean
-
   //监听isClear变化
   onIsClearChange() {
     if (this.checkBookShelf === null || this.checkBookShelf.length === 0) {
@@ -31,11 +31,6 @@ export default struct ShelfBookList {
     if (this.isClear) {
       this.shelfInfoDel?.open()
     }
-  }
-
-
-  aboutToAppear(): void {
-    console.log(JSON.stringify(this.shelfBookList))
   }
   build() {
     Column(){
@@ -61,6 +56,14 @@ export default struct ShelfBookList {
                       }
                     }
                   }))
+              .onClick(()=>{
+                if (!this.isShow) {
+                  this.shelfBook = item
+                  this.isShow = true
+                  this.shelfAllInfoDialog?.open()
+                }
+                // showMessage('跳转')
+              })
 
           } else {
             BookShelfInfo({
@@ -81,12 +84,35 @@ export default struct ShelfBookList {
                       }
                     }
                   }))
+              .onClick(()=>{
+                if (!this.isShow) {
+                  this.shelfBook = item
+                  this.isShow = true
+                  this.shelfAllInfoDialog?.open()
+                }
+                showMessage('跳转')
+              })
           }
         })
       }
     }
 
   }
+  shelfAllInfoDialog: CustomDialogController | null = new CustomDialogController({
+    builder: editBookShelf({
+      shelf:this.shelfBook,
+      cancel: () => {
+        this.exitDialog()
+      }
+    }),
+    cancel: this.exitDialog,
+    autoCancel: true,
+    width:'100%',
+    height:'100%',
+    alignment: DialogAlignment.Bottom,
+    customStyle:true
+  })
+
   shelfInfoDialog: CustomDialogController | null = new CustomDialogController({
     builder: ShelfInfoDialog({
       itemData:this.shelfBook,
