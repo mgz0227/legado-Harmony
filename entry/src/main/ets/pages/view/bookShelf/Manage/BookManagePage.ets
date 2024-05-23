@@ -212,6 +212,7 @@ struct BookManagePage {
         Scroll(){
           if (this.bookTypes === '书单'){
             ShelfBookList({
+              isClear:this.isClear,
               EXHIBIT:this.EXHIBIT,
               changeTop:this.changeTop,
               allCheck:this.allCheck,
@@ -292,6 +293,7 @@ struct BookManagePage {
       Text('删除').fontSize(16).fontWeight(500).lineHeight(24).fontColor('#EF4444')
     }.onClick(()=>{
         showMessage('测试删除')
+      this.isClear = true
     })
     .alignItems(HorizontalAlign.Center)
     .height('10%')
