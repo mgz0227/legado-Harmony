@@ -41,7 +41,7 @@ export default struct editBookShelf{
   exitDialog(){
     this.shareShelfBookDialog?.close()
   }
-
+  @State isEdit:boolean = false
   build() {
     Flex({
       justifyContent:FlexAlign.SpaceBetween,
@@ -53,29 +53,52 @@ export default struct editBookShelf{
        Column({
          space:24
        }) {
-         Flex({
-           alignItems:ItemAlign.Center,
-           justifyContent:FlexAlign.SpaceBetween
-         }){
-           Image($r('app.media.return_left'))
-             .width(25)
-             .height(25)
-             .fillColor('rgba(0, 0, 0, 0.88)')
-             .onClick(()=>{
-               this.controller?.close()
-               this.cancel()
-               // this.isAddShelfShow=true
-             })
-           Row({
-             space:24
+         if (this.isEdit){
+           Flex({
+             alignItems:ItemAlign.Center,
+             justifyContent:FlexAlign.Center
            }){
-             Image($r('app.media.edit_black')).width(25)
-             Image($r('app.media.edit_share')).width(25)
+             Image($r('app.media.close'))
+               .width(25)
+               .height(25)
+               .fillColor('rgba(0, 0, 0, 0.88)')
                .onClick(()=>{
-                 this.shareShelfBookDialog?.open()
+                 this.isEdit=false
                })
-           }.justifyContent(FlexAlign.Center)
+             Column(){
+               Text('编辑书单').fontSize(16).lineHeight(24).fontWeight(500).textAlign(TextAlign.Center).fontColor('rgba(0, 0, 0, 0.88)')
+             }.margin({right:20}).width('100%')
+           }
+         } else {
+           Flex({
+             alignItems:ItemAlign.Center,
+             justifyContent:FlexAlign.SpaceBetween
+           }){
+             Image($r('app.media.return_left'))
+               .width(25)
+               .height(25)
+               .fillColor('rgba(0, 0, 0, 0.88)')
+               .onClick(()=>{
+                 this.controller?.close()
+                 this.cancel()
+                 // this.isAddShelfShow=true
+               })
+             Row({
+               space:24
+             }){
+               Image($r('app.media.edit_black')).width(25)
+                 .onClick(()=>{
+                   // this.controller?.open()
+                   this.isEdit=true
+                 })
+               Image($r('app.media.edit_share')).width(25)
+                 .onClick(()=>{
+                   this.shareShelfBookDialog?.open()
+                 })
+             }.justifyContent(FlexAlign.Center)
+           }
          }
+
          Flex({
            direction:FlexDirection.Column,
            justifyContent:FlexAlign.SpaceBetween
@@ -101,9 +124,18 @@ export default struct editBookShelf{
        }
        .padding({left:20,right:20,top:12,bottom:12})
        .align(Alignment.Center)
-     }.padding({bottom:this.bottomRectHeight})
-    }.backgroundColor(Color.White)
-
+     }
+      if (this.isEdit){
+        Divider().strokeWidth(0.5)
+        Flex({
+          justifyContent:FlexAlign.Center
+        }){
+          this.newFooter()
+        }.padding({top:12,bottom:12})
+      }
+    }
+    .backgroundColor(Color.White)
+    .padding({bottom:this.bottomRectHeight})
   }
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @Builder newFooter(){
