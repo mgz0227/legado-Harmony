@@ -10,12 +10,17 @@ import FolderAndFileItem from '../../../componets/dataList/FolderAndFileItem';
  */
 
 // 书架/更多/书籍导入/网盘导入/文件列表/开源阅读
+
+PersistentStorage.persistProp('onSelect', 0);
+
 @Entry
 @Component
 struct FileManagement {
     @State title: string = '坚果云';
 
     @State fileList: FolderFileDataSource = new FolderFileDataSource()
+
+    @StorageLink("onSelect") onSelect: number = 0
 
     aboutToAppear(): void {
         for (let i=0; i < 20; i++){
@@ -38,9 +43,6 @@ struct FileManagement {
                 isShowEdit: true,
                 isShowMore: true,
                 onEditClickEvent: ()=>{
-
-                },
-                onMoreClickEvent: ()=>{
 
                 }
             })
