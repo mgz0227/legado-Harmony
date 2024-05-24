@@ -7,6 +7,11 @@ import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
 import { BookList } from '../../../componets/dataList/bookList'
 import { buttonList } from '../../../componets/dataList/buttonList'
 import { shelfList } from '../../../componets/dataList/shelfList'
+import componentSnapshot from '@ohos.arkui.componentSnapshot'
+import image from '@ohos.multimedia.image'
+import fs from '@ohos.file.fs';
+import { photoAccessHelper } from '@kit.MediaLibraryKit'
+import { showMessage } from '../../../componets/common/promptShow'
 
 @CustomDialog
 @Preview
@@ -51,6 +56,7 @@ export default struct shareShelfBook{
         }
         .alignItems(HorizontalAlign.Start)
       }
+      .id('shareBook')
       .margin(40)
       .padding({top:24,left:20,right:20})
       .width('80%')
@@ -70,6 +76,25 @@ export default struct shareShelfBook{
           ForEach(this.buttonListInfo,(item:buttonList)=>{
             InsideCircleIcon({
               item:item
+            }).onClick(()=>{
+              switch (item.id){
+                case 1 :
+                  showMessage('跳转微信'); break;
+                case 2 :
+                  showMessage('跳转QQ'); break;
+                case 3 :
+                  showMessage('跳转朋友圈'); break;
+                case 4 :
+                  showMessage('跳转QQ空间'); break;
+                case 5 :
+                  showMessage('导出本地成功'); break;
+                case 6 :
+                  showMessage('已复制链接'); break;
+                case 7 :
+                  showMessage('保存成功'); break;
+                case 8 :
+                  showMessage('系统分享'); break;
+              }
             })
           })
         }
@@ -86,12 +111,41 @@ export default struct shareShelfBook{
     }
     .align(Alignment.Bottom)
   }
+
+  saveSnapshot(result: SaveButtonOnClickResult) {
+    componentSnapshot.get('shareBook', async (error: Error, pixmap: image.PixelMap)=>{
+      if (error) {
+        console.log("error: " + JSON.stringify(error))
+        return;
+      }
+      this.pixmap = pixmap
+      console.log(JSON.stringify(result))
+      if (result == SaveButtonOnClickResult.SUCCESS) {
+        try {
+          const context = getContext(this.pixmap);
+          let helper = photoAccessHelper.getPhotoAccessHelper(context);
+          // onClick触发后10秒内通过createAsset接口创建图片文件，10秒后createAsset权限收回。
+          let uri = await helper.createAsset(photoAccessHelper.PhotoType.IMAGE, 'png');
+          // 使用uri打开文件，可以持续写入内容，写入过程不受时间限制
+          let file = await fs.open(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
+          // 写入文件
+          await fs.write(file.fd, "context");
+          // 关闭文件
+          await fs.close(file.fd);
+        } catch (error) {
+          console.error("error is "+ JSON.stringify(error));
+        }
+      }
+    })
+  }
+
   @State validDate:string = '7天有效'
+  @State pixmap: image.PixelMap | undefined = undefined
+  @State footerDialogShow:boolean = false
   @Builder footerTitle(){
     Flex({
       direction:FlexDirection.Row,
       justifyContent:FlexAlign.SpaceBetween
-
     }){
       Text('链接有效期').fontColor($r('app.string.color_black_88')).fontSize(12).fontWeight(400).lineHeight(20).textAlign(TextAlign.Center)
       Row({
@@ -101,7 +155,78 @@ export default struct shareShelfBook{
         Image($r('app.media.icon_right')).width(24).height(24).fillColor(($r('app.string.color_black_45')))
       }
     }
+    .onClick(()=>{
+      this.footerDialogShow = true
+    })
+    .bindSheet($$this.footerDialogShow,this.footerDialog(), {
+      height:200,
+      showClose: false,
+      blurStyle:BlurStyle.COMPONENT_ULTRA_THIN,
+      maskColor: 'rgba(0,0,0,0.6)',
+      onDisappear:()=>{
+        this.footerDialogShow = false
+      }
+    })
     .padding(16)
+  }
+
+
+  @Builder footerDialog(){
+    Column(){
+      Text('链接有效日期')
+        .fontColor($r('app.string.color_black_88'))
+        .textAlign(TextAlign.Center)
+        .padding({top:12,bottom:12})
+        .lineHeight(24)
+        .fontWeight(500)
+    }
+    Column(){
+      Flex({
+        justifyContent:FlexAlign.SpaceBetween,
+        alignItems:ItemAlign.Center
+      }
+      ){
+        Text('7天')
+          .fontColor($r('app.string.color_black_88'))
+          .textAlign(TextAlign.Center)
+          .padding({top:12,bottom:12})
+          .lineHeight(24)
+          .fontWeight(500)
+
+        Image(this.validDate === '7天有效'?$r('app.media.hook'):'').width(24).height(24)
+      }
+      .onClick(()=>{
+        this.validDate = '7天有效'
+        this.footerDialogShow = false
+        showMessage('修改成功')
+      })
+      Flex({
+        justifyContent:FlexAlign.SpaceBetween,
+        alignItems:ItemAlign.Center
+      }
+      ){
+        Text('永久有效')
+          .fontColor($r('app.string.color_black_88'))
+          .textAlign(TextAlign.Center)
+          .padding({top:12,bottom:12})
+          .lineHeight(24)
+          .fontWeight(500)
+        Image(this.validDate === '永久有效'?$r('app.media.hook'):'').width(24).height(24)
+      }
+      .onClick(()=>{
+        this.validDate = '永久有效'
+        this.footerDialogShow = false
+        showMessage('修改成功')
+      })
+    }.padding({left:20,right:20})
+
+    Column(){
+      Text('取消').fontSize($r('app.string.color_black_88')).textAlign(TextAlign.Center).fontSize(16).fontWeight(400).lineHeight(24)
+    }.padding({left:32,right:32,top:16,bottom:16})
+    .onClick(()=>{
+      this.footerDialogShow = false
+    })
+
   }
 
   @Builder BookShelfInfo(book:BookList,index:number){
