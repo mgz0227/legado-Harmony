@@ -27,6 +27,7 @@ jobs:
         else
           echo "PR author ${PR_AUTHOR} is not allowed to auto-merge."
           echo "MERGE=false" >> $GITHUB_ENV
+        fi
 
     - name: Install GitHub CLI
       run: |
