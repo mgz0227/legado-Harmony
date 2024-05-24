@@ -67,6 +67,7 @@ struct CloudDisk {
     }
     .width("100%")
     .justifyContent(FlexAlign.SpaceBetween)
+    .padding({top:5,bottom:5})
   }
 
 
@@ -177,7 +178,7 @@ struct CloudDisk {
           .onClick(()=>{this.backups_onClick()})
         }
         //备份设置
-        Column({space:20}){
+        Column({space:10}){
           ForEach(this.backups_list,(item:dataItem)=>{
             this.backups_item(item)
           })
@@ -198,16 +199,17 @@ struct CloudDisk {
           showClose:false,
           backgroundColor: PublicConstants.THEME_COLOR_WHITE,
           shouldDismiss:((sheetDismiss: SheetDismiss)=> {
+            this.dataRecoveryStatus=false
             this.zipIndex=this.zipDataIndex
             this.deviceIndex=this.deviceDataIndex
             this.isShow=false
-            sheetDismiss.dismiss()
           })
         })
 
       }.stateStyles({
         normal: this.pageStyle,
       })
+      .blur(this.dataRecoveryStatus?40:0)
       .attributeModifier(this.Columns)
 
   }
@@ -245,8 +247,8 @@ struct CloudDisk {
     if(!this.backups_status){
       this.backups_status=true
       animateTo({
-        duration: 2000,
-        curve: Curve.EaseOut,
+        duration: 1000,
+        curve: Curve.Linear,
         iterations: 2,
         playMode: PlayMode.Normal,
         //动画结束方法
@@ -301,7 +303,7 @@ struct CloudDisk {
   }
   @Styles transitionStyles():void{
     .transition(TransitionEffect.opacity(1).animation({ duration: 1000, curve: Curve.Ease }).combine(
-      TransitionEffect.translate({ x: 500  })
+      TransitionEffect.translate({ y: 500  })
     ))
   }
   @Styles transitionsStyles():void{
