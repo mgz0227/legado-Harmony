@@ -76,7 +76,7 @@ struct  WebDav{
               })
               setTimeout(()=>{
                 router.pushUrl({
-                  url: 'pages/myCenter/MyCenter',
+                  url: "pages/view/myCenter/FileManagement",
                   params:{
                     webDavStatus:1
                   }

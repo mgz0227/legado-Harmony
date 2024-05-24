@@ -1,6 +1,10 @@
+import commonInputDialog from '../../../componets/common/commonInputDialog'
 import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
+import { showMessage } from '../../../componets/common/promptShow'
 import { buttonList } from '../../../componets/dataList/buttonList'
 import { folderList } from '../../../componets/dataList/folderList'
+import { updateBookListData } from '../../../storage/bookListData'
+
 @CustomDialog
 /**
  * 文件夹长按弹窗
@@ -21,7 +25,8 @@ export default struct FolderInfoDialog{
     new buttonList(8,'删除',$r('app.media.ic_public_delete'))
   ]
   itemDataFunction(){
-    console.log(JSON.stringify(this.itemData))
+    console.log('变动了' + JSON.stringify(this.itemData))
+    //TODO 监听到变动将分组缓存更新
   }
   cancel: () => void = () => {
   }
@@ -54,6 +59,9 @@ export default struct FolderInfoDialog{
           InsideCircleIcon({
             item:item
           })
+            .onClick(()=>{
+              this.folderInfo(item.id)
+            })
         })
       }
       Divider().strokeWidth(0.5).padding({bottom:16})
@@ -70,5 +78,65 @@ export default struct FolderInfoDialog{
     .borderRadius({topLeft:20,topRight:20})
     .backgroundColor(Color.White)
     .width('100%')
+  }
+
+  folderInfo(id:number){
+    switch (id){
+      case 1 :
+        this.restTitle(); break;
+      case 2 :
+        showMessage('置顶'); break;
+      case 3 :
+        showMessage('移动至'); break;
+      case 4 :
+        showMessage('加入书单'); break;
+      case 5 :
+        showMessage('封面样式'); break;
+      case 6 :
+        showMessage('隐藏分组'); break;
+      case 7 :
+        showMessage('解散分组'); break;
+      case 8 :
+        showMessage('删除'); break;
+    }
+  }
+  restTitle(){
+    this.restTitleDialog?.open()
+    this.inputValue = this.itemData.title
+  }
+
+  @State inputValue:string = ''
+  restTitleDialog: CustomDialogController | null = new CustomDialogController({
+    builder: commonInputDialog({
+      textValue:this.inputValue,
+      cancel: () => {
+        this.restTitleCancel()
+      },
+      confirm: () => {
+        this.restTitleConfirm()
+      },
+      placeholder:'请输入分组名称',
+      title:'重命名'
+    }),
+    gridCount: 4,
+    cancel: this.restTitleCancel,
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    customStyle: false,
+    cornerRadius: 25
+  })
+
+  restTitleCancel(){
+    this.restTitleDialog?.close()
+    this.inputValue = ''
+  }
+  restTitleConfirm(){
+    console.log(this.inputValue + 'inputValue')
+    this.itemData.title = this.inputValue
+    this.inputValue = ''
+    showMessage('重命名成功')
+    console.log(JSON.stringify(this.itemData))
+    console.log(JSON.stringify(this.itemData.title))
+    this.restTitleDialog?.close()
   }
 }
