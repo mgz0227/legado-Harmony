@@ -34,6 +34,9 @@ struct LocalImportPage {
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @State currentTabIndex: number = 0
   @State SearchValue: string = ""
+  @State onSearchClick: boolean = false
+  @State SearchTranslateY: number = 0
+  SearchController: SearchController = new SearchController()
   FilesTypeImageList: Array<string> = ["EPUB", "TXT", "PDF"]
   @State SmartScanItemList: SmartScanItem[] = [
   // new SmartScanItem("斗破苍穹", "12MB", "EPUB", new Date()),
@@ -59,87 +62,140 @@ struct LocalImportPage {
   }
 
   build() {
-    Column() {
-      Tabs({
-        barPosition: BarPosition.Start
-      }) {
-        TabContent() {
-          Column() {
-            // this.SearchBar()
-            if (this.SmartScanItemList.length > 0) {
-              ForEach(this.SmartScanItemList, (item: SmartScanItem) => {
-                this.ScanShowItem(item)
-              })
-              Blank(1)
-              Divider()
-              this.BottomBar()
-            } else {
-              Image($r('app.media.no_record'))
-                .width(200)
-                .margin({
-                  top: 144
-                })
-              Text('暂未扫描到可用书籍，支持txt、epub、pdf、mp3、wma')
-                .textAlign(TextAlign.Center)
-                .lineHeight(22)
-                .opacity(0.45)
-                .font({
-                  size: 14,
-                  weight: 400
-                })
-            }
-          }
-          .width('100%')
-          .height("100%")
+    Stack() {
+      Row({ space: 12 }) {
+        if (this.onSearchClick) {
+          Image($r('app.media.return_left'))
+            .width(24)
+            .onClick(() => {
+              this.onSearchClick = false
+              this.SearchTranslateY = 55
+            })
         }
-        .padding({
-          top: 40,
-          left: 20,
-          right: 20
+        Search({
+          value: this.SearchValue,
+          placeholder: '搜索',
+          icon: "/common/images/search.svg",
+          controller: this.SearchController
         })
-        .tabBar(this.TabBuilder(0, "智能扫描"))
-
-        TabContent() {
-          Column() {
-            // this.SearchBar()
-            if (this.SmartScanItemList.length > 0) {
-              ForEach(this.SmartScanItemList, (item: SmartScanItem) => {
-                this.ScanShowItem(item)
-              })
-              Blank(1)
-              Divider()
-              this.BottomBar()
-            } else {
-              Image($r('app.media.no_record'))
-                .width(200)
-                .margin({
-                  top: 144
-                })
-              Text('暂未扫描到可用书籍，支持txt、epub、pdf、mp3、wma')
-                .textAlign(TextAlign.Center)
-                .lineHeight(22)
-                .opacity(0.45)
-                .font({
-                  size: 14,
-                  weight: 400
-                })
-            }
-          }
-          .width('100%')
-          .height("100%")
-        }
-        .padding({
-          top: 40,
-          left: 20,
-          right: 20
-        })
-        .tabBar(this.TabBuilder(1, "本地目录"))
+          .width(this.onSearchClick ? "90%" : "100%")
+          .onClick(() => {
+            this.onSearchClick = true
+            this.SearchTranslateY = -55
+          })
+          .onBlur(() => {
+            this.onSearchClick = false
+            this.SearchTranslateY = 0
+          })
       }
-      .onChange((index: number) => {
-        this.currentTabIndex = index
+      .translate({ x: 0, y: this.SearchTranslateY })
+      .animation({
+        duration: 500,
+        curve: Curve.EaseOut,
+        playMode: PlayMode.Normal
       })
+      .borderWidth(1)
+      .width("100%")
+      .height(40)
+      .margin({
+        top:55
+      })
+      .padding({
+        left: 20,
+        right: 20
+      })
+      .zIndex(2)
+
+      if (!this.onSearchClick) {
+        Tabs({
+          barPosition: BarPosition.Start
+        }) {
+          TabContent() {
+            Column() {
+              if (this.SmartScanItemList.length > 0) {
+                ForEach(this.SmartScanItemList, (item: SmartScanItem) => {
+                  this.ScanShowItem(item)
+                })
+                Blank(1)
+                Divider()
+                this.BottomBar()
+              } else {
+                Image($r('app.media.no_record'))
+                  .width(200)
+                  .margin({
+                    top: 144
+                  })
+                Text('暂未扫描到可用书籍，支持txt、epub、pdf、mp3、wma')
+                  .textAlign(TextAlign.Center)
+                  .lineHeight(22)
+                  .opacity(0.45)
+                  .font({
+                    size: 14,
+                    weight: 400
+                  })
+              }
+            }
+            .width('100%')
+            .height("100%")
+          }
+          .padding({
+            top: 40,
+            left: 20,
+            right: 20
+          })
+          .tabBar(this.TabBuilder(0, "智能扫描"))
+
+          TabContent() {
+            Column() {
+              // this.SearchBar()
+              if (this.SmartScanItemList.length > 0) {
+                ForEach(this.SmartScanItemList, (item: SmartScanItem) => {
+                  this.ScanShowItem(item)
+                })
+                Blank(1)
+                Divider()
+                this.BottomBar()
+              } else {
+                Image($r('app.media.no_record'))
+                  .width(200)
+                  .margin({
+                    top: 144
+                  })
+                Text('暂未扫描到可用书籍，支持txt、epub、pdf、mp3、wma')
+                  .textAlign(TextAlign.Center)
+                  .lineHeight(22)
+                  .opacity(0.45)
+                  .font({
+                    size: 14,
+                    weight: 400
+                  })
+              }
+            }
+            .width('100%')
+            .height("100%")
+          }
+          .padding({
+            top: 40,
+            left: 20,
+            right: 20
+          })
+          .tabBar(this.TabBuilder(1, "本地目录"))
+        }
+        .onChange((index: number) => {
+          this.currentTabIndex = index
+        })
+      } else {
+        Column()
+          .width("100%")
+          .height("100%")
+          .onClick(() => {
+            // 狗鸿蒙的search组件点击其它地方不失焦
+            this.onSearchClick = false
+            this.SearchTranslateY = 0
+          })
+      }
     }
-    .overlay(this.SearchBar(), { align: Alignment.TopStart, offset: { x: 0, y: this.topRectHeight + 55 } })
+    .alignContent(Alignment.TopStart)
     .width("100%")
     .padding({
       top: this.topRectHeight,
@@ -149,15 +205,7 @@ struct LocalImportPage {
 
   @Builder
   SearchBar() {
-    Row() {
-      Search({ value: $$this.SearchValue, placeholder: '搜索', icon: "/common/images/search.svg" })
-        .width("100%")
-    }
-    .height(40)
-    .padding({
-      left: 20,
-      right: 20
-    })
+
   }
 
   @Builder
