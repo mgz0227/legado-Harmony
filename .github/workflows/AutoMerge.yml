@@ -21,21 +21,12 @@ jobs:
       run: |
         ALLOWED_USERS=("yindushenwen" "linxunxr" "c386522459" "Sunny-316" "thfgjy" "stupchen" "MaoXiaoone" "ouzechang" "polo3584" "YiQingZi")
         PR_AUTHOR=$(jq -r .pull_request.user.login < "$GITHUB_EVENT_PATH")
-
-        MERGE=false
-        for user in "${ALLOWED_USERS[@]}"; do
-          if [ "$user" == "$PR_AUTHOR" ]; then
-            MERGE=true
-            break
-          fi
-        done
-
-        echo "MERGE=$MERGE" >> $GITHUB_ENV
-        if [ "$MERGE" == "true" ]; then
+        if printf '%s\n' "${ALLOWED_USERS[@]}" | grep -qx "${PR_AUTHOR}"; then
           echo "PR author ${PR_AUTHOR} is allowed. Proceeding to merge."
+          echo "MERGE=true" >> $GITHUB_ENV
         else
           echo "PR author ${PR_AUTHOR} is not allowed to auto-merge."
-        fi
+          echo "MERGE=false" >> $GITHUB_ENV
 
     - name: Install GitHub CLI
       run: |
