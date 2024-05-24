@@ -14,7 +14,11 @@ export struct MyCenterTitle{
   // 编辑标题按钮事件
   onEditClickEvent?: (event: ClickEvent) => void
   // 更多菜单按钮
-  onMoreClickEvent?: (event: ClickEvent) => void
+  // onMoreClickEvent?: (event: ClickEvent) => void
+  // @State onSelect: number = 0
+  @StorageLink("onSelect") onSelect: number = 0
+
+  // @BuilderParam menu?: ()=> void
 
   @StorageProp('topRectHeight') topRectHeight: number = 0
 
@@ -46,7 +50,7 @@ export struct MyCenterTitle{
             // 修改标题的 笔图标
             if (this.isShowEdit){
               Image($r("app.media.ic_public_edit"))
-                .size({width:CommonConstants.TITLE_IMG_SIZE,height:CommonConstants.TITLE_IMG_SIZE})
+                .size({width: 16,height: 16})
                 .margin({left: 8})
                 .onClick(this.onEditClickEvent)
             }
@@ -59,7 +63,8 @@ export struct MyCenterTitle{
         if (this.isShowMore){
           Image($r("app.media.more_vertical"))
             .size({width:CommonConstants.TITLE_IMG_SIZE,height:CommonConstants.TITLE_IMG_SIZE})
-            .onClick(this.onMoreClickEvent)
+            //.onClick(this.onMoreClickEvent)
+            .bindMenu(this.menu)
         }else { // 占位，保持标题居中
           Blank(CommonConstants.TITLE_IMG_SIZE)
         }
@@ -68,5 +73,67 @@ export struct MyCenterTitle{
       .width("100%").justifyContent(FlexAlign.Center).padding({top:12,bottom:12})
       //.width(320).justifyContent(FlexAlign.Start).padding({top:12,bottom:12})
     }
+  }
+
+  @Builder menu(){
+    Column(){
+      // TODO 菜单现在不支持自定义形状
+      // Image($r("app.media.ic_menu_triangle"))
+      //   .width(18)
+      //   .height(8)
+      Menu() {
+        MenuItemGroup() {
+          MenuItem(this.menuItemUi("按时间排序", 0))
+          MenuItem(this.menuItemUi("按名称排序", 1))
+          MenuItem(this.menuItemUi("按大小排序", 2))
+        }
+        MenuItem(this.logout())
+      }
+      .radius(12)
+    }
+  }
+
+  @Builder menuItemUi(text: string, index: number){
+    Row(){
+      Row(){
+        Text(text)
+          .font({size: 16, weight: 400})
+          .fontColor(index === this.onSelect ? "#FF6600" : "#000000")
+          .height(22)
+        if (this.onSelect === index){
+          Image($r("app.media.ic_select"))
+            .height(20)
+            .width(20)
+            .margin({left: 8})
+        }else {
+          Blank(20)
+            .margin({left: 8})
+        }
+      }
+      .alignItems(VerticalAlign.Center)
+    }
+    .padding({left: 20, right: 20, top: 12, bottom: 12})
+    .height(46)
+    .onClick(()=>{
+      this.onSelect = index
+    })
+  }
+
+  @Builder logout(){
+    Row(){
+      Row(){
+        Image($r("app.media.ic_logout"))
+          .height(20)
+          .width(20)
+          .margin({right: 8})
+        Text("退出登录")
+          .font({size: 16, weight: 400})
+          .fontColor("#EF4444")
+          .height(22)
+      }
+      .alignItems(VerticalAlign.Center)
+    }
+    .padding({left: 20, right: 20, top: 12, bottom: 12})
+    .height(46)
   }
 }
