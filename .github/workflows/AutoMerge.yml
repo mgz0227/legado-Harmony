@@ -9,12 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v2
 
     - name: Set up Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v2
       with:
-        node-version: '16'
+        node-version: '14'
 
     - name: Determine if PR should be merged
       id: determine-merge
@@ -22,12 +22,20 @@ jobs:
         ALLOWED_USERS=("yindushenwen" "linxunxr" "c386522459" "Sunny-316" "thfgjy" "stupchen" "MaoXiaoone" "ouzechang" "polo3584" "YiQingZi")
         PR_AUTHOR=$(jq -r .pull_request.user.login < "$GITHUB_EVENT_PATH")
 
-        if printf '%s\n' "${ALLOWED_USERS[@]}" | grep -qx "${PR_AUTHOR}"; then
+        MERGE=false
+        for user in "${ALLOWED_USERS[@]}"; do
+          if [ "$user" == "$PR_AUTHOR" ]; then
+            MERGE=true
+            break
+          fi
+        done
+
+        echo "MERGE=$MERGE" >> $GITHUB_ENV
+        if [ "$MERGE" == "true" ]; then
           echo "PR author ${PR_AUTHOR} is allowed. Proceeding to merge."
-          echo "MERGE=true" >> $GITHUB_ENV
         else
           echo "PR author ${PR_AUTHOR} is not allowed to auto-merge."
-          echo "MERGE=false" >> $GITHUB_ENV
+        fi
 
     - name: Install GitHub CLI
       run: |
