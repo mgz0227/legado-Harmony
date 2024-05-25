@@ -1,3 +1,4 @@
+import CommonConstants from '../common/constants/CommonConstants'
 import { BookList } from '../componets/dataList/bookList'
 import { shelfList } from '../componets/dataList/shelfList'
 
@@ -44,5 +45,5 @@ const SHELF_LIST_DATA:shelfList[] = [
 ]
 
 export const shelfInitAppData = ()=>{
-  AppStorage.setOrCreate(SHELF_LIST_KEY,SHELF_LIST_DATA)
+  AppStorage.setOrCreate(CommonConstants.SHELF_LIST_DATA,SHELF_LIST_DATA)
 }

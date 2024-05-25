@@ -1,6 +1,8 @@
+import { it } from '@ohos/hypium'
 import BookOverlay from '../../../componets/bookDetail/BookOverlay'
+import { showMessage } from '../../../componets/common/promptShow'
 import { folderList } from '../../../componets/dataList/folderList'
-import {novelPageList} from '../../../viewData/bookData'
+import { updateDateGroup } from '../../../storage/groupData'
 import FolderInfoDialog from '../dialog/FolderInfoDialog'
 
 /**
@@ -9,21 +11,30 @@ import FolderInfoDialog from '../dialog/FolderInfoDialog'
 @Component
 export default struct BookFolder {
   @Prop EXHIBIT:string
-  @State folderCheckList:folderList[] = []
+  @State groupCheckList:folderList[] = []
   @State isShow:boolean = false
-  @State folder:folderList = new folderList(0,'',0,$r('app.media.folder_test'),'')
+  @State @Watch('watchFolder')group:folderList = new folderList(0,'',0,$r('app.media.folder_test'),'')
+  @StorageProp('GROUP_LIST_DATA') groupData:folderList[] = []
+  @State changeNumber:number = 0
+
+  watchFolder(){
+    if (this.changeNumber === 1) {
+      updateDateGroup(this.group)
+    }
+  }
+
   build() {
     Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
-      ForEach(novelPageList, (item: folderList,index:number) => {
-        if (this.EXHIBIT === '宫格'){
-          this.bookInfoGrid(item)
-        } else {
-          this.bookFolderInfo(item)
-        }
+      ForEach(this.groupData, (item: folderList,index:number) => {
+          if(!item.isShow){
+            if (this.EXHIBIT === '宫格'){
+              this.bookInfoGrid(item)
+            } else {
+              this.bookFolderInfo(item)
+            }
+          }
       })
     }
-
-
   }
 
 
@@ -42,9 +53,10 @@ export default struct BookFolder {
                 .onAction((event: GestureEvent) => {
                   if (event.repeat) {
                     if (!this.isShow) {
-                      this.folder = item
+                      this.group = item
                       this.isShow = true
-                      this.folderInfoDialog?.open()
+                      this.changeNumber = 1
+                      this.groupInfoDialog?.open()
                     }
                   }
                 }))
@@ -91,7 +103,7 @@ export default struct BookFolder {
     .backgroundColor('rgba(244,244,244,0.8)')
   }
 
-  @Builder bookFolderInfo(folderList:folderList){
+  @Builder bookFolderInfo(group:folderList){
     Flex(
       {
         alignItems:ItemAlign.Center,
@@ -102,10 +114,10 @@ export default struct BookFolder {
         space:20
       }){
         BookOverlay({
-          bookImage:folderList.bookImage,
+          bookImage:group.bookImage,
           bookWidth:60,
           bookHeight:80,
-          isTop:folderList.isTop
+          isTop:group.isTop
         })
           .gesture(
           LongPressGesture({ repeat: true,duration:500 })
@@ -113,9 +125,10 @@ export default struct BookFolder {
               if (event.repeat) {
 
                 if (!this.isShow) {
-                  this.folder = folderList
+                  this.group = group
                   this.isShow = true
-                  this.folderInfoDialog?.open()
+                  this.changeNumber = 1
+                  this.groupInfoDialog?.open()
                 }
               }
             }))
@@ -123,10 +136,10 @@ export default struct BookFolder {
           space:24
         })
         {
-          Text(folderList.title)
+          Text(group.title)
             .fontWeight(700)
           Column(){
-            Text(`共${folderList.countNumber}本`).fontSize(12).fontColor('rgb(174,174,174)')
+            Text(`共${group.countNumber}本`).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
               })
@@ -134,7 +147,7 @@ export default struct BookFolder {
               .fontWeight(400)
               .maxLines(1)
               .lineHeight(20)
-            Text(folderList.newUpdateBook?folderList.newUpdateBook:'暂无更新')
+            Text(group.newUpdateBook?group.newUpdateBook:'暂无更新')
               .fontSize(12)
               .fontWeight(400)
               .textOverflow({
@@ -155,9 +168,9 @@ export default struct BookFolder {
   }
 
 
-  folderInfoDialog: CustomDialogController | null = new CustomDialogController({
+  groupInfoDialog: CustomDialogController | null = new CustomDialogController({
     builder: FolderInfoDialog({
-      itemData:this.folder,
+      itemData:this.group,
       cancel: () => {
         this.exitDialog()
       }
@@ -172,6 +185,9 @@ export default struct BookFolder {
   //退出弹框
   exitDialog(){
     this.isShow = false
+    this.changeNumber = 0
+    this.groupInfoDialog?.close()
+    showMessage('退出了')
   }
 
 }
