@@ -1,9 +1,11 @@
 import commonInputDialog from '../../../componets/common/commonInputDialog'
+import confirmDialogExample from '../../../componets/common/confirmDialog'
 import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
 import { showMessage } from '../../../componets/common/promptShow'
 import { buttonList } from '../../../componets/dataList/buttonList'
 import { folderList } from '../../../componets/dataList/folderList'
 import { updateBookListData } from '../../../storage/bookListData'
+import { delGroupById } from '../../../storage/groupData'
 
 @CustomDialog
 /**
@@ -12,7 +14,7 @@ import { updateBookListData } from '../../../storage/bookListData'
 export default struct FolderInfoDialog{
   controller?: CustomDialogController
   //推送提醒
-  @Link @Watch('itemDataFunction')itemData:folderList
+  @Link itemData:folderList
   @State pushReminder:boolean = false
   @State buttonListInfo:buttonList[] = [
     new buttonList(1,'重命名',$r('app.media.edit')),
@@ -24,10 +26,7 @@ export default struct FolderInfoDialog{
     new buttonList(7,'解散分组',$r('app.media.disband')),
     new buttonList(8,'删除',$r('app.media.ic_public_delete'))
   ]
-  itemDataFunction(){
-    console.log('变动了' + JSON.stringify(this.itemData))
-    //TODO 监听到变动将分组缓存更新
-  }
+
   cancel: () => void = () => {
   }
 
@@ -85,7 +84,7 @@ export default struct FolderInfoDialog{
       case 1 :
         this.restTitle(); break;
       case 2 :
-        showMessage('置顶'); break;
+        showMessage('置顶'); this.isFolderTop(); break;
       case 3 :
         showMessage('移动至'); break;
       case 4 :
@@ -97,12 +96,17 @@ export default struct FolderInfoDialog{
       case 7 :
         showMessage('解散分组'); break;
       case 8 :
-        showMessage('删除'); break;
+        showMessage('删除'); this.groupDelDialog?.open(); break;
     }
   }
   restTitle(){
     this.restTitleDialog?.open()
     this.inputValue = this.itemData.title
+  }
+
+  isFolderTop(){
+    this.itemData.isTop = true
+    this.itemData.topUpdateTime = new Date()
   }
 
   @State inputValue:string = ''
@@ -138,5 +142,34 @@ export default struct FolderInfoDialog{
     console.log(JSON.stringify(this.itemData))
     console.log(JSON.stringify(this.itemData.title))
     this.restTitleDialog?.close()
+  }
+
+  @State delCache:boolean = false
+  //弹窗
+  groupDelDialog: CustomDialogController | null = new CustomDialogController({
+    builder: confirmDialogExample({
+      confirm: ()=> { this.onAccept() },
+      delCache:this.delCache
+    }),
+    cancel: this.exitApp,
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
+
+
+  onAccept() {
+    this.deleteGroup()
+  }
+
+  deleteGroup() {
+    delGroupById(this.itemData.id)
+    this.cancel()
+  }
+
+  exitApp() {
+    this.groupDelDialog?.close()
   }
 }
