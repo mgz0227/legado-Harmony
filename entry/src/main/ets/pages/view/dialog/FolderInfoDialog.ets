@@ -2,6 +2,7 @@ import commonInputDialog from '../../../componets/common/commonInputDialog'
 import confirmDialogExample from '../../../componets/common/confirmDialog'
 import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
 import { showMessage } from '../../../componets/common/promptShow'
+import TitleContentDialog from '../../../componets/common/TitleContentDialog'
 import { buttonList } from '../../../componets/dataList/buttonList'
 import { folderList } from '../../../componets/dataList/folderList'
 import { updateBookListData } from '../../../storage/bookListData'
@@ -92,9 +93,17 @@ export default struct FolderInfoDialog{
       case 5 :
         showMessage('封面样式'); break;
       case 6 :
-        showMessage('隐藏分组'); break;
+        showMessage('隐藏分组');
+        this.dialogTitle = this.dialogHideTitle;
+        this.dialogContent = this.dialogHideContent;
+        this.hideDisbandDelDialog?.open();
+        break;
       case 7 :
-        showMessage('解散分组'); break;
+        showMessage('解散分组');
+        this.dialogTitle = this.dialogDisbandTitle;
+        this.dialogContent = this.dialogDisbandContent;
+        this.hideDisbandDelDialog?.open();
+        break;
       case 8 :
         showMessage('删除'); this.groupDelDialog?.open(); break;
     }
@@ -148,7 +157,7 @@ export default struct FolderInfoDialog{
   //弹窗
   groupDelDialog: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
-      confirm: ()=> { this.onAccept() },
+      confirm: ()=> { this.deleteGroup() },
       delCache:this.delCache
     }),
     cancel: this.exitApp,
@@ -159,11 +168,6 @@ export default struct FolderInfoDialog{
     cornerRadius: 25,
   })
 
-
-  onAccept() {
-    this.deleteGroup()
-  }
-
   deleteGroup() {
     delGroupById(this.itemData.id)
     this.cancel()
@@ -172,4 +176,44 @@ export default struct FolderInfoDialog{
   exitApp() {
     this.groupDelDialog?.close()
   }
+  @State dialogTitle:string = ''
+  @State dialogContent:string = ''
+
+  @State dialogHideTitle:string = '隐藏分组'
+  @State dialogHideContent:string = '隐藏后可点击分组标签栏右侧分组管理入口查看隐藏分组并进入'
+  @State dialogDisbandTitle:string = '解散分组'
+  @State dialogDisbandContent:string = '解散分组后，原组内书籍不会被删除，将自动移动至未分组'
+
+  //隐藏、解散分组弹窗
+  hideDisbandDelDialog: CustomDialogController | null = new CustomDialogController({
+    builder: TitleContentDialog({
+      confirm: ()=> { this.hideOrDisband() },
+      title:this.dialogTitle,
+      content:this.dialogContent
+    }),
+    cancel: this.exitApp,
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
+
+  hideOrDisband(){
+    if (this.dialogTitle === '隐藏分组') {
+      this.hideGroup()
+    } else {
+      this.disbandGroup()
+    }
+  }
+
+  disbandGroup(){
+    //TODO 删除分组将原来小说分类类型置为空
+  }
+  //隐藏分组
+  hideGroup(){
+    this.itemData.isShow = true
+    this.cancel()
+  }
+
 }
