@@ -7,6 +7,7 @@ import { buttonList } from '../../../componets/dataList/buttonList'
 import { folderList } from '../../../componets/dataList/folderList'
 import { updateBookListData } from '../../../storage/bookListData'
 import { delGroupById } from '../../../storage/groupData'
+import coverInfoDialog from './coverInfoDialog'
 
 @CustomDialog
 /**
@@ -91,7 +92,9 @@ export default struct FolderInfoDialog{
       case 4 :
         showMessage('加入书单'); break;
       case 5 :
-        showMessage('封面样式'); break;
+        showMessage('封面样式');
+        this.coverDialog?.open();
+        break;
       case 6 :
         showMessage('隐藏分组');
         this.dialogTitle = this.dialogHideTitle;
@@ -214,6 +217,23 @@ export default struct FolderInfoDialog{
   hideGroup(){
     this.itemData.isShow = true
     this.cancel()
+  }
+
+  coverDialog: CustomDialogController | null = new CustomDialogController({
+    builder: coverInfoDialog({
+      cancel:()=>{
+        this.coverCancel()
+      }
+    }),
+    cancel: this.coverCancel,
+    autoCancel: true,
+    width:'100%',
+    alignment: DialogAlignment.Bottom,
+    customStyle:true
+  })
+
+  coverCancel(){
+    this.coverDialog?.close()
   }
 
 }

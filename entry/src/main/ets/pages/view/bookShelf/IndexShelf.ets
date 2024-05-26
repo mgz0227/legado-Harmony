@@ -242,7 +242,7 @@ export default struct IndexShelf {
                   isClear: this.isClear
                 })
               } else {
-                if (this.GROUP === '标签' && this.bookType !== '分组') {
+                if (this.searchValue === '浏览历史') {
                   if (this.currentIndex === 0) {
                     novelPage({
                       searchValue: this.searchValue,

@@ -44,8 +44,6 @@ export default struct BookFolderInfoManage {
       }){
         BookOverlay({
           bookImage:this.folderList.bookImage,
-          bookWidth:60,
-          bookHeight:80,
           isTop:this.folderList.isTop
         })
         Column({
