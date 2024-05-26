@@ -3,6 +3,8 @@ import MyCenterFileSearch from  '../../../componets/myCenter/MyCenterFileSearch'
 import FolderFileDataSource from '../../../common/LazyIDataSource/FileListDataSource';
 import FolderFileListItem from '../../../componets/myCenter/FolderFileListItem';
 import FolderAndFileItem from '../../../componets/dataList/FolderAndFileItem';
+import RenameDialog from '../dialog/RenameDialog';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 /**
  * @author 惟草木之零落兮
@@ -12,15 +14,31 @@ import FolderAndFileItem from '../../../componets/dataList/FolderAndFileItem';
 // 书架/更多/书籍导入/网盘导入/文件列表/开源阅读
 
 PersistentStorage.persistProp('onSelect', 0);
+PersistentStorage.persistProp('webDavTitle', "坚果云");
 
 @Entry
 @Component
 struct FileManagement {
-    @State title: string = '坚果云';
+    @State title: string = AppStorage.get("webDavTitle") || "坚果云"
 
     @State fileList: FolderFileDataSource = new FolderFileDataSource()
 
     @StorageLink("onSelect") onSelect: number = 0
+
+    dialogController: CustomDialogController | null = new CustomDialogController({
+        builder: RenameDialog({
+            oldName: "坚果云",
+            confirm: this.confirm
+        }),
+        //autoCancel: true,
+        alignment: DialogAlignment.Center,
+        offset: { dx: 0, dy: 0 },
+        customStyle: true
+    })
+
+    confirm(value: string){
+        // 新名字
+    }
 
     aboutToAppear(): void {
         for (let i=0; i < 20; i++){
@@ -43,7 +61,7 @@ struct FileManagement {
                 isShowEdit: true,
                 isShowMore: true,
                 onEditClickEvent: ()=>{
-
+                    this.dialogController?.open()
                 }
             })
 
