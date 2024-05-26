@@ -52,7 +52,7 @@ export default struct IndexShelf {
   EXHIBIT_NAMES: string[] = ['列表', '宫格']
   GROUP_NAMES: string[] = ['标签', '文件夹']
   @State EXHIBIT: string = '列表'
-  @State GROUP: string = '标签'
+  @State GROUP: string = '文件夹'
   @State searchValue: string = '最近阅读'
   @State bookType: string = '分组'
   @State title: string = '最近阅读'
@@ -242,7 +242,7 @@ export default struct IndexShelf {
                   isClear: this.isClear
                 })
               } else {
-                if (this.searchValue === '浏览历史') {
+                if (this.GROUP === '标签') {
                   if (this.currentIndex === 0) {
                     novelPage({
                       searchValue: this.searchValue,
