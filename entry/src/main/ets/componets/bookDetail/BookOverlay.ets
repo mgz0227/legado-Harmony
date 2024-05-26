@@ -1,9 +1,9 @@
-
+import CommonConstants from '../../common/constants/CommonConstants'
 
 @Component
 export default struct BookOverlay {
-  @Prop bookWidth:number
-  @Prop bookHeight:number
+  // @Prop bookWidth:number
+  // @Prop bookHeight:number
   @Prop bookImage:Resource
   @Prop isTop:boolean
   @Prop isShow:boolean = false
@@ -16,7 +16,7 @@ export default struct BookOverlay {
         }
         .zIndex(3)
         .backgroundColor('rgba(0,0,0,0.45)')
-        .width(this.bookWidth).height(this.bookHeight)
+        .width(CommonConstants.NOVEL_IMG_WIDTH).height(CommonConstants.NOVEL_IMG_HEIGHT)
       }
       Flex({
         alignItems: ItemAlign.End,
@@ -27,21 +27,21 @@ export default struct BookOverlay {
         }
       }
       .align(Alignment.Start)
-      .width(this.bookWidth).height(this.bookHeight)
+      .width(CommonConstants.NOVEL_IMG_WIDTH).height(CommonConstants.NOVEL_IMG_HEIGHT)
       .backgroundImage(this.bookImage)
-      .backgroundImageSize({width:this.bookWidth,height:this.bookHeight})
+      .backgroundImageSize({width:CommonConstants.NOVEL_IMG_WIDTH,height:CommonConstants.NOVEL_IMG_HEIGHT})
       .zIndex(2)
 
       Row(){
         Image($r('app.media.occlusion1'))
       }
       .zIndex(1)
-      .width(this.bookWidth + 5).height(this.bookHeight + 5)
+      .width(CommonConstants.NOVEL_IMG_WIDTH + 5).height(CommonConstants.NOVEL_IMG_HEIGHT - 5)
 
       Row(){
         Image($r('app.media.occlusion2'))
       }.zIndex(0)
-      .width(this.bookWidth + 10).height(this.bookHeight + 10)
+      .width(CommonConstants.NOVEL_IMG_WIDTH + 10).height(CommonConstants.NOVEL_IMG_HEIGHT - 10)
     }
     .align(Alignment.BottomStart)
   }

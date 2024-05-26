@@ -115,8 +115,6 @@ export default struct BookFolder {
       }){
         BookOverlay({
           bookImage:group.bookImage,
-          bookWidth:60,
-          bookHeight:80,
           isTop:group.isTop
         })
           .gesture(
