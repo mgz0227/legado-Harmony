@@ -1,13 +1,6 @@
-import BookOverlay from '../../../componets/bookDetail/BookOverlay'
-import commonInputDialog from '../../../componets/common/commonInputDialog'
-import confirmDialogExample from '../../../componets/common/confirmDialog'
-import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
-import { showMessage } from '../../../componets/common/promptShow'
-import TitleContentDialog from '../../../componets/common/TitleContentDialog'
-import { buttonList } from '../../../componets/dataList/buttonList'
 import { folderList } from '../../../componets/dataList/folderList'
-import { updateBookListData } from '../../../storage/bookListData'
-import { delGroupById } from '../../../storage/groupData'
+import { pickerAvatar } from '../../../common/utils/photoViewPicker'
+import coverInfoImageShow from '../coverInfoImageShow'
 
 @CustomDialog
 /**
@@ -17,8 +10,8 @@ import { delGroupById } from '../../../storage/groupData'
 export default struct coverInfoDialog{
   controller?: CustomDialogController
   //推送提醒
-  // @Link itemData:folderList
-
+  @Link itemData:folderList
+  @State coverImages:string = ''
   cancel: () => void = () => {
   }
   @State coverFolder:boolean = false
@@ -29,8 +22,8 @@ export default struct coverInfoDialog{
         alignItems:ItemAlign.Center
       }){
         Column(){
-          Text('游戏').fontColor('rgba(0, 0, 0, 0.88)').fontSize(16).fontWeight(500).lineHeight(24)
-          Text(`共${12}本`).fontColor('rgba(0, 0, 0, 0.45)').fontWeight(400).lineHeight(20).fontSize(12)
+          Text(this.itemData.title).fontColor('rgba(0, 0, 0, 0.88)').fontSize(16).fontWeight(500).lineHeight(24)
+          Text(`共${this.itemData.countNumber}本`).fontColor('rgba(0, 0, 0, 0.45)').fontWeight(400).lineHeight(20).fontSize(12)
         }
         Row(){
           Text('仅用于当前分组')
@@ -46,9 +39,22 @@ export default struct coverInfoDialog{
         direction: FlexDirection.Row,
         justifyContent:FlexAlign.SpaceBetween
       }){
-        this.coverImage($r('app.media.cover_list'))
-        this.coverImage($r('app.media.cover_list'))
-        this.coverImage($r('app.media.cover_list'))
+        coverInfoImageShow({
+          coverCount:1,
+          image:this.itemData.bookImage
+        })
+        coverInfoImageShow({
+          coverCount:2,
+          imageString:this.coverImages
+        }).onClick(()=>{
+          this.setCoverImages()
+        })
+        coverInfoImageShow({
+          coverCount:3,
+          imageString:this.coverImages
+        }).onClick(()=>{
+          this.setCoverImages()
+        })
       }.padding(20)
       Divider().strokeWidth(0.5).padding({bottom:16})
       Column(){
@@ -86,15 +92,8 @@ export default struct coverInfoDialog{
     .width('100%')
   }
 
-  @Builder coverImage(bookImage:Resource){
-    Column(){
-      BookOverlay({
-        bookImage:bookImage,
-        // isTop:this.folderList.isTop
-      })
-      Row().width(86).height(20).backgroundColor(Color.White).borderRadius(2)
-        .shadow({ radius: 5, color: 'rgba(0, 0, 0, 0.10)' })
-         // .border({width:1,color:'rgba(255, 255, 255, 0.10)'})
-    }
+  async setCoverImages(){
+    let imageUrl = await pickerAvatar();
+    this.coverImages = imageUrl?.photoUris[0] || ''
   }
 }
