@@ -221,6 +221,7 @@ export default struct FolderInfoDialog{
 
   coverDialog: CustomDialogController | null = new CustomDialogController({
     builder: coverInfoDialog({
+      itemData:this.itemData,
       cancel:()=>{
         this.coverCancel()
       }
