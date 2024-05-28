@@ -170,7 +170,7 @@ export default struct bookListManage{
               })
             })
           }
-          .backgroundColor('rgba(255,250,247,0.8)')
+          // .backgroundColor('rgba(255,250,247,0.8)')
         }
         // Divider().vertical(false)
         // Row() {

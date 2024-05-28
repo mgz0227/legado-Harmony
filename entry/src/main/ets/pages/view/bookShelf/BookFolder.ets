@@ -4,6 +4,7 @@ import { showMessage } from '../../../componets/common/promptShow'
 import { folderList } from '../../../componets/dataList/folderList'
 import { updateDateGroup } from '../../../storage/groupData'
 import FolderInfoDialog from '../dialog/FolderInfoDialog'
+import FolderManageDialog from '../dialog/FolderManageDialog'
 
 /**
  * 文件夹
@@ -23,9 +24,14 @@ export default struct BookFolder {
     }
   }
 
+  @State isShowBookFolderInfoDialog:boolean = false
+
+
+
   build() {
     Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
       ForEach(this.groupData, (item: folderList,index:number) => {
+        Column(){
           if(!item.isShow){
             if (this.EXHIBIT === '宫格'){
               this.bookInfoGrid(item)
@@ -33,10 +39,32 @@ export default struct BookFolder {
               this.bookFolderInfo(item)
             }
           }
+        }
+        .onClick(()=>{
+          this.isShowBookFolderInfoDialog = true
+          this.folderType = item.title
+          showMessage(item.title)
+        })
       })
     }
+    .bindSheet($$this.isShowBookFolderInfoDialog, this.bookFolderInfoDialog(), {
+      detents: [SheetSize.MEDIUM, SheetSize.LARGE, 200],
+      showClose: false,
+      dragBar: true,
+      maskColor: 'rgba(0,0,0,0.6)',
+      onDisappear:()=>{
+        console.log('隐藏')
+      }
+    })
   }
-
+  @State folderType:string = ''
+  @Builder bookFolderInfoDialog(){
+    Column(){
+      FolderManageDialog({
+        folderType:this.folderType
+      })
+    }.padding(15)
+  }
 
   @Builder bookInfoGrid(item: folderList){
     Column({
