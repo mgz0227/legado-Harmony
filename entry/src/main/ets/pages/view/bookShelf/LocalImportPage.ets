@@ -94,7 +94,6 @@ struct LocalImportPage {
         curve: Curve.EaseOut,
         playMode: PlayMode.Normal
       })
-      .borderWidth(1)
       .width("100%")
       .height(40)
       .margin({
