@@ -21,6 +21,8 @@ class DownloadItem {
   }
 }
 
+PersistentStorage.persistProp('ExportSettingList', [false, false, false, false, false]);
+
 @Entry
 @Component
 struct DownloadManagementPage {
@@ -31,7 +33,7 @@ struct DownloadManagementPage {
   @State SearchValue: string = ""
   @State IsEdit: boolean = false
   @State isShowExportSetting: boolean = false
-  @State ExportSettingList: Array<boolean> = [false, false, false, false, false]
+  @StorageLink('ExportSettingList') ExportSettingList: Array<boolean> = [false, false, false, false, false]
   @State questionsList: Array<string> = ["全部", "小说", "漫画", "有声书", "有声书", "有声书"]
   @State DownloadingItemList: DownloadItem[] = [
     new DownloadItem("斗破苍穹", 12, 100, "EPUB"),
@@ -413,11 +415,11 @@ struct DownloadManagementPage {
           weight: 400
         })
       Blank(1)
-      Toggle({ type: ToggleType.Switch })
+      Toggle({ type: ToggleType.Switch, isOn: this.ExportSettingList[index] })
         .onChange((value) => {
           this.ExportSettingList[index] = value // 按钮状态同步到数组对应元素
         })
-      // Text(this.ExportSettingList[index].toString()) 验证按钮是否双向同步
+      Text(this.ExportSettingList[index].toString()) // 验证按钮是否双向同步
     }
     .padding({
       top: 12,
