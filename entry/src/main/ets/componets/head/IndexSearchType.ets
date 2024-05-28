@@ -4,7 +4,7 @@ export default struct IndexSearchType {
   @Link searchValue:string
   @State isShown: boolean = false
 
-  @State THEME_NAME: string[] = ['最近阅读', '最新阅读排序', '最近更新排序', '手动排序']
+  @State THEME_NAME: string[] = ['最近阅读', '阅读排序', '更新排序', '手动排序']
   // @State THEME_NAMES: string[] = []
 
   build() {
