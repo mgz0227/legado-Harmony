@@ -65,6 +65,12 @@ export default struct IndexShelf {
   @State isShowCloudImport: boolean = false
   @State isShowImportBookList: boolean = false
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
+  // 网址导入dialog
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: CloudPasteDialog(),
+    cornerRadius: 8,
+    offset: { dx: 0, dy: 0 }
+  })
 
   build() {
     Column() {
@@ -435,7 +441,8 @@ export default struct IndexShelf {
           this.isShowCloudImport = true
           break
         case 2:
-
+        // 网址导入
+          this.dialogController.open();
           break
       }
     })
@@ -603,11 +610,11 @@ export default struct IndexShelf {
       }) {
         Grid() {
           GridItem() {
-            this.ImportClickBox(0, "app.media.Paste", "粘贴导入")
+            this.ImportClickBox(3, "app.media.Paste", "粘贴导入")
           }
 
           GridItem() {
-            this.ImportClickBox(1, "app.media.my_center_file_icon", "本地导入")
+            this.ImportClickBox(4, "app.media.my_center_file_icon", "本地导入")
           }
         }
         .columnsTemplate("1fr 1fr 1fr 1fr")
@@ -653,5 +660,77 @@ export default struct IndexShelf {
       case 3:
         break
     }
+  }
+}
+
+@CustomDialog
+  // 网址导入自定义弹窗
+struct CloudPasteDialog {
+  controller?: CustomDialogController;
+
+  build() {
+    Column() {
+      Row() {
+        Text("网址导入")
+          .lineHeight(26)
+          .font({
+            size: 18,
+            weight: 500
+          })
+      }
+
+      Row() {
+        Search({ placeholder: '请输入书籍目录或详情页地址' })
+      }
+      .margin({
+        top:16,
+        bottom:24
+      })
+
+      Flex({
+        justifyContent: FlexAlign.SpaceEvenly,
+        alignItems: ItemAlign.Center
+      }) {
+        Button() {
+          Text("取消")
+            .fontColor("#FF6600")
+            .lineHeight(22)
+            .font({
+              size: 14,
+              weight: 500
+            })
+        }
+        .width(112)
+        .height(38)
+        .backgroundColor("rgba(255, 102, 0, 0.12)")
+        .onClick(() => {
+          if (this.controller != undefined) {
+            this.controller.close()
+          }
+        })
+
+        Button() {
+          Text("确定")
+            .fontColor("#FFFFFF")
+            .lineHeight(22)
+            .font({
+              size: 14,
+              weight: 500
+            })
+        }
+        .width(112)
+        .height(38)
+        .backgroundColor("#FF6600")
+        .onClick(() => {
+
+        })
+      }
+    }
+    .padding({
+      top: 24,
+      bottom: 24,
+      left: 24,
+      right: 24
+    })
   }
 }
