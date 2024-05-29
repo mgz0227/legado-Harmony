@@ -19,6 +19,7 @@
     "pages/view/myCenter/readStatistics",
     "pages/view/myCenter/FileManagement",
     "pages/view/bookShelf/LocalImportPage",
-    "pages/view/bookShelf/DownloadManagementPage"
+    "pages/view/bookShelf/DownloadManagementPage",
+    "pages/view/Reader/ReaderPage"
   ]
 }
