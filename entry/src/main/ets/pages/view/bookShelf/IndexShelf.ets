@@ -6,6 +6,7 @@ import soundPage from './soundPage'
 import IndexSearchType from '../../../componets/head/IndexSearchType'
 import router from '@ohos.router'; // 引入路由管理器
 import confirmDialogExample from '../../../componets/common/confirmDialog'
+import inputDialog from 'ets/componets/common/inputDialog'
 import BookFolder from './BookFolder'
 import groupTypeComponent from '../../../componets/group/GroupType'
 import BookShelfInfo from './Shelf/BookShelfInfo'
@@ -67,7 +68,11 @@ export default struct IndexShelf {
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
   // 网址导入dialog
   dialogController: CustomDialogController = new CustomDialogController({
-    builder: CloudPasteDialog(),
+    builder: inputDialog({
+      title: '网址导入',
+      placeholder: "请输入书籍目录或详情页地址",
+      maxlength: 10
+    }),
     cornerRadius: 8,
     offset: { dx: 0, dy: 0 }
   })
@@ -660,77 +665,5 @@ export default struct IndexShelf {
       case 3:
         break
     }
-  }
-}
-
-@CustomDialog
-  // 网址导入自定义弹窗
-struct CloudPasteDialog {
-  controller?: CustomDialogController;
-
-  build() {
-    Column() {
-      Row() {
-        Text("网址导入")
-          .lineHeight(26)
-          .font({
-            size: 18,
-            weight: 500
-          })
-      }
-
-      Row() {
-        Search({ placeholder: '请输入书籍目录或详情页地址' })
-      }
-      .margin({
-        top:16,
-        bottom:24
-      })
-
-      Flex({
-        justifyContent: FlexAlign.SpaceEvenly,
-        alignItems: ItemAlign.Center
-      }) {
-        Button() {
-          Text("取消")
-            .fontColor("#FF6600")
-            .lineHeight(22)
-            .font({
-              size: 14,
-              weight: 500
-            })
-        }
-        .width(112)
-        .height(38)
-        .backgroundColor("rgba(255, 102, 0, 0.12)")
-        .onClick(() => {
-          if (this.controller != undefined) {
-            this.controller.close()
-          }
-        })
-
-        Button() {
-          Text("确定")
-            .fontColor("#FFFFFF")
-            .lineHeight(22)
-            .font({
-              size: 14,
-              weight: 500
-            })
-        }
-        .width(112)
-        .height(38)
-        .backgroundColor("#FF6600")
-        .onClick(() => {
-
-        })
-      }
-    }
-    .padding({
-      top: 24,
-      bottom: 24,
-      left: 24,
-      right: 24
-    })
   }
 }

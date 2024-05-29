@@ -1,8 +1,7 @@
 import CommonConstants from '../../common/constants/CommonConstants'
 import ReadRecordItem from '../../componets/bookDetail/ReadRecordItem'
 import TagIndex from '../../componets/bookDetail/TagIndex'
-import { Router, SwipeRefresher } from '@kit.ArkUI'
-import router from '@ohos.router'
+import { router, Router, SwipeRefresher } from '@kit.ArkUI'
 import NoteIndex from '../../componets/bookDetail/note/NoteIndex'
 
 /**
@@ -132,6 +131,12 @@ struct BookDetailPage {
           .borderRadius(200)
           .backgroundColor('#FF6600')
           .fontColor('#FFFFFF')
+          .onClick(()=>{
+            // 跳转到阅读器
+            router.pushUrl({
+              url: '/pages/view/Reader/ReaderPage'
+            })
+          })
       }
       .padding({top: 12, bottom: 12})
       .justifyContent(FlexAlign.Center)
