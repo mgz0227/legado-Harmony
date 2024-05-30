@@ -14,18 +14,25 @@ export default struct battery {
       Stack() {
         Flex()
           .height(7)
-          .width(18)
+          .width(20)
           .backgroundColor("red")
           .zIndex(2)
           .borderRadius(1.5)
           .margin({
-            left:3
+            left: 2
           })
 
         Image($r("app.media.Union")).width(26)
       }
       .alignContent(Alignment.Start)
+
+      Image($r("app.media.Vector"))
+        .height(12)
+        .margin({
+          left: 3
+        })
+        .opacity(0.88)
     }
-    .width(26)
+    .width(38)
   }
 }

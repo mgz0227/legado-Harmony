@@ -6,7 +6,7 @@ import soundPage from './soundPage'
 import IndexSearchType from '../../../componets/head/IndexSearchType'
 import router from '@ohos.router'; // 引入路由管理器
 import confirmDialogExample from '../../../componets/common/confirmDialog'
-import inputDialog from 'ets/componets/common/inputDialog'
+import Dialog from 'ets/componets/common/Dialog'
 import BookFolder from './BookFolder'
 import groupTypeComponent from '../../../componets/group/GroupType'
 import BookShelfInfo from './Shelf/BookShelfInfo'
@@ -68,14 +68,33 @@ export default struct IndexShelf {
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
   // 网址导入dialog
   dialogController: CustomDialogController = new CustomDialogController({
-    builder: inputDialog({
+    builder: Dialog({
       title: '网址导入',
-      placeholder: "请输入书籍目录或详情页地址",
-      maxlength: 10
+      child: () => {
+        this.DialogInput("请输入书籍目录或详情页", 10)
+      }
     }),
     cornerRadius: 8,
     offset: { dx: 0, dy: 0 }
   })
+
+  @Builder
+  DialogInput(placeholder: string, maxlength: number) {
+    Row() {
+      TextInput({ placeholder: placeholder })
+        .maxLength(maxlength)
+        .showCounter(true)
+        .cancelButton({
+          icon: {
+            src: $r('app.media.close')
+          }
+        })
+    }
+    .margin({
+      top: 16,
+      bottom: 16
+    })
+  }
 
   build() {
     Column() {
