@@ -1,10 +1,11 @@
 @CustomDialog
-  // 输入弹窗
-export default struct inputDialog {
+  // 通用弹窗
+export default struct Dialog {
   controller?: CustomDialogController;
   @Prop title: string = '标题'
-  @Prop placeholder: string = '请输入'
-  @Prop maxlength: number = 10
+  @Prop CancelString: string = "取消"
+  @Prop ConfirmString: string = "确定"
+  @BuilderParam child: () => void // 通用组件
 
   build() {
     Column() {
@@ -17,27 +18,29 @@ export default struct inputDialog {
           })
       }
 
-      Row() {
-        TextInput({ placeholder: this.placeholder })
-          .maxLength(this.maxlength)
-          .showCounter(true)
-          .cancelButton({
-            icon: {
-              src: $r('app.media.close')
-            }
-          })
-      }
-      .margin({
-        top: 16,
-        bottom: 16
-      })
+
+      this.child()
+      // Row() {
+      //   TextInput({ placeholder: this.placeholder })
+      //     .maxLength(this.maxlength)
+      //     .showCounter(true)
+      //     .cancelButton({
+      //       icon: {
+      //         src: $r('app.media.close')
+      //       }
+      //     })
+      // }
+      // .margin({
+      //   top: 16,
+      //   bottom: 16
+      // })
 
       Flex({
         justifyContent: FlexAlign.SpaceEvenly,
         alignItems: ItemAlign.Center
       }) {
         Button() {
-          Text("取消")
+          Text(this.CancelString)
             .fontColor("#FF6600")
             .lineHeight(22)
             .font({
@@ -55,7 +58,7 @@ export default struct inputDialog {
         })
 
         Button() {
-          Text("确定")
+          Text(this.ConfirmString)
             .fontColor("#FFFFFF")
             .lineHeight(22)
             .font({
