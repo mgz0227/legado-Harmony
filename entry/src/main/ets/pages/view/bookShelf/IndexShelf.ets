@@ -53,9 +53,9 @@ export default struct IndexShelf {
   EXHIBIT_NAMES: string[] = ['列表', '宫格']
   GROUP_NAMES: string[] = ['标签', '文件夹']
   @State EXHIBIT: string = '列表'
-  @State GROUP: string = '文件夹'
+  @State GROUP: string = '标签'
   @State searchValue: string = '最近阅读'
-  @State bookType: string = '分组'
+  @State bookType: string = '全部'
   @State title: string = '最近阅读'
   @State isClear: boolean = false
   @State isRefreshing: boolean = false
@@ -295,7 +295,8 @@ export default struct IndexShelf {
           groupTypeComponent({
             bookType: this.bookType,
             currentIndex: this.currentIndex,
-            groupCoverShow: this.groupCoverShow
+            groupCoverShow: this.groupCoverShow,
+            GROUP:this.GROUP
           }).zIndex(999)
         }
         Refresh({ refreshing: $$this.isRefreshing, builder: this.refreshComponent }) {

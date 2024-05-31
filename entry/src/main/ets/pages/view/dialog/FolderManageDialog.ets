@@ -8,6 +8,8 @@ import { folderList } from '../../../componets/dataList/folderList'
 import IndexSearchType from '../../../componets/head/IndexSearchType'
 import { updateBookListData } from '../../../storage/bookListData'
 import bookListManage from '../bookShelf/Manage/bookManage/bookListManage'
+import newAddShelf from '../bookShelf/Manage/bookManage/newAddShelf'
+import newBookShelf from '../bookShelf/Manage/bookManage/newBookShelf'
 
 /**
  * 分组单击跳转页面
@@ -114,14 +116,32 @@ export default struct FolderManageDialog {
   @State addCheckShelf:BookList[] = [
     new BookList('1','开局长生万古，苟到天荒地老','这个世界，有儒;有道；有佛书;有妖;有术士。警校毕业的许七安幽幽醒来，发现自己将要远赴','更新至·第340章 镇压',$r('app.media.shelf_book'),'玄幻')]
   build() {
-    this.bookManage()
+    Column(){
+      if (this.showNumber === 0){
+        this.bookManage()
+      } else if(this.showNumber === 1){
+        newBookShelf({
+          addCheckShelf:this.addCheckShelf,
+          showNumber:this.showNumber,
+          isAddShelfShow:this.isAddShelfShow,
+          topIsShow:false
+        })
+      } else if (this.showNumber === 2){
+        newAddShelf({
+          addCheckShelf:this.addCheckShelf,
+          showNumber:this.showNumber,
+          isAddShelfShow:this.isAddShelfShow,
+          topIsShow:false
+        })
+      }
+    }.height('100%')
   }
   @Builder bookManage(){
     Flex({
       justifyContent:FlexAlign.SpaceBetween,
       direction:FlexDirection.Column
     }) {
-      if (this.isManage){
+      if (!this.isManage){
         this.headTitleManage()
       } else {
         this.headTitle()
@@ -135,13 +155,14 @@ export default struct FolderManageDialog {
           checkNumber:this.checkNumber,
           changeTop:this.changeTop,
           checkBookList:this.checkBookList,
-          shelfType:0
+          shelfType:0,
+          isManage:this.isManage
         })
       }
-      .height(this.isManage?'95%':'85%')
+      .height(!this.isManage?'95%':'85%')
       .align(Alignment.TopStart)
       .scrollBar(BarState.Off)
-      if (!this.isManage){
+      if (this.isManage){
         this.footerTitle()
       }
     }.height('100%').width('100%')
@@ -177,7 +198,7 @@ export default struct FolderManageDialog {
   }
   @State titleManage:string = '最近阅读'
   @State searchValue: string = '最近阅读'
-  @State isManage:boolean = true
+  @State isManage:boolean = false
 
   @Builder headTitleManage(){
     Flex(

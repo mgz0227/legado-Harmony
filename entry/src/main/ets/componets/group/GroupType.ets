@@ -7,6 +7,7 @@ export default struct groupTypeComponent {
   @Link bookType: string
   @Link currentIndex: number
   @Link groupCoverShow:boolean
+  @Link GROUP:string
 
   build() {
     if (this.groupCoverShow){
@@ -33,6 +34,7 @@ export default struct groupTypeComponent {
           Row({ space: 10 }) {
             BookType({ title: '分组', bookType: this.bookType }).onClick(() => {
               this.bookType = '分组'
+              this.GROUP = '文件夹'
             })
             BookType({ title: '全部', bookType: this.bookType }).onClick(() => {
               this.bookType = '全部'

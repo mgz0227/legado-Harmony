@@ -37,7 +37,9 @@ export class BookList {
 
   topUpdateTime:Date
 
-  constructor(bookId:string, title:string,describe:string , chapter:string,  bookImage:Resource,bookType:string ='玄幻', topUpdateTime:Date = new Date(),isJoin:boolean = false,isTop:boolean = false) {
+  author:string
+
+  constructor(bookId:string, title:string,describe:string , chapter:string,  bookImage:Resource,author:string = '卖报小郎君',bookType:string ='玄幻', topUpdateTime:Date = new Date(),isJoin:boolean = false,isTop:boolean = false) {
     this.bookId = bookId
     this.title = title
     this.isJoin = isJoin
@@ -47,5 +49,6 @@ export class BookList {
     this.bookType = bookType
     this.isTop = isTop
     this.topUpdateTime = topUpdateTime
+    this.author = author
   }
 }

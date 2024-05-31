@@ -21,6 +21,7 @@ export default struct newAddShelf{
   @State checkNumber:number = 0
   @State @Watch('changeCheckNumber')checkBookList:BookList[] = []
   @Link addCheckShelf:BookList[]
+  @Prop topIsShow:boolean = true
   changeTextValue(){
     console.log('模糊匹配中')
     //更具TextValue值模糊匹配bookList的显示值
@@ -44,7 +45,9 @@ export default struct newAddShelf{
     }
     ){
      Column(){
-       Blank(20)
+       if (this.topIsShow){
+         Blank(this.topRectHeight)
+       }
        Column({
          space:5
        }) {
@@ -73,13 +76,7 @@ export default struct newAddShelf{
         Column(){
           ForEach(this.TextValue.length>0?this.searchList:this.bookList, (item: BookList,index:number) => {
             BookInfoManage({
-              bookId:item.bookId,
-              title: item.title,
-              describe: item.describe,
-              chapter: item.chapter,
-              bookImage: item.bookImage,
-              isJoin:item.isJoin,
-              isTop:item.isTop,
+              bookData:item,
               allCheck:this.allCheck,
               changeTop:this.changeTop,
               checkBookList:this.checkBookList
