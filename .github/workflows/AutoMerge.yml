@@ -34,7 +34,7 @@ jobs:
       - name: Configure git
         run: |
           git config --global user.name "mgz0227"
-          git config --global user.email "mgz0227@users.noreply.github.com"
+          git config --global user.email "miaogongzi0227@gmail.com"
 
       - name: Merge PR
         if: env.MERGE == 'true'
@@ -56,4 +56,4 @@ jobs:
           git merge --no-ff $PR_BRANCH -m "Merge pull request #$PR_NUMBER from $PR_BRANCH"
 
           # Push the changes
-          git push https://mgz0227:${{ secrets.AUTOMERGE }}@github.com/${{ github.repository }} $BASE_BRANCH
+          git push https://x-access-token:${{ secrets.AUTOMERGE }}@github.com/${{ github.repository }} $BASE_BRANCH
