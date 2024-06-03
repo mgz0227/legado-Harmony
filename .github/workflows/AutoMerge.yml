@@ -30,10 +30,6 @@ jobs:
             echo "PR author ${PR_AUTHOR} is not allowed to auto-merge."
             echo "MERGE=false" >> $GITHUB_ENV
           fi
-      - name: Configure git
-        run: |
-          git config user.email "miaogongzi0227@gmail.com"
-          git config user.name "mgz0227"
       - name: Merge PR
         if: env.MERGE == 'true'
         env:
@@ -42,12 +38,20 @@ jobs:
           PR_NUMBER=${{ github.event.pull_request.number }}
           PR_BRANCH=refs/pull/$PR_NUMBER/head
           BASE_BRANCH=${{ github.event.pull_request.base.ref }}
+    
+          # Configure git with necessary information
+          git config user.email "miaogongzi0227@gmail.com"
+          git config user.name "mgz0227"
+    
           # Fetch the PR branch and the base branch
           git fetch origin $PR_BRANCH:$PR_BRANCH
           git fetch origin $BASE_BRANCH
+    
           # Checkout the base branch
           git checkout $BASE_BRANCH
+    
           # Merge the PR branch
           git merge --no-ff $PR_BRANCH -m "Merge pull request #$PR_NUMBER from $PR_BRANCH"
+    
           # Push the changes
-          git push origin $BASE_BRANCH
+          git push https://mgz0227:${{ secrets.AUTOMERGE }}@github.com/${{ github.repository }} HEAD:$BASE_BRANCH
