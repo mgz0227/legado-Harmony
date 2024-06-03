@@ -32,12 +32,12 @@ jobs:
           fi
       - name: Configure git
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.email "miaogongzi0227@gmail.com"
+          git config user.name "mgz0227"
       - name: Merge PR
         if: env.MERGE == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.AUTOMERGE }}
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
           PR_BRANCH=refs/pull/$PR_NUMBER/head
