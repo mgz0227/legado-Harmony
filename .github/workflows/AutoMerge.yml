@@ -35,7 +35,10 @@ jobs:
 
       - name: Merge PR
         if: env.MERGE == 'true'
-        run: |
-          gh pr merge ${{ github.event.pull_request.number }} --squash --admin --repo ${{ github.repository }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            execSync(`gh pr merge ${{ github.event.pull_request.number }} --squash --admin --repo ${{ github.repository }}`, { stdio: 'inherit' });
         env:
           GITHUB_TOKEN: ${{ secrets.AUTOMERGE }}
