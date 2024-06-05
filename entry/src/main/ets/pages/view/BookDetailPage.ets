@@ -134,7 +134,10 @@ struct BookDetailPage {
           .onClick(()=>{
             // 跳转到阅读器
             router.pushUrl({
-              url: 'pages/view/Reader/ReaderPage'
+              url: 'pages/view/Reader/ReaderPage',
+              params: {
+                bookUrl:"/data/local/tmp"
+              }
             })
           })
       }

@@ -2,9 +2,16 @@ import battery from 'ets/componets/common/battery';
 import Dialog from 'ets/componets/common/Dialog';
 import { router } from '@kit.ArkUI';
 
+
 @Entry
 @Component
 struct ReaderPage {
+  onPageShow(): void {
+    let temp = router.getParams()
+    console.log('router'+JSON.stringify(temp))
+  }
+
+
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @State isShowSetting: boolean = true
