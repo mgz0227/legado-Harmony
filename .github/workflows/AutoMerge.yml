@@ -54,4 +54,4 @@ jobs:
           git merge --no-ff $PR_BRANCH -m "Merge pull request #$PR_NUMBER from $PR_BRANCH"
     
           # Push the changes
-          git push https://mgz0227:${{ secrets.AUTOMERGE }}@github.com/${{ github.repository }} HEAD:$BASE_BRANCH
+          git push https://mgz0227:${{ secrets.AUTOMERGE }}@github.com/legado-Harmony.git HEAD:$BASE_BRANCH
