@@ -37,7 +37,6 @@ jobs:
         uses: hmarr/auto-approve-action@v4
         with:
           github-token: ${{ secrets.AUTOMERGE }}
-
       - name: Merge PR
         if: env.MERGE == 'true'
         run: |
