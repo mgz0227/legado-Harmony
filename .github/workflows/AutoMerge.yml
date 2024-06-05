@@ -32,11 +32,7 @@ jobs:
             echo "PR author ${PR_AUTHOR} is not allowed to auto-merge."
             echo "MERGE=false" >> $GITHUB_ENV
           fi
-      - name: Auto-approve PR
-        if: env.MERGE == 'true'
-        uses: hmarr/auto-approve-action@v4
-        with:
-          github-token: ${{ secrets.AUTOMERGE }}
+
       - name: Merge PR
         if: env.MERGE == 'true'
         run: |
