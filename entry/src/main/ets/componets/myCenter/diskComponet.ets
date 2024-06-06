@@ -26,12 +26,14 @@ export struct diskComponet{
             .width("100%")
             .textAlign(TextAlign.End)
         }.width(100).margin({bottom:3})
-        ImageSpan($r("app.media.right"))
-          .size({width:24,height:24})
-          .verticalAlign(ImageSpanAlignment.BOTTOM)
-          .onClick(()=>{
-            this.device_onclick()
-          })
+        Text(){
+          ImageSpan($r("app.media.right"))
+            .size({width:24,height:24})
+            .verticalAlign(ImageSpanAlignment.BOTTOM)
+            .onClick(()=>{
+              this.device_onclick()
+            })
+        }
       }.width("60%")
       .padding({top:12,bottom:12})
       .justifyContent(FlexAlign.End)

@@ -60,12 +60,14 @@ struct DiskSet {
             .maxLines(1)
             .ellipsisMode(item.status?EllipsisMode.START:EllipsisMode.END)
         }.width(124).margin({bottom:3})
-        ImageSpan($r("app.media.right"))
-          .size({width:24,height:24})
-          .verticalAlign(ImageSpanAlignment.BOTTOM)
-          .onClick(()=>{
-            onClick();
-          })
+        Text(){
+          ImageSpan($r("app.media.right"))
+            .size({width:24,height:24})
+            .verticalAlign(ImageSpanAlignment.BOTTOM)
+            .onClick(()=>{
+              onClick();
+            })
+        }
       }.width("60%")
       .padding({top:12,bottom:12})
       .justifyContent(FlexAlign.End)
