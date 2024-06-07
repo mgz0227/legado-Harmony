@@ -5,6 +5,7 @@ import shareShelfBook from '../../dialog/shareShelfBook'
 
 @CustomDialog
 @Preview
+@Component
 export default struct editBookShelf{
   controller?: CustomDialogController
 
