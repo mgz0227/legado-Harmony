@@ -7,7 +7,9 @@
 @Preview
 export default struct sourceCommon{
   @State rating: number = 3.5
-  @State IsSelect:boolean = true
+  @Prop IsSelect:boolean = true
+  @Prop sourceType:string
+
   build() {
     Flex({
       justifyContent:FlexAlign.SpaceBetween,
@@ -39,7 +41,7 @@ export default struct sourceCommon{
               left:4,right:4
             })
           Row(){
-            Text('4.0')
+            Text(this.rating.toFixed(1))
               .fontSize(9)
               .fontWeight(500)
               .textAlign(TextAlign.Center)
@@ -63,29 +65,36 @@ export default struct sourceCommon{
         .padding({
           bottom:12
         })
-        Row(){
-          Text('最新 番外三 庆功宴')
-            .fontSize(12)
-            .fontWeight(400)
-            .lineHeight(20)
-            .fontColor($r('app.string.color_black_45'))
+        if (this.sourceType === '整本换源'){
+          Row(){
+            Text('最新 番外三 庆功宴')
+              .fontSize(12)
+              .fontWeight(400)
+              .lineHeight(20)
+              .fontColor($r('app.string.color_black_45'))
+          }
+        } else {
+          Flex({
+            justifyContent:FlexAlign.SpaceBetween,
+            alignItems:ItemAlign.End
+          }){
+            Text('第一章 牢狱之灾')
+              .fontSize(12)
+              .fontWeight(400)
+              .lineHeight(20)
+              .fontColor($r('app.string.color_black_45'))
+            if (!this.IsSelect) {
+              Row(){
+                Text('选择章节').fontSize(12).fontColor($r('app.string.color_black_45'))
+                Image($r("app.media.icon_right"))
+                  .fillColor($r('app.string.color_black_65'))
+                  .size({width:16,height:16})
+              }
+            }
+          }.padding({right:16})
         }
-        // Flex({
-        //   justifyContent:FlexAlign.SpaceBetween,
-        //   alignItems:ItemAlign.End
-        // }){
-        //   Text('第一章 牢狱之灾')
-        //     .fontSize(12)
-        //     .fontWeight(400)
-        //     .lineHeight(20)
-        //     .fontColor($r('app.string.color_black_45'))
-        //   Row(){
-        //     Text('选择章节').fontSize(12).fontColor($r('app.string.color_black_45'))
-        //     Image($r("app.media.icon_right"))
-        //       .fillColor($r('app.string.color_black_65'))
-        //       .size({width:16,height:16})
-        //   }
-        // }
+
+
       }
       .alignItems(HorizontalAlign.Start)
       .margin({

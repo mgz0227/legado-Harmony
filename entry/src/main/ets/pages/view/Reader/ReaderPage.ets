@@ -1,6 +1,7 @@
 import battery from 'ets/componets/common/battery';
 import Dialog from 'ets/componets/common/Dialog';
 import { router } from '@kit.ArkUI';
+import sourceView from './sourceView';
 
 
 @Entry
@@ -39,6 +40,8 @@ struct ReaderPage {
     cornerRadius: 8,
     offset: { dx: 0, dy: -100 }
   })
+
+  @State isShowSource:boolean = false
 
   @Builder
   DialogString() {
@@ -204,20 +207,43 @@ struct ReaderPage {
               Divider()
               Row() {
                 Button({ type: ButtonType.Normal }) {
-                  Row() {
-                    Image($r("app.media.ic_public_return_left")).width(24)
-                    Text("换源")
+                  Row({
+                    space:4
+                  }) {
+                    Image($r("app.media.change_source_icon")).width(16).height(16)
+                    Text("换源").fontColor($r('app.string.color_black_65'))
+                      .font({
+                        size:14,
+                        weight:400
+                      })
                   }
                 }
                 .borderRadius(8)
                 .height(40)
                 .width("45%")
                 .backgroundColor("rgba(0, 0, 0, 0.06)")
-
+                .bindSheet($$this.isShowSource, this.sourceView(), {
+                  height: '95%',
+                  showClose: false,
+                  dragBar: false,
+                  maskColor: 'rgba(0,0,0,0.6)',
+                  onDisappear:()=>{
+                    console.log('隐藏')
+                  }
+                })
+                .onClick(()=>{
+                  this.isShowSource = true
+                })
                 Button({ type: ButtonType.Normal }) {
-                  Row() {
-                    Image($r("app.media.ic_public_return_left")).width(24)
-                    Text("净化")
+                  Row({
+                    space:4
+                  }) {
+                    Image($r("app.media.purify_icon")).width(16).height(16)
+                    Text("净化").fontColor($r('app.string.color_black_65'))
+                      .font({
+                        size:14,
+                        weight:400
+                      })
                   }
                 }
                 .borderRadius(8)
@@ -305,6 +331,16 @@ struct ReaderPage {
     .alignContent(Alignment.TopStart)
     .height('100%')
     .width('100%')
+  }
+  @Builder
+  sourceView() {
+    Column(){
+      Column() {
+        Row().width(36).height(4).backgroundColor($r('app.string.color_black_15')).borderRadius(12)
+      }
+      .padding({ top: 12 })
+      sourceView()
+    }
   }
 
   onBackPress() {

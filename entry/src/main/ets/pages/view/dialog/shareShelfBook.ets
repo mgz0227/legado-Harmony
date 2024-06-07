@@ -19,6 +19,7 @@ import { BusinessError } from '@kit.BasicServicesKit'
 
 @CustomDialog
 @Preview
+@Component
 export default struct shareShelfBook {
   controller?: CustomDialogController
   @Prop shelf: shelfList = new shelfList(1,'测试书单','测试书单描述','测试书单描述理由',[
