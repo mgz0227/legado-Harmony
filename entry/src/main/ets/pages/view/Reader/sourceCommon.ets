@@ -3,12 +3,14 @@
  * @datetime 2024/6/6 22:05
  * @className: sourceCommon
  */
+import chapterCommon from './chapterCommon'
+
 @Component
-@Preview
 export default struct sourceCommon{
   @State rating: number = 3.5
   @Prop IsSelect:boolean = true
   @Prop sourceType:string
+  @State isShowChapter:boolean = false
 
   build() {
     Flex({
@@ -90,6 +92,18 @@ export default struct sourceCommon{
                   .fillColor($r('app.string.color_black_65'))
                   .size({width:16,height:16})
               }
+              .bindSheet($$this.isShowChapter, this.chapterView(), {
+                height: '95%',
+                showClose: false,
+                dragBar: false,
+                maskColor: 'rgba(0,0,0,0.6)',
+                onDisappear:()=>{
+                  console.log('隐藏')
+                }
+              })
+              .onClick(()=>{
+                this.isShowChapter = true
+              })
             }
           }.padding({right:16})
         }
@@ -114,5 +128,17 @@ export default struct sourceCommon{
     .border({width:this.IsSelect?1:0,color:$r('app.color.theme_color'),style:BorderStyle.Solid})
     .borderRadius(12)
     .backgroundColor(this.IsSelect?'rgba(255, 102, 0, 0.12)':'rgba(0, 0, 0, 0.06)')
+  }
+  @Builder
+  chapterView(){
+   Column(){
+     Column() {
+       Row().width(36).height(4).backgroundColor($r('app.string.color_black_15')).borderRadius(12)
+     }
+     .padding({ top: 12 })
+     chapterCommon({
+       isShowChapter:this.isShowChapter
+     })
+   }
   }
 }
