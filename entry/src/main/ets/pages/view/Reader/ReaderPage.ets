@@ -2,21 +2,18 @@ import battery from 'ets/componets/common/battery';
 import Dialog from 'ets/componets/common/Dialog';
 import { router } from '@kit.ArkUI';
 import sourceView from './sourceView';
-
+import { readFile } from 'ets/common/utils/readFile';
+import { AddDownloadDialog } from 'ets/componets/Reader/AddDownloadDialog';
+import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
 
 @Entry
 @Component
 struct ReaderPage {
-  onPageShow(): void {
-    let temp = router.getParams()
-    console.log('router'+JSON.stringify(temp))
-  }
-
-
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @State isShowSetting: boolean = true
   @State isShowDownload: boolean = false
+  @State isShowListen: boolean = false
   @State StartText: string = "1"
   @State EndText: string = "2"
   controller: TextInputController = new TextInputController()
@@ -40,8 +37,13 @@ struct ReaderPage {
     cornerRadius: 8,
     offset: { dx: 0, dy: -100 }
   })
+  @State isShowSource: boolean = false
 
-  @State isShowSource:boolean = false
+  onPageShow(): void {
+    let temp = router.getParams()
+    console.log('router' + JSON.stringify(temp))
+    readFile()
+  }
 
   @Builder
   DialogString() {
@@ -58,41 +60,6 @@ struct ReaderPage {
       top: 12,
       bottom: 16
     })
-  }
-
-  @Builder
-  NetworkInput() {
-    Row() {
-      Row() {
-        Image($r("app.media.ic_public_return_left"))
-          .width(12)
-        Text("笔趣阁")
-          .lineHeight(18)
-          .font({
-            size: 10,
-            weight: 500
-          })
-      }
-      .margin({
-        left: 3
-      })
-      .borderRadius(40)
-      .backgroundColor("white")
-      .padding({
-        top: 4,
-        bottom: 4,
-        left: 12,
-        right: 12
-      })
-
-      Text("https://www.qidian.com/book/10319406240624062")
-        .textOverflow({ overflow: TextOverflow.Ellipsis })
-        .maxLines(1)
-    }
-    .backgroundColor("rgba(0, 0, 0, 0.06)")
-    .width("100%")
-    .height(30)
-    .borderRadius(40)
   }
 
   build() {
@@ -143,7 +110,7 @@ struct ReaderPage {
           .width("100%")
 
           Row() {
-            this.NetworkInput()
+            NetworkInput()
           }
           .padding({
             top: 8,
@@ -208,13 +175,13 @@ struct ReaderPage {
               Row() {
                 Button({ type: ButtonType.Normal }) {
                   Row({
-                    space:4
+                    space: 4
                   }) {
                     Image($r("app.media.change_source_icon")).width(16).height(16)
                     Text("换源").fontColor($r('app.string.color_black_65'))
                       .font({
-                        size:14,
-                        weight:400
+                        size: 14,
+                        weight: 400
                       })
                   }
                 }
@@ -227,22 +194,23 @@ struct ReaderPage {
                   showClose: false,
                   dragBar: false,
                   maskColor: 'rgba(0,0,0,0.6)',
-                  onDisappear:()=>{
+                  onDisappear: () => {
                     console.log('隐藏')
                   }
                 })
-                .onClick(()=>{
+                .onClick(() => {
                   this.isShowSource = true
                 })
+
                 Button({ type: ButtonType.Normal }) {
                   Row({
-                    space:4
+                    space: 4
                   }) {
                     Image($r("app.media.purify_icon")).width(16).height(16)
                     Text("净化").fontColor($r('app.string.color_black_65'))
                       .font({
-                        size:14,
-                        weight:400
+                        size: 14,
+                        weight: 400
                       })
                   }
                 }
@@ -282,10 +250,17 @@ struct ReaderPage {
 
                 GridItem() {
                   Column() {
-                    Image($r("app.media.ic_public_return_left")).width(24)
+                    Image($r("app.media.listen")).width(24)
                     Text("听书")
                   }
                 }
+                .bindContentCover($$this.isShowListen, this.listenBuilder(), {
+                  modalTransition: ModalTransition.DEFAULT,
+                  backgroundColor: "rgba(51, 106, 128, 0.75)"
+                })
+                .onClick(() => {
+                  this.isShowListen = true
+                })
 
                 GridItem() {
                   Column() {
@@ -332,13 +307,15 @@ struct ReaderPage {
     .height('100%')
     .width('100%')
   }
+
   @Builder
   sourceView() {
-    Column(){
+    Column() {
       Column() {
         Row().width(36).height(4).backgroundColor($r('app.string.color_black_15')).borderRadius(12)
       }
       .padding({ top: 12 })
+
       sourceView()
     }
   }
@@ -346,6 +323,71 @@ struct ReaderPage {
   onBackPress() {
     this.dialogController.open();
     return true
+  }
+
+  @Builder
+  listenBuilder() {
+    Column() {
+      Row() {
+        Image($r("app.media.direction_down")).width(24)
+          .onClick(() => {
+            this.isShowListen = false
+          })
+        Blank(1)
+        Text("大奉打更人")
+          .lineHeight(24)
+          .fontColor("#FFFFFF")
+          .font({
+            size: 16,
+            weight: 500
+          })
+        Blank(1)
+        Image($r("app.media.more")).width(24)
+      }
+      .height(48)
+      .width("100%")
+
+
+      Blank(1)
+      Column() {
+        Row() {
+          Text("第1章 牢狱之灾")
+        }
+
+        Row() {
+          Text("卖报小郎君")
+          Button("搜作者")
+        }
+
+        Row() {
+          Text("许七安幽幽醒来，嗅到了空气中潮湿的腐臭")
+        }
+      }
+
+      Column({ space: 24 }) {
+        Row() {
+
+        }
+
+        Row() {
+
+        }
+
+        Row() {
+
+        }
+
+        Row() {
+
+        }
+      }
+    }
+    .padding({
+      top: this.topRectHeight,
+      bottom: this.bottomRectHeight,
+      left: 20,
+      right: 20
+    })
   }
 
   @Builder
@@ -495,39 +537,5 @@ struct ReaderPage {
       left: 20,
       right: 20
     })
-  }
-}
-
-@CustomDialog
-struct AddDownloadDialog {
-  controller?: CustomDialogController;
-
-  build() {
-    Row({ space: 8 }) {
-      Image($r('app.media.ic_public_confirm'))
-        .width(24)
-        .height(24)
-        .fillColor('#FFFFFF')
-      Text('已加入下载列表')
-        .fontSize(14)
-        .fontWeight(400)
-        .lineHeight(22)
-        .fontColor('#FFFFFF')
-      Blank(1)
-      Text('查看')
-        .fontSize(14)
-        .fontWeight(400)
-        .lineHeight(22)
-        .fontColor('#FF9500')
-    }
-    .height(56)
-    .width("100%")
-    .padding({
-      left: 20,
-      right: 20,
-      top: 16,
-      bottom: 16
-    })
-    .backgroundColor('#333333')
   }
 }
