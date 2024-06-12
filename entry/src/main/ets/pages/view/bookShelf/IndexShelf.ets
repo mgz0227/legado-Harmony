@@ -9,8 +9,10 @@ import confirmDialogExample from '../../../componets/common/confirmDialog'
 import Dialog from 'ets/componets/common/Dialog'
 import BookFolder from './BookFolder'
 import groupTypeComponent from '../../../componets/group/GroupType'
-import BookShelfInfo from './Shelf/BookShelfInfo'
 import ShelfBookList from './Shelf/ShelfBookList'
+
+import picker from '@ohos.file.picker'
+import { CopyFile } from 'ets/common/utils/CopyFile'
 
 @Component
 export default struct IndexShelf {
@@ -34,20 +36,6 @@ export default struct IndexShelf {
     customStyle: false,
     cornerRadius: 25
   })
-
-  onAccept() {
-    console.info('确定')
-    this.isClear = true
-  }
-
-  onCancel() {
-    console.info('取消')
-  }
-
-  exitApp() {
-    console.info('点外围取消')
-  }
-
   @State currentIndex: number = 0
   THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单', '批量管理']
   EXHIBIT_NAMES: string[] = ['列表', '宫格']
@@ -77,6 +65,19 @@ export default struct IndexShelf {
     cornerRadius: 8,
     offset: { dx: 0, dy: 0 }
   })
+
+  onAccept() {
+    console.info('确定')
+    this.isClear = true
+  }
+
+  onCancel() {
+    console.info('取消')
+  }
+
+  exitApp() {
+    console.info('点外围取消')
+  }
 
   @Builder
   DialogInput(placeholder: string, maxlength: number) {
@@ -227,9 +228,6 @@ export default struct IndexShelf {
               dragBar: false,
               backgroundColor: "rgba(0, 0, 0, 0.15)",
               blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
-              onDisappear: () => {
-                // this.clickBookType = ''
-              }
             })
         }.margin({ right: 20 })
       }
@@ -296,7 +294,7 @@ export default struct IndexShelf {
             bookType: this.bookType,
             currentIndex: this.currentIndex,
             groupCoverShow: this.groupCoverShow,
-            GROUP:this.GROUP
+            GROUP: this.GROUP
           }).zIndex(999)
         }
         Refresh({ refreshing: $$this.isRefreshing, builder: this.refreshComponent }) {
@@ -453,13 +451,20 @@ export default struct IndexShelf {
       left: 21,
       right: 21
     })
-    .onClick(() => {
+    .onClick(async () => {
       switch (index) {
         case 0:
         // 本地导入
-          router.pushUrl({
-            url: 'pages/view/bookShelf/LocalImportPage'
-          });
+        //   router.pushUrl({
+        //     url: 'pages/view/bookShelf/LocalImportPage'
+        //   });
+          let documentSelectOptions = new picker.DocumentSelectOptions();
+          let documentPicker = new picker.DocumentViewPicker();
+          let filePath: string = ""
+          await documentPicker.select(documentSelectOptions).then((documentSelectResult: Array<string>) => {
+            filePath = documentSelectResult[0];
+          })
+          CopyFile(filePath)
           break
         case 1:
         // 云盘导入
