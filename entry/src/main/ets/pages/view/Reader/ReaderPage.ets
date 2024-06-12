@@ -1,10 +1,12 @@
 import battery from 'ets/componets/common/battery';
 import Dialog from 'ets/componets/common/Dialog';
+import media from '@ohos.multimedia.media';
 import { router } from '@kit.ArkUI';
 import sourceView from './sourceView';
 import { readFile } from 'ets/common/utils/readFile';
 import { AddDownloadDialog } from 'ets/componets/Reader/AddDownloadDialog';
 import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
+import { MusicPlayer } from 'ets/componets/MusicPlayer';
 
 @Entry
 @Component
@@ -254,7 +256,7 @@ struct ReaderPage {
                     Text("听书")
                   }
                 }
-                .bindContentCover($$this.isShowListen, this.listenBuilder(), {
+                .bindContentCover($$this.isShowListen, this.BookListen(), {
                   modalTransition: ModalTransition.DEFAULT,
                   backgroundColor: "rgba(51, 106, 128, 0.75)"
                 })
@@ -326,7 +328,7 @@ struct ReaderPage {
   }
 
   @Builder
-  listenBuilder() {
+  BookListen() {
     Column() {
       Row() {
         Image($r("app.media.direction_down")).width(24)
@@ -364,29 +366,15 @@ struct ReaderPage {
         }
       }
 
-      Column({ space: 24 }) {
-        Row() {
-
-        }
-
-        Row() {
-
-        }
-
-        Row() {
-
-        }
-
-        Row() {
-
-        }
-      }
+      MusicPlayer({ RightMinus: 118 })
     }
+    .width("100%")
+    .height("100%")
     .padding({
       top: this.topRectHeight,
       bottom: this.bottomRectHeight,
-      left: 20,
-      right: 20
+      left: 24,
+      right: 24
     })
   }
 
