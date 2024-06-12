@@ -5,6 +5,7 @@ import sourceView from './sourceView';
 import { readFile } from 'ets/common/utils/readFile';
 import { AddDownloadDialog } from 'ets/componets/Reader/AddDownloadDialog';
 import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
+import purificationView from './purificationView';
 
 @Entry
 @Component
@@ -38,6 +39,7 @@ struct ReaderPage {
     offset: { dx: 0, dy: -100 }
   })
   @State isShowSource: boolean = false
+  @State isShowPurification:boolean = false
 
   onPageShow(): void {
     let temp = router.getParams()
@@ -213,6 +215,18 @@ struct ReaderPage {
                         weight: 400
                       })
                   }
+                  .bindSheet($$this.isShowPurification, this.purificationView(), {
+                    height: '40%',
+                    showClose: false,
+                    dragBar: false,
+                    maskColor: 'rgba(0,0,0,0.6)',
+                    onDisappear: () => {
+                      console.log('隐藏')
+                    }
+                  })
+                  .onClick(() => {
+                    this.isShowPurification = true
+                  })
                 }
                 .borderRadius(8)
                 .height(40)
@@ -317,6 +331,15 @@ struct ReaderPage {
       .padding({ top: 12 })
 
       sourceView()
+    }
+  }
+
+  @Builder
+  purificationView() {
+    Column() {
+      purificationView({
+        isShowPurification:this.isShowPurification
+      })
     }
   }
 
