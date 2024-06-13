@@ -13,6 +13,7 @@ import ShelfBookList from './Shelf/ShelfBookList'
 
 import picker from '@ohos.file.picker'
 import { CopyFile } from 'ets/common/utils/CopyFile'
+import { ColumnModifier } from '../../../common/utils/ComponetModifier'
 
 @Component
 export default struct IndexShelf {
@@ -53,6 +54,7 @@ export default struct IndexShelf {
   @State isShowImport: boolean = false
   @State isShowCloudImport: boolean = false
   @State isShowImportBookList: boolean = false
+  @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
   // 网址导入dialog
   dialogController: CustomDialogController = new CustomDialogController({
@@ -96,12 +98,133 @@ export default struct IndexShelf {
       bottom: 16
     })
   }
-
+  private scrollController: Scroller = new Scroller();
+  tabsController: TabsController = new TabsController();
   build() {
-    Column() {
-      Blank(20)
+    Column(){
+      Flex({
+        justifyContent:FlexAlign.SpaceBetween,
+        alignItems: ItemAlign.End
+      }){
+        Row(){
+          Stack() {
+            List({scroller:this.scrollController}){
+              ListItem(){
+                BookMark({ title: '小说', index: 0, currentIndex: this.currentIndex }).onClick(() => {
+                  this.currentIndex = 0
+                  this.tabsController.changeIndex(0)
+                  console.log(this.currentIndex + '')
+                })
+              }
+              ListItem(){
+                BookMark({ title: '漫画', index: 1, currentIndex: this.currentIndex }).onClick(() => {
+                  this.currentIndex = 1
+                  this.tabsController.changeIndex(1)
+                  console.log(this.currentIndex + '')
+                })
+              }
+              ListItem(){
+                BookMark({ title: '有声书', index: 2, currentIndex: this.currentIndex }).onClick(() => {
+                  this.currentIndex = 2
+                  this.tabsController.changeIndex(2)
+                  console.log(this.currentIndex + '')
+                })
+              }
+            }
+            // .align(Alignment.TopStart)
+            .height(40)
+            .scrollBar(BarState.Off)
+            .listDirection(Axis.Horizontal)
+          }
+        }
+
+        Row(){
+          Flex() {
+          }
+          .width(0)
+          .height(0)
+          .bindSheet($$this.isShowCloudImport, this.CloudImportDialog(), {
+            // 网盘导入弹窗绑定元素
+            height: 240,
+            showClose: false,
+            dragBar: false,
+            backgroundColor: "white",
+            blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
+            onDisappear: () => {
+              // this.clickBookType = ''
+            }
+          })
+
+          Flex() {
+          }
+          .width(0)
+          .height(0)
+          .bindSheet($$this.isShowImportBookList, this.ImportBookListDialog(), {
+            // 书单导入弹窗绑定元素
+            height: 240,
+            showClose: false,
+            dragBar: false,
+            backgroundColor: "white",
+            blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
+            onDisappear: () => {
+              // this.clickBookType = ''
+            }
+          })
+
+          Row({ space: 16 }) {
+            Image($r('app.media.search')).width(24).onClick(() => {
+              router.pushUrl({
+                url: 'pages/view/search/SearchBook'
+              });
+            })
+            Image($r('app.media.more')).width(24)
+              .bindMenu([
+                {
+                  icon: $r('app.media.import_svg'),
+                  value: this.THEME_NAMES[0],
+                  action: () => {
+                    this.changeTheme(0)
+                  }
+                },
+                {
+                  icon: $r('app.media.down_svg'),
+                  value: this.THEME_NAMES[1],
+                  action: () => {
+                    this.changeTheme(1)
+                  }
+                },
+                {
+                  icon: $r('app.media.import_book_svg'),
+                  value: this.THEME_NAMES[2],
+                  action: () => {
+                    this.changeTheme(2)
+                  }
+                },
+                {
+                  icon: $r('app.media.batch_svg'),
+                  value: this.THEME_NAMES[3],
+                  action: () => {
+                    this.changeTheme(3)
+                  }
+                }
+              ])
+              .bindSheet($$this.isShowImport, this.ImportDialog(), {
+                // 书籍导入弹窗绑定元素
+                height: 200,
+                showClose: false,
+                dragBar: false,
+                backgroundColor: "rgba(0, 0, 0, 0.15)",
+                blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
+              })
+          }
+        }.margin({bottom:12})
+      }
+
+      .padding({top:this.topRectHeight === 0 ? 30 : this.topRectHeight,left:20,right:20})
+
       Tabs({
-        barPosition: BarPosition.Start
+        barPosition: BarPosition.Start,
+        controller: this.tabsController
       }) {
         TabContent() {
           this.book()
@@ -115,123 +238,28 @@ export default struct IndexShelf {
           this.book()
         }
       }
+      .barWidth(0)
       .barHeight(0)
       .onChange((index) => {
+        this.tabsController.changeIndex(index)
         console.log('index:' + index)
         this.currentIndex = index
       })
+      .backgroundColor(Color.White)
       .scrollable(this.APP_INDEX_SCROLLABLE)
     }
-    .padding({ bottom: 10 })
+    .height('100%')
+    .linearGradient({
+      direction: GradientDirection.Bottom, // 渐变方向
+      colors: [["rgb(254, 203, 169)", 0], ["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
+    })
+    // .padding({ top: this.topRectHeight})
     .borderRadius({ bottomRight: 5, bottomLeft: 5 })
-    .backgroundImage($r('app.media.backgroundimage'))
-    .backgroundImageSize({ width: '100%', height: '10%' })
-    .width('100%')
   }
 
   @Builder
   book() {
     Column() {
-      Flex({
-        justifyContent: FlexAlign.SpaceBetween,
-        alignItems: ItemAlign.End
-      }) {
-        Row({ space: 20 }) {
-          BookMark({ title: '小说', index: 0, currentIndex: this.currentIndex }).onClick(() => {
-            this.currentIndex = 0
-            console.log(this.currentIndex + '')
-          })
-          BookMark({ title: '漫画', index: 1, currentIndex: this.currentIndex }).onClick(() => {
-            this.currentIndex = 1
-            console.log(this.currentIndex + '')
-          })
-          BookMark({ title: '有声书', index: 2, currentIndex: this.currentIndex }).onClick(() => {
-            this.currentIndex = 2
-            console.log(this.currentIndex + '')
-          })
-        }
-        .padding({ left: 15 })
-
-        Flex() {
-        }
-        .width(0)
-        .height(0)
-        .bindSheet($$this.isShowCloudImport, this.CloudImportDialog(), {
-          // 网盘导入弹窗绑定元素
-          height: 240,
-          showClose: false,
-          dragBar: false,
-          backgroundColor: "white",
-          blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
-          onDisappear: () => {
-            // this.clickBookType = ''
-          }
-        })
-
-        Flex() {
-        }
-        .width(0)
-        .height(0)
-        .bindSheet($$this.isShowImportBookList, this.ImportBookListDialog(), {
-          // 书单导入弹窗绑定元素
-          height: 240,
-          showClose: false,
-          dragBar: false,
-          backgroundColor: "white",
-          blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
-          onDisappear: () => {
-            // this.clickBookType = ''
-          }
-        })
-
-        Row({ space: 16 }) {
-          Image($r('app.media.search')).width(24).onClick(() => {
-            router.pushUrl({
-              url: 'pages/view/search/SearchBook'
-            });
-          })
-          Image($r('app.media.more')).width(24)
-            .bindMenu([
-              {
-                icon: $r('app.media.import_svg'),
-                value: this.THEME_NAMES[0],
-                action: () => {
-                  this.changeTheme(0)
-                }
-              },
-              {
-                icon: $r('app.media.down_svg'),
-                value: this.THEME_NAMES[1],
-                action: () => {
-                  this.changeTheme(1)
-                }
-              },
-              {
-                icon: $r('app.media.import_book_svg'),
-                value: this.THEME_NAMES[2],
-                action: () => {
-                  this.changeTheme(2)
-                }
-              },
-              {
-                icon: $r('app.media.batch_svg'),
-                value: this.THEME_NAMES[3],
-                action: () => {
-                  this.changeTheme(3)
-                }
-              }
-            ])
-            .bindSheet($$this.isShowImport, this.ImportDialog(), {
-              // 书籍导入弹窗绑定元素
-              height: 200,
-              showClose: false,
-              dragBar: false,
-              backgroundColor: "rgba(0, 0, 0, 0.15)",
-              blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
-            })
-        }.margin({ right: 20 })
-      }
-
       Flex(
         {
           alignItems: ItemAlign.Center,
@@ -340,9 +368,8 @@ export default struct IndexShelf {
             }
             .padding({ left: 10, right: 10 })
           }
-          .height('85%')
+          .margin({bottom:110 + (this.topRectHeight === 0 ? 10 : this.topRectHeight)})
           .align(Alignment.TopStart)
-          // .height(this.searchValue==='浏览历史'?'83%':'78%')
           .scrollBar(BarState.Off)
         }
         .margin({ top: this.searchValue === '浏览历史' ? 0 : 30 })
