@@ -46,4 +46,4 @@ jobs:
             const { execSync } = require('child_process');
             execSync(`gh pr merge ${{ github.event.pull_request.number }} --squash --admin --repo ${{ github.repository }}`, { stdio: 'inherit' });
         env:
-          GITHUB_TOKEN: ${{ secrets.AUTOMERGE }}
+          GH_TOKEN: ${{ secrets.AUTOMERGE }}

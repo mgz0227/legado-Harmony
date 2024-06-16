@@ -12,6 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { curves } from '@kit.ArkUI';
 
 /**
  * Common constants for all features.
@@ -224,4 +225,9 @@ export default class CommonConstants {
   static readonly KEY_CARTOON_BOOK_DATA:string = 'KEY_CARTOON_BOOK_DATA'
   static readonly GROUP_LIST_DATA:string = 'GROUP_LIST_DATA'
   static readonly SHELF_LIST_DATA:string = 'SHELF_LIST_DATA'
+
+  /**
+   * Default curve value.
+   */
+  static readonly UniCurve: ICurve = curves.springCurve(0, 0.5, 128, 12)
 }
