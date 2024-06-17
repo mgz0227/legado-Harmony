@@ -3,6 +3,7 @@
  * @datetime 2024/6/15 20:00
  * @className: ruleView
  */
+import CommonConstants from '../../../common/constants/CommonConstants'
 import RuleGroupType from './RuleGroupType'
 
 @Preview
@@ -10,6 +11,7 @@ import RuleGroupType from './RuleGroupType'
 @Component
 export default struct ruleView{
   @StorageLink('topRectHeight') topRectHeight: number = 0
+  @State ruleTitle:Array<string> = ['替换净化','净化标题']
   @State ruleType:string = '替换净化'
   @State coverShow:boolean = false
   @State ruleArray:Array<string> =
@@ -18,6 +20,7 @@ export default struct ruleView{
     '中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)',
       '中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)']
   controller?: CustomDialogController
+  tabsController: TabsController = new TabsController();
   build() {
     Column(){
       Flex({
@@ -34,36 +37,33 @@ export default struct ruleView{
         Row({
           space:16
         }){
-          Column(){
-            Text('替换净化').font({
-              size:16,
-              weight:this.ruleType === '替换净化'?500:400
-            })
-              .textAlign(TextAlign.Center)
-              .lineHeight(24)
-              .fontColor(this.ruleType === '替换净化'?$r('app.color.theme_color'):$r('app.string.color_black_45'))
-            if (this.ruleType === '替换净化'){
+          ForEach(this.ruleTitle,(item:string,index:number)=>{
+            Column(){
+              Text(item).font({
+                size:16,
+                weight:this.ruleType === item?500:400
+              })
+                .textAlign(TextAlign.Center)
+                .lineHeight(24)
+                .fontColor(this.ruleType === item?$r('app.color.theme_color'):$r('app.string.color_black_45'))
               Row().width(10).height(3).backgroundColor($r('app.color.theme_color')).borderRadius(8).offset({y:5})
-            }
-          }.onClick(()=>{
-            this.ruleType = '替换净化'
-          })
-
-          Column(){
-            Text('目录净化').font({
-              size:16,
-              weight:this.ruleType === '替换净化'?400:500
+                .visibility(this.ruleType === item?Visibility.Visible:Visibility.None)
+                .opacity(this.ruleType === item?1:0)
+                .scale({
+                  centerX: "50%",
+                  centerY: "50%",
+                  x: this.ruleType === item ? 1 : 0,
+                  y: this.ruleType === item ? 1 : 0,
+                })
+                .animation({
+                  duration: 600,
+                  curve: CommonConstants.UniCurve
+                })
+            }.onClick(()=>{
+              this.ruleType = item
+              this.tabsController.changeIndex(index)
             })
-              .textAlign(TextAlign.Center)
-              .lineHeight(24)
-              .fontColor(this.ruleType === '目录净化'?$r('app.color.theme_color'):$r('app.string.color_black_45'))
-            if (this.ruleType === '目录净化'){
-              Row().width(10).height(3).backgroundColor($r('app.color.theme_color')).borderRadius(8).offset({y:5})
-            }
-          }.onClick(()=>{
-            this.ruleType = '目录净化'
           })
-
         }
         Image($r('app.media.addSubscription')).width(24).bindMenu(this.MenuBuilder)
           // .bindMenu(this.MenuBuilder)
@@ -82,19 +82,25 @@ export default struct ruleView{
             coverShow:this.coverShow
           }).zIndex(9999).backgroundColor(!this.coverShow?Color.White:'')
         }
-        Scroll(){
-          Column({
-            space:12
-          }){
-            ForEach(this.ruleArray,(item:string)=>{
-              this.ruleTitle(item)
-            })
+
+        Tabs({
+          barPosition: BarPosition.Start,
+          controller: this.tabsController
+        }){
+          TabContent(){
+            this.ruleBuilder()
           }
-          .padding({top:12,left:20,right:20,bottom:35})
+          TabContent(){
+            this.ruleBuilder()
+          }
         }
-        .padding({top:this.ruleType === '替换净化'?30:0})
-        .align(Alignment.TopStart)
-        .scrollBar(BarState.Off)
+        .barWidth(0)
+        .barHeight(0)
+        .onChange((index) => {
+          this.tabsController.changeIndex(index)
+          this.ruleType = index === 0 ? '替换净化' : '净化标题'
+        })
+
       }
       .alignContent(Alignment.Top)
     }
@@ -103,8 +109,29 @@ export default struct ruleView{
       top:this.topRectHeight
     })
   }
+
+  @Builder ruleBuilder(){
+    Scroll(){
+      Column({
+        space:12
+      }){
+        ForEach(this.ruleArray,(item:string)=>{
+          if (this.ruleType === '替换净化'){
+            this.ruleReplaceTitle(item)
+          } else {
+            this.ruleDirectoryTitle(item)
+          }
+        })
+      }
+      .padding({top:12,left:20,right:20,bottom:35})
+    }
+    .padding({top:this.ruleType === '替换净化'?30:0})
+    .align(Alignment.TopStart)
+    .scrollBar(BarState.Off)
+  }
+
   @State isRule:boolean = false
-  @Builder ruleTitle(title:string){
+  @Builder ruleReplaceTitle(title:string){
     Flex({
       justifyContent:FlexAlign.SpaceBetween,
       alignItems:ItemAlign.Center
@@ -122,6 +149,38 @@ export default struct ruleView{
         Image($r('app.media.more_translate')).width(24).height(24)
       }
     }
+    .padding({left:16,right:16,top:12,bottom:12})
+    //阴影
+    .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.20)' })
+    // .border({width:1,color:Color.Gray})
+    .borderRadius(8)
+    .backgroundColor(Color.White)
+  }
+
+  @Builder ruleDirectoryTitle(title:string){
+    Column({
+      space:5
+    }){
+      Flex({
+        justifyContent:FlexAlign.SpaceBetween,
+        alignItems:ItemAlign.Center
+      }){
+        Text(`${title}`).fontSize(14).fontWeight(400).fontColor($r('app.string.color_black_88'))
+        Row({
+          space:6
+        }){
+          Toggle({ type: ToggleType.Switch, isOn: $$this.isRule})
+            .selectedColor("#F60").hoverEffect(HoverEffect.None)
+            .onChange(()=>{
+              // updateAppData(this.APP_INDEX_SCROLLABLE)
+              // showMessage(this.APP_INDEX_SCROLLABLE?'标签栏锁已开启':'标签栏已解锁')
+            })
+          Image($r('app.media.more_translate')).width(24).height(24)
+        }
+      }
+      Text(`${title}`).fontSize(12).fontWeight(400).fontColor($r('app.string.color_black_45'))
+    }
+    .alignItems(HorizontalAlign.Start)
     .padding({left:16,right:16,top:12,bottom:12})
     //阴影
     .shadow({ radius: 8, color: 'rgba(0, 0, 0, 0.20)' })
