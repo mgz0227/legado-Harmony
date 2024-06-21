@@ -3,10 +3,25 @@
  * @datetime 2024/6/12 21:48
  * @className: purificationView
  */
+import ruleView from './ruleView';
 
 @Component
 export default struct purificationView{
   @Link isShowPurification: boolean;
+  @State isRule: boolean = false;
+  ruleViewDialog: CustomDialogController | null = new CustomDialogController({
+    builder: ruleView(),
+    cancel: this.clickExitDialog,
+    autoCancel: true,
+    width:'100%',
+    height:'100%',
+    alignment: DialogAlignment.Top,
+    customStyle:true
+  })
+  clickExitDialog(){
+    this.ruleViewDialog?.close()
+  }
+
   build() {
     Column(){
       Column({
@@ -17,7 +32,11 @@ export default struct purificationView{
         this.titleContent('重新分段')
         this.titleContent('反转内容')
         this.titleContent('编辑内容',true)
-        this.titleContent('净化规则管理',true)
+        Column(){
+          this.titleContent('净化规则管理',true)
+        }.onClick(()=>{
+          this.ruleViewDialog?.open()
+        })
       }.padding({top:16,left:20,right:20,bottom:16})
       Divider()
       Column({

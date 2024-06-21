@@ -19,12 +19,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '16'
+          
       - name: Install GitHub CLI
         run: |
           curl -fsSL https://github.com/cli/cli/releases/download/v2.49.2/gh_2.49.2_linux_amd64.tar.gz -o ghcli.tar.gz
           tar -xzf ghcli.tar.gz
           sudo mv gh_2.49.2_linux_amd64/bin/gh /usr/local/bin/
           gh --version
+
       - name: Determine if PR should be merged
         id: determine-merge
         run: |
