@@ -4,6 +4,8 @@
  * @className: ruleView
  */
 import CommonConstants from '../../../common/constants/CommonConstants'
+import buttonCommon from '../../../componets/common/buttonCommon'
+import { showMessage } from '../../../componets/common/promptShow'
 import RuleGroupType from './RuleGroupType'
 
 @Preview
@@ -17,10 +19,24 @@ export default struct ruleView{
   @State ruleArray:Array<string> =
     ['一个目录 (标题)','书名净化标题 (标题)','JS标题(标题)','章节名称规整 (标题)','序号加括号 (标题)',
       '章节名重复① (标题)','章节名重复② (标题)','章节符号净化 (标题)','第XXX章 XXX(规范章节)(标题)',
-    '中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)',
-      '中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)']
+    '中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)1','中文标题转数字(可选)(标题)2','中文标题转数字(可选)(标题)3',
+      '中文标题转数字(可选)(标题)4','中文标题转数字(可选)(标题)5','中文标题转数字(可选)(标题)6','中文标题转数字(可选)(标题)7']
   controller?: CustomDialogController
   tabsController: TabsController = new TabsController();
+  @State checkRule:boolean = false
+  @State checkedRuleList:Array<string> = [] //选中的规则
+  checkedRuleListPush(title:string,checkRule:boolean){
+    //checkRule为false时候移除从checkedRuleList中移除title,当checkRule为true时将title添加到checkedRuleList同时要校验里面是否存在相同值不存在才push
+    if (checkRule){
+      if (this.checkedRuleList.includes(title)){
+        return
+      }
+      this.checkedRuleList.push(title)
+    }else{
+      this.checkedRuleList = this.checkedRuleList.filter(item => item !== title)
+    }
+    this.ruleNumber = this.checkedRuleList.length
+  }
   build() {
     Column(){
       Flex({
@@ -104,34 +120,101 @@ export default struct ruleView{
       }
       .alignContent(Alignment.Top)
     }
+    .bindSheet($$this.isRuleChange, this.menuBuilder(), {
+      height: '95%',
+      showClose: false,
+      dragBar: true,
+      backgroundColor:Color.White,
+      onDisappear: () => {
+        // this.clickBookType = ''
+      }
+    })
     .backgroundColor(Color.White)
     .padding({
       top:this.topRectHeight
     })
   }
+  @State ruleNumber:number = 0
+  @State ruleAll:number = this.ruleArray.length
+  @Builder menuBuilder() {
+    Column(){
+      Column() {
+        Row().width(36).height(4).backgroundColor($r('app.string.color_black_15')).borderRadius(12)
+      }
+      .padding({ top: 12,bottom:12 })
+      Column(){
+        this.ruleBuilder(true)
+      }
+      .height('83%')
+      Column(){
+        Row(){
+          Checkbox().selectedColor($r('app.color.theme_color')).margin({right:8}).select(this.checkRule)
+            .onChange(()=>{
+              this.checkRule = !this.checkRule
+            })
+          Text(this.ruleNumber!==this.ruleAll?$r('app.string.select_all'):$r('app.string.deselect_all')).fontColor($r('app.string.color_black_88')).font({
+            size:16,
+            weight:400
+          })
+            .lineHeight(24)
+            .margin({right:8})
+          Text('(')
+            .fontColor($r('app.string.color_black_88')).font({
+            size:16,
+            weight:400
+          })
+            .lineHeight(24)
+          Text(`${this.ruleNumber}`).fontColor($r('app.color.theme_color'))
+            .font({
+              size:16,
+              weight:400
+            })
+            .lineHeight(24)
+          Text(`/${this.ruleAll})`)
+            .fontColor($r('app.string.color_black_88')).font({
+            size:16,
+            weight:400
+          })
+            .lineHeight(24)
+        }
+        .alignItems(VerticalAlign.Center)
+        .padding({left:20})
+        buttonCommon({
+          cancel:()=>{
+            this.isRuleChange = false
+          },
+          confirm:()=>{
+            showMessage('test111')
+          }
+        })
+          .padding({bottom:12})
+      }.alignItems(HorizontalAlign.Start)
+    }
+  }
 
-  @Builder ruleBuilder(){
+
+  @Builder ruleBuilder(isTop:boolean = false){
     Scroll(){
       Column({
         space:12
       }){
         ForEach(this.ruleArray,(item:string)=>{
           if (this.ruleType === '替换净化'){
-            this.ruleReplaceTitle(item)
+            this.ruleReplaceTitle(item,isTop)
           } else {
-            this.ruleDirectoryTitle(item)
+            this.ruleDirectoryTitle(item,isTop)
           }
         })
       }
-      .padding({top:12,left:20,right:20,bottom:35})
+      .padding({top:12,left:20,right:20,bottom:isTop?20:35})
     }
-    .padding({top:this.ruleType === '替换净化'?30:0})
+    .padding({top:!isTop?this.ruleType === '替换净化'?30:0:0})
     .align(Alignment.TopStart)
     .scrollBar(BarState.Off)
   }
 
   @State isRule:boolean = false
-  @Builder ruleReplaceTitle(title:string){
+  @Builder ruleReplaceTitle(title:string,isShowCheck:boolean = false){
     Flex({
       justifyContent:FlexAlign.SpaceBetween,
       alignItems:ItemAlign.Center
@@ -140,13 +223,24 @@ export default struct ruleView{
       Row({
         space:6
       }){
-        Toggle({ type: ToggleType.Switch, isOn: $$this.isRule})
-          .selectedColor("#F60").hoverEffect(HoverEffect.None)
-          .onChange(()=>{
-            // updateAppData(this.APP_INDEX_SCROLLABLE)
-            // showMessage(this.APP_INDEX_SCROLLABLE?'标签栏锁已开启':'标签栏已解锁')
+        if (!isShowCheck){
+          Toggle({ type: ToggleType.Switch, isOn: $$this.isRule})
+            .selectedColor("#F60").hoverEffect(HoverEffect.None)
+            .onChange(()=>{
+              // updateAppData(this.APP_INDEX_SCROLLABLE)
+              // showMessage(this.APP_INDEX_SCROLLABLE?'标签栏锁已开启':'标签栏已解锁')
+            })
+          Image($r('app.media.more_translate')).width(24).height(24)
+        } else {
+          Checkbox({
+            name: title
           })
-        Image($r('app.media.more_translate')).width(24).height(24)
+            .selectedColor($r('app.color.theme_color'))
+            .select(this.checkRule)
+            .onChange((value:boolean)=>{
+              this.checkedRuleListPush(title,value)
+            })
+        }
       }
     }
     .padding({left:16,right:16,top:12,bottom:12})
@@ -157,7 +251,7 @@ export default struct ruleView{
     .backgroundColor(Color.White)
   }
 
-  @Builder ruleDirectoryTitle(title:string){
+  @Builder ruleDirectoryTitle(title:string,isShowCheck:boolean = false){
     Column({
       space:5
     }){
@@ -169,13 +263,20 @@ export default struct ruleView{
         Row({
           space:6
         }){
-          Toggle({ type: ToggleType.Switch, isOn: $$this.isRule})
-            .selectedColor("#F60").hoverEffect(HoverEffect.None)
-            .onChange(()=>{
-              // updateAppData(this.APP_INDEX_SCROLLABLE)
-              // showMessage(this.APP_INDEX_SCROLLABLE?'标签栏锁已开启':'标签栏已解锁')
+          if (!isShowCheck){
+            Toggle({ type: ToggleType.Switch, isOn: $$this.isRule})
+              .selectedColor("#F60").hoverEffect(HoverEffect.None)
+            Image($r('app.media.more_translate')).width(24).height(24)
+          } else {
+            Checkbox({
+              name: title
             })
-          Image($r('app.media.more_translate')).width(24).height(24)
+              .select(this.checkRule)
+              .onChange((value:boolean)=>{
+                this.checkedRuleListPush(title,value)
+              })
+              .selectedColor($r('app.color.theme_color'))
+          }
         }
       }
       Text(`${title}`).fontSize(12).fontWeight(400).fontColor($r('app.string.color_black_45'))
@@ -190,7 +291,8 @@ export default struct ruleView{
   }
 
   MoreList: string[] = ['新建替换', '粘贴导入', '本地导入','批量管理','帮助']
-  moreIcon: Resource[] = [$r('app.media.add_shelf'),$r('app.media.Paste'),$r('app.media.export'),$r('app.media.batch_svg'),$r('app.media.my_center_help_icon')]
+  moreIcon: Resource[] = [$r('app.media.icon_rule_add'),$r('app.media.icon_rule_paste'),$r('app.media.icon_rule_export'),$r('app.media.icon_rule_batch'),$r('app.media.icon_rule_help')]
+  @State isRuleChange:boolean = false
   @Builder
   MenuBuilder() {
     Flex({ direction: FlexDirection.Column}) {
@@ -198,19 +300,18 @@ export default struct ruleView{
         Column() {
           Row() {
             Image(this.moreIcon[index])
-              .width(24)
-              .height(24)
+              .width(20)
+              .height(20)
               .margin({
-                right: 5
+                right: 8
               })
-              .fillColor(Color.Black)
+              .fillColor($r('app.string.color_black_88'))
             Text(`${item}`).fontSize(14)
           }
           .height(40)
-          .onClick(() => {
-            // this.MenuOnclick(index)
+          .onClick(()=>{
+            this.ruleDialog(index)
           })
-
           Divider()
         }
         .alignItems(HorizontalAlign.Start)
@@ -220,5 +321,11 @@ export default struct ruleView{
       })
     }
     .width(100)
+  }
+
+  ruleDialog(index:number){
+    switch (index){
+      case 0: this.isRuleChange = true;
+    }
   }
 }

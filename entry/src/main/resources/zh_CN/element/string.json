@@ -11,6 +11,14 @@
     {
       "name": "EntryAbility_label",
       "value": "阅读"
+    },
+    {
+      "name": "select_all",
+      "value": "全选"
+    },
+    {
+      "name": "deselect_all",
+      "value": "取消全选"
     }
   ]
 }
