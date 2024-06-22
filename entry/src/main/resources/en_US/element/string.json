@@ -11,6 +11,14 @@
     {
       "name": "EntryAbility_label",
       "value": "Legado"
+    },
+    {
+      "name": "select_all",
+      "value": "select all"
+    },
+    {
+      "name": "deselect_all",
+      "value": "deselect all"
     }
   ]
 }
