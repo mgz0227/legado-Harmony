@@ -1,9 +1,13 @@
 import fs from '@ohos.file.fs';
 import { BusinessError } from '@ohos.base';
+import { common } from '@kit.AbilityKit';
+
+let context = getContext(this) as common.UIAbilityContext;
+let filePath = context.filesDir + '/desTest.txt';
 
 // 将picker选择的文件复制到沙箱路径
 export function CopyFile(srcUrl: string): void {
-  let dstPath = getContext() + '/desTest.txt';
+  let dstPath = filePath;
   console.log("dstPath:" + dstPath)
   console.log("srcUrl:" + srcUrl)
 
