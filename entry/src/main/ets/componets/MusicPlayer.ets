@@ -4,19 +4,33 @@ import picker from '@ohos.file.picker';
 import fs from '@ohos.file.fs';
 
 let avPlayer: media.AVPlayer;
+let seekTime: number = 15000
 
 @Component
 export struct MusicPlayer {
   @StorageLink('WindowWidth') WindowWidth: number = 0
-  @Prop RightMinus: number = 0
+  @Prop WidthMinus: number = 0
   @State hasInit: boolean = false;
-  @State SelectUrl: string = '';
-  @State isMusicPlaying: boolean = false;
+  @State isMusicPlaying: boolean = false; // 音乐播放状态
+  @State MusicPlayingTime: number = 0 // 音乐目前播放时间
+  @State MusicDuration: number = 100 // 音乐总时长
+  @State isShowSpeed: boolean = false;
 
   // private Player: media.AVPlayer = new media
 
+  // 格式化时间
+  formatMilliseconds(milliseconds: number): string {
+    const totalSeconds = Math.floor(milliseconds / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    // 格式化秒数为两位数字
+    const formattedSeconds = seconds < 10 ? `0${seconds}` : `${seconds}`;
+
+    return `${minutes}:${formattedSeconds}`;
+  }
+
   async aboutToAppear() {
-    // todo:这里暂时用 picker选本地音乐，音乐的 URL后期需要改成从上级组件传进来
     let audioSelectOptions = new picker.AudioSelectOptions();
     let audioPicker = new picker.AudioViewPicker();
 
@@ -31,11 +45,14 @@ export struct MusicPlayer {
       console.error(`AVPlayer catchCallback, error message:${error.message}`);
     });
 
+    // todo:这里暂时用 picker选本地音乐，音乐的 URL后期需要改成从上级组件传进来
     await audioPicker.select(audioSelectOptions).then((audioSelectResult: Array<string>) => {
       console.info('AudioViewPicker.select successfully, audioSelectResult uri: ' + JSON.stringify(audioSelectResult));
-      let file = fs.openSync(audioSelectResult[0]); //此处用picker返回的uri
-      this.SelectUrl = 'fd://' + file.fd.toString();
+      avPlayer.url = 'fd://' + fs.openSync(audioSelectResult[0]).fd.toString();
     })
+
+    await this.setCallback(avPlayer)
+    this.timeDurationUpdateCallback(avPlayer)
   }
 
   build() {
@@ -43,7 +60,7 @@ export struct MusicPlayer {
       Row() {
         Stack() {
           Flex() {
-            Text("02:10/08:35")
+            Text(`${this.formatMilliseconds(this.MusicPlayingTime)}/${this.formatMilliseconds(this.MusicDuration)}`)
               .font({
                 size: 10,
                 weight: 400
@@ -51,7 +68,7 @@ export struct MusicPlayer {
           }
           .margin({
             // 需要在模拟器查看
-            left: this.WindowWidth - this.RightMinus
+            left: (this.WindowWidth - this.WidthMinus) * this.MusicPlayingTime / this.MusicDuration
           })
           .borderRadius(33)
           .width(70)
@@ -78,6 +95,8 @@ export struct MusicPlayer {
         Image($r("app.media.Backward"))
           .width(24)
           .onClick(() => {
+            avPlayer.seek(this.MusicPlayingTime - seekTime < 0 ? 0 : this.MusicPlayingTime - seekTime,
+              media.SeekMode.SEEK_PREV_SYNC)
           })
         Image($r("app.media.Previous"))
           .width(24)
@@ -89,16 +108,10 @@ export struct MusicPlayer {
           .onClick(async () => {
             if (this.isMusicPlaying) {
               avPlayer.pause()
-              this.isMusicPlaying = false
+              avPlayer.off('timeUpdate')
             } else {
-              if (this.hasInit) {
-                console.info("Play Again")
-                avPlayer.play()
-                this.isMusicPlaying = true
-              } else {
-                this.setCallback(avPlayer)
-                avPlayer.url = this.SelectUrl
-              }
+              avPlayer.play()
+              this.timeUpdateCallback()
             }
           })
 
@@ -109,13 +122,57 @@ export struct MusicPlayer {
         Image($r("app.media.forward"))
           .width(24)
           .onClick(() => {
+            avPlayer.seek(this.MusicPlayingTime + seekTime, media.SeekMode.SEEK_NEXT_SYNC)
           })
       }
       .width("100%")
 
-      Row() {
+      Flex({
+        direction: FlexDirection.Row,
+        justifyContent: FlexAlign.SpaceBetween,
+        alignItems: ItemAlign.Center
+      }) {
+        Column() {
+          Image($r("app.media.appointment_time"))
+            .width(24)
+            .onClick(() => {
+            })
+          Text("定时")
+        }
 
+        Column() {
+          Image($r("app.media.speed"))
+            .width(24)
+            .onClick(() => {
+
+            })
+          Text("语速")
+        }.bindSheet($$this.isShowSpeed, this.SpeedDialog(), {
+          height: 326,
+          showClose: false,
+          dragBar: false,
+          blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
+        })
+
+        Column() {
+          Image($r("app.media.add_bookshelf"))
+            .fillColor(Color.White)
+            .width(80)
+            .onClick(() => {
+
+            })
+          Text("加书架")
+        }
+
+        Column() {
+          Image($r("app.media.directory"))
+            .width(24)
+            .onClick(() => {
+            })
+          Text("目录")
+        }
       }
+      .width("100%")
 
       Row() {
 
@@ -125,7 +182,7 @@ export struct MusicPlayer {
 
   setCallback(avPlayer: media.AVPlayer) {
     avPlayer.on('stateChange', async (state: string, reason: media.StateChangeReason) => {
-      console.info('state:' + state)
+      console.info('reason:' + reason) // reason:1 USER; 2 BACKGROUND;
       switch (state) {
         case 'idle':
           console.info('state idle called');
@@ -133,9 +190,7 @@ export struct MusicPlayer {
         case 'initialized':
           console.info('initialized prepared called')
           this.hasInit = true;
-          avPlayer.prepare().then(() => {
-            avPlayer.play()
-          })
+          avPlayer.prepare()
           break;
         case 'playing':
           console.info('audio play success')
@@ -143,6 +198,7 @@ export struct MusicPlayer {
           break;
         case 'paused':
           console.info('audio paused success')
+          this.isMusicPlaying = false
           break;
         case 'error':
           console.error('state error called');
@@ -152,5 +208,37 @@ export struct MusicPlayer {
           break;
       }
     })
+  }
+
+  // 用于获取音频目前播放时间
+  timeUpdateCallback() {
+    avPlayer.on('timeUpdate', (time: number) => {
+      console.info('timeUpdate success,and new time is :' + time)
+      this.MusicPlayingTime = time
+    })
+  }
+
+  // 用于获取音频的总时间长度
+  timeDurationUpdateCallback(avPlayer: media.AVPlayer) {
+    avPlayer.on('durationUpdate', (duration: number) => {
+      console.info('durationUpdate success,new duration is :' + duration)
+      this.MusicDuration = duration
+    })
+  }
+
+  @Builder
+  SpeedDialog() {
+    Column() {
+      Row() {
+        Text("语速设置")
+        Blank(1)
+        Text("仅用于当前")
+        Toggle({ type: ToggleType.Switch, isOn: false })
+      }
+
+      Row() {
+
+      }
+    }
   }
 }
