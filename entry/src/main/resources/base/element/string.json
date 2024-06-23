@@ -19,6 +19,26 @@
     {
       "name": "deselect_all",
       "value": "取消全选"
+    },
+    {
+      "name": "new_replacement_rule",
+      "value": "新建替换规则"
+    },
+    {
+      "name": "copy",
+      "value": "复制"
+    },
+    {
+      "name": "paste",
+      "value": "粘贴"
+    },
+    {
+      "name": "appellation",
+      "value": "名称"
+    },
+    {
+      "name": "please_enter_name",
+      "value": "请输入名称"
     }
   ]
 }

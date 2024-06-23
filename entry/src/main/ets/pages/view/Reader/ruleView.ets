@@ -6,6 +6,7 @@
 import CommonConstants from '../../../common/constants/CommonConstants'
 import buttonCommon from '../../../componets/common/buttonCommon'
 import { showMessage } from '../../../componets/common/promptShow'
+import newAddRule from './newAddRule'
 import RuleGroupType from './RuleGroupType'
 
 @Preview
@@ -16,6 +17,7 @@ export default struct ruleView{
   @State ruleTitle:Array<string> = ['替换净化','净化标题']
   @State ruleType:string = '替换净化'
   @State coverShow:boolean = false
+  @State newReplacementRule:boolean = false
   @State ruleArray:Array<string> =
     ['一个目录 (标题)','书名净化标题 (标题)','JS标题(标题)','章节名称规整 (标题)','序号加括号 (标题)',
       '章节名重复① (标题)','章节名重复② (标题)','章节符号净化 (标题)','第XXX章 XXX(规范章节)(标题)',
@@ -119,6 +121,18 @@ export default struct ruleView{
 
       }
       .alignContent(Alignment.Top)
+      Flex(){
+
+      }
+      .bindSheet($$this.newReplacementRule, this.newAddRule(), {
+        height: '95%',
+        showClose: false,
+        dragBar: true,
+        backgroundColor:Color.White,
+        onDisappear: () => {
+          // this.clickBookType = ''
+        }
+      })
     }
     .bindSheet($$this.isRuleChange, this.menuBuilder(), {
       height: '95%',
@@ -206,7 +220,7 @@ export default struct ruleView{
           }
         })
       }
-      .padding({top:12,left:20,right:20,bottom:isTop?20:35})
+      .padding({top:12,left:20,right:20,bottom:isTop?20:120})
     }
     .padding({top:!isTop?this.ruleType === '替换净化'?30:0:0})
     .align(Alignment.TopStart)
@@ -232,6 +246,10 @@ export default struct ruleView{
             })
           Image($r('app.media.more_translate')).width(24).height(24)
         } else {
+          Text('新增').font({
+            size:12,
+            weight:400
+          }).fontColor($r('app.string.color_black_45'))
           Checkbox({
             name: title
           })
@@ -323,9 +341,20 @@ export default struct ruleView{
     .width(100)
   }
 
+  @Builder newAddRule(){
+    Column(){
+      newAddRule({
+        cancel:() =>{
+          this.newReplacementRule = false
+        }
+      })
+    }
+  }
+
   ruleDialog(index:number){
     switch (index){
-      case 0: this.isRuleChange = true;
+      case 0: this.newReplacementRule = true;break;
+      case 1: this.isRuleChange = true;break;
     }
   }
 }

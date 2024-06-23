@@ -230,4 +230,8 @@ export default class CommonConstants {
    * Default curve value.
    */
   static readonly UniCurve: ICurve = curves.springCurve(0, 0.5, 128, 12)
+  /**
+   * 字体样式
+   */
+  static readonly FAMILY_PingFANG: string = 'PingFang SC'
 }

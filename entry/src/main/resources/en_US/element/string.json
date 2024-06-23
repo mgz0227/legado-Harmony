@@ -19,6 +19,26 @@
     {
       "name": "deselect_all",
       "value": "deselect all"
+    },
+    {
+      "name": "new_replacement_rule",
+      "value": "new Replacement Rule"
+    },
+    {
+      "name": "copy",
+      "value": "Copy"
+    },
+    {
+      "name": "paste",
+      "value": "Paste"
+    },
+    {
+      "name": "appellation",
+      "value": "Appellation"
+    },
+    {
+      "name": "please_enter_name",
+      "value": "Please enter a name"
     }
   ]
 }
