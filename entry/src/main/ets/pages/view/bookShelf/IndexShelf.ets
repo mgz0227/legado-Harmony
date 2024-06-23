@@ -107,35 +107,33 @@ export default struct IndexShelf {
         alignItems: ItemAlign.End
       }){
         Row(){
-          Stack() {
-            List({scroller:this.scrollController}){
-              ListItem(){
-                BookMark({ title: '小说', index: 0, currentIndex: this.currentIndex }).onClick(() => {
-                  this.currentIndex = 0
-                  this.tabsController.changeIndex(0)
-                  console.log(this.currentIndex + '')
-                })
-              }
-              ListItem(){
-                BookMark({ title: '漫画', index: 1, currentIndex: this.currentIndex }).onClick(() => {
-                  this.currentIndex = 1
-                  this.tabsController.changeIndex(1)
-                  console.log(this.currentIndex + '')
-                })
-              }
-              ListItem(){
-                BookMark({ title: '有声书', index: 2, currentIndex: this.currentIndex }).onClick(() => {
-                  this.currentIndex = 2
-                  this.tabsController.changeIndex(2)
-                  console.log(this.currentIndex + '')
-                })
-              }
+          List({scroller:this.scrollController}){
+            ListItem(){
+              BookMark({ title: '小说', index: 0, currentIndex: this.currentIndex }).onClick(() => {
+                this.currentIndex = 0
+                this.tabsController.changeIndex(0)
+                console.log(this.currentIndex + '')
+              })
             }
-            // .align(Alignment.TopStart)
-            .height(40)
-            .scrollBar(BarState.Off)
-            .listDirection(Axis.Horizontal)
+            ListItem(){
+              BookMark({ title: '漫画', index: 1, currentIndex: this.currentIndex }).onClick(() => {
+                this.currentIndex = 1
+                this.tabsController.changeIndex(1)
+                console.log(this.currentIndex + '')
+              })
+            }
+            ListItem(){
+              BookMark({ title: '有声书', index: 2, currentIndex: this.currentIndex }).onClick(() => {
+                this.currentIndex = 2
+                this.tabsController.changeIndex(2)
+                console.log(this.currentIndex + '')
+              })
+            }
           }
+          // .align(Alignment.TopStart)
+          .height(40)
+          .scrollBar(BarState.Off)
+          .listDirection(Axis.Horizontal)
         }
 
         Row(){
