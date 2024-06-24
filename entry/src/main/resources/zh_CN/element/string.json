@@ -39,6 +39,14 @@
     {
       "name": "please_enter_name",
       "value": "请输入名称"
+    },
+    {
+      "name": "grouping",
+      "value": "分组"
+    },
+    {
+      "name": "unclassified",
+      "value": "未分组"
     }
   ]
 }

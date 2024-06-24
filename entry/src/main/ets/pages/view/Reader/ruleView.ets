@@ -5,7 +5,10 @@
  */
 import CommonConstants from '../../../common/constants/CommonConstants'
 import buttonCommon from '../../../componets/common/buttonCommon'
+import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
+import operateIcon from '../../../componets/common/operateIcon'
 import { showMessage } from '../../../componets/common/promptShow'
+import { buttonList } from '../../../componets/dataList/buttonList'
 import newAddRule from './newAddRule'
 import RuleGroupType from './RuleGroupType'
 
@@ -14,6 +17,7 @@ import RuleGroupType from './RuleGroupType'
 @Component
 export default struct ruleView{
   @StorageLink('topRectHeight') topRectHeight: number = 0
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State ruleTitle:Array<string> = ['替换净化','净化标题']
   @State ruleType:string = '替换净化'
   @State coverShow:boolean = false
@@ -23,6 +27,7 @@ export default struct ruleView{
       '章节名重复① (标题)','章节名重复② (标题)','章节符号净化 (标题)','第XXX章 XXX(规范章节)(标题)',
     '中文标题转数字(可选)(标题)','中文标题转数字(可选)(标题)1','中文标题转数字(可选)(标题)2','中文标题转数字(可选)(标题)3',
       '中文标题转数字(可选)(标题)4','中文标题转数字(可选)(标题)5','中文标题转数字(可选)(标题)6','中文标题转数字(可选)(标题)7']
+  @State isRuleCheck:boolean = false
   controller?: CustomDialogController
   tabsController: TabsController = new TabsController();
   @State checkRule:boolean = false
@@ -40,7 +45,9 @@ export default struct ruleView{
     this.ruleNumber = this.checkedRuleList.length
   }
   build() {
-    Column(){
+    Flex({
+      direction:FlexDirection.Column
+    }){
       Flex({
         alignItems:ItemAlign.Center,
         justifyContent:FlexAlign.SpaceBetween
@@ -88,17 +95,39 @@ export default struct ruleView{
       }.margin({
         top:6,bottom:6,right:20,left:20
       })
+      .animationIsBatchF()
+      Column(){
+        this.headTitle()
+      }
+      .padding({right:20,left:20})
+      .animationIsBatchT()
+
+
       Search({
         placeholder:'搜索'
       }).margin({
         top:8,bottom:8,
         right:20,left:20
       })
+        .animationIsBatchF()
       Stack(){
         if (this.ruleType === '替换净化'){
           RuleGroupType({
             coverShow:this.coverShow
-          }).zIndex(9999).backgroundColor(!this.coverShow?Color.White:'')
+          })
+            .visibility(!this.isBatch?Visibility.Visible:Visibility.None)
+            .opacity(!this.isBatch?1:0)
+            .scale({
+              centerX: "50%",
+              centerY: "50%",
+              x: !this.isBatch ? 1 : 0,
+              y: !this.isBatch ? 1 : 0,
+            })
+            .animation({
+              duration: 600,
+              curve: CommonConstants.UniCurve
+            })
+            .zIndex(9999).backgroundColor(!this.coverShow?Color.White:'')
         }
 
         Tabs({
@@ -118,9 +147,12 @@ export default struct ruleView{
           this.tabsController.changeIndex(index)
           this.ruleType = index === 0 ? '替换净化' : '净化标题'
         })
-
       }
       .alignContent(Alignment.Top)
+      Column(){
+        this.operateListBuilder()
+      }
+      .animationIsBatchT()
       Flex(){
 
       }
@@ -145,7 +177,8 @@ export default struct ruleView{
     })
     .backgroundColor(Color.White)
     .padding({
-      top:this.topRectHeight
+      top:this.topRectHeight,
+      bottom:this.bottomRectHeight
     })
   }
   @State ruleNumber:number = 0
@@ -208,26 +241,32 @@ export default struct ruleView{
 
 
   @Builder ruleBuilder(isTop:boolean = false){
-    Scroll(){
-      Column({
-        space:12
-      }){
-        ForEach(this.ruleArray,(item:string)=>{
-          if (this.ruleType === '替换净化'){
-            this.ruleReplaceTitle(item,isTop)
-          } else {
-            this.ruleDirectoryTitle(item,isTop)
-          }
-        })
+    Flex({
+      direction: FlexDirection.Column, wrap: FlexWrap.Wrap,
+      alignItems:ItemAlign.Center
+    }){
+      Scroll(){
+        Column({
+          space:12
+        }){
+          ForEach(this.ruleArray,(item:string)=>{
+            if (this.ruleType === '替换净化'){
+              this.ruleReplaceTitle(item,isTop)
+            } else {
+              this.ruleDirectoryTitle(item,isTop)
+            }
+          })
+        }
+        .padding({top:12,left:20,right:20,bottom:5})
       }
-      .padding({top:12,left:20,right:20,bottom:isTop?20:120})
+      .padding({top:!isTop?this.ruleType === '替换净化'?this.isBatch?0:30:0:0})
+      .align(Alignment.Top)
+      .scrollBar(BarState.Off)
     }
-    .padding({top:!isTop?this.ruleType === '替换净化'?30:0:0})
-    .align(Alignment.TopStart)
-    .scrollBar(BarState.Off)
   }
 
   @State isRule:boolean = false
+  @State isBatch:boolean = false
   @Builder ruleReplaceTitle(title:string,isShowCheck:boolean = false){
     Flex({
       justifyContent:FlexAlign.SpaceBetween,
@@ -241,10 +280,16 @@ export default struct ruleView{
           Toggle({ type: ToggleType.Switch, isOn: $$this.isRule})
             .selectedColor("#F60").hoverEffect(HoverEffect.None)
             .onChange(()=>{
-              // updateAppData(this.APP_INDEX_SCROLLABLE)
-              // showMessage(this.APP_INDEX_SCROLLABLE?'标签栏锁已开启':'标签栏已解锁')
+
             })
           Image($r('app.media.more_translate')).width(24).height(24)
+            .animationIsBatchF()
+          Checkbox().selectedColor($r('app.color.theme_color')).select(this.isRuleCheck)
+            .onChange((value:boolean)=>{
+              this.checkedRuleListPush(title,value)
+            })
+            .width(20).height(20)
+            .animationIsBatchT()
         } else {
           Text('新增').font({
             size:12,
@@ -285,6 +330,13 @@ export default struct ruleView{
             Toggle({ type: ToggleType.Switch, isOn: $$this.isRule})
               .selectedColor("#F60").hoverEffect(HoverEffect.None)
             Image($r('app.media.more_translate')).width(24).height(24)
+              .animationIsBatchF()
+            Checkbox().selectedColor($r('app.color.theme_color')).select(this.isRuleCheck)
+              .onChange((value:boolean)=>{
+                this.checkedRuleListPush(title,value)
+              })
+              .width(20).height(20)
+              .animationIsBatchT()
           } else {
             Checkbox({
               name: title
@@ -355,6 +407,110 @@ export default struct ruleView{
     switch (index){
       case 0: this.newReplacementRule = true;break;
       case 1: this.isRuleChange = true;break;
+      case 3: this.isBatch = !this.isBatch;break;
+    }
+  }
+
+  @Builder headTitle(){
+    Flex(
+      {
+        alignItems:ItemAlign.Center
+      }
+    ){
+      Column(){
+        Text(this.checkedRuleList.length === this.ruleArray.length ?'取消选择':'全选').fontSize(16).onClick(()=>{
+          this.isRuleCheck = !this.isRuleCheck
+        })
+      }
+      .alignItems(HorizontalAlign.Start)
+      .width('33%')
+      Column(){
+        Text(`已选${this.checkedRuleList.length}项目`).fontSize(20).fontWeight(600)
+      }.width('33%')
+      Column(){
+        Text('完成').fontSize(16)
+      }.onClick(()=>{
+        this.isBatch = false
+        this.checkedRuleList = []
+        this.isRuleCheck = false
+      })
+      .alignItems(HorizontalAlign.End)
+      .width('33%')
+    }
+    .padding(10)
+  }
+
+  @Styles animationIsBatchF() {
+    .visibility(!this.isBatch?Visibility.Visible:Visibility.None)
+    .opacity(!this.isBatch?1:0)
+    .scale({
+      centerX: "50%",
+      centerY: "50%",
+      x: !this.isBatch ? 1 : 0,
+      y: !this.isBatch ? 1 : 0,
+    })
+    .animation({
+      duration: 600,
+      curve: CommonConstants.UniCurve
+    })
+  }
+
+  @Styles animationIsBatchT() {
+    .visibility(this.isBatch?Visibility.Visible:Visibility.None)
+    .opacity(this.isBatch?1:0)
+    .scale({
+      centerX: "50%",
+      centerY: "50%",
+      x: this.isBatch ? 1 : 0,
+      y: this.isBatch ? 1 : 0,
+    })
+    .animation({
+      duration: 600,
+      curve: CommonConstants.UniCurve
+    })
+  }
+
+
+  @State operateList:buttonList[] = [
+    new buttonList(1,'置顶',$r('app.media.icon_operate_top')),
+    new buttonList(2,'禁用',$r('app.media.icon_operate_export')),
+    new buttonList(3,'导出',$r('app.media.icon_operate_export')),
+    new buttonList(4,'移动至',$r('app.media.icon_operate_move')),
+    new buttonList(5,'删除',$r('app.media.delete_svg'))
+  ]
+  @State operateDisable:boolean = false
+  @Builder
+  operateListBuilder() {
+    GridRow({
+      columns:5
+    }){
+        ForEach(this.operateList,(item:buttonList)=>{
+          GridCol(){
+            if (item.id === 2) {
+              Column(){
+                Toggle({ type: ToggleType.Switch, isOn: $$this.operateDisable})
+                  .selectedColor($r('app.color.theme_color')).hoverEffect(HoverEffect.None)
+                  .onChange(()=>{
+                    if (this.checkedRuleList.length === 0) {
+                      showMessage('请选择要禁用的内容')
+                      this.operateDisable = false
+                      return
+                    }
+                  })
+                Text(item.title).fontColor($r('app.string.color_black_88')).fontSize(12).fontWeight(400).lineHeight(20)
+              }.padding({
+                top:12,bottom:12
+              })
+            } else {
+              operateIcon({
+                item:item
+              })
+                .onClick(()=>{
+                  // this.bookInfoButton(item.id)
+                })
+            }
+          }
+        })
     }
   }
 }

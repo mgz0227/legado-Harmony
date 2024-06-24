@@ -2,6 +2,7 @@
  * @author 2008
  * @datetime 2024/6/23 22:51
  * @className: newAddRule
+ * 新建替换规则
  */
 import CommonConstants from '../../../common/constants/CommonConstants'
 import buttonCommon from '../../../componets/common/buttonCommon'
@@ -11,6 +12,8 @@ import { showMessage } from '../../../componets/common/promptShow'
 @Preview
 export default struct newAddRule{
   @State changeRule:boolean = false
+  @State grouping:string = '未分组'
+  @State isShown: boolean = false
   cancel: () => void = () => {
   }
   build() {
@@ -71,7 +74,7 @@ export default struct newAddRule{
             space:8
           }){
             Row(){
-              Text('分组').textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
+              Text($r('app.string.grouping')).textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
                 size:16,
                 weight:500,
                 family:CommonConstants.FAMILY_PingFANG
@@ -84,9 +87,50 @@ export default struct newAddRule{
               })
                 .lineHeight(24)
             }
-            TextInput({
-              placeholder:'未分组'
-            }).borderRadius(0)
+            Stack(){
+              // TextInput({
+              //   text:this.grouping,
+              //   placeholder:$r('app.string.unclassified')
+              // })
+              //   .fontColor($r('app.string.color_black_88'))
+              //   .borderRadius(0)
+              Column(){
+                Text(this.grouping)
+                  .font({
+                    size:15,
+                    weight:500
+                  })
+                  .fontColor($r('app.string.color_black_45'))
+                  .borderRadius(0)
+                  .width('100%')
+                  .lineHeight(22)
+                  .padding({
+                    top:12,bottom:12,
+                    right:16,
+                    left:16
+                  })
+              }
+              .alignItems(HorizontalAlign.Center)
+              .backgroundColor($r('app.string.color_black_6'))
+              Column(){
+                Image(this.isShown?$r('app.media.direction_upper'):$r('app.media.direction_down'))
+                  .margin({right:16})
+                  .width(15).height(15)
+                  .fillColor($r('app.string.color_black_45'))
+                  .bindContextMenu(this.isShown, this.MenuBuilder,
+                    {
+                      onDisappear: ()=>{
+                        this.isShown = false;
+                      },
+                      borderRadius:0
+                    })
+              }
+              .alignItems(HorizontalAlign.End)
+              .onClick(()=>{
+                this.isShown = !this.isShown
+              })
+              .width('100%')
+            }
           }
           .padding({top:12,bottom:12})
           .alignItems(HorizontalAlign.Start)
@@ -240,7 +284,8 @@ export default struct newAddRule{
                 .lineHeight(24)
             }
             TextInput({
-              placeholder:'请请入超时毫秒数'
+              text: '3000',
+              placeholder:'请入超时毫秒数',
             }).borderRadius(0)
           }
           .padding({top:12,bottom:12})
@@ -272,5 +317,33 @@ export default struct newAddRule{
         weight:400
       })
     }
+  }
+  @State GroupList: string[] = ['未分组', '标题', '标点', '去广告', '排版', '格式']
+  @Builder MenuBuilder() {
+    Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
+      ForEach(this.GroupList, (item:string, index) => {
+        Column() {
+          Flex({
+            justifyContent:FlexAlign.SpaceBetween,
+            alignItems:ItemAlign.Center
+          }) {
+            Text(item).fontSize(14).lineHeight(24).fontColor(item === this.grouping?$r('app.color.theme_color'):$r('app.string.color_black_88'))
+            if (item === this.grouping){
+              Image($r('app.media.hook')).width(24).height(24)
+            }
+          }
+          .padding({right:16,left:16})
+          .height(30)
+          .width('100%')
+          .onClick(() => {
+            this.grouping = item
+          })
+          if (index != this.GroupList.length - 1) {
+            Divider().height(10).color('#ccc')
+          }
+        }
+      })
+    }
+    .width(150)
   }
 }
