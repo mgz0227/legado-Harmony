@@ -1,3 +1,4 @@
+import { PublicConstants } from '../../common/constants/PublicConstants'
 import { dataItem } from '../dataList/dataItem'
 
 
@@ -25,7 +26,7 @@ export struct cloudDisKBindSheetComponet{
         })
         .border({
           width:index==this.bindSheetIndex?1:0,
-          color:index==this.bindSheetIndex?"rgba(255, 102, 0, 1)":Color.White
+          color:index==this.bindSheetIndex?"rgba(255, 102, 0, 1)":PublicConstants.THEME_COLOR_WHITE
         })
       })
     }.padding({top:12,left:20,right:20})

@@ -1,7 +1,9 @@
 import { promptAction, router } from '@kit.ArkUI';
 import { dataItem } from '../../../componets/dataList/dataItem';
-import { myCenterTitle } from '../../../componets/myCenter/myCenterTitle';
+import { MyCenterTitle } from '../../../componets/myCenter/MyCenterTitle';
 import { cloudDisKBindSheetComponet } from '../../../componets/myCenter/cloudDisKBindSheetComponet';
+import { ColumnModifier } from '../../../common/utils/ComponetModifier';
+import { PublicConstants, TextConstants } from '../../../common/constants/PublicConstants';
 
 @Entry
 @Component
@@ -14,7 +16,7 @@ struct CloudDisk {
   @State backups_status:boolean=false
   //自动备份状态
   @State auto_backups_status:boolean=true
-
+  Columns = new ColumnModifier().setCustom({left:20,right:20})
   @State backups_list:dataItem[]=[
     new dataItem("自动备份",1,"",0),
     new dataItem("备份设置",2,"",1),
@@ -65,6 +67,7 @@ struct CloudDisk {
     }
     .width("100%")
     .justifyContent(FlexAlign.SpaceBetween)
+    .padding({top:5,bottom:5})
   }
 
 
@@ -117,7 +120,7 @@ struct CloudDisk {
 
         Row({space:20}) {
           this.button("取消",[$r('app.color.theme_color'),'rgba(255,120,0,0.12)'],()=>{this.bindSheetCancel(this.isShow)})
-          this.button("确定",[Color.White,$r('app.color.theme_color')],()=>{this.bindSheetConfirm(this.isShow)})
+          this.button("确定",[PublicConstants.THEME_COLOR_WHITE,$r('app.color.theme_color')],()=>{this.bindSheetConfirm(this.isShow)})
 
         }.height(40)
         .width("100%")
@@ -147,7 +150,7 @@ struct CloudDisk {
       Column() {
         //标题栏
 
-        myCenterTitle({title:"云备份"})
+        MyCenterTitle({title:"云备份"})
         //备份图片及按钮
         Column(){
           Column(){
@@ -164,14 +167,14 @@ struct CloudDisk {
           .size({width:264,height:206})
           .backgroundImageSize({width:"100%",height:"100%"})
           .justifyContent(FlexAlign.Center)
-          Text("上次备份时间："+this.backups_time).fontSize(14).fontColor("rgba(0, 0, 0, 0.45)")
+          Text("上次备份时间："+this.backups_time).fontSize(14).fontColor(TextConstants.TEXT_FONT_COLOR)
 
           //备份按钮
           Button({ type: ButtonType.Capsule, stateEffect: true }) {
             this.backups_botton()
           }
           .margin({top:32,bottom:42})
-          .backgroundColor("rgb(255, 102, 0)")
+          .backgroundColor(PublicConstants.THEME_COLOR)
           .onClick(()=>{this.backups_onClick()})
         }
         //备份设置
@@ -183,27 +186,31 @@ struct CloudDisk {
           normal: this.setStyle,
         })
 
+
         Column(){
           this.backups_item(new dataItem("数据恢复",4,"",1))
-        }.stateStyles({
-          normal: this.setStyle,
-        })
+        }.backgroundColor(0xffffff)
+        .size({width:"100%"})
+        .borderRadius(15)
         .margin({top:16})
+        .padding({ left:20,right:20,top:10,bottom:10 })
         .bindSheet($$this.dataRecoveryStatus, this.dataRecoveryBindSheet(), {
           height: 320,
           showClose:false,
-          backgroundColor: Color.White,
+          backgroundColor: PublicConstants.THEME_COLOR_WHITE,
           shouldDismiss:((sheetDismiss: SheetDismiss)=> {
+            this.dataRecoveryStatus=false
             this.zipIndex=this.zipDataIndex
             this.deviceIndex=this.deviceDataIndex
             this.isShow=false
-            sheetDismiss.dismiss()
           })
         })
 
       }.stateStyles({
         normal: this.pageStyle,
       })
+      .blur(this.dataRecoveryStatus?40:0)
+      .attributeModifier(this.Columns)
 
   }
 
@@ -240,8 +247,8 @@ struct CloudDisk {
     if(!this.backups_status){
       this.backups_status=true
       animateTo({
-        duration: 2000,
-        curve: Curve.EaseOut,
+        duration: 1000,
+        curve: Curve.Linear,
         iterations: 2,
         playMode: PlayMode.Normal,
         //动画结束方法
@@ -283,13 +290,11 @@ struct CloudDisk {
   //样式
   @Styles setStyle():void{
     .backgroundColor(0xffffff)
-    .size({width:"90%"})
+    .size({width:"100%"})
     .borderRadius(15)
     .padding(20)
   }
   @Styles pageStyle():void{
-    .padding(10)
-    .backgroundColor("rgb(245, 245, 245)")
     .width("100%")
     .height("100%")
   }
@@ -298,7 +303,7 @@ struct CloudDisk {
   }
   @Styles transitionStyles():void{
     .transition(TransitionEffect.opacity(1).animation({ duration: 1000, curve: Curve.Ease }).combine(
-      TransitionEffect.translate({ x: 500  })
+      TransitionEffect.translate({ y: 500  })
     ))
   }
   @Styles transitionsStyles():void{

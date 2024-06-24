@@ -7,19 +7,22 @@ export default struct groupTypeComponent {
   @Link bookType: string
   @Link currentIndex: number
   @Link groupCoverShow:boolean
+  @Link GROUP:string
 
   build() {
     if (this.groupCoverShow){
       Stack(){
+        groupTypePanel({
+          groupCoverShow:this.groupCoverShow
+        }).zIndex(9999)
         Rect()
           // .fillOpacity(0)
           .height('85%')
           .width('100%')
           .fill('rgba(0, 0, 0, 0.45)')
-        groupTypePanel({
-          groupCoverShow:this.groupCoverShow
-        }).zIndex(9999)
-      }.alignContent(Alignment.Top)
+          .offset({y:20})
+
+      }.alignContent(Alignment.TopStart)
     } else {
       Flex(
         {
@@ -29,6 +32,10 @@ export default struct groupTypeComponent {
       ) {
         Scroll() {
           Row({ space: 10 }) {
+            BookType({ title: '分组', bookType: this.bookType }).onClick(() => {
+              this.bookType = '分组'
+              this.GROUP = '文件夹'
+            })
             BookType({ title: '全部', bookType: this.bookType }).onClick(() => {
               this.bookType = '全部'
             })

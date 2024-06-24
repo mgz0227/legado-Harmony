@@ -1,16 +1,17 @@
 import { ColumnModifier } from '../../../common/utils/ComponetModifier';
 import { dataItem } from '../../../componets/dataList/dataItem';
 
-import { myCenterTitle } from '../../../componets/myCenter/myCenterTitle';
+import { MyCenterTitle } from '../../../componets/myCenter/MyCenterTitle';
 
 import { diskComponet } from '../../../componets/myCenter/diskComponet';
+import { PublicConstants, TextConstants } from '../../../common/constants/PublicConstants';
 
 @Entry
 @Component
 struct DiskSet {
   @State message: string = 'Hello World';
-  modifier = new ColumnModifier()
-
+  Column= new ColumnModifier()
+  modifier = new ColumnModifier().setCustom({left:20,right:20,top:0,bottom:0})
   @State toggleList:dataItem[]=[
     new dataItem("阅读器","","","",false),
     new dataItem("主题","","","",false),
@@ -36,7 +37,7 @@ struct DiskSet {
       Toggle({type:ToggleType.Switch,isOn:item.status})
         .onChange((isOn: boolean) => {
           item.status=isOn;
-        }).selectedColor("#F60").hoverEffect(HoverEffect.None)
+        }).selectedColor(PublicConstants.THEME_COLOR).hoverEffect(HoverEffect.None)
     }.justifyContent(FlexAlign.SpaceBetween)
     .stateStyles({normal: this.componetStyles})
   }
@@ -54,36 +55,38 @@ struct DiskSet {
           Text(item.value.toString())
             .fontSize(12)
             .lineHeight(20)
-            .fontColor("rgba(0, 0, 0, 0.45)")
+            .fontColor(TextConstants.TEXT_FONT_COLOR)
             .textOverflow({overflow:TextOverflow.Ellipsis})
             .maxLines(1)
             .ellipsisMode(item.status?EllipsisMode.START:EllipsisMode.END)
         }.width(124).margin({bottom:3})
-        ImageSpan($r("app.media.right"))
-          .size({width:24,height:24})
-          .verticalAlign(ImageSpanAlignment.BOTTOM)
-          .onClick(()=>{
-            onClick();
-          })
+        Text(){
+          ImageSpan($r("app.media.right"))
+            .size({width:24,height:24})
+            .verticalAlign(ImageSpanAlignment.BOTTOM)
+            .onClick(()=>{
+              onClick();
+            })
+        }
       }.width("60%")
       .padding({top:12,bottom:12})
       .justifyContent(FlexAlign.End)
     }.width(280)
   }
 
-  @Builder Text(value:string,fontSize:number,lineHeight:number,fontColor:ResourceColor=Color.White){
+  @Builder Text(value:string,fontSize:number,lineHeight:number,fontColor:ResourceColor=PublicConstants.THEME_COLOR_WHITE){
     Text(value).fontSize(fontSize).lineHeight(lineHeight).fontColor(fontColor)
   }
 
   @Builder title(title:string){
     Row(){
-      this.Text(title,12,20,"rgba(0, 0, 0, 0.45)")
+      this.Text(title,12,20,TextConstants.TEXT_FONT_COLOR)
     }.width("100%").justifyContent(FlexAlign.Start).padding({top:16,bottom:8,left:20,right:20})
   }
   build() {
     Column() {
       //标题栏
-      myCenterTitle({title:"备份设置"})
+      MyCenterTitle({title:"备份设置"})
 
       Column(){
         diskComponet({
@@ -109,11 +112,11 @@ struct DiskSet {
           this.toggleComponets(item)
         })
       }.attributeModifier(this.modifier)
-      .backgroundColor(Color.White)
+      .backgroundColor(PublicConstants.THEME_COLOR_WHITE)
       .borderRadius(12)
     }
     .height('100%')
-    .attributeModifier(this.modifier)
+    .attributeModifier(this.Column)
   }
 
 
@@ -127,7 +130,7 @@ struct DiskSet {
     .width(280)
   }
   @Styles columnStyles():void{
-    .backgroundColor(Color.White)
+    .backgroundColor(PublicConstants.THEME_COLOR_WHITE)
     .borderRadius(12)
   }
 }

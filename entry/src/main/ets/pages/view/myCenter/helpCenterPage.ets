@@ -14,11 +14,11 @@ struct HelpCenterPage {
     "2、遇到目录为空怎么办？",
     "3、替换净化是什么？",
   ]
-  @State tutorialQuestionsList: Array<string> = [
-    "书源制作教程",
-    "订阅源源制作教程",
-    "替换净化教程",
-  ]
+  // @State tutorialQuestionsList: Array<string> = [
+  //   "书源制作教程",
+  //   "订阅源源制作教程",
+  //   "替换净化教程",
+  // ]
   @State MoreQuestionsSideBarList: Array<string> = [
     "热门问题",
     "书源校验",
@@ -184,58 +184,6 @@ struct HelpCenterPage {
             .margin({
               bottom: 16
             })
-
-            Column() {
-              Row() {
-                Text("教程中心")
-                  .lineHeight(24)
-                  .font({
-                    family: "PingFang SC",
-                    size: 16,
-                    weight: 500,
-                    style: FontStyle.Normal,
-                  })
-                Blank(20)
-              }
-              .width("100%")
-              .margin({
-                bottom: 16
-              })
-
-              ForEach(this.tutorialQuestionsList, (item: string, index) => {
-                Row() {
-                  Text(item)
-                    .lineHeight(22)
-                    .font({
-                      family: "PingFang SC",
-                      size: 14,
-                      weight: 400,
-                      style: FontStyle.Normal,
-                    })
-                  Blank(20)
-                  Image($r("app.media.right"))
-                    .width(24)
-                    .height(24)
-                    .interpolation(ImageInterpolation.Medium)
-                    .onClick(() => {
-
-                    })
-                }
-                .margin({
-                  top: 12,
-                  bottom: 12
-                })
-                .width("100%")
-              })
-            }
-            .borderRadius(12)
-            .padding({
-              top: 20,
-              left: 16,
-              right: 16
-            })
-            .width("100%")
-            .backgroundColor("#FFFFFF")
           }
           .padding({
             left: 20,

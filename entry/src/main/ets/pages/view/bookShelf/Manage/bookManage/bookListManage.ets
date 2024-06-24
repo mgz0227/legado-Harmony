@@ -16,6 +16,7 @@ export default struct bookListManage{
   @Link checkNumber:number
   @Link @Watch('isTopChange') changeTop:boolean
   @Prop shelfType:number
+  @Prop isManage:boolean = true
 
   isTopChange(){
     console.log('置顶操作中')
@@ -138,16 +139,11 @@ export default struct bookListManage{
           Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
             ForEach(this.showBookList, (item: BookList,index:number) => {
               BookInfoGridManage({
-                bookId:item.bookId,
-                title: item.title,
-                describe: item.describe,
-                chapter: item.chapter,
-                bookImage: item.bookImage,
-                isJoin:item.isJoin,
-                isTop:item.isTop,
+                bookData:item,
                 allCheck:this.allCheck,
                 changeTop:this.changeTop,
-                checkBookList:this.checkBookList
+                checkBookList:this.checkBookList,
+                isManage:this.isManage
               }).width('33%')
             })
           }
@@ -157,20 +153,15 @@ export default struct bookListManage{
           ) {
             ForEach(this.showBookList, (item: BookList,index:number) => {
               BookInfoManage({
-                bookId:item.bookId,
-                title: item.title,
-                describe: item.describe,
-                chapter: item.chapter,
-                bookImage: item.bookImage,
-                isJoin:item.isJoin,
-                isTop:item.isTop,
+                bookData:item,
                 allCheck:this.allCheck,
                 changeTop:this.changeTop,
-                checkBookList:this.checkBookList
+                checkBookList:this.checkBookList,
+                isManage:this.isManage
               })
             })
           }
-          .backgroundColor('rgba(255,250,247,0.8)')
+          // .backgroundColor('rgba(255,250,247,0.8)')
         }
         // Divider().vertical(false)
         // Row() {

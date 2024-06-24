@@ -15,5 +15,9 @@ export default struct BookMark {
         .backgroundImageSize(this.currentIndex === this.index ? {width:'100%',height:15}:{})
         .backgroundImagePosition(Alignment.Center)
     }
+    .margin(this.index !== 0 ? { left: 20 } : {
+      left: 0,
+      right: 0
+    })
   }
 }

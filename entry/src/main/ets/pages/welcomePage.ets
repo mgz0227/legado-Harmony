@@ -1,6 +1,5 @@
 import CommonConstants from '../common/constants/CommonConstants';
 import router from '@ohos.router'; // 引入路由管理器
-import { initBookListData } from '../storage/bookListData';
 import { initAppData } from '../storage/appData';
 
 @Entry

@@ -5,6 +5,8 @@
   "main": "",
   "author": "",
   "license": "",
-  "dependencies": {}
+  "dependencies": {
+    '@ohos/colorLibrary': 'file:../commons/colorLibrary'
+  }
 }
 

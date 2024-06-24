@@ -13,6 +13,7 @@ export default struct newBookShelf{
   @State TextValue:string = ''
   @State deByBookId:string = ''
   @State delCache:boolean = false
+  @Prop topIsShow:boolean = true
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
@@ -52,7 +53,9 @@ export default struct newBookShelf{
     }
     ){
      Column(){
-       Blank(20)
+       if (this.topIsShow){
+         Blank(this.topRectHeight)
+       }
        Column({
          space:24
        }) {

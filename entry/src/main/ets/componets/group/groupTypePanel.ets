@@ -1,6 +1,10 @@
+import FolderInfoDialog from '../../pages/view/dialog/FolderInfoDialog'
+import FolderManageDialog from '../../pages/view/dialog/FolderManageDialog'
 import { updateAppData } from '../../storage/appData'
+import { updateDateGroup } from '../../storage/groupData'
 import customizeDialogExample from '../common/customizeDialog'
 import { showMessage } from '../common/promptShow'
+import { folderList } from '../dataList/folderList'
 
 @Component
 export default struct groupTypePanel{
@@ -9,6 +13,9 @@ export default struct groupTypePanel{
   @State groupType:string[] = ['分组','全部','未分组','本地','书单']
   @State groupTypes:string[] = []
   @State hideGroupType:string[] = ['游戏','玄幻','都市', '历史', '军事', '科幻', '灵异', '二次元', '耽美', '同人']
+
+  @StorageProp('GROUP_LIST_DATA') groupData:folderList[] = []
+
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = true
   build() {
     Column({
@@ -112,30 +119,56 @@ export default struct groupTypePanel{
         Flex({
           direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center
         }){
-          ForEach(this.hideGroupType,(item:string,index:number)=>{
-            Row(){
-              this.GroupType(item)
-              if (this.isShowIcon) {
-                Image($r('app.media.add_new_fill')).width(12).height(12).offset({x:-20,y:-20})
+          ForEach(this.groupData, (item: folderList,index:number) => {
+              Row(){
+                this.GroupType(item.title)
+                if (this.isShowIcon) {
+                  Image($r('app.media.add_new_fill')).width(12).height(12).offset({x:-20,y:-20})
+                }
               }
-            }
-            .onTouch((event: TouchEvent) => {
-              if (event.type === TouchType.Down) {
-                this.dragIndex = index // 获取当前拖拽子组件的索引
-                console.info('onTouch' + this.dragIndex)
-              }
-            })
-            .draggable(this.isShowIcon)
-            .onDragStart(()=>{
-              console.log('onDragStart')
-            })
-            .onDrop((event: DragEvent, extraParams: string) => {
-              console.log('onDrop')
-              this.changeIndex(this.dragIndex, index,1)
-            })
-            .width('25%')
+              .onTouch((event: TouchEvent) => {
+                if (event.type === TouchType.Down) {
+                  this.dragIndex = index // 获取当前拖拽子组件的索引
+                  console.info('onTouch' + this.dragIndex)
+                }
+              })
+              .draggable(this.isShowIcon)
+              .onDragStart(()=>{
+                console.log('onDragStart')
+              })
+              .onDrop((event: DragEvent, extraParams: string) => {
+                console.log('onDrop')
+                this.changeIndex(this.dragIndex, index,1)
+              })
+              .onClick(()=>{
+                this.group = item
+                this.isShowBookFolderInfoDialog = true
+                this.folderType = item.title
+              })
+              .gesture(
+                LongPressGesture({ repeat: true,duration:500 })
+                  .onAction((event: GestureEvent) => {
+                    if (event.repeat) {
+                      if (!this.isShow) {
+                        this.group = item
+                        this.isShow = true
+                        this.changeNumber = 1
+                        this.groupInfoDialog?.open()
+                      }
+                    }
+                  }))
+              .width('25%')
           })
         }
+        .bindSheet($$this.isShowBookFolderInfoDialog, this.bookFolderInfoDialog(), {
+          detents: [SheetSize.MEDIUM, SheetSize.LARGE, 200],
+          showClose: false,
+          dragBar: true,
+          maskColor: 'rgba(0,0,0,0.6)',
+          onDisappear:()=>{
+            console.log('隐藏')
+          }
+        })
 
       } else {
         Flex({
@@ -151,8 +184,9 @@ export default struct groupTypePanel{
       }
 
     }
+    .offset({y:-15})
     .borderRadius({bottomLeft:20,bottomRight:20})
-    .padding({left:20,right:20,top:12,bottom:20})
+    .padding({left:15,right:15,top:12,bottom:20})
     .width('100%').backgroundColor(Color.White)
   }
   @State tagLockContent:string = '长按底部tab栏书架图标可锁定分组标签栏，再次长按解锁，锁定后左右滑动将直接切换小说，漫画，有声书分组大类。'
@@ -232,4 +266,44 @@ export default struct groupTypePanel{
      .backgroundColor('rgba(0, 0, 0, 0.04)').padding({left:16,right:16,top:6,bottom:6})
    }
   }
+
+  @State @Watch('watchFolder')group:folderList = new folderList(0,'',0,$r('app.media.folder_test'),'')
+  @State changeNumber:number = 0
+  @State isShow:boolean = false
+  groupInfoDialog: CustomDialogController | null = new CustomDialogController({
+    builder: FolderInfoDialog({
+      itemData:this.group,
+      cancel: () => {
+        this.exitDialog()
+      }
+    }),
+    cancel: this.exitDialog,
+    autoCancel: true,
+    width:'100%',
+    alignment: DialogAlignment.Bottom,
+    customStyle:true
+
+  })
+  //退出弹框
+  exitDialog(){
+    this.changeNumber = 0
+    this.isShow = false
+    this.groupInfoDialog?.close()
+  }
+
+  watchFolder(){
+    if (this.changeNumber === 1) {
+      updateDateGroup(this.group)
+    }
+  }
+  @State isShowBookFolderInfoDialog:boolean = false
+  @State folderType:string = ''
+  @Builder bookFolderInfoDialog(){
+    Column(){
+      FolderManageDialog({
+        folderType:this.folderType
+      })
+    }.padding(15)
+  }
+
 }

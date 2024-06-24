@@ -4,6 +4,7 @@ import font from '@ohos.font';
 import web_webview from '@ohos.web.webview'
 
 import { promptAction, router } from '@kit.ArkUI';
+import { ColumnModifier } from '../../../common/utils/ComponetModifier';
 
 @Entry
 @Component
@@ -18,7 +19,7 @@ struct  WebDav{
   ]
   @State helper_status:boolean=false
   controller: web_webview.WebviewController = new web_webview.WebviewController()
-
+  Column = new ColumnModifier().setPadding(0,0)
   @Builder input_type(item:Input_items){
     Column(){
       TextInput({ text:item.text, placeholder: item.placeholder })
@@ -75,7 +76,7 @@ struct  WebDav{
               })
               setTimeout(()=>{
                 router.pushUrl({
-                  url: 'pages/myCenter/MyCenter',
+                  url: "pages/view/myCenter/FileManagement",
                   params:{
                     webDavStatus:1
                   }
@@ -100,6 +101,7 @@ struct  WebDav{
         this.helper_status=true;
       }).width("100%").height(20)
     }.justifyContent(FlexAlign.Start)
+    .attributeModifier(this.Column)
   }
 }
 

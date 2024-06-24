@@ -41,8 +41,6 @@ export default struct BookShelfInfo{
         Column(){
           BookOverlay({
             bookImage:this.bookShelf.bookList[0].bookImage,
-            bookWidth:60,
-            bookHeight:80,
             isTop:false,
             isShow:this.isShowCheck
           })

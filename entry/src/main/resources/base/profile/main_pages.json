@@ -16,6 +16,10 @@
     "pages/view/myCenter/aboutUs/OpenSourceLicensePage",
     "pages/view/myCenter/aboutUs/DisclaimerPage",
     "pages/view/myCenter/helpCenterPage",
-    "pages/view/myCenter/readStatistics"
+    "pages/view/myCenter/readStatistics",
+    "pages/view/myCenter/FileManagement",
+    "pages/view/bookShelf/LocalImportPage",
+    "pages/view/bookShelf/DownloadManagementPage",
+    "pages/view/Reader/ReaderPage"
   ]
 }

@@ -2,6 +2,7 @@ import { serviceList } from '../dataList/serviceList'
 import { font, promptAction } from '@kit.ArkUI'
 import { pasteboard } from '@kit.BasicServicesKit'
 import { serviceDialog } from './serviceDialog'
+import CommonConstants from '../../common/constants/CommonConstants'
 
 
 @Component
@@ -48,8 +49,21 @@ export struct WebdavService {
         }
       }.width("100%").justifyContent(FlexAlign.SpaceBetween)
       //wifi 阅读 写源
-      Row({space:10}){
-        ForEach(this.List,(item:serviceList)=>{
+      Flex({
+        direction:FlexDirection.Row,
+        justifyContent:FlexAlign.Center,
+        alignContent:FlexAlign.Center,
+        alignItems:ItemAlign.Center
+      }){
+        ForEach(this.List,(item:serviceList,index: number)=> {
+          if (index != 0) {
+            Column()
+              .width(10)
+              .flexBasis('auto')
+              .flexGrow(0)
+              .flexShrink(0)
+          }
+
           Column({space:5}){
             Text(item.name)
               .fontSize(12)
@@ -61,13 +75,20 @@ export struct WebdavService {
             Image(item.img).size({width:28,height:28})
             this.canvas(item.background[2],-18,-25)
             this.canvas(item.background[2],5,-30)
-          }.backgroundColor(item.background[1])
-            .alignItems(HorizontalAlign.End)
-            .size({width:85,height:70})
-            .padding({top:10,bottom:10,left:10,right:12})
-            .borderRadius(12)
+          }
+          .backgroundColor(item.background[1])
+          .alignItems(HorizontalAlign.End)
+          .width(95)
+          .height(70)
+          .padding({top:10,bottom:10,left:10,right:12})
+          .borderRadius(12)
+          .flexBasis('auto')
+          .flexGrow(1)
+          .flexShrink(1)
         })
       }
+      .width("100%")
+
       //复制地址
       Row({space:20}){
         Text(this.address)
@@ -83,17 +104,27 @@ export struct WebdavService {
           .fontWeight(600)
           .onClick(()=>{this.copy(this.address)})
       }
-      .width(280)
+      .width("100%")
       .height(40)
       .backgroundColor("rgba(0, 0, 0, 0.04)")
       .borderRadius(8)
       .padding({left:20,right:20})
       .visibility(this.webDavStatus?Visibility.Visible:Visibility.None)
+      .opacity(this.webDavStatus?1:0)
+      .scale({
+        centerX: "50%",
+        centerY: "50%",
+        x: this.webDavStatus ? 1 : 0,
+        y: this.webDavStatus? 1 : 0,
+      })
+      .animation({
+        duration: 600,
+        curve: CommonConstants.UniCurve
+      })
     }
     .width("100%")
     .backgroundColor("#FFF")
     .padding({top:16,bottom:16,left:20,right:20})
-
     .borderRadius(10)
   }
 

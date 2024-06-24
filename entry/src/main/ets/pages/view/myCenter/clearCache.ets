@@ -1,5 +1,7 @@
+import { PublicConstants } from '../../../common/constants/PublicConstants'
+import { ColumnModifier } from '../../../common/utils/ComponetModifier'
 import { dataItem } from '../../../componets/dataList/dataItem'
-import { myCenterTitle } from '../../../componets/myCenter/myCenterTitle'
+import { MyCenterTitle } from '../../../componets/myCenter/MyCenterTitle'
 import { serviceDialog } from '../../../componets/webDavService/serviceDialog'
 
 @Entry
@@ -14,10 +16,11 @@ struct clearCache{
   ]
   @State @Watch("ClearChange") clearDialogStatus:boolean=false
   @State index:number=0
+  Column = new ColumnModifier().setCustom({left:20,right:20})
   build() {
     Column({space:12}){
       //标题栏
-      myCenterTitle({title:"清理缓存"})
+      MyCenterTitle({title:"清理缓存"})
       Column(){
         ForEach(this.clearList,(item:dataItem,index:number)=>{
           Row({space:10}){
@@ -35,10 +38,13 @@ struct clearCache{
 
         })
       }
-      .backgroundColor(Color.White)
+      .backgroundColor(PublicConstants.THEME_COLOR_WHITE)
       .padding({ left:20,right:20 })
       .borderRadius(15)
-    }.padding({left:20,right:20}).backgroundColor("rgb(245, 245, 245)").width("100%").height("100%")
+
+    }.width("100%")
+    .height("100%")
+    .attributeModifier(this.Column)
   }
 
 

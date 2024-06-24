@@ -2,6 +2,7 @@ import confirmDialogExample from '../../../componets/common/confirmDialog'
 import router from '@ohos.router'
 import { BookList } from '../../../componets/dataList/bookList'
 import { showMessage } from '../../../componets/common/promptShow'
+import BookInfoDialog from '../dialog/BookInfoDialog'
 
 @Component
 /**
@@ -109,8 +110,27 @@ export default struct BookInfoGrid{
       LongPressGesture({ repeat: true,duration:500 })
         .onAction((event: GestureEvent) => {
           if (event.repeat) {
-            showMessage('6666')
+            this.bookInfoDialog?.open()
           }
         }))
+  }
+  bookInfoDialog: CustomDialogController | null = new CustomDialogController({
+    builder: BookInfoDialog({
+      itemData:this.bookData,
+      onDelete:this.onDelete,
+      cancel: () => {
+        this.exitDialog()
+      }
+    }),
+    cancel: this.exitDialog,
+    autoCancel: true,
+    width:'100%',
+    alignment: DialogAlignment.Bottom,
+    customStyle:true
+
+  })
+  //退出弹框
+  exitDialog(){
+    this.bookInfoDialog?.close()
   }
 }
