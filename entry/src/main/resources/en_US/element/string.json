@@ -39,6 +39,14 @@
     {
       "name": "please_enter_name",
       "value": "Please enter a name"
+    },
+    {
+      "name": "grouping",
+      "value": "Grouping"
+    },
+    {
+      "name": "unclassified",
+      "value": "Unclassified"
     }
   ]
 }
