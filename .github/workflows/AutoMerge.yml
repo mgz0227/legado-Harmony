@@ -7,8 +7,9 @@ on:
 jobs:
   auto-merge:
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
+    permissions:                    # Global permissions configuration starts here
+      contents: write                # 'read' access to repository contents
+      pull-requests: write          # 'write' access to pull requests
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
