@@ -12,7 +12,7 @@ import NoteListItem from './NoteListItem'
 
 @Component
 export default struct NoteIndex {
-  private noteList: NoteListVO[] = [
+   @State noteList: NoteListVO[] = [
     new NoteListVO(1, '第一章 牢狱之灾', [
       new NoteVO(1, '许七安幽幽醒来，嗅到了空气中潮湿的腐臭味，令人轻微的不适，胃酸翻涌', '2020-03-14 12:34', '备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息备注信息'),
       new NoteVO(2, '2许七安幽幽醒来，嗅到了空气中潮湿的腐臭味，令人轻微的不适，胃酸翻涌', '2020-03-14 12:34')
@@ -67,7 +67,10 @@ export default struct NoteIndex {
             ListItemGroup({ space: 12, header: this.itemHead(list.chapterName) }) {
               ForEach(list.noteList, (item: NoteVO) => {
                 ListItem() {
-                  NoteListItem({ noteVO: item })
+                  NoteListItem({noteVO: item, saveChange: (val: string) => {
+                     item.note = val;
+                    }
+                  })
                 }
               })
             }

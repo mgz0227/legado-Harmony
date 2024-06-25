@@ -13,8 +13,6 @@ export default struct purificationView{
     builder: ruleView(),
     cancel: this.clickExitDialog,
     autoCancel: true,
-    width:'100%',
-    height:'100%',
     alignment: DialogAlignment.Top,
     customStyle:true
   })
