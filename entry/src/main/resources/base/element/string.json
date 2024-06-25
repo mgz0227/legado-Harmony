@@ -25,6 +25,34 @@
       "value": "新建替换规则"
     },
     {
+      "name": "edit_replacement_rule",
+      "value": "编辑替换规则"
+    },
+    {
+      "name": "new_directory_purification",
+      "value": "新建目录规则"
+    },
+    {
+      "name": "edit_directory_purification",
+      "value": "编辑目录规则"
+    },
+    {
+      "name": "regular_expressions",
+      "value": "正则表达式"
+    },
+    {
+      "name": "please_enter_regular_expression",
+      "value": "请输入正则表达式"
+    },
+    {
+      "name": "please_enter_example",
+      "value": "请输入示例"
+    },
+    {
+      "name": "example",
+      "value": "示例"
+    },
+    {
       "name": "copy",
       "value": "复制"
     },

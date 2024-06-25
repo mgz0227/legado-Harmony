@@ -25,6 +25,34 @@
       "value": "new Replacement Rule"
     },
     {
+      "name": "edit_replacement_rule",
+      "value": "edit replacement Rule"
+    },
+    {
+      "name": "new_directory_purification",
+      "value": "new Directory Purification"
+    },
+    {
+      "name": "edit_directory_purification",
+      "value": "edit Directory Purification"
+    },
+    {
+      "name": "regular_expressions",
+      "value": "Regular Expressions"
+    },
+    {
+      "name": "please_enter_regular_expression",
+      "value": "Please Enter Regular Expression"
+    },
+    {
+      "name": "please_enter_example",
+      "value": "Please Enter Example"
+    },
+    {
+      "name": "example",
+      "value": "Example"
+    },
+    {
       "name": "copy",
       "value": "Copy"
     },
