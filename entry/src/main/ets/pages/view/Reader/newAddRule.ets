@@ -2,7 +2,7 @@
  * @author 2008
  * @datetime 2024/6/23 22:51
  * @className: newAddRule
- * 新建替换规则
+ * 新建替换规则弹窗
  */
 import CommonConstants from '../../../common/constants/CommonConstants'
 import buttonCommon from '../../../componets/common/buttonCommon'
@@ -14,6 +14,7 @@ export default struct newAddRule{
   @State changeRule:boolean = false
   @State grouping:string = '未分组'
   @State isShown: boolean = false
+  @Prop isEdit:boolean = false
   cancel: () => void = () => {
   }
   build() {
@@ -25,7 +26,7 @@ export default struct newAddRule{
         Flex({
           justifyContent:FlexAlign.SpaceBetween
         }){
-          Text($r('app.string.new_replacement_rule'))
+          Text(this.isEdit?$r('app.string.edit_replacement_rule'):$r('app.string.new_replacement_rule'))
             .font({
               size:18,
               weight:500,
@@ -44,107 +45,14 @@ export default struct newAddRule{
           right:20,
           bottom:12
         })
-        Column(){
-          //名称
-          Column({
-            space:8
-          }){
-            Row(){
-              Text($r('app.string.appellation')).textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
-                size:16,
-                weight:500,
-                family:CommonConstants.FAMILY_PingFANG
-              })
-                .lineHeight(24)
-              Text('*').fontColor($r('app.color.theme_color')).font({
-                size:16,
-                weight:500,
-                family:CommonConstants.FAMILY_PingFANG
-              })
-                .lineHeight(24)
-            }
-            TextInput({
-              placeholder:$r('app.string.please_enter_name')
-            }).borderRadius(0)
-          }
-          .padding({top:12,bottom:12})
-          .alignItems(HorizontalAlign.Start)
-          //未分组
-          Column({
-            space:8
-          }){
-            Row(){
-              Text($r('app.string.grouping')).textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
-                size:16,
-                weight:500,
-                family:CommonConstants.FAMILY_PingFANG
-              })
-                .lineHeight(24)
-              Text('*').fontColor($r('app.color.theme_color')).font({
-                size:16,
-                weight:500,
-                family:CommonConstants.FAMILY_PingFANG
-              })
-                .lineHeight(24)
-            }
-            Stack(){
-              // TextInput({
-              //   text:this.grouping,
-              //   placeholder:$r('app.string.unclassified')
-              // })
-              //   .fontColor($r('app.string.color_black_88'))
-              //   .borderRadius(0)
-              Column(){
-                Text(this.grouping)
-                  .font({
-                    size:15,
-                    weight:500
-                  })
-                  .fontColor($r('app.string.color_black_45'))
-                  .borderRadius(0)
-                  .width('100%')
-                  .lineHeight(22)
-                  .padding({
-                    top:12,bottom:12,
-                    right:16,
-                    left:16
-                  })
-              }
-              .alignItems(HorizontalAlign.Center)
-              .backgroundColor($r('app.string.color_black_6'))
-              Column(){
-                Image(this.isShown?$r('app.media.direction_upper'):$r('app.media.direction_down'))
-                  .margin({right:16})
-                  .width(15).height(15)
-                  .fillColor($r('app.string.color_black_45'))
-                  .bindContextMenu(this.isShown, this.MenuBuilder,
-                    {
-                      onDisappear: ()=>{
-                        this.isShown = false;
-                      },
-                      borderRadius:0
-                    })
-              }
-              .alignItems(HorizontalAlign.End)
-              .onClick(()=>{
-                this.isShown = !this.isShown
-              })
-              .width('100%')
-            }
-          }
-          .padding({top:12,bottom:12})
-          .alignItems(HorizontalAlign.Start)
-
-          //替换对象
-          Column({
-            space:8
-          }){
-            Flex({
-              justifyContent:FlexAlign.SpaceBetween,
-              alignItems:ItemAlign.End
+        Scroll(){
+          Column(){
+            //名称
+            Column({
+              space:8
             }){
               Row(){
-                Text('替换对象').textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
+                Text($r('app.string.appellation')).textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
                   size:16,
                   weight:500,
                   family:CommonConstants.FAMILY_PingFANG
@@ -157,42 +65,199 @@ export default struct newAddRule{
                 })
                   .lineHeight(24)
               }
-              Row({
-                space:8
-              }){
-                Image($r('app.media.help')).width(16).height(16)
-                Text('使用正则表达式').font({
-                  size:14,
-                  weight:400,
-                  family:CommonConstants.FAMILY_PingFANG
-                })
-                  .fontColor($r('app.string.color_black_45'))
-                Toggle({ type: ToggleType.Switch, isOn: $$this.changeRule})
-                  .selectedColor("#F60").hoverEffect(HoverEffect.None)
-                  .onChange(()=>{
-                    // updateAppData(this.APP_INDEX_SCROLLABLE)
-                    // showMessage(this.APP_INDEX_SCROLLABLE?'标签栏锁已开启':'标签栏已解锁')
-                  })
-
-              }
+              TextInput({
+                placeholder:$r('app.string.please_enter_name')
+              }).borderRadius(0)
             }
-            TextInput({
-              placeholder:'请输入替换对象或替换规则'
-            }).borderRadius(0)
-          }
-          .padding({top:12,bottom:12})
-          .alignItems(HorizontalAlign.Start)
-
-          //替换为
-          Column({
-            space:8
-          }){
-            Flex({
-              justifyContent:FlexAlign.SpaceBetween,
-              alignItems:ItemAlign.End
+            .padding({top:12,bottom:12})
+            .alignItems(HorizontalAlign.Start)
+            //未分组
+            Column({
+              space:8
             }){
               Row(){
-                Text('替换为').textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
+                Text($r('app.string.grouping')).textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
+                  size:16,
+                  weight:500,
+                  family:CommonConstants.FAMILY_PingFANG
+                })
+                  .lineHeight(24)
+                Text('*').fontColor($r('app.color.theme_color')).font({
+                  size:16,
+                  weight:500,
+                  family:CommonConstants.FAMILY_PingFANG
+                })
+                  .lineHeight(24)
+              }
+              Stack(){
+                // TextInput({
+                //   text:this.grouping,
+                //   placeholder:$r('app.string.unclassified')
+                // })
+                //   .fontColor($r('app.string.color_black_88'))
+                //   .borderRadius(0)
+                Column(){
+                  Text(this.grouping)
+                    .font({
+                      size:15,
+                      weight:500
+                    })
+                    .fontColor($r('app.string.color_black_45'))
+                    .borderRadius(0)
+                    .width('100%')
+                    .lineHeight(22)
+                    .padding({
+                      top:12,bottom:12,
+                      right:16,
+                      left:16
+                    })
+                }
+                .alignItems(HorizontalAlign.Center)
+                .backgroundColor($r('app.string.color_black_6'))
+                Column(){
+                  Image(this.isShown?$r('app.media.direction_upper'):$r('app.media.direction_down'))
+                    .margin({right:16})
+                    .width(15).height(15)
+                    .fillColor($r('app.string.color_black_45'))
+                    .bindContextMenu(this.isShown, this.MenuBuilder,
+                      {
+                        onDisappear: ()=>{
+                          this.isShown = false;
+                        },
+                        borderRadius:0
+                      })
+                }
+                .alignItems(HorizontalAlign.End)
+                .onClick(()=>{
+                  this.isShown = !this.isShown
+                })
+                .width('100%')
+              }
+            }
+            .padding({top:12,bottom:12})
+            .alignItems(HorizontalAlign.Start)
+
+            //替换对象
+            Column({
+              space:8
+            }){
+              Flex({
+                justifyContent:FlexAlign.SpaceBetween,
+                alignItems:ItemAlign.End
+              }){
+                Row(){
+                  Text('替换对象').textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
+                    size:16,
+                    weight:500,
+                    family:CommonConstants.FAMILY_PingFANG
+                  })
+                    .lineHeight(24)
+                  Text('*').fontColor($r('app.color.theme_color')).font({
+                    size:16,
+                    weight:500,
+                    family:CommonConstants.FAMILY_PingFANG
+                  })
+                    .lineHeight(24)
+                }
+                Row({
+                  space:8
+                }){
+                  Image($r('app.media.help')).width(16).height(16)
+                  Text('使用正则表达式').font({
+                    size:14,
+                    weight:400,
+                    family:CommonConstants.FAMILY_PingFANG
+                  })
+                    .fontColor($r('app.string.color_black_45'))
+                  Toggle({ type: ToggleType.Switch, isOn: $$this.changeRule})
+                    .selectedColor("#F60").hoverEffect(HoverEffect.None)
+                    .onChange(()=>{
+
+                    })
+
+                }
+              }
+              TextArea({
+                placeholder:'请输入替换对象或替换规则'
+              }).borderRadius(0)
+            }
+            .padding({top:12,bottom:12})
+            .alignItems(HorizontalAlign.Start)
+
+            //替换为
+            Column({
+              space:8
+            }){
+              Flex({
+                justifyContent:FlexAlign.SpaceBetween,
+                alignItems:ItemAlign.End
+              }){
+                Row(){
+                  Text('替换为').textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
+                    size:16,
+                    weight:500,
+                    family:CommonConstants.FAMILY_PingFANG
+                  })
+                    .lineHeight(24)
+
+                }
+                Row({
+                  space:8
+                }){
+                  Row({
+                    space:8
+                  }){
+                    Text('作用于标题').font({
+                      size:14,
+                      weight:400,
+                      family:CommonConstants.FAMILY_PingFANG
+                    })
+                      .fontColor($r('app.string.color_black_45'))
+                    Radio({value:'default',group:'radioGroup'})
+                      .radioStyle({
+                        checkedBackgroundColor: $r('app.color.theme_color')
+                      })
+                      .onChange(()=>{
+
+                      })
+                      .width(20).height(20)
+                  }
+
+                  Row({
+                    space:8
+                  }){
+                    Text('作用于正文').font({
+                      size:14,
+                      weight:400,
+                      family:CommonConstants.FAMILY_PingFANG
+                    })
+                      .fontColor($r('app.string.color_black_45'))
+                    Radio({value:'default',group:'radioGroup'})
+                      .radioStyle({
+                        checkedBackgroundColor: $r('app.color.theme_color')
+                      })
+                      .checked(true)
+                      .onChange(()=>{
+
+                      })
+                      .width(20).height(20)
+                  }
+
+                }
+              }
+              TextArea({
+                placeholder:'请输入替换结果'
+              }).borderRadius(0)
+            }
+            .padding({top:12,bottom:12})
+            .alignItems(HorizontalAlign.Start)
+
+            //替换范围
+            Column({
+              space:8
+            }){
+              Row(){
+                Text('替换范围').textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
                   size:16,
                   weight:500,
                   family:CommonConstants.FAMILY_PingFANG
@@ -200,98 +265,38 @@ export default struct newAddRule{
                   .lineHeight(24)
 
               }
-              Row({
-                space:8
-              }){
-                Row({
-                  space:8
-                }){
-                  Text('作用于标题').font({
-                    size:14,
-                    weight:400,
-                    family:CommonConstants.FAMILY_PingFANG
-                  })
-                    .fontColor($r('app.string.color_black_45'))
-                  Radio({value:'default',group:'radioGroup'})
-                    .radioStyle({
-                      checkedBackgroundColor: $r('app.color.theme_color')
-                    })
-                    .onChange(()=>{
+              TextArea({
+                placeholder:'选填书名或书源URL'
+              }).borderRadius(0)
+            }
+            .padding({top:12,bottom:12})
+            .alignItems(HorizontalAlign.Start)
 
-                    })
-                    .width(20).height(20)
-                }
-
-                Row({
-                  space:8
-                }){
-                  Text('作用于正文').font({
-                    size:14,
-                    weight:400,
-                    family:CommonConstants.FAMILY_PingFANG
-                  })
-                    .fontColor($r('app.string.color_black_45'))
-                  Radio({value:'default',group:'radioGroup'})
-                    .radioStyle({
-                      checkedBackgroundColor: $r('app.color.theme_color')
-                    })
-                    .checked(true)
-                    .onChange(()=>{
-
-                    })
-                    .width(20).height(20)
-                }
-
+            //超时毫秒数
+            Column({
+              space:8
+            }){
+              Row(){
+                Text('超时毫秒数').textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
+                  size:16,
+                  weight:500,
+                  family:CommonConstants.FAMILY_PingFANG
+                })
+                  .lineHeight(24)
               }
+              TextInput({
+                text: '3000',
+                placeholder:'请入超时毫秒数',
+              }).borderRadius(0)
             }
-            TextInput({
-              placeholder:'请输入替换结果'
-            }).borderRadius(0)
+            .padding({top:12,bottom:12})
+            .alignItems(HorizontalAlign.Start)
           }
-          .padding({top:12,bottom:12})
-          .alignItems(HorizontalAlign.Start)
-
-          //替换范围
-          Column({
-            space:8
-          }){
-            Row(){
-              Text('替换范围').textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
-                size:16,
-                weight:500,
-                family:CommonConstants.FAMILY_PingFANG
-              })
-                .lineHeight(24)
-
-            }
-            TextInput({
-              placeholder:'选填书名或书源URL'
-            }).borderRadius(0)
-          }
-          .padding({top:12,bottom:12})
-          .alignItems(HorizontalAlign.Start)
-
-          //超时毫秒数
-          Column({
-            space:8
-          }){
-            Row(){
-              Text('超时毫秒数').textAlign(TextAlign.Start).fontColor($r('app.string.color_black_88')).font({
-                size:16,
-                weight:500,
-                family:CommonConstants.FAMILY_PingFANG
-              })
-                .lineHeight(24)
-            }
-            TextInput({
-              text: '3000',
-              placeholder:'请入超时毫秒数',
-            }).borderRadius(0)
-          }
-          .padding({top:12,bottom:12})
-          .alignItems(HorizontalAlign.Start)
+          .margin({left:20,right:20})
         }
-        .margin({left:20,right:20})
+        .height('85%')
+        .align(Alignment.Top)
+        .scrollBar(BarState.Off)
       }
       Column(){
         Divider()
