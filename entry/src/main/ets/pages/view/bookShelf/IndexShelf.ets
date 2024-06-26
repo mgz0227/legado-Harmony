@@ -14,6 +14,7 @@ import ShelfBookList from './Shelf/ShelfBookList'
 import picker from '@ohos.file.picker'
 import { CopyFile } from 'ets/common/utils/CopyFile'
 import { ColumnModifier } from '../../../common/utils/ComponetModifier'
+import RefreshComponent from '../../../componets/common/RefreshComponent'
 
 @Component
 export default struct IndexShelf {
@@ -217,7 +218,6 @@ export default struct IndexShelf {
           }
         }.margin({bottom:12})
       }
-
       .padding({top:this.topRectHeight === 0 ? 30 : this.topRectHeight,left:20,right:20})
 
       Tabs({
@@ -439,12 +439,9 @@ export default struct IndexShelf {
 
   @Builder
   refreshComponent() {
-    Row() {
-      if (this.RefreshingTitle !== '松开刷新') {
-        LoadingProgress().height(30)
-      }
-      Text(this.RefreshingTitle).fontSize(16).margin({ left: 20 })
-    }
+    RefreshComponent({
+      RefreshingTitle: this.RefreshingTitle,
+    })
   }
 
   @Builder

@@ -14,7 +14,8 @@ export default struct groupTypeComponent {
       Stack(){
         groupTypePanel({
           groupCoverShow:this.groupCoverShow
-        }).zIndex(9999)
+        })
+          .zIndex(9999)
         Rect()
           // .fillOpacity(0)
           .height('85%')
