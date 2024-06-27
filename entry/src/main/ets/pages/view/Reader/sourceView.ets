@@ -10,6 +10,7 @@ import sourceCommon from './sourceCommon'
 @Preview
 export default struct sourceView{
   @State sourceType:string = '整本换源'
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   build() {
     Column({
       space:16
@@ -130,8 +131,8 @@ export default struct sourceView{
           })
         }
       }
-      .padding({left:20,right:20})
-      .height('74%')
+      .padding({left:20,right:20,bottom:this.bottomRectHeight?this.bottomRectHeight+5:30})
+      .layoutWeight(1)
       .align(Alignment.TopStart)
       .scrollBar(BarState.Off)
 

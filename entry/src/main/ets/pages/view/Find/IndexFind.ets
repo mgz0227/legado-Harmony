@@ -13,6 +13,7 @@ import soundFind from './soundFind';
  * 发现入口
  */
 @Component
+@Entry
 @Preview
 export default struct IndexFind {
   private scrollController: Scroller = new Scroller();
@@ -79,18 +80,14 @@ export default struct IndexFind {
         barPosition: BarPosition.Start,
         controller: this.tabsController
       }) {
-        TabContent() {
-          this.indexFind()
-        }
-
-        TabContent() {
-          this.indexFind()
-        }
-
-        TabContent() {
-          this.indexFind()
-        }
+       ForEach(this.titleArray,(item:string)=>{
+         TabContent() {
+           this.indexFind()
+         }
+         .align(Alignment.Top)
+       })
       }
+      .layoutWeight(1)
       .barWidth(0)
       .barHeight(0)
       .onChange((index) => {
@@ -109,10 +106,10 @@ export default struct IndexFind {
   @State isRefreshing: boolean = false
   @State counter: number = 0
   @State RefreshingTitle: string = '松开刷新'
-  @State isShowNoFind:boolean = false
+  @State isShowNoFind:boolean = true
   @Builder
   indexFind() {
-    Stack(){
+    Column(){
       groupTypeComponent({
         bookType: this.bookType,
         currentIndex: this.currentIndex,
@@ -140,14 +137,12 @@ export default struct IndexFind {
               }
             }
             .padding({
-              left:20,right:20,
-              bottom:25
+              left:20,right:20,bottom:20
             })
           }
-          .margin({bottom:120})
-          .align(Alignment.TopStart)
           .scrollBar(BarState.Off)
         }
+        .layoutWeight(1)
         .onStateChange((refreshStatus: RefreshStatus) => {
           if (refreshStatus === 1 || refreshStatus === 2) {
             this.RefreshingTitle = '松开刷新'
@@ -161,9 +156,8 @@ export default struct IndexFind {
             this.isRefreshing = false
           }, 1000)
         })
-        .margin({ top: 40 })
       }
-    }.align(Alignment.Top)
+    }
   }
 
   @Builder
