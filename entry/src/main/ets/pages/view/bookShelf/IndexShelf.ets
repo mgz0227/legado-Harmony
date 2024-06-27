@@ -12,8 +12,7 @@ import groupTypeComponent from '../../../componets/group/GroupType'
 import ShelfBookList from './Shelf/ShelfBookList'
 
 import picker from '@ohos.file.picker'
-import { CopyFile } from 'ets/common/utils/CopyFile'
-import { ColumnModifier } from '../../../common/utils/ComponetModifier'
+import { FileHandler } from 'ets/common/utils/FileHandler'
 import RefreshComponent from '../../../componets/common/RefreshComponent'
 
 @Component
@@ -68,6 +67,8 @@ export default struct IndexShelf {
     cornerRadius: 8,
     offset: { dx: 0, dy: 0 }
   })
+  tabsController: TabsController = new TabsController();
+  private scrollController: Scroller = new Scroller();
 
   onAccept() {
     console.info('确定')
@@ -99,31 +100,32 @@ export default struct IndexShelf {
       bottom: 16
     })
   }
-  private scrollController: Scroller = new Scroller();
-  tabsController: TabsController = new TabsController();
+
   build() {
-    Column(){
+    Column() {
       Flex({
-        justifyContent:FlexAlign.SpaceBetween,
+        justifyContent: FlexAlign.SpaceBetween,
         alignItems: ItemAlign.End
-      }){
-        Row(){
-          List({scroller:this.scrollController}){
-            ListItem(){
+      }) {
+        Row() {
+          List({ scroller: this.scrollController }) {
+            ListItem() {
               BookMark({ title: '小说', index: 0, currentIndex: this.currentIndex }).onClick(() => {
                 this.currentIndex = 0
                 this.tabsController.changeIndex(0)
                 console.log(this.currentIndex + '')
               })
             }
-            ListItem(){
+
+            ListItem() {
               BookMark({ title: '漫画', index: 1, currentIndex: this.currentIndex }).onClick(() => {
                 this.currentIndex = 1
                 this.tabsController.changeIndex(1)
                 console.log(this.currentIndex + '')
               })
             }
-            ListItem(){
+
+            ListItem() {
               BookMark({ title: '有声书', index: 2, currentIndex: this.currentIndex }).onClick(() => {
                 this.currentIndex = 2
                 this.tabsController.changeIndex(2)
@@ -137,7 +139,7 @@ export default struct IndexShelf {
           .listDirection(Axis.Horizontal)
         }
 
-        Row(){
+        Row() {
           Flex() {
           }
           .width(0)
@@ -216,9 +218,9 @@ export default struct IndexShelf {
                 blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
               })
           }
-        }.margin({bottom:12})
+        }.margin({ bottom: 12 })
       }
-      .padding({top:this.topRectHeight === 0 ? 30 : this.topRectHeight,left:20,right:20})
+      .padding({ top: this.topRectHeight === 0 ? 30 : this.topRectHeight, left: 20, right: 20 })
 
       Tabs({
         barPosition: BarPosition.Start,
@@ -367,6 +369,8 @@ export default struct IndexShelf {
             }
             .padding({ left: 10, right: 10 ,bottom:10})
           }
+
+          .margin({ bottom: 110 + (this.topRectHeight === 0 ? 10 : this.topRectHeight) })
           .align(Alignment.TopStart)
           .scrollBar(BarState.Off)
         }
@@ -487,7 +491,8 @@ export default struct IndexShelf {
           await documentPicker.select(documentSelectOptions).then((documentSelectResult: Array<string>) => {
             filePath = documentSelectResult[0];
           })
-          CopyFile(filePath)
+          FileHandler.CopyFile(filePath)
+          this.isShowImport = false
           break
         case 1:
         // 云盘导入

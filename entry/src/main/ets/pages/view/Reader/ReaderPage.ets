@@ -2,13 +2,13 @@ import battery from 'ets/componets/common/battery';
 import Dialog from 'ets/componets/common/Dialog';
 import { router } from '@kit.ArkUI';
 import sourceView from './sourceView';
-import { TxtFileHandler } from 'ets/common/utils/readFile';
+import { FileHandler } from 'ets/common/utils/FileHandler';
 import { AddDownloadDialog } from 'ets/componets/Reader/AddDownloadDialog';
 import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
 
 import { MusicPlayer } from 'ets/componets/MusicPlayer';
 import purificationView from './purificationView';
-import { chaptersItem } from 'ets/storage/ReaderFile';
+import { chaptersItem } from 'ets/storage/ReaderChaptersItem';
 
 @Entry
 @Component
@@ -20,6 +20,8 @@ struct ReaderPage {
   @State isShowListen: boolean = false
   @State StartText: string = "1"
   @State EndText: string = "2"
+  @State CurrentChapters: number = 0
+  @State TotalChapters: number = 0
   controller: TextInputController = new TextInputController()
   // 网址导入Dialog
   dialogController: CustomDialogController = new CustomDialogController({
@@ -49,7 +51,8 @@ struct ReaderPage {
   async onPageShow() {
     let temp = router.getParams()
     // console.log('router' + JSON.stringify(temp))
-    this.txtFile = await TxtFileHandler.readFile() //txt小说
+    this.txtFile = await FileHandler.readFile() //txt小说
+    this.TotalChapters = this.txtFile.length
   }
 
   @Builder
@@ -80,7 +83,7 @@ struct ReaderPage {
               .onClick(() => {
                 router.back()
               })
-            Text(`第${this.txtFile[0]?.chapterTitleNumber}章 ${this.txtFile[0]?.title}`)
+            Text(`第${this.txtFile[this.CurrentChapters]?.chapterTitleNumber}章 ${this.txtFile[this.CurrentChapters]?.title}`)
             Blank(1)
             Row({ space: 16 }) {
               Image($r("app.media.refresh"))
@@ -145,7 +148,7 @@ struct ReaderPage {
         Scroll(this.scroller) {
           Column() {
             Row() {
-              Text(this.txtFile[0]?.title)
+              Text(this.txtFile[this.CurrentChapters]?.title)
                 .lineHeight(20)
                 .font({
                   size: 12,
@@ -161,7 +164,7 @@ struct ReaderPage {
             })
             .width("100%")
 
-            Text(this.txtFile[0]?.content)
+            Text(this.txtFile[this.CurrentChapters]?.content)
               .lineHeight(20)
               .font({
                 size: 12,
@@ -170,8 +173,8 @@ struct ReaderPage {
               .fontColor("rgba(0, 0, 0, 0.88)")
           }
           .padding({
-            left:24,
-            right:24
+            left: 24,
+            right: 24
           })
         }
         // .scrollable(ScrollDirection.Horizontal)
@@ -268,12 +271,22 @@ struct ReaderPage {
               .justifyContent(FlexAlign.SpaceBetween)
               .width("100%")
 
-              Row() {
-                Text("上一章")
+              Row({ space: 16 }) {
+                Text("上一章").onClick(() => {
+                  if (this.CurrentChapters > 0) {
+                    this.CurrentChapters--
+                  }
+                })
+
                 Blank(1)
-                Progress({ value: 50 }).width("50%")
+                Progress({ value: this.CurrentChapters, total: this.TotalChapters - 1 }).layoutWeight(1)
                 Blank(1)
-                Text("下一章")
+
+                Text("下一章").onClick(() => {
+                  if (this.CurrentChapters < this.TotalChapters - 1) {
+                    this.CurrentChapters++
+                  }
+                })
               }
               .padding({
                 left: 24,
