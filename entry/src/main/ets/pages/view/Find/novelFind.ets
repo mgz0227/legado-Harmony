@@ -7,49 +7,34 @@ export default struct novelFind {
     Column({
       space:16
     }){
-      Flex({
-        justifyContent:FlexAlign.Center,
-        alignContent:FlexAlign.Center
-      }){
-        Column(){
-          mayAlsoLike()
-          Text('小说')
-          noFind().padding({
-            top:107
-          })
-        }
+      Column(){
+        mayAlsoLike()
+        Text('小说')
+        noFind().padding({
+          top:107
+        })
       }
       .borderRadius(12)
       .backgroundColor(Color.White)
       .height(436)
 
-      Flex({
-        justifyContent:FlexAlign.Center,
-        alignContent:FlexAlign.Center
-      }){
-        Column(){
-          mayAlsoLike()
-          Text('小说')
-          noFind().padding({
-            top:107
-          })
-        }
+      Column(){
+        mayAlsoLike()
+        Text('小说')
+        noFind().padding({
+          top:107
+        })
       }
       .borderRadius(12)
       .backgroundColor(Color.White)
       .height(436)
 
-      Flex({
-        justifyContent:FlexAlign.Center,
-        alignContent:FlexAlign.Center
-      }){
-        Column(){
-          mayAlsoLike()
-          Text('小说')
-          noFind().padding({
-            top:107
-          })
-        }
+      Column(){
+        mayAlsoLike()
+        Text('小说')
+        noFind().padding({
+          top:107
+        })
       }
       .borderRadius(12)
       .backgroundColor(Color.White)

@@ -15,7 +15,7 @@ export default struct noSourceFind {
   build() {
     Column(){
         Image($r('app.media.icon_no_source_find')).width(124).height(120)
-          .margin({top:150,bottom:32})
+          .margin({top:80,bottom:32})
         Text('该书源暂无发现功能，请切换至其他书源吧，点击下方按钮一键隐藏所有暂无发现功能书源')
           .width(280)
           .font({
