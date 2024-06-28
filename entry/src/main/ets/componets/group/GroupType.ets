@@ -14,10 +14,11 @@ export default struct groupTypeComponent {
       Stack(){
         groupTypePanel({
           groupCoverShow:this.groupCoverShow
-        }).zIndex(9999)
+        })
+          .zIndex(9999)
         Rect()
           // .fillOpacity(0)
-          .height('85%')
+          .height('100%')
           .width('100%')
           .fill('rgba(0, 0, 0, 0.45)')
           .offset({y:20})

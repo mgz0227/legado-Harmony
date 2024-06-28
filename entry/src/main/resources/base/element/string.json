@@ -13,28 +13,68 @@
       "value": "label"
     },
     {
-      "name": "color_black_15",
-      "value": "rgba(0, 0, 0, 0.15)"
+      "name": "select_all",
+      "value": "全选"
     },
     {
-      "name": "color_black_45",
-      "value": "rgba(0, 0, 0, 0.45)"
+      "name": "deselect_all",
+      "value": "取消全选"
     },
     {
-      "name": "color_black_65",
-      "value": "rgba(0, 0, 0, 0.65)"
+      "name": "new_replacement_rule",
+      "value": "新建替换规则"
     },
     {
-      "name": "color_black_88",
-      "value": "rgba(0, 0, 0, 0.88)"
+      "name": "edit_replacement_rule",
+      "value": "编辑替换规则"
     },
     {
-      "name": "ThemeColor",
-      "value": "#FF6600"
+      "name": "new_directory_purification",
+      "value": "新建目录规则"
     },
     {
-      "name": "BackgroundThemeColor",
-      "value": "rgba(255, 102, 0, 0.12)"
+      "name": "edit_directory_purification",
+      "value": "编辑目录规则"
+    },
+    {
+      "name": "regular_expressions",
+      "value": "正则表达式"
+    },
+    {
+      "name": "please_enter_regular_expression",
+      "value": "请输入正则表达式"
+    },
+    {
+      "name": "please_enter_example",
+      "value": "请输入示例"
+    },
+    {
+      "name": "example",
+      "value": "示例"
+    },
+    {
+      "name": "copy",
+      "value": "复制"
+    },
+    {
+      "name": "paste",
+      "value": "粘贴"
+    },
+    {
+      "name": "appellation",
+      "value": "名称"
+    },
+    {
+      "name": "please_enter_name",
+      "value": "请输入名称"
+    },
+    {
+      "name": "grouping",
+      "value": "分组"
+    },
+    {
+      "name": "unclassified",
+      "value": "未分组"
     }
   ]
 }

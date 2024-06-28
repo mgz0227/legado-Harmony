@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 import { curves } from '@kit.ArkUI';
+import { relationalStore } from '@kit.ArkData';
 
 /**
  * Common constants for all features.
@@ -225,9 +226,23 @@ export default class CommonConstants {
   static readonly KEY_CARTOON_BOOK_DATA:string = 'KEY_CARTOON_BOOK_DATA'
   static readonly GROUP_LIST_DATA:string = 'GROUP_LIST_DATA'
   static readonly SHELF_LIST_DATA:string = 'SHELF_LIST_DATA'
-
+  /**
+   * 数据库日志标签
+   */
+  static readonly RDB_TAG: string = 'RdbTag';
+  /**
+   * 数据库配置
+   */
+  static readonly STORE_CONFIG: relationalStore.StoreConfig = {
+    name: "novel.db",
+    securityLevel: relationalStore.SecurityLevel.S1
+  }
   /**
    * Default curve value.
    */
   static readonly UniCurve: ICurve = curves.springCurve(0, 0.5, 128, 12)
+  /**
+   * 字体样式
+   */
+  static readonly FAMILY_PingFANG: string = 'PingFang SC'
 }

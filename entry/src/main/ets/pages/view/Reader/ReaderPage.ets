@@ -1,14 +1,14 @@
 import battery from 'ets/componets/common/battery';
 import Dialog from 'ets/componets/common/Dialog';
-import media from '@ohos.multimedia.media';
 import { router } from '@kit.ArkUI';
 import sourceView from './sourceView';
-import { readFile } from 'ets/common/utils/readFile';
+import { FileHandler } from 'ets/common/utils/FileHandler';
 import { AddDownloadDialog } from 'ets/componets/Reader/AddDownloadDialog';
 import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
 
 import { MusicPlayer } from 'ets/componets/MusicPlayer';
 import purificationView from './purificationView';
+import { chaptersItem } from 'ets/storage/ReaderChaptersItem';
 
 @Entry
 @Component
@@ -20,6 +20,8 @@ struct ReaderPage {
   @State isShowListen: boolean = false
   @State StartText: string = "1"
   @State EndText: string = "2"
+  @State CurrentChapters: number = 0
+  @State TotalChapters: number = 0
   controller: TextInputController = new TextInputController()
   // 网址导入Dialog
   dialogController: CustomDialogController = new CustomDialogController({
@@ -41,13 +43,16 @@ struct ReaderPage {
     cornerRadius: 8,
     offset: { dx: 0, dy: -100 }
   })
+  scroller: Scroller = new Scroller()
   @State isShowSource: boolean = false
-  @State isShowPurification:boolean = false
+  @State isShowPurification: boolean = false
+  @State txtFile: chaptersItem[] = [];
 
-  onPageShow(): void {
+  async onPageShow() {
     let temp = router.getParams()
-    console.log('router' + JSON.stringify(temp))
-    readFile()
+    // console.log('router' + JSON.stringify(temp))
+    this.txtFile = await FileHandler.readFile() //txt小说
+    this.TotalChapters = this.txtFile.length
   }
 
   @Builder
@@ -69,6 +74,7 @@ struct ReaderPage {
 
   build() {
     Stack() {
+      // 阅读器-上方弹框
       if (this.isShowSetting) {
         Column() {
           Row({ space: 8 }) {
@@ -77,7 +83,7 @@ struct ReaderPage {
               .onClick(() => {
                 router.back()
               })
-            Text("第一章 牢狱之灾")
+            Text(`第${this.txtFile[this.CurrentChapters]?.chapterTitleNumber}章 ${this.txtFile[this.CurrentChapters]?.title}`)
             Blank(1)
             Row({ space: 16 }) {
               Image($r("app.media.refresh"))
@@ -131,28 +137,48 @@ struct ReaderPage {
         .backgroundColor("white")
         .transition(TransitionEffect.move(TransitionEdge.TOP).animation({ duration: 500 }))
       }
+
+      // 阅读器-小说内容
       Column() {
         Row() {
         }
         .width("100%")
         .height(40)
 
-        Row() {
-          Text("第一章 牢狱之灾")
-            .lineHeight(20)
-            .font({
-              size: 12,
-              weight: 400
+        Scroll(this.scroller) {
+          Column() {
+            Row() {
+              Text(this.txtFile[this.CurrentChapters]?.title)
+                .lineHeight(20)
+                .font({
+                  size: 12,
+                  weight: 400
+                })
+                .fontColor("rgba(0, 0, 0, 0.88)")
+            }
+            .padding({
+              top: 16,
+              bottom: 16,
+              left: 24,
+              right: 24
             })
-            .fontColor("rgba(0, 0, 0, 0.88)")
+            .width("100%")
+
+            Text(this.txtFile[this.CurrentChapters]?.content)
+              .lineHeight(20)
+              .font({
+                size: 12,
+                weight: 400
+              })
+              .fontColor("rgba(0, 0, 0, 0.88)")
+          }
+          .padding({
+            left: 24,
+            right: 24
+          })
         }
-        .padding({
-          top: 16,
-          bottom: 16,
-          left: 24,
-          right: 24
-        })
-        .width("100%")
+        // .scrollable(ScrollDirection.Horizontal)
+        .layoutWeight(1)
 
 
         Blank(1)
@@ -174,6 +200,7 @@ struct ReaderPage {
           })
           .width("100%")
 
+          // 阅读器-下方弹框
           if (this.isShowSetting) {
             Column({ space: 20 }) {
               Divider()
@@ -244,12 +271,22 @@ struct ReaderPage {
               .justifyContent(FlexAlign.SpaceBetween)
               .width("100%")
 
-              Row() {
-                Text("上一章")
+              Row({ space: 16 }) {
+                Text("上一章").onClick(() => {
+                  if (this.CurrentChapters > 0) {
+                    this.CurrentChapters--
+                  }
+                })
+
                 Blank(1)
-                Progress({ value: 50 }).width("50%")
+                Progress({ value: this.CurrentChapters, total: this.TotalChapters - 1 }).layoutWeight(1)
                 Blank(1)
-                Text("下一章")
+
+                Text("下一章").onClick(() => {
+                  if (this.CurrentChapters < this.TotalChapters - 1) {
+                    this.CurrentChapters++
+                  }
+                })
               }
               .padding({
                 left: 24,
@@ -303,7 +340,7 @@ struct ReaderPage {
             }
             .backgroundColor("white")
             .transition(TransitionEffect.move(TransitionEdge.BOTTOM).animation({ duration: 500 }))
-            .zIndex(2)
+            // .zIndex(2)
             .onClick(() => {
               // 这里必须有onclick，不然点击弹窗会消失，走下面的onclick逻辑
             })
@@ -341,7 +378,7 @@ struct ReaderPage {
   purificationView() {
     Column() {
       purificationView({
-        isShowPurification:this.isShowPurification
+        isShowPurification: this.isShowPurification
       })
     }
   }
@@ -390,7 +427,7 @@ struct ReaderPage {
         }
       }
 
-      MusicPlayer({ RightMinus: 118 })
+      MusicPlayer({ WidthMinus: 118 })
     }
     .width("100%")
     .height("100%")
