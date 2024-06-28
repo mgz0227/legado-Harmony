@@ -10,8 +10,10 @@ export default struct cartoonFind {
       Column(){
         mayAlsoLike()
         Text('漫画')
-        noFind().padding({
-          top:107
+        noFind({
+          hintIndex:1
+        }).padding({
+          top:75
         })
       }
       .borderRadius(12)
@@ -22,7 +24,7 @@ export default struct cartoonFind {
         mayAlsoLike()
         Text('漫画')
         noFind().padding({
-          top:107
+          top:75
         })
       }
       .borderRadius(12)
@@ -33,7 +35,7 @@ export default struct cartoonFind {
         mayAlsoLike()
         Text('漫画')
         noFind().padding({
-          top:107
+          top:75
         })
       }
       .borderRadius(12)

@@ -8,10 +8,12 @@ export default struct novelFind {
       space:16
     }){
       Column(){
-        mayAlsoLike()
+        mayAlsoLike({
+          mayAlsoLike:'畅销精选'
+        })
         Text('小说')
         noFind().padding({
-          top:107
+          top:75
         })
       }
       .borderRadius(12)
@@ -22,7 +24,7 @@ export default struct novelFind {
         mayAlsoLike()
         Text('小说')
         noFind().padding({
-          top:107
+          top:75
         })
       }
       .borderRadius(12)
@@ -33,7 +35,7 @@ export default struct novelFind {
         mayAlsoLike()
         Text('小说')
         noFind().padding({
-          top:107
+          top:75
         })
       }
       .borderRadius(12)
