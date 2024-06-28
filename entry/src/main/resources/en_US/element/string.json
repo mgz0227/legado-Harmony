@@ -75,6 +75,10 @@
     {
       "name": "unclassified",
       "value": "Unclassified"
+    },
+    {
+      "name": "retry",
+      "value": "retry"
     }
   ]
 }

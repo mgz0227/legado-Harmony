@@ -7,7 +7,7 @@ import CommonConstants from '../../../common/constants/CommonConstants'
 
 @Component
 export default struct mayAlsoLike {
-  @State mayAlsoLike:string = '猜你喜欢'
+  @Prop mayAlsoLike:string = '猜你喜欢'
   build() {
     Flex({
       justifyContent:FlexAlign.SpaceBetween,

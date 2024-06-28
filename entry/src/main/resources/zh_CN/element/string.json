@@ -75,6 +75,10 @@
     {
       "name": "unclassified",
       "value": "未分组"
+    },
+    {
+      "name": "retry",
+      "value": "重试"
     }
   ]
 }
