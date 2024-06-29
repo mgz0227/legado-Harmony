@@ -57,7 +57,8 @@ const showGroupSort = (group:folderList[]) =>{
     } else if (!a.isTop && b.isTop) {
       return 1
     } else {
-      return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+      // return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+      return 0
     }
   })
 }
