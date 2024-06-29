@@ -16,7 +16,7 @@ export default struct noSourceFind {
   build() {
     Column(){
         Image($r('app.media.icon_no_source_find')).width(124).height(120)
-          .margin({top:80,bottom:32})
+          .margin({bottom:32})
         Text(this.title)
           .width(280)
           .font({

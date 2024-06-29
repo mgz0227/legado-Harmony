@@ -102,7 +102,8 @@ export default struct FolderManageDialog {
       } else if (!a.isTop && b.isTop) {
         return 1
       } else {
-        return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+        return 0
+        // return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
       }
     })
   }
@@ -632,7 +633,8 @@ export default struct FolderManageDialog {
       } else if (!a.isTop && b.isTop) {
         return 1
       } else {
-        return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+        return 0
+        // return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
       }
     })
   }
