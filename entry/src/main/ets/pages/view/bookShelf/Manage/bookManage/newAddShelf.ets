@@ -79,7 +79,8 @@ export default struct newAddShelf{
               bookData:item,
               allCheck:this.allCheck,
               changeTop:this.changeTop,
-              checkBookList:this.checkBookList
+              checkBookList:this.checkBookList,
+              isManage:true
             })
           })
         }

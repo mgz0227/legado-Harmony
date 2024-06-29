@@ -6,6 +6,15 @@ import RefreshComponent from '../../../componets/common/RefreshComponent';
 import noSourceFind from '../../../componets/common/noSourceFind';
 import cartoonFind from './cartoonFind';
 import soundFind from './soundFind';
+import dialogTitleFuction from '../../../componets/common/dialogTitleFuction';
+import { IconTitleVo } from '../../../componetsmodel/IconTitleVo';
+import FindGroupSource from '../../../componets/group/FindGroupSource';
+import { showMessage } from '../../../componets/common/promptShow';
+import FontConstants from '../../../common/constants/FontConstants';
+import CommonConstants from '../../../common/constants/CommonConstants';
+import { HelpInfo } from '../../../viewData/HelpInfo';
+import PaddingConstants from '../../../common/constants/PaddingConstants';
+
 /**
  * @author 2008
  * @datetime 2024/6/26 23:55
@@ -25,6 +34,8 @@ export default struct IndexFind {
   @State groupCoverShow: boolean = false
   @State bookType: string = '全部'
   @State GROUP: string = '标签'
+  @State isShowFuction:boolean = false
+  @State isShowHelp:boolean = false
   build() {
     Column(){
       Flex({
@@ -59,6 +70,18 @@ export default struct IndexFind {
           .listDirection(Axis.Horizontal)
         }
         Image($r('app.media.addSubscription')).width(24)
+          .bindMenu(this.isShowFuction,this.dialogRightFuction()
+          , {
+          // enableArrow:true,
+          //
+          // arrowOffset:Placement.Right,
+          onDisappear:()=>{
+            this.isShowFuction = false
+          }
+        })
+          .onClick(()=>{
+            this.isShowFuction = true
+          })
       }
       .padding({top:this.topRectHeight === 0 ? 30 : this.topRectHeight,left:20,right:20})
 
@@ -95,6 +118,15 @@ export default struct IndexFind {
         this.currentIndex = index
       })
       .scrollable(this.APP_INDEX_SCROLLABLE)
+      Flex()
+        .bindSheet(this.isShowHelp,this.dialogHelpFuction(),{
+        height: '50%',
+        showClose:false,
+        dragBar:false,
+        onDisappear:()=>{
+          this.isShowHelp = false
+       }
+      })
     }
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
@@ -110,12 +142,7 @@ export default struct IndexFind {
   @Builder
   indexFind() {
     Column(){
-      groupTypeComponent({
-        bookType: this.bookType,
-        currentIndex: this.currentIndex,
-        groupCoverShow: this.groupCoverShow,
-        GROUP: this.GROUP
-      })
+      FindGroupSource()
         .padding(5)
         .zIndex(999)
       if (this.isShowNoFind){
@@ -165,6 +192,81 @@ export default struct IndexFind {
     RefreshComponent({
       RefreshingTitle: this.RefreshingTitle,
     })
+  }
+  //'粘贴导入', '本地导入', '书源管理', '导入帮助'
+  FIND_Dialog_Right_Fuction: IconTitleVo[] = [
+    new IconTitleVo($r('app.media.icon_rule_paste'), '粘贴导入'),
+    new IconTitleVo($r('app.media.icon_rule_export'), '本地导入'),
+    new IconTitleVo($r('app.media.icon_find_shelf'), '书源管理'),
+    new IconTitleVo($r('app.media.icon_rule_help'), '导入帮助')
+  ]
+
+  @Builder dialogRightFuction(){
+   Column(){
+     ForEach(this.FIND_Dialog_Right_Fuction,(item:IconTitleVo,index)=>{
+       dialogTitleFuction({
+         title:item.title,
+         icon:item.icon,
+       })
+         .onClick(()=>{
+           this.findBindMenuFunction(index)
+         })
+     })
+   }
+  }
+  findBindMenuFunction(index:number){
+    switch (index){
+      case 0: showMessage(this.FIND_Dialog_Right_Fuction[index].title);break;
+      case 1: showMessage(this.FIND_Dialog_Right_Fuction[index].title);break;
+      case 2: showMessage(this.FIND_Dialog_Right_Fuction[index].title);break;
+      case 3:
+        showMessage(this.FIND_Dialog_Right_Fuction[index].title);
+        this.isShowHelp = true;
+        break;
+    }
+  }
+
+  @Builder dialogHelpFuction(){
+    Flex({
+      direction:FlexDirection.Column,
+      justifyContent:FlexAlign.SpaceBetween
+    }){
+      Column(){
+        Text($r('app.string.export_help'))
+          .font({
+            size:FontConstants.FONT_SIZE_16,
+            weight:FontConstants.FONT_WEIGHT_500,
+            family:CommonConstants.FAMILY_PingFANG
+          })
+          .textAlign(TextAlign.Center)
+          .lineHeight(24)
+          .fontColor($r('app.string.color_black_88'))
+          .padding({
+            bottom:PaddingConstants.PADDING_12})
+
+        Flex(){
+          Text(HelpInfo.HELP_INFO_MESSAGE)
+        }.padding({
+          top:PaddingConstants.PADDING_12,
+          bottom:PaddingConstants.PADDING_12})
+      }
+      Button($r('app.string.i_know'))
+        .width('100%')
+        .backgroundColor($r('app.color.theme_color'))
+        .padding({
+          left:PaddingConstants.PADDING_32,
+          right:PaddingConstants.PADDING_32,
+          top:PaddingConstants.PADDING_8,
+          bottom:PaddingConstants.PADDING_8})
+        .onClick(()=>{
+          this.isShowHelp = false
+        })
+    }
+    .height('100%')
+    .padding({left:PaddingConstants.PADDING_20,
+      right:PaddingConstants.PADDING_20,
+      top:PaddingConstants.PADDING_12,
+      bottom:PaddingConstants.PADDING_12})
   }
 
 }
