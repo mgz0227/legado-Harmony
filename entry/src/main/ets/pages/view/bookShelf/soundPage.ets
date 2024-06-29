@@ -3,7 +3,7 @@ import BookInfo from './BookInfo'
 import { promptAction } from '@kit.ArkUI'
 import BookInfoGrid from './BookInfoGrid'
 import CommonConstants from '../../../common/constants/CommonConstants'
-import { delBookListAll, delBookListByBookId } from '../../../storage/bookListData'
+import { delBookListAll, delBookListByBookId, getBookData } from '../../../storage/bookListData'
 
 /**
  * 有声书
@@ -15,8 +15,12 @@ export default struct soundPage{
   @Prop currentIndex:number
   @State lastIndex:string = '9999'
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
-  @StorageLink(CommonConstants.KEY_SOUND_BOOK_DATA)
+
   soundList:BookList[] = []
+
+  aboutToAppear(): void {
+    this.soundList = getBookData(2) as BookList[] //初始化数据
+  }
   //监听isClear变化
   onIsClearChange() {
     if (this.currentIndex === 2 && this.isClear) {

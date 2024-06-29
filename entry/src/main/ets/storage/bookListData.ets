@@ -1,11 +1,14 @@
 import CommonConstants from '../common/constants/CommonConstants'
+import { showMessage } from '../componets/common/promptShow'
 import { BookList } from '../componets/dataList/bookList'
+import bookDataPreferences from '../preferences/bookDataPreferences'
+
 /**
  * 初始化存放书本内容
  */
 let KEY = ''
 
-const novelListData:BookList[] = [
+export const novelListData:BookList[] = [
   new BookList('1','仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'),'测试作者','玄幻')
   ,new BookList('2','仙人消失之后','会说话的肘子·未读过2','更新至·第340章 镇压',$r('app.media.cover_list'),'测试作者','玄幻')
 ]
@@ -40,35 +43,54 @@ const soundGroupListData:string[] = []
 const cartoonGroupListData:string[] = []
 
 export const initBookListData = ()=>{
-  AppStorage.setOrCreate(CommonConstants.KEY_NOVEL_BOOK_DATA,novelListData)
-  AppStorage.setOrCreate(CommonConstants.KEY_SOUND_BOOK_DATA,soundListData)
-  AppStorage.setOrCreate(CommonConstants.KEY_CARTOON_BOOK_DATA,cartoonListData)
+  bookDataPreferences.shared.set(CommonConstants.PREFERENCES_BOOK_INIT_KEY,true)
+  bookDataPreferences.shared.set(CommonConstants.KEY_NOVEL_BOOK_DATA,novelListData)
+  bookDataPreferences.shared.set(CommonConstants.KEY_SOUND_BOOK_DATA,soundListData)
+  bookDataPreferences.shared.set(CommonConstants.KEY_CARTOON_BOOK_DATA,cartoonListData)
+}
+
+export const getBookData = (shelfTye:number)=>{
+  shelfBookType(shelfTye)
+  return bookDataPreferences.shared.get(KEY) as BookList[];
+}
+
+export const addShelfBook = (shelfTye:number, bookData:BookList)=>{
+  let bookList = getBookData(shelfTye)
+  //根据bookList bookId是string类型排序然后获取最大的一个id然后自增
+  bookData.bookId = getBookIdAutoIncrement(bookList)
+  showMessage(bookData.bookId)
+  bookList.push(bookData)
+  console.log(`${KEY} ---------------`)
+  console.log(JSON.stringify(bookList))
+  bookDataPreferences.shared.set(KEY,bookList)
+  console.log(`最终结果 ---------------`)
+  console.log(JSON.stringify(bookDataPreferences.shared.get(KEY) as BookList[]))
 }
 
 export const delBookListByBookId = (shelfTye:number,bookId:string)=>{
 
-    let bookListData = getBookListData(shelfTye)
+    let bookListData = getBookData(shelfTye)
 
     bookListData = bookListData.filter(book => book.bookId !== bookId);
 
     console.log('b',JSON.stringify(bookListData))
     //重新存放
-    AppStorage.set(KEY,bookListData)
+    bookDataPreferences.shared.set(KEY,shortDateList(bookListData))
 }
 
 export const delBookListAll = (shelfTye:number)=>{
 
-  let bookListData = getBookListData(shelfTye)
+  let bookListData = getBookData(shelfTye)
 
   bookListData = [];
   //重新存放
-  AppStorage.set(KEY,bookListData)
+  bookDataPreferences.shared.set(KEY,shortDateList(bookListData))
 }
 
 
 //根据调用方法传过来的BookList数组更新AppStorage中的数据
 export const updateBookListData = (shelfTye:number,list:BookList[])=>{
-  let bookListData =  getBookListData(shelfTye)
+  let bookListData =  getBookData(shelfTye)
   for (let index = 0; index < list.length; index++) {
     for (let j = 0; j < bookListData.length; j++) {
       if (bookListData[j].bookId === list[index].bookId) {
@@ -81,11 +103,11 @@ export const updateBookListData = (shelfTye:number,list:BookList[])=>{
       }
     }
   }
-  AppStorage.set(KEY,shortDateList(bookListData))
+  bookDataPreferences.shared.set(KEY,shortDateList(bookListData))
 }
 
 export const updateDateListById = (index:number, isJoin:boolean, bookId:string)=>{
-  let bookListData =  getBookListData(index)
+  let bookListData =  getBookData(index)
   //如何bookId存在，则更新字段isJoin
   for (let i = 0; i < bookListData.length; i++) {
     if (bookListData[i].bookId === bookId) {
@@ -93,7 +115,7 @@ export const updateDateListById = (index:number, isJoin:boolean, bookId:string)=
       break
     }
   }
-  AppStorage.set(KEY,shortDateList(bookListData))
+  bookDataPreferences.shared.set(KEY,shortDateList(bookListData))
 }
 
 function shortDateList(showBookList:BookList[]){
@@ -103,18 +125,19 @@ function shortDateList(showBookList:BookList[]){
     } else if (!a.isTop && b.isTop) {
       return 1
     } else {
-      return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+      // return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+      return 0
     }
   })
   return showBookList
 }
 
-function getBookListData(shelfTye:number){
-  shelfBookType(shelfTye)
-  let bookList = AppStorage.get<BookList>(KEY) || []
-  let bookListData = bookList as BookList[]
-  return bookListData
-}
+// function getBookListData(shelfTye:number){
+//   shelfBookType(shelfTye)
+//   let bookList = AppStorage.get<BookList>(KEY) || []
+//   let bookListData = bookList as BookList[]
+//   return bookListData
+// }
 
 function shelfBookType(shelfTye:number){
   if (shelfTye === 0) {
@@ -124,5 +147,16 @@ function shelfBookType(shelfTye:number){
   } else if (shelfTye === 2) {
     KEY = CommonConstants.KEY_SOUND_BOOK_DATA
   }
+  //id自增
+}
+
+const getBookIdAutoIncrement = (bookList:BookList[])=>{
+  let maxId = 0
+  bookList.forEach(book => {
+    if (parseInt(book.bookId) > maxId) {
+      maxId = parseInt(book.bookId)
+    }
+  })
+  return JSON.stringify( maxId + 1)
 }
 

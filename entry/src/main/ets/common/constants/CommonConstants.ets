@@ -221,6 +221,8 @@ export default class CommonConstants {
   /**
    * 小说AppStorage存储key
    */
+  static readonly PREFERENCES_BOOK_INIT_KEY:string = 'PREFERENCES_BOOK_INIT_KEY'
+  static readonly PREFERENCES_BOOK_DATA_KEY:string = 'PREFERENCES_BOOK_DATA_KEY'
   static readonly KEY_NOVEL_BOOK_DATA:string = 'KEY_NOVEL_BOOK_DATA'
   static readonly KEY_SOUND_BOOK_DATA:string = 'KEY_SOUND_BOOK_DATA'
   static readonly KEY_CARTOON_BOOK_DATA:string = 'KEY_CARTOON_BOOK_DATA'

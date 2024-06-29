@@ -1,4 +1,3 @@
-import groupTypeComponent from '../../../componets/group/GroupType';
 import BookMark from '../../../componets/head/BookMark';
 import { router } from '@kit.ArkUI';
 import novelFind from './novelFind';
@@ -151,6 +150,10 @@ export default struct IndexFind {
             this.isShowNoFind = false
           }
         })
+          .margin({
+            top:PaddingConstants.PADDING_20
+          })
+
       } else {
         Refresh({ refreshing: $$this.isRefreshing, builder: this.refreshComponent }) {
           Scroll(){

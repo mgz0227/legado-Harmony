@@ -3,7 +3,8 @@ import BookInfo from './BookInfo'
 import { promptAction } from '@kit.ArkUI'
 import BookInfoGrid from './BookInfoGrid'
 import CommonConstants from '../../../common/constants/CommonConstants'
-import { delBookListAll, delBookListByBookId } from '../../../storage/bookListData'
+import { delBookListAll, delBookListByBookId, getBookData } from '../../../storage/bookListData'
+
 
 @Component
 export default struct novelPage{
@@ -13,8 +14,14 @@ export default struct novelPage{
   @State lastIndex:string = '9999'
   @Prop bookType:string
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
-  @StorageProp(CommonConstants.KEY_NOVEL_BOOK_DATA)
-  bookList:BookList[] = []
+
+  @State bookList:BookList[] = []
+
+  aboutToAppear(): void {
+    this.bookList = getBookData(0) as BookList[] //初始化数据
+    console.log('test----------')
+    console.log(JSON.stringify(this.bookList))
+  }
 
   //监听isClear变化
   onIsClearChange() {

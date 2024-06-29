@@ -3,7 +3,7 @@ import BookInfo from './BookInfo'
 import { promptAction } from '@kit.ArkUI'
 import BookInfoGrid from './BookInfoGrid'
 import CommonConstants from '../../../common/constants/CommonConstants'
-import { delBookListAll, delBookListByBookId } from '../../../storage/bookListData'
+import { delBookListAll, delBookListByBookId, getBookData } from '../../../storage/bookListData'
 
 /**
  * 漫画
@@ -15,8 +15,13 @@ export default struct cartoonPage{
   @Prop currentIndex:number
   @State lastIndex:string = '9999'
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
-  @StorageLink(CommonConstants.KEY_CARTOON_BOOK_DATA)
-  cartoonList:BookList[] = []
+
+  @State cartoonList:BookList[] = []
+
+  aboutToAppear(): void {
+    this.cartoonList = getBookData(1) as BookList[] //初始化数据
+  }
+
   onIsClearChange() {
     if (this.currentIndex === 1 && this.isClear) {
       delBookListAll(1)
