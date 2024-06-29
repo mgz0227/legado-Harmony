@@ -8,7 +8,8 @@ import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
 
 import { MusicPlayer } from 'ets/componets/MusicPlayer';
 import purificationView from './purificationView';
-import { chaptersItem } from 'ets/storage/ReaderChaptersItem';
+import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
+import { BookList } from 'ets/componets/dataList/bookList'
 
 @Entry
 @Component
@@ -49,9 +50,9 @@ struct ReaderPage {
   @State txtFile: chaptersItem[] = [];
 
   async onPageShow() {
-    let temp = router.getParams()
-    // console.log('router' + JSON.stringify(temp))
-    this.txtFile = await FileHandler.readFile() //txt小说
+    let temp = router.getParams() as BookList
+    console.log('router ReaderPage:' + temp.fileLink)
+    this.txtFile = await FileHandler.readFile(temp.fileLink) //txt小说
     this.TotalChapters = this.txtFile.length
   }
 
