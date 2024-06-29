@@ -99,13 +99,7 @@ export default struct BookInfo{
         .onClick(()=>{
           router.pushUrl({
             url: 'pages/view/BookDetailPage',
-            params: {
-              bookId: '1',
-              bookName: '大奉打更人',
-              bookAuthor: '卖报小郎君',
-              bookImage: $r('app.media.cover_list'),
-              bookDescribe: '《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... '
-            }
+            params: this.bookData
           })
         })
       }
