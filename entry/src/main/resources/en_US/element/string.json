@@ -79,6 +79,14 @@
     {
       "name": "retry",
       "value": "retry"
+    },
+    {
+      "name": "i_know",
+      "value": "I know"
+    },
+    {
+      "name": "export_help",
+      "value": "export help"
     }
   ]
 }

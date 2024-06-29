@@ -79,6 +79,14 @@
     {
       "name": "retry",
       "value": "重试"
+    },
+    {
+      "name": "i_know",
+      "value": "知道了"
+    },
+    {
+      "name": "export_help",
+      "value": "导入帮助"
     }
   ]
 }

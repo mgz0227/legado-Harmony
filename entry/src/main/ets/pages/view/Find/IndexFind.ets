@@ -232,7 +232,7 @@ export default struct IndexFind {
       justifyContent:FlexAlign.SpaceBetween
     }){
       Column(){
-        Text('导入帮助')
+        Text($r('app.string.export_help'))
           .font({
             size:FontConstants.FONT_SIZE_16,
             weight:FontConstants.FONT_WEIGHT_500,
@@ -250,7 +250,7 @@ export default struct IndexFind {
           top:PaddingConstants.PADDING_12,
           bottom:PaddingConstants.PADDING_12})
       }
-      Button('知道了')
+      Button($r('app.string.i_know'))
         .width('100%')
         .backgroundColor($r('app.color.theme_color'))
         .padding({
