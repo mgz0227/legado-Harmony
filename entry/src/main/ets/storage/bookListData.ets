@@ -118,18 +118,27 @@ export const updateDateListById = (index:number, isJoin:boolean, bookId:string)=
   bookDataPreferences.shared.set(KEY,shortDateList(bookListData))
 }
 
-function shortDateList(showBookList:BookList[]){
-  showBookList.sort((a, b) => {
-    if (a.isTop && !b.isTop) {
-      return -1
-    } else if (!a.isTop && b.isTop) {
-      return 1
-    } else {
-      // return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
-      return 0
+export function shortDateList(showBookList:BookList[]) {
+  //防止topUpdateTime出现string类型
+  showBookList.forEach(book => {
+    if (typeof book.topUpdateTime === 'string') {
+      book.topUpdateTime = new Date(book.topUpdateTime);
     }
-  })
-  return showBookList
+  });
+  let aTime = 0, bTime = 0;
+  showBookList.sort((a:BookList, b:BookList) => {
+    if (a.isTop && !b.isTop) {
+      return -1;
+    } else if (!a.isTop && b.isTop) {
+      return 1;
+    } else {
+      aTime = a.topUpdateTime instanceof Date ? a.topUpdateTime.getTime() : 0;
+      bTime = b.topUpdateTime instanceof Date ? b.topUpdateTime.getTime() : 0;
+      return bTime - aTime;
+    }
+  });
+
+  return showBookList;
 }
 
 // function getBookListData(shelfTye:number){
@@ -147,9 +156,8 @@ function shelfBookType(shelfTye:number){
   } else if (shelfTye === 2) {
     KEY = CommonConstants.KEY_SOUND_BOOK_DATA
   }
-  //id自增
 }
-
+//id自增
 const getBookIdAutoIncrement = (bookList:BookList[])=>{
   let maxId = 0
   bookList.forEach(book => {
