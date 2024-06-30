@@ -369,8 +369,7 @@ export default struct IndexShelf {
             }
             .padding({ left: 10, right: 10 ,bottom:10})
           }
-
-          .margin({ bottom: 110 + (this.topRectHeight === 0 ? 10 : this.topRectHeight) })
+          // .margin({ bottom: 110 + (this.topRectHeight === 0 ? 10 : this.topRectHeight) })
           .align(Alignment.TopStart)
           .scrollBar(BarState.Off)
         }
