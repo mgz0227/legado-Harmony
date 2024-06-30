@@ -1,4 +1,3 @@
-import { data } from '@kit.TelephonyKit'
 
 export class BookList {
 
