@@ -50,8 +50,10 @@ struct ReaderPage {
                 .onClick(() => {
                   router.back()
                 })
-              Text(`第${this.txtFile[this.CurrentChapters]?.chapterTitleNumber}章 ${this.txtFile[this.CurrentChapters]?.title}`)
-              Blank(1)
+              Text(`${this.txtFile[this.CurrentChapters]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters]?.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=',''))
+                .layoutWeight(1)
+                .maxLines(1)
+                .textOverflow({overflow:TextOverflow.Ellipsis})
               Row({ space: 16 }) {
                 Image($r("app.media.refresh"))
                   .width(24)
@@ -347,11 +349,11 @@ struct ReaderPage {
         Scroll(this.scroller) {
           Column() {
             Row() {
-              Text(this.txtFile[this.CurrentChapters]?.title)
+              Text(`${this.txtFile[this.CurrentChapters]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters]?.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=',''))
                 .lineHeight(20)
                 .font({
-                  size: 12,
-                  weight: 400
+                  size: 15,
+                  weight: 700
                 })
                 .fontColor("rgba(0, 0, 0, 0.88)")
             }
