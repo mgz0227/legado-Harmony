@@ -5,6 +5,7 @@ import sourceView from './sourceView';
 import { FileHandler } from 'ets/common/utils/FileHandler';
 import { AddDownloadDialog } from 'ets/componets/Reader/AddDownloadDialog';
 import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
+import { LengthMetrics } from '@ohos.arkui.node';
 
 import { MusicPlayer } from 'ets/componets/MusicPlayer';
 import purificationView from './purificationView';
@@ -26,7 +27,7 @@ struct ReaderPage {
   @State TotalChapters: number = 0
   @State CurrentLuminance: number = 0 // 亮度
   @State CurrentFontSize: number = 20 // 字号
-  @State LineHeight: string = ""
+  @State LineHeight: string = "180%"
   @State ParagraphSpacing: number = 0
   controller: TextInputController = new TextInputController()
   // 网址导入Dialog
@@ -173,10 +174,12 @@ struct ReaderPage {
             Text(this.txtFile[this.CurrentChapters]?.content)
               .lineHeight(this.LineHeight)
               .font({
-                size: this.CurrentFontSize,
+                size: this.CurrentFontSize, // 用px感觉太小了，用vp算了
                 weight: 400
               })
+              .lineSpacing(LengthMetrics.vp(this.CurrentFontSize + this.ParagraphSpacing))
               .fontColor("rgba(0, 0, 0, 0.88)")
+              .width("100%")
           }
           .padding({
             left: 24,
@@ -336,8 +339,8 @@ struct ReaderPage {
                     Text('字号')
                     Slider({
                       value: this.CurrentFontSize,
-                      max: 100,
-                      min: 10,
+                      max: 30,
+                      min: 12,
                       step: 1,
                       style: SliderStyle.InSet
                     })
