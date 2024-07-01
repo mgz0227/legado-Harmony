@@ -8,8 +8,11 @@ let seekTime: number = 15000
 
 @Component
 export struct MusicPlayer {
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('WindowWidth') WindowWidth: number = 0
   @Prop WidthMinus: number = 0
+  @Link isShowListen: boolean
   @State hasInit: boolean = false;
   @State isMusicPlaying: boolean = false; // 音乐播放状态
   @State MusicPlayingTime: number = 0 // 音乐目前播放时间
@@ -56,128 +59,173 @@ export struct MusicPlayer {
   }
 
   build() {
-    Column({ space: 24 }) {
+    Column() {
       Row() {
-        Stack() {
-          Flex() {
-            Text(`${this.formatMilliseconds(this.MusicPlayingTime)}/${this.formatMilliseconds(this.MusicDuration)}`)
-              .font({
-                size: 10,
-                weight: 400
-              })
-          }
-          .margin({
-            // 需要在模拟器查看
-            left: (this.WindowWidth - this.WidthMinus) * this.MusicPlayingTime / this.MusicDuration
+        Image($r("app.media.direction_down")).width(24)
+          .onClick(() => {
+            this.isShowListen = false
           })
-          .borderRadius(33)
-          .width(70)
-          .zIndex(2)
-          .backgroundColor('#FFFFFF')
-          .padding({
-            top: 4,
-            bottom: 4,
-            left: 8,
-            right: 8
+        Blank(1)
+        Text("大奉打更人")
+          .lineHeight(24)
+          .fontColor("#FFFFFF")
+          .font({
+            size: 16,
+            weight: 500
           })
-
-          Line().width("100%").height(2).backgroundColor('#FFFFFF')
-        }
-        .alignContent(Alignment.Start)
-        .width("100%")
+        Blank(1)
+        Image($r("app.media.more")).width(24)
       }
-
-      Flex({
-        direction: FlexDirection.Row,
-        justifyContent: FlexAlign.SpaceBetween,
-        alignItems: ItemAlign.Center
-      }) {
-        Image($r("app.media.Backward"))
-          .width(24)
-          .onClick(() => {
-            avPlayer.seek(this.MusicPlayingTime - seekTime < 0 ? 0 : this.MusicPlayingTime - seekTime,
-              media.SeekMode.SEEK_PREV_SYNC)
-          })
-        Image($r("app.media.Previous"))
-          .width(24)
-          .onClick(() => {
-          })
-        Image($r(this.isMusicPlaying ? "app.media.stop" : "app.media.music_play"))
-          .fillColor(Color.White)
-          .width(80)
-          .onClick(async () => {
-            if (this.isMusicPlaying) {
-              avPlayer.pause()
-              avPlayer.off('timeUpdate')
-            } else {
-              avPlayer.play()
-              this.timeUpdateCallback()
-            }
-          })
-
-        Image($r("app.media.next"))
-          .width(24)
-          .onClick(() => {
-          })
-        Image($r("app.media.forward"))
-          .width(24)
-          .onClick(() => {
-            avPlayer.seek(this.MusicPlayingTime + seekTime, media.SeekMode.SEEK_NEXT_SYNC)
-          })
-      }
+      .height(48)
       .width("100%")
 
-      Flex({
-        direction: FlexDirection.Row,
-        justifyContent: FlexAlign.SpaceBetween,
-        alignItems: ItemAlign.Center
-      }) {
-        Column() {
-          Image($r("app.media.appointment_time"))
-            .width(24)
-            .onClick(() => {
-            })
-          Text("定时")
+
+      Blank(1)
+      Column() {
+        Row() {
+          Text("第1章 牢狱之灾")
         }
 
-        Column() {
-          Image($r("app.media.speed"))
+        Row() {
+          Text("卖报小郎君")
+          Button("搜作者")
+        }
+
+        Row() {
+          Text("许七安幽幽醒来，嗅到了空气中潮湿的腐臭")
+        }
+      }
+
+      Column({ space: 24 }) {
+        Row() {
+          Stack() {
+            Flex() {
+              Text(`${this.formatMilliseconds(this.MusicPlayingTime)}/${this.formatMilliseconds(this.MusicDuration)}`)
+                .font({
+                  size: 10,
+                  weight: 400
+                })
+            }
+            .margin({
+              // 需要在模拟器查看
+              left: (this.WindowWidth - this.WidthMinus) * this.MusicPlayingTime / this.MusicDuration
+            })
+            .borderRadius(33)
+            .width(70)
+            .zIndex(2)
+            .backgroundColor('#FFFFFF')
+            .padding({
+              top: 4,
+              bottom: 4,
+              left: 8,
+              right: 8
+            })
+
+            Line().width("100%").height(2).backgroundColor('#FFFFFF')
+          }
+          .alignContent(Alignment.Start)
+          .width("100%")
+        }
+
+        Flex({
+          direction: FlexDirection.Row,
+          justifyContent: FlexAlign.SpaceBetween,
+          alignItems: ItemAlign.Center
+        }) {
+          Image($r("app.media.Backward"))
             .width(24)
             .onClick(() => {
-
+              avPlayer.seek(this.MusicPlayingTime - seekTime < 0 ? 0 : this.MusicPlayingTime - seekTime,
+                media.SeekMode.SEEK_PREV_SYNC)
             })
-          Text("语速")
-        }.bindSheet($$this.isShowSpeed, this.SpeedDialog(), {
-          height: 326,
-          showClose: false,
-          dragBar: false,
-          blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
-        })
-
-        Column() {
-          Image($r("app.media.add_bookshelf"))
+          Image($r("app.media.Previous"))
+            .width(24)
+            .onClick(() => {
+            })
+          Image($r(this.isMusicPlaying ? "app.media.stop" : "app.media.music_play"))
             .fillColor(Color.White)
             .width(80)
-            .onClick(() => {
-
+            .onClick(async () => {
+              if (this.isMusicPlaying) {
+                avPlayer.pause()
+                avPlayer.off('timeUpdate')
+              } else {
+                avPlayer.play()
+                this.timeUpdateCallback()
+              }
             })
-          Text("加书架")
-        }
 
-        Column() {
-          Image($r("app.media.directory"))
+          Image($r("app.media.next"))
             .width(24)
             .onClick(() => {
             })
-          Text("目录")
+          Image($r("app.media.forward"))
+            .width(24)
+            .onClick(() => {
+              avPlayer.seek(this.MusicPlayingTime + seekTime, media.SeekMode.SEEK_NEXT_SYNC)
+            })
+        }
+        .width("100%")
+
+        Flex({
+          direction: FlexDirection.Row,
+          justifyContent: FlexAlign.SpaceBetween,
+          alignItems: ItemAlign.Center
+        }) {
+          Column() {
+            Image($r("app.media.appointment_time"))
+              .width(24)
+              .onClick(() => {
+              })
+            Text("定时")
+          }
+
+          Column() {
+            Image($r("app.media.speed"))
+              .width(24)
+              .onClick(() => {
+
+              })
+            Text("语速")
+          }.bindSheet($$this.isShowSpeed, this.SpeedDialog(), {
+            height: 326,
+            showClose: false,
+            dragBar: false,
+            blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
+          })
+
+          Column() {
+            Image($r("app.media.add_bookshelf"))
+              .fillColor(Color.White)
+              .width(80)
+              .onClick(() => {
+
+              })
+            Text("加书架")
+          }
+
+          Column() {
+            Image($r("app.media.directory"))
+              .width(24)
+              .onClick(() => {
+              })
+            Text("目录")
+          }
+        }
+        .width("100%")
+
+        Row() {
+
         }
       }
-      .width("100%")
-
-      Row() {
-
-      }
     }
+    .height("100%")
+    .padding({
+      top: this.topRectHeight,
+      bottom: this.bottomRectHeight,
+      left: 24,
+      right: 24
+    })
   }
 
   setCallback(avPlayer: media.AVPlayer) {
