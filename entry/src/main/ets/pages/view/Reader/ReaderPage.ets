@@ -3,10 +3,9 @@ import Dialog from 'ets/componets/common/Dialog';
 import { router } from '@kit.ArkUI';
 import sourceView from './sourceView';
 import { FileHandler } from 'ets/common/utils/FileHandler';
-import { AddDownloadDialog } from 'ets/componets/Reader/AddDownloadDialog';
 import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
 import { LengthMetrics } from '@ohos.arkui.node';
-
+import DownloadSettingDialog from './DownloadSettingDialog';
 import { MusicPlayer } from 'ets/componets/MusicPlayer';
 import purificationView from './purificationView';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
@@ -28,7 +27,7 @@ struct ReaderPage {
   @State CurrentLuminance: number = 0 // 亮度
   @State CurrentFontSize: number = 20 // 字号
   @State LineHeight: string = "180%"
-  @State ParagraphSpacing: number = 0
+  @State ParagraphSpacing: number = -2
   controller: TextInputController = new TextInputController()
   // 网址导入Dialog
   dialogController: CustomDialogController = new CustomDialogController({
@@ -43,12 +42,6 @@ struct ReaderPage {
     cornerRadius: 16,
     gridCount: 4,
     offset: { dx: 0, dy: -300 }
-  })
-  // 加入下载列表Dialog
-  DownloadDialogController: CustomDialogController = new CustomDialogController({
-    builder: AddDownloadDialog(),
-    cornerRadius: 8,
-    offset: { dx: 0, dy: -100 }
   })
   scroller: Scroller = new Scroller()
   @State isShowSource: boolean = false
@@ -103,8 +96,8 @@ struct ReaderPage {
                 .onClick(() => {
                   this.isShowDownload = true
                 })
-                .bindSheet($$this.isShowDownload, this.ExportSettingDialog(), {
-                  height: 326,
+                .bindSheet($$this.isShowDownload, this.DownloadDialog(), {
+                  height: 500,
                   showClose: false,
                   dragBar: false,
                   blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
@@ -482,201 +475,18 @@ struct ReaderPage {
 
   @Builder
   BookListen() {
-    Column() {
-      Row() {
-        Image($r("app.media.direction_down")).width(24)
-          .onClick(() => {
-            this.isShowListen = false
-          })
-        Blank(1)
-        Text("大奉打更人")
-          .lineHeight(24)
-          .fontColor("#FFFFFF")
-          .font({
-            size: 16,
-            weight: 500
-          })
-        Blank(1)
-        Image($r("app.media.more")).width(24)
-      }
-      .height(48)
+    MusicPlayer({ WidthMinus: 118, isShowListen: this.isShowListen })
       .width("100%")
-
-
-      Blank(1)
-      Column() {
-        Row() {
-          Text("第1章 牢狱之灾")
-        }
-
-        Row() {
-          Text("卖报小郎君")
-          Button("搜作者")
-        }
-
-        Row() {
-          Text("许七安幽幽醒来，嗅到了空气中潮湿的腐臭")
-        }
-      }
-
-      MusicPlayer({ WidthMinus: 118 })
-    }
-    .width("100%")
-    .height("100%")
-    .padding({
-      top: this.topRectHeight,
-      bottom: this.bottomRectHeight,
-      left: 24,
-      right: 24
-    })
+      .height("100%")
   }
 
   @Builder
-  ExportSettingDialog() {
+  DownloadDialog() {
     Column() {
-      Grid() {
-        GridItem() {
-          Row() {
-            Text("缓存后50章")
-            Blank(1)
-            Checkbox()
-          }
-          .width("100%")
-        }
-
-        GridItem() {
-          Row() {
-            Text("缓存后面全部章节")
-            Blank(1)
-            Checkbox()
-          }
-          .width("100%")
-        }
-
-        GridItem() {
-          Row() {
-            Text("缓存全部")
-            Blank(1)
-            Checkbox()
-          }
-          .width("100%")
-        }
-
-        GridItem() {
-          Row() {
-            Text("自定义缓存")
-            Blank(1)
-            Checkbox()
-          }
-          .width("100%")
-        }
-
-        GridItem() {
-          Row({ space: 16 }) {
-            TextInput({ text: this.StartText, controller: this.controller })
-              .type(InputType.Number)
-              .width(107)
-              .height(38)
-              .borderRadius(8)
-              .fontSize(20)
-              .fontWeight(400)
-              .lineHeight(22)
-              .textAlign(TextAlign.Center)
-              .backgroundColor("white")
-              .border({
-                width: 1,
-                color: "gray"
-              })
-              .onChange((value: string) => {
-                this.StartText = value
-              })
-
-            Text("至")
-
-            TextInput({ text: this.EndText, controller: this.controller })
-              .type(InputType.Number)
-              .width(107)
-              .height(38)
-              .borderRadius(8)
-              .fontSize(20)
-              .fontWeight(400)
-              .lineHeight(22)
-              .textAlign(TextAlign.Center)
-              .backgroundColor("white")
-              .border({
-                width: 1,
-                color: "gray"
-              })
-              .onChange((value: string) => {
-                this.EndText = value
-              })
-          }
-          .width("100%")
-        }
-      }
-      .padding({
-        top: 16
-      })
-      .height("80%")
-      .columnsTemplate("1fr")
-      .rowsTemplate("1fr 1fr 1fr 1fr 1fr")
-
-      Blank(1)
-      Grid() {
-        GridItem() {
-          Button() {
-            Text("取消")
-              .lineHeight(24)
-              .fontColor($r('app.string.ThemeColor'))
-              .font({
-                size: 16,
-                weight: 500
-              })
-          }
-          .width("80%")
-          .height(40)
-          .backgroundColor($r('app.string.BackgroundThemeColor'))
-        }
-
-        GridItem() {
-          Button() {
-            Text("确定")
-              .fontColor("white")
-              .lineHeight(24)
-              .font({
-                size: 16,
-                weight: 500
-              })
-          }
-          .width("80%")
-          .height(40)
-          .backgroundColor($r('app.string.ThemeColor'))
-          .onClick(() => {
-            this.isShowDownload = false
-            this.isShowSetting = false
-            this.DownloadDialogController.open()
-            setTimeout(() => {
-              this.DownloadDialogController.close()
-            }, 1000)
-          })
-        }
-      }
-      .height(64)
-      .columnsTemplate("1fr 1fr")
-      .rowsTemplate("1fr")
-      .width("100%")
-      .onClick(() => {
-        this.isShowDownload = false
-      })
-      .padding({
-        top: 12,
-        bottom: 12
+      DownloadSettingDialog({
+        isShowDownload: this.isShowDownload,
+        isShowSetting: this.isShowSetting,
       })
     }
-    .height("100%")
-    .padding({
-      left: 20,
-      right: 20
-    })
   }
 }
