@@ -20,56 +20,22 @@ struct ReaderPage {
   @State isShowDownload: boolean = false
   @State isShowListen: boolean = false
   @State isShowContentSetting: boolean = false
-  @State StartText: string = "1" // 下载-缓存开始章节
-  @State EndText: string = "2" // 下载-缓存结束章节
   @State CurrentChapters: number = 0
   @State TotalChapters: number = 0
   @State CurrentLuminance: number = 0 // 亮度
   @State CurrentFontSize: number = 20 // 字号
   @State LineHeight: string = "180%"
   @State ParagraphSpacing: number = -2
-  controller: TextInputController = new TextInputController()
-  // 网址导入Dialog
-  dialogController: CustomDialogController = new CustomDialogController({
-    builder: Dialog({
-      title: '加入书架',
-      CancelString: "暂不加入",
-      ConfirmString: "加入书架",
-      child: () => {
-        this.DialogString()
-      },
-    }),
-    cornerRadius: 16,
-    gridCount: 4,
-    offset: { dx: 0, dy: -300 }
-  })
-  scroller: Scroller = new Scroller()
   @State isShowSource: boolean = false
   @State isShowPurification: boolean = false
   @State txtFile: chaptersItem[] = [];
+  scroller: Scroller = new Scroller()
 
   async onPageShow() {
     let temp = router.getParams() as BookList
     console.log('router ReaderPage:' + temp.fileLink)
     this.txtFile = await FileHandler.readFile(temp.fileLink) //txt小说
     this.TotalChapters = this.txtFile.length
-  }
-
-  @Builder
-  DialogString() {
-    Row() {
-      Text("喜欢就加入书架吧")
-        .lineHeight(22)
-        .font({
-          size: 14,
-          weight: 400
-        })
-        .fontColor($r("app.string.color_black_45"))
-    }
-    .margin({
-      top: 12,
-      bottom: 16
-    })
   }
 
   build() {
@@ -467,6 +433,38 @@ struct ReaderPage {
       })
     }
   }
+
+  @Builder
+  DialogString() {
+    Row() {
+      Text("喜欢就加入书架吧")
+        .lineHeight(22)
+        .font({
+          size: 14,
+          weight: 400
+        })
+        .fontColor($r("app.string.color_black_45"))
+    }
+    .margin({
+      top: 12,
+      bottom: 16
+    })
+  }
+
+  // 网址导入Dialog
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: Dialog({
+      title: '加入书架',
+      CancelString: "暂不加入",
+      ConfirmString: "加入书架",
+      child: () => {
+        this.DialogString()
+      },
+    }),
+    cornerRadius: 16,
+    gridCount: 4,
+    offset: { dx: 0, dy: -300 }
+  })
 
   onBackPress() {
     this.dialogController.open();
