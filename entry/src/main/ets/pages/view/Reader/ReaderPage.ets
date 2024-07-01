@@ -9,7 +9,7 @@ import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
 import { MusicPlayer } from 'ets/componets/MusicPlayer';
 import purificationView from './purificationView';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
-import { BookList } from 'ets/componets/dataList/bookList'
+import { BookList } from 'ets/componets/dataList/bookList';
 
 @Entry
 @Component
@@ -19,10 +19,15 @@ struct ReaderPage {
   @State isShowSetting: boolean = true
   @State isShowDownload: boolean = false
   @State isShowListen: boolean = false
-  @State StartText: string = "1"
-  @State EndText: string = "2"
+  @State isShowContentSetting: boolean = false
+  @State StartText: string = "1" // 下载-缓存开始章节
+  @State EndText: string = "2" // 下载-缓存结束章节
   @State CurrentChapters: number = 0
   @State TotalChapters: number = 0
+  @State CurrentLuminance: number = 0 // 亮度
+  @State CurrentFontSize: number = 20 // 字号
+  @State LineHeight: string = ""
+  @State ParagraphSpacing: number = 0
   controller: TextInputController = new TextInputController()
   // 网址导入Dialog
   dialogController: CustomDialogController = new CustomDialogController({
@@ -166,9 +171,9 @@ struct ReaderPage {
             .width("100%")
 
             Text(this.txtFile[this.CurrentChapters]?.content)
-              .lineHeight(20)
+              .lineHeight(this.LineHeight)
               .font({
-                size: 12,
+                size: this.CurrentFontSize,
                 weight: 400
               })
               .fontColor("rgba(0, 0, 0, 0.88)")
@@ -205,49 +210,26 @@ struct ReaderPage {
           if (this.isShowSetting) {
             Column({ space: 20 }) {
               Divider()
-              Row() {
-                Button({ type: ButtonType.Normal }) {
-                  Row({
-                    space: 4
-                  }) {
-                    Image($r("app.media.change_source_icon")).width(16).height(16)
-                    Text("换源").fontColor($r('app.string.color_black_65'))
-                      .font({
-                        size: 14,
-                        weight: 400
-                      })
+              if (!this.isShowContentSetting) {
+                Row() {
+                  Button({ type: ButtonType.Normal }) {
+                    Row({
+                      space: 4
+                    }) {
+                      Image($r("app.media.change_source_icon")).width(16).height(16)
+                      Text("换源").fontColor($r('app.string.color_black_65'))
+                        .font({
+                          size: 14,
+                          weight: 400
+                        })
+                    }
                   }
-                }
-                .borderRadius(8)
-                .height(40)
-                .width("45%")
-                .backgroundColor("rgba(0, 0, 0, 0.06)")
-                .bindSheet($$this.isShowSource, this.sourceView(), {
-                  height: '95%',
-                  showClose: false,
-                  dragBar: false,
-                  maskColor: 'rgba(0,0,0,0.6)',
-                  onDisappear: () => {
-                    console.log('隐藏')
-                  }
-                })
-                .onClick(() => {
-                  this.isShowSource = true
-                })
-
-                Button({ type: ButtonType.Normal }) {
-                  Row({
-                    space: 4
-                  }) {
-                    Image($r("app.media.purify_icon")).width(16).height(16)
-                    Text("净化").fontColor($r('app.string.color_black_65'))
-                      .font({
-                        size: 14,
-                        weight: 400
-                      })
-                  }
-                  .bindSheet($$this.isShowPurification, this.purificationView(), {
-                    height: '40%',
+                  .borderRadius(8)
+                  .height(40)
+                  .width("45%")
+                  .backgroundColor("rgba(0, 0, 0, 0.06)")
+                  .bindSheet($$this.isShowSource, this.sourceView(), {
+                    height: '95%',
                     showClose: false,
                     dragBar: false,
                     maskColor: 'rgba(0,0,0,0.6)',
@@ -256,45 +238,148 @@ struct ReaderPage {
                     }
                   })
                   .onClick(() => {
-                    this.isShowPurification = true
+                    this.isShowSource = true
+                  })
+
+                  Button({ type: ButtonType.Normal }) {
+                    Row({
+                      space: 4
+                    }) {
+                      Image($r("app.media.purify_icon")).width(16).height(16)
+                      Text("净化").fontColor($r('app.string.color_black_65'))
+                        .font({
+                          size: 14,
+                          weight: 400
+                        })
+                    }
+                    .bindSheet($$this.isShowPurification, this.purificationView(), {
+                      height: '40%',
+                      showClose: false,
+                      dragBar: false,
+                      maskColor: 'rgba(0,0,0,0.6)',
+                      onDisappear: () => {
+                        console.log('隐藏')
+                      }
+                    })
+                    .onClick(() => {
+                      this.isShowPurification = true
+                    })
+                  }
+                  .borderRadius(8)
+                  .height(40)
+                  .width("45%")
+                  .backgroundColor("rgba(0, 0, 0, 0.06)")
+                }
+                .padding({
+                  top: 12,
+                  left: 24,
+                  right: 24
+                })
+                .justifyContent(FlexAlign.SpaceBetween)
+                .width("100%")
+
+                Row({ space: 16 }) {
+                  Text("上一章").onClick(() => {
+                    if (this.CurrentChapters > 0) {
+                      this.CurrentChapters--
+                    }
+                  })
+
+                  Slider({
+                    value: this.CurrentChapters,
+                    max: this.TotalChapters - 1,
+                    min: 0,
+                    step: 1,
+                    style: SliderStyle.InSet
+                  })
+                    .selectedColor('rgba(0, 0, 0, 0.04)')
+                    .blockSize({ width: 30, height: 30 })
+                    .layoutWeight(1)
+                    .onChange((value) => {
+                      this.CurrentChapters = value
+                    })
+
+                  Text("下一章").onClick(() => {
+                    if (this.CurrentChapters < this.TotalChapters - 1) {
+                      this.CurrentChapters++
+                    }
                   })
                 }
-                .borderRadius(8)
-                .height(40)
-                .width("45%")
-                .backgroundColor("rgba(0, 0, 0, 0.06)")
-              }
-              .padding({
-                top: 12,
-                left: 24,
-                right: 24
-              })
-              .justifyContent(FlexAlign.SpaceBetween)
-              .width("100%")
-
-              Row({ space: 16 }) {
-                Text("上一章").onClick(() => {
-                  if (this.CurrentChapters > 0) {
-                    this.CurrentChapters--
+                .padding({
+                  left: 24,
+                  right: 24
+                })
+                .width("100%")
+              } else {
+                Column({ space: 24 }) {
+                  Row({ space: 16 }) {
+                    Text('亮度')
+                    Slider({
+                      value: this.CurrentLuminance,
+                      max: 100,
+                      min: 0,
+                      step: 1,
+                      style: SliderStyle.InSet
+                    })
+                      .selectedColor('rgba(0, 0, 0, 0.04)')
+                      .blockSize({ width: 30, height: 30 })
+                      .layoutWeight(1)
+                      .onChange((value) => {
+                        this.CurrentLuminance = value
+                      })
+                    Row() {
+                      Text('跟随系统')
+                    }
                   }
+
+                  Row({ space: 16 }) {
+                    Text('字号')
+                    Slider({
+                      value: this.CurrentFontSize,
+                      max: 100,
+                      min: 10,
+                      step: 1,
+                      style: SliderStyle.InSet
+                    })
+                      .selectedColor('rgba(0, 0, 0, 0.04)')
+                      .blockSize({ width: 30, height: 30 })
+                      .layoutWeight(1)
+                      .onChange((value) => {
+                        this.CurrentFontSize = value
+                      })
+                    Row() {
+                      Button('字体')
+                    }
+                  }
+
+                  Row({ space: 16 }) {
+                    Text('排版')
+                    Button('紧凑')
+                      .onClick(() => {
+                        this.LineHeight = "160%"
+                        this.ParagraphSpacing = -4
+                      })
+                    Button('适中')
+                      .onClick(() => {
+                        this.LineHeight = "180%"
+                        this.ParagraphSpacing = -2
+                      })
+                    Button('宽松')
+                      .onClick(() => {
+                        this.LineHeight = "200%"
+                        this.ParagraphSpacing = 0
+                      })
+                    Row() {
+                      Button('更多')
+                    }
+                  }
+                }
+                .padding({
+                  left: 20,
+                  right: 20
                 })
 
-                Blank(1)
-                Progress({ value: this.CurrentChapters, total: this.TotalChapters - 1 }).layoutWeight(1)
-                Blank(1)
-
-                Text("下一章").onClick(() => {
-                  if (this.CurrentChapters < this.TotalChapters - 1) {
-                    this.CurrentChapters++
-                  }
-                })
               }
-              .padding({
-                left: 24,
-                right: 24
-              })
-              .width("100%")
-
               Grid() {
                 GridItem() {
                   Column() {
@@ -329,6 +414,9 @@ struct ReaderPage {
                     Image($r("app.media.my_center_set_icon")).width(24)
                     Text("设置")
                   }
+                  .onClick(() => {
+                    this.isShowContentSetting = !this.isShowContentSetting
+                  })
                 }
               }
               .padding({
