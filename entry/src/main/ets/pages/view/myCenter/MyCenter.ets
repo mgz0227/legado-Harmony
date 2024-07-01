@@ -122,7 +122,7 @@ export default struct MyCenter {
             Image(item.icon).size({width:20,height:20}).interpolation(ImageInterpolation.High)
             Text(item.title).fontSize(14).width("75%" ).layoutWeight(1)
             Image($r("app.media.right")).size({width:24,height:24})
-          }.width(300)
+          }.width("100%")
           .height(48)
           .justifyContent(FlexAlign.SpaceBetween)
           .padding({top:12,bottom:12,left:20,right:20})
