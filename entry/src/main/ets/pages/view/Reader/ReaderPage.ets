@@ -53,7 +53,7 @@ struct ReaderPage {
   })
 
   async onPageShow() {
-    //详情页加了个传参，所以修改了一下params的类型，不影响之前的bookData，但需要多‘.’一次。看看大佬们可以怎么优化一下，上个页面BookDetailPage
+    //详情页加了个目录序号参数，所以修改了一下params的类型，不影响之前的bookData，但需要多‘.’一次。看看大佬们可以怎么优化一下，上个页面BookDetailPage
     let temp = router.getParams() as ParamsObj
     console.log('router ReaderPage:' + temp.bookData.fileLink)
     this.txtFile = await FileHandler.readFile(temp.bookData.fileLink) //txt小说
