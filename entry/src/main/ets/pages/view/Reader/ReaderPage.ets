@@ -1,31 +1,28 @@
 import battery from 'ets/componets/common/battery';
 import Dialog from 'ets/componets/common/Dialog';
-import { router, SwipeRefresher } from '@kit.ArkUI';
+import { router } from '@kit.ArkUI';
 import sourceView from './sourceView';
 import { FileHandler } from 'ets/common/utils/FileHandler';
 import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
 import { LengthMetrics } from '@ohos.arkui.node';
-import DownloadSettingDialog from './DownloadSettingDialog';
-import { MusicPlayer } from 'ets/componets/MusicPlayer';
+import DownloadSettingDialog from '../../../componets/Reader/DownloadSettingDialog';
+import LayoutMoreDialog from '../../../componets/Reader/LayoutMoreDialog';
+import { MusicPlayer } from 'ets/componets/Reader/MusicPlayer';
 import purificationView from './purificationView';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
 import { BookList } from 'ets/componets/dataList/bookList';
-import CommonConstants from '../../../common/constants/CommonConstants';
-
-interface ParamsObj {
-  bookData: BookList,
-  clickBookChapter: number
-}
 
 @Entry
 @Component
 struct ReaderPage {
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('topRectHeight') topRectHeight: number = 0
+  @State ReaderPadding: number = 24 // 亮度
   @State isShowSetting: boolean = true
   @State isShowDownload: boolean = false
   @State isShowListen: boolean = false
   @State isShowContentSetting: boolean = false
+  @State isShowMoreLayout: boolean = false
   @State CurrentChapters: number = 0
   @State TotalChapters: number = 0
   @State CurrentLuminance: number = 0 // 亮度
@@ -35,24 +32,26 @@ struct ReaderPage {
   @State isShowSource: boolean = false
   @State isShowPurification: boolean = false
   @State txtFile: chaptersItem[] = [];
-  @State loadingStr: string = '加载中...'
-  @State isLoading: boolean = true
-  scroller: Scroller = new Scroller()
+  // 网址导入Dialog
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: Dialog({
+      title: '加入书架',
+      CancelString: "暂不加入",
+      ConfirmString: "加入书架",
+      child: () => {
+        this.DialogString()
+      },
+    }),
+    cornerRadius: 16,
+    gridCount: 4,
+    offset: { dx: 0, dy: -300 }
+  })
 
   async onPageShow() {
-    let temp = router.getParams() as ParamsObj
-    console.log('router ReaderPage:' + temp.bookData.fileLink)
-    this.txtFile = await FileHandler.readFile(temp.bookData.fileLink) //txt小说
+    let temp = router.getParams() as BookList
+    console.log('router ReaderPage:' + temp.fileLink)
+    this.txtFile = await FileHandler.readFile(temp.fileLink) //txt小说
     this.TotalChapters = this.txtFile.length
-    //不要把⬇️这个的位置挪到上面去，不然在100章以后会跳转到错误章节。
-      this.CurrentChapters = temp.clickBookChapter
-    //写了个假加载，10秒后执行
-    setTimeout(() => {
-      animateTo({ duration: 500, curve: CommonConstants.UniCurve }, () => {
-        this.loadingStr = '加载失败，超时'
-        this.isLoading = false
-      })
-    }, 1000 * 10)
   }
 
   build() {
@@ -67,15 +66,10 @@ struct ReaderPage {
                 .onClick(() => {
                   router.back()
                 })
-              if (this.txtFile.length === 0 || undefined){
-                this.LoadingBook()
-              }else {
-                //toFixed(0)解决slider有时脑残传的不是整数，导致一直显示undefined的问题，搞不懂传个小数干啥，明明都设置了step：1了，还能再给你来点小数。
-                Text(`${this.txtFile[this.CurrentChapters.toFixed(0)]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters.toFixed(0)]?.title}`.replace(new RegExp('\\s{1,}','g'), ' ').replaceAll('=', ''))
-                  .layoutWeight(1)
-                  .maxLines(1)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
-              }
+              Text(`${this.txtFile[this.CurrentChapters]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters]?.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=',''))
+                .layoutWeight(1)
+                .maxLines(1)
+                .textOverflow({overflow:TextOverflow.Ellipsis})
               Row({ space: 16 }) {
                 Image($r("app.media.refresh"))
                   .width(24)
@@ -236,6 +230,7 @@ struct ReaderPage {
               })
               .width("100%")
             } else {
+              // 下方-设置
               Column({ space: 24 }) {
                 Row({ space: 16 }) {
                   Text('亮度')
@@ -261,7 +256,7 @@ struct ReaderPage {
                   Text('字号')
                   Slider({
                     value: this.CurrentFontSize,
-                    max: 30,
+                    max: 48,
                     min: 12,
                     step: 1,
                     style: SliderStyle.InSet
@@ -296,7 +291,33 @@ struct ReaderPage {
                     })
                   Row() {
                     Button('更多')
+                      .bindSheet($$this.isShowMoreLayout, this.LayoutMoreDialog(), {
+                        height: 500,
+                        showClose: false,
+                        dragBar: false,
+                        blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
+                        onDisappear: () => {
+                          // this.clickBookType = ''
+                        }
+                      })
+                      .onClick(() => {
+                        this.isShowMoreLayout = true
+                      })
                   }
+                }
+
+                Row({ space: 16 }) {
+                  Text('背景')
+                  Blank(1)
+                  Row() {
+                    Button('更多')
+                  }
+                }
+
+                Row({ space: 16 }) {
+                  Button('自动阅读')
+                  Button('仿真翻页')
+                  Button('更多设置')
                 }
               }
               .padding({
@@ -336,7 +357,9 @@ struct ReaderPage {
 
               GridItem() {
                 Column() {
-                  Image($r("app.media.my_center_set_icon")).width(24)
+                  Image($r(this.isShowContentSetting ? "app.media.my_center_set_icon_fill" :
+                    "app.media.my_center_set_icon"))
+                    .width(24)
                   Text("设置")
                 }
                 .onClick(() => {
@@ -368,47 +391,41 @@ struct ReaderPage {
         .width("100%")
         .height(40)
 
-        Scroll(this.scroller) {
-          if (this.txtFile.length === 0 || undefined){
-            this.LoadingBook()
-          }else {
-            Column() {
-              Row() {
-                Text(`${this.txtFile[this.CurrentChapters.toFixed(0)]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters.toFixed(0)]?.title}`.replace(new RegExp('\\s{1,}',
-                  'g'), ' ').replaceAll('=', ''))
-                  .lineHeight(20)
-                  .font({
-                    size: 15,
-                    weight: 700
-                  })
-                  .fontColor("rgba(0, 0, 0, 0.88)")
-              }
-              .padding({
-                top: 16,
-                bottom: 16,
-                left: 24,
-                right: 24
-              })
-              .width("100%")
-
-              Text(this.txtFile[this.CurrentChapters.toFixed(0)]?.content)
-                .lineHeight(this.LineHeight)
+        Scroll() {
+          Column() {
+            Row() {
+              Text(`${this.txtFile[this.CurrentChapters]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters]?.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=',''))
+                .lineHeight(20)
                 .font({
-                  size: this.CurrentFontSize, // 用px感觉太小了，用vp算了
-                  weight: 400
+                  size: 15,
+                  weight: 700
                 })
-                .lineSpacing(LengthMetrics.vp(this.CurrentFontSize + this.ParagraphSpacing))
                 .fontColor("rgba(0, 0, 0, 0.88)")
-                .width("100%")
             }
             .padding({
+              top: 16,
+              bottom: 16,
               left: 24,
               right: 24
             })
+            .width("100%")
+
+            Text(this.txtFile[this.CurrentChapters]?.content)
+              .lineHeight(this.LineHeight)
+              .font({
+                size: this.CurrentFontSize, // 用px感觉太小了，用vp算了
+                weight: 400
+              })
+              .lineSpacing(LengthMetrics.vp(this.CurrentFontSize + this.ParagraphSpacing))
+              .fontColor("rgba(0, 0, 0, 0.88)")
+              .width("100%")
           }
+          .padding({
+            left: this.ReaderPadding,
+            right: this.ReaderPadding
+          })
         }
         .layoutWeight(1)
-
 
         Blank(1)
         Row({ space: 4 }) {
@@ -464,14 +481,6 @@ struct ReaderPage {
   }
 
   @Builder
-  LoadingBook(){
-    SwipeRefresher({
-      content: this.loadingStr,
-      isLoading: this.isLoading
-    }).layoutWeight(1)
-  }
-
-  @Builder
   DialogString() {
     Row() {
       Text("喜欢就加入书架吧")
@@ -487,21 +496,6 @@ struct ReaderPage {
       bottom: 16
     })
   }
-
-  // 网址导入Dialog
-  dialogController: CustomDialogController = new CustomDialogController({
-    builder: Dialog({
-      title: '加入书架',
-      CancelString: "暂不加入",
-      ConfirmString: "加入书架",
-      child: () => {
-        this.DialogString()
-      },
-    }),
-    cornerRadius: 16,
-    gridCount: 4,
-    offset: { dx: 0, dy: -300 }
-  })
 
   onBackPress() {
     this.dialogController.open();
@@ -523,5 +517,12 @@ struct ReaderPage {
         isShowSetting: this.isShowSetting,
       })
     }
+  }
+
+  @Builder
+  LayoutMoreDialog() {
+    LayoutMoreDialog({ ReaderPadding: this.ReaderPadding })
+      .height(500)
+      .width("100%")
   }
 }
