@@ -314,7 +314,7 @@ struct BookDetailPage {
           .height(CommonConstants.NOVEL_IMG_HEIGHT)
           .borderRadius(5)
         Column({ space: 8 }) {
-          Text(this.bookData.title)
+          Text(this.bookData.title.replace(new RegExp('\\..*', 'g'), ''))
             .fontColor(Color.White)
             .fontSize(20)
           Blank()
