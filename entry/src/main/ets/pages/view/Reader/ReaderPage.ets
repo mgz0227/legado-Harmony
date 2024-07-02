@@ -1,6 +1,6 @@
 import battery from 'ets/componets/common/battery';
 import Dialog from 'ets/componets/common/Dialog';
-import { router } from '@kit.ArkUI';
+import { router, SwipeRefresher } from '@kit.ArkUI';
 import sourceView from './sourceView';
 import { FileHandler } from 'ets/common/utils/FileHandler';
 import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
@@ -10,6 +10,12 @@ import { MusicPlayer } from 'ets/componets/MusicPlayer';
 import purificationView from './purificationView';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
 import { BookList } from 'ets/componets/dataList/bookList';
+import CommonConstants from '../../../common/constants/CommonConstants';
+
+interface ParamsObj {
+  bookData: BookList,
+  clickBookChapter: number
+}
 
 @Entry
 @Component
@@ -29,13 +35,24 @@ struct ReaderPage {
   @State isShowSource: boolean = false
   @State isShowPurification: boolean = false
   @State txtFile: chaptersItem[] = [];
+  @State loadingStr: string = '加载中...'
+  @State isLoading: boolean = true
   scroller: Scroller = new Scroller()
 
   async onPageShow() {
-    let temp = router.getParams() as BookList
-    console.log('router ReaderPage:' + temp.fileLink)
-    this.txtFile = await FileHandler.readFile(temp.fileLink) //txt小说
+    let temp = router.getParams() as ParamsObj
+    console.log('router ReaderPage:' + temp.bookData.fileLink)
+    this.txtFile = await FileHandler.readFile(temp.bookData.fileLink) //txt小说
     this.TotalChapters = this.txtFile.length
+    //不要把⬇️这个的位置挪到上面去，不然在100章以后会跳转到错误章节。
+      this.CurrentChapters = temp.clickBookChapter
+    //写了个假加载，10秒后执行
+    setTimeout(() => {
+      animateTo({ duration: 500, curve: CommonConstants.UniCurve }, () => {
+        this.loadingStr = '加载失败，超时'
+        this.isLoading = false
+      })
+    }, 1000 * 10)
   }
 
   build() {
@@ -50,11 +67,15 @@ struct ReaderPage {
                 .onClick(() => {
                   router.back()
                 })
-              Text(`${this.txtFile[this.CurrentChapters.toFixed(0)]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters.toFixed(0)]?.title}`.replace(new RegExp('\\s{1,}',
-                'g'), ' ').replaceAll('=', ''))
-                .layoutWeight(1)
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
+              if (this.txtFile.length === 0 || undefined){
+                this.LoadingBook()
+              }else {
+                //toFixed(0)解决slider有时脑残传的不是整数，导致一直显示undefined的问题，搞不懂传个小数干啥，明明都设置了step：1了，还能再给你来点小数。
+                Text(`${this.txtFile[this.CurrentChapters.toFixed(0)]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters.toFixed(0)]?.title}`.replace(new RegExp('\\s{1,}','g'), ' ').replaceAll('=', ''))
+                  .layoutWeight(1)
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+              }
               Row({ space: 16 }) {
                 Image($r("app.media.refresh"))
                   .width(24)
@@ -348,39 +369,43 @@ struct ReaderPage {
         .height(40)
 
         Scroll(this.scroller) {
-          Column() {
-            Row() {
-              Text(`${this.txtFile[this.CurrentChapters.toFixed(0)]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters.toFixed(0)]?.title}`.replace(new RegExp('\\s{1,}',
-                'g'), ' ').replaceAll('=', ''))
-                .lineHeight(20)
+          if (this.txtFile.length === 0 || undefined){
+            this.LoadingBook()
+          }else {
+            Column() {
+              Row() {
+                Text(`${this.txtFile[this.CurrentChapters.toFixed(0)]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters.toFixed(0)]?.title}`.replace(new RegExp('\\s{1,}',
+                  'g'), ' ').replaceAll('=', ''))
+                  .lineHeight(20)
+                  .font({
+                    size: 15,
+                    weight: 700
+                  })
+                  .fontColor("rgba(0, 0, 0, 0.88)")
+              }
+              .padding({
+                top: 16,
+                bottom: 16,
+                left: 24,
+                right: 24
+              })
+              .width("100%")
+
+              Text(this.txtFile[this.CurrentChapters.toFixed(0)]?.content)
+                .lineHeight(this.LineHeight)
                 .font({
-                  size: 15,
-                  weight: 700
+                  size: this.CurrentFontSize, // 用px感觉太小了，用vp算了
+                  weight: 400
                 })
+                .lineSpacing(LengthMetrics.vp(this.CurrentFontSize + this.ParagraphSpacing))
                 .fontColor("rgba(0, 0, 0, 0.88)")
+                .width("100%")
             }
             .padding({
-              top: 16,
-              bottom: 16,
               left: 24,
               right: 24
             })
-            .width("100%")
-
-            Text(this.txtFile[this.CurrentChapters.toFixed(0)]?.content)
-              .lineHeight(this.LineHeight)
-              .font({
-                size: this.CurrentFontSize, // 用px感觉太小了，用vp算了
-                weight: 400
-              })
-              .lineSpacing(LengthMetrics.vp(this.CurrentFontSize + this.ParagraphSpacing))
-              .fontColor("rgba(0, 0, 0, 0.88)")
-              .width("100%")
           }
-          .padding({
-            left: 24,
-            right: 24
-          })
         }
         .layoutWeight(1)
 
@@ -436,6 +461,14 @@ struct ReaderPage {
         isShowPurification: this.isShowPurification
       })
     }
+  }
+
+  @Builder
+  LoadingBook(){
+    SwipeRefresher({
+      content: this.loadingStr,
+      isLoading: this.isLoading
+    }).layoutWeight(1)
   }
 
   @Builder
