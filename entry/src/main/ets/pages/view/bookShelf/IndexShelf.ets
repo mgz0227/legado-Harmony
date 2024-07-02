@@ -14,6 +14,7 @@ import ShelfBookList from './Shelf/ShelfBookList'
 import picker from '@ohos.file.picker'
 import { FileHandler } from 'ets/common/utils/FileHandler'
 import RefreshComponent from '../../../componets/common/RefreshComponent'
+import CommonConstants from '../../../common/constants/CommonConstants'
 
 @Component
 export default struct IndexShelf {
