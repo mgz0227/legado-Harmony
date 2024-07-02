@@ -43,8 +43,8 @@ jobs:
 
       - name: Configure git
         run: |
-          git config --global user.name "mgz0227"
-          git config --global user.email "miaogongzi0227@gmail.com"
+          git config --local user.name "mgz0227"
+          git config --local user.email "miaogongzi0227@gmail.com"
       - name: Merge PR
         if: env.MERGE == 'true'
         env:
