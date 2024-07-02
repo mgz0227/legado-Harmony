@@ -4,9 +4,9 @@ import { router } from '@kit.ArkUI';
 import sourceView from './sourceView';
 import { FileHandler } from 'ets/common/utils/FileHandler';
 import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
-import { LengthMetrics } from '@ohos.arkui.node';
 import DownloadSettingDialog from '../../../componets/Reader/DownloadSettingDialog';
 import LayoutMoreDialog from '../../../componets/Reader/LayoutMoreDialog';
+import { TxtContentHandler } from '../../../componets/Reader/TxtContentHandler';
 import { MusicPlayer } from 'ets/componets/Reader/MusicPlayer';
 import purificationView from './purificationView';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
@@ -22,7 +22,7 @@ interface ParamsObj {
 struct ReaderPage {
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('topRectHeight') topRectHeight: number = 0
-  @State ReaderPadding: number = 24 // 亮度
+  @State ReaderPadding: number = 24 // 边距
   @State isShowSetting: boolean = true
   @State isShowDownload: boolean = false
   @State isShowListen: boolean = false
@@ -76,7 +76,7 @@ struct ReaderPage {
               Text(`${this.txtFile[this.CurrentChapters.toFixed(0)]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters.toFixed(0)]?.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=',''))
                 .layoutWeight(1)
                 .maxLines(1)
-                .textOverflow({overflow:TextOverflow.Ellipsis})
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
               Row({ space: 16 }) {
                 Image($r("app.media.refresh"))
                   .width(24)
@@ -417,15 +417,14 @@ struct ReaderPage {
             })
             .width("100%")
 
-            Text(this.txtFile[this.CurrentChapters.toFixed(0)]?.content)
-              .lineHeight(this.LineHeight)
-              .font({
-                size: this.CurrentFontSize, // 用px感觉太小了，用vp算了
-                weight: 400
-              })
-              .lineSpacing(LengthMetrics.vp(this.CurrentFontSize + this.ParagraphSpacing))
-              .fontColor("rgba(0, 0, 0, 0.88)")
-              .width("100%")
+            // txt小说内容显示处理
+            TxtContentHandler({
+              txtFile: this.txtFile,
+              CurrentChapters: this.CurrentChapters,
+              LineHeight: this.LineHeight,
+              CurrentFontSize: this.CurrentFontSize,
+              ParagraphSpacing: this.ParagraphSpacing
+            })
           }
           .padding({
             left: this.ReaderPadding,
