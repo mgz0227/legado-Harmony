@@ -83,6 +83,7 @@ struct BookDetailPage {
   @State txtFile: chaptersItem[] = [];
 
   async onPageShow() {
+    this.isShow = true
     console.log('router BookDetailPage:' + JSON.stringify(router.getParams()))
     if (router.getParams() as BookList) {
       this.bookData = router.getParams() as BookList
@@ -141,8 +142,11 @@ struct BookDetailPage {
                       // 跳转到阅读器
                       router.pushUrl({
                         url: 'pages/view/Reader/ReaderPage',
-                        //跳转到对应的章节，额，不会传这个参。。。只知道传index过去，对面TotalChapters接收
-                        params: this.bookData
+                        //跳转到对应的章节，传index过去，对面TotalChapters接收
+                        params: {
+                          bookData:this.bookData,
+                          clickBookChapter:index
+                        }
                       })
                     })
                   }
@@ -211,7 +215,11 @@ struct BookDetailPage {
             // 跳转到阅读器
             router.pushUrl({
               url: 'pages/view/Reader/ReaderPage',
-              params: this.bookData
+              params: {
+                bookData:this.bookData,
+                //后续持久化后再获取已经读到的章节序号，目前先传默认的0
+                clickBookChapter:0
+              }
             })
           })
       }
@@ -314,7 +322,7 @@ struct BookDetailPage {
           .height(CommonConstants.NOVEL_IMG_HEIGHT)
           .borderRadius(5)
         Column({ space: 8 }) {
-          Text(this.bookData.title)
+          Text(this.bookData.title.replace(new RegExp('\\..*', 'g'), ''))
             .fontColor(Color.White)
             .fontSize(20)
           Blank()

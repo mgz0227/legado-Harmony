@@ -12,6 +12,11 @@ import purificationView from './purificationView';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
 import { BookList } from 'ets/componets/dataList/bookList';
 
+interface ParamsObj {
+  bookData: BookList,
+  clickBookChapter: number
+}
+
 @Entry
 @Component
 struct ReaderPage {
@@ -48,10 +53,12 @@ struct ReaderPage {
   })
 
   async onPageShow() {
-    let temp = router.getParams() as BookList
-    console.log('router ReaderPage:' + temp.fileLink)
-    this.txtFile = await FileHandler.readFile(temp.fileLink) //txt小说
+    //详情页加了个目录序号参数，所以修改了一下params的类型，不影响之前的bookData，但需要多‘.’一次。看看大佬们可以怎么优化一下，上个页面BookDetailPage
+    let temp = router.getParams() as ParamsObj
+    console.log('router ReaderPage:' + temp.bookData.fileLink)
+    this.txtFile = await FileHandler.readFile(temp.bookData.fileLink) //txt小说
     this.TotalChapters = this.txtFile.length
+    this.CurrentChapters = temp.clickBookChapter
   }
 
   build() {
@@ -66,7 +73,7 @@ struct ReaderPage {
                 .onClick(() => {
                   router.back()
                 })
-              Text(`${this.txtFile[this.CurrentChapters]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters]?.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=',''))
+              Text(`${this.txtFile[this.CurrentChapters.toFixed(0)]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters.toFixed(0)]?.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=',''))
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({overflow:TextOverflow.Ellipsis})
@@ -394,7 +401,7 @@ struct ReaderPage {
         Scroll() {
           Column() {
             Row() {
-              Text(`${this.txtFile[this.CurrentChapters]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters]?.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=',''))
+              Text(`${this.txtFile[this.CurrentChapters.toFixed(0)]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters.toFixed(0)]?.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=',''))
                 .lineHeight(20)
                 .font({
                   size: 15,
@@ -410,7 +417,7 @@ struct ReaderPage {
             })
             .width("100%")
 
-            Text(this.txtFile[this.CurrentChapters]?.content)
+            Text(this.txtFile[this.CurrentChapters.toFixed(0)]?.content)
               .lineHeight(this.LineHeight)
               .font({
                 size: this.CurrentFontSize, // 用px感觉太小了，用vp算了
