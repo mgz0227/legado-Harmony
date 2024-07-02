@@ -59,7 +59,7 @@ export default struct MyCenter {
           Text("夏目友人").fontSize(16).fontWeight(600).lineHeight(24)
           Text("今日阅读"+this.reading_time+"分钟").fontSize(12).fontColor(TextConstants.TEXT_FONT_COLOR)
             .lineHeight(20)
-        }.alignItems(HorizontalAlign.Start).width("45%").height("100%")
+        }.alignItems(HorizontalAlign.Start).width("45%").height("100%").layoutWeight(1)
 
         .justifyContent(FlexAlign.SpaceBetween)
         //云盘登录
@@ -120,12 +120,12 @@ export default struct MyCenter {
         ForEach(this.end_list,(item:dataItem)=>{
           Row({space:10}){
             Image(item.icon).size({width:20,height:20}).interpolation(ImageInterpolation.High)
-            Text(item.title).fontSize(14).width("75%" )
+            Text(item.title).fontSize(14).width("75%" ).layoutWeight(1)
             Image($r("app.media.right")).size({width:24,height:24})
-          }.width(300)
+          }.width("100%")
           .height(48)
           .justifyContent(FlexAlign.SpaceBetween)
-          .padding({top:12,bottom:12})
+          .padding({top:12,bottom:12,left:20,right:20})
           .onClick(()=>this.endOnclick(item.value))
         })
       }.padding({top:5,bottom:5})

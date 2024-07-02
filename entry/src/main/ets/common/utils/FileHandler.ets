@@ -32,13 +32,14 @@ export class FileHandler {
     let chapterNumber = 0
     const chapters: chaptersItem[] = [];
     console.info('readFileUrl:' + readFileUrl)
-    const regex = /===第(.*?)章 (.*?)===/g;
+    //const regex = /===第(.*?)章 (.*?)===/g;
+    const regex = /^[=|<]{0,4}((?:序章|楔子|番外|第\s{0,4})([\d〇零一二两三四五六七八九十百千万壹贰叁肆伍陆柒捌玖拾佰仟]+?\s{0,4})(?:章|回(?!合)|话(?!说)|节(?!课)|卷|篇(?!张)))(.{0,30})/g;
     await fs.readLines(readFileUrl, options).then((readerIterator: fs.ReaderIterator) => {
       for (let it = readerIterator.next();!it.done; it = readerIterator.next()) {
         const match = regex.exec(it.value);
         if (match) {
           const chapterTitleNumber = match[1]; // 书源内部章节
-          const chapterTitle = match[2];
+          const chapterTitle = match[3];
           chapterNumber++
           chapters.push(new chaptersItem(chapterNumber, chapterTitle, chapterTitleNumber, ''))
         } else {

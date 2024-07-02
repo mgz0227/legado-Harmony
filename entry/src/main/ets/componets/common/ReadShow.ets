@@ -31,6 +31,7 @@ export default struct ReadShow {
           }
           .alignItems(HorizontalAlign.Start)
         }
+        .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
         .padding({left:15})
         Column(){

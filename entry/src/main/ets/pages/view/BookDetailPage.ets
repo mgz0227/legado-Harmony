@@ -4,6 +4,8 @@ import TagIndex from '../../componets/bookDetail/TagIndex'
 import { router, SwipeRefresher } from '@kit.ArkUI'
 import NoteIndex from '../../componets/bookDetail/note/NoteIndex'
 import { BookList } from 'ets/componets/dataList/bookList'
+import { chaptersItem } from '../../componets/dataList/ReaderChaptersItem'
+import { FileHandler } from '../../common/utils/FileHandler'
 
 /**
  * 标题图片样式
@@ -78,10 +80,13 @@ struct BookDetailPage {
     offset: { dx: 0, dy: -100 }
   })
 
-  onPageShow(): void {
+  @State txtFile: chaptersItem[] = [];
+
+  async onPageShow() {
     console.log('router BookDetailPage:' + JSON.stringify(router.getParams()))
     if (router.getParams() as BookList) {
       this.bookData = router.getParams() as BookList
+      this.txtFile = await FileHandler.readFile(this.bookData.fileLink) //txt小说
     }
   }
 
@@ -108,18 +113,56 @@ struct BookDetailPage {
       Tabs({ barPosition: BarPosition.Start }) {
         TabContent() {
           Column() {
-            SwipeRefresher({
-              content: '目录加载中...',
-              isLoading: true
-            })
+            if (this.txtFile.length === 0 || undefined) {
+              SwipeRefresher({
+                content: '目录加载中...',
+                isLoading: true
+              })
+            } else {
+              List() {
+                ForEach(this.txtFile, (item: chaptersItem, index: number) => {
+                  ListItem() {
+                    Button({ type: ButtonType.Normal }) {
+                      Row() {
+                        Text(`${item.chapterTitleNumber} ${item.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=', '')).layoutWeight(1)
+                      }
+                      .width('100%')
+                      .padding({
+                        left: 20,
+                        right: 20,
+                        top: 12,
+                        bottom: 12
+                      })
+                    }
+                    .borderRadius(10)
+                    .width('100%')
+                    .backgroundColor(Color.White)
+                    .onClick(() => {
+                      // 跳转到阅读器
+                      router.pushUrl({
+                        url: 'pages/view/Reader/ReaderPage',
+                        //跳转到对应的章节，额，不会传这个参。。。只知道传index过去，对面TotalChapters接收
+                        params: this.bookData
+                      })
+                    })
+                  }
+                })
+              }
+              .divider({
+                strokeWidth: 0.8,
+                color: '#cccccc',
+                startMargin: 12,
+                endMargin: 12
+              })
+            }
           }
         }
-        .tabBar(this.catalogTab(0, '目录', 548))
+        .tabBar(this.catalogTab(0, '目录', this.txtFile.length))
 
         TabContent() {
           Column() {
             SwipeRefresher({
-              content: '目录加载中...',
+              content: '书源加载中...',
               isLoading: true
             })
           }
