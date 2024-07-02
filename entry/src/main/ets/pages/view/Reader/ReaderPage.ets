@@ -50,11 +50,18 @@ struct ReaderPage {
                 .onClick(() => {
                   router.back()
                 })
+
               Text(`${this.txtFile[this.CurrentChapters.toFixed(0)]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters.toFixed(0)]?.title}`.replace(new RegExp('\\s{1,}',
                 'g'), ' ').replaceAll('=', ''))
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
+
+              Text(`${this.txtFile[this.CurrentChapters]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters]?.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=',''))
+                .layoutWeight(1)
+                .maxLines(1)
+                .textOverflow({overflow:TextOverflow.Ellipsis})
+
               Row({ space: 16 }) {
                 Image($r("app.media.refresh"))
                   .width(24)
@@ -350,8 +357,12 @@ struct ReaderPage {
         Scroll(this.scroller) {
           Column() {
             Row() {
+
               Text(`${this.txtFile[this.CurrentChapters.toFixed(0)]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters.toFixed(0)]?.title}`.replace(new RegExp('\\s{1,}',
                 'g'), ' ').replaceAll('=', ''))
+
+              Text(`${this.txtFile[this.CurrentChapters]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters]?.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=',''))
+
                 .lineHeight(20)
                 .font({
                   size: 15,
