@@ -3,7 +3,8 @@ import BookInfo from './BookInfo'
 import { promptAction } from '@kit.ArkUI'
 import BookInfoGrid from './BookInfoGrid'
 import CommonConstants from '../../../common/constants/CommonConstants'
-import { delBookListAll, delBookListByBookId, getBookData } from '../../../storage/bookListData'
+import { delBookListAll, delBookListByBookId } from '../../../storage/bookListData'
+import { updateShelfBookData } from '../../../preferences/bookDataPreferences'
 
 
 @Component
@@ -15,12 +16,10 @@ export default struct novelPage{
   @Prop bookType:string
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
 
-  @State bookList:BookList[] = []
-
-  aboutToAppear(): void {
-    this.bookList = getBookData(0) as BookList[] //初始化数据
-    console.log('test----------')
-    console.log(JSON.stringify(this.bookList))
+  @StorageLink(CommonConstants.KEY_NOVEL_BOOK_DATA)
+  @Watch('updatePreferences')bookList:BookList[] = []
+  updatePreferences(){
+    updateShelfBookData(this.bookList, 0)
   }
 
   //监听isClear变化
@@ -34,25 +33,6 @@ export default struct novelPage{
       })
     }
   }
-
-  // isChangeManageDelete() {
-  //   if (this.manageDelete) {
-  //     if (this.checkBookList === null || this.checkBookList.length === 0) {
-  //       promptAction.showToast({
-  //         message: '请选择要删除的内容',
-  //         duration: 1000,
-  //       })
-  //       this.manageDelete = false
-  //       return
-  //     }
-  //     this.bookList = []
-  //     console.log('删除')
-  //     this.manageDelete = false
-  //   }
-  // }
-  // isChangeBookList() {
-  //   console.log(this.checkBookList + '')
-  // }
 
   //监听EXHIBIT变化
   onIsEXHIBITChange() {
