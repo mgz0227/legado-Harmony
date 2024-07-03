@@ -56,7 +56,7 @@
 //   }
 // }
 
-// todo: Canvas方案，按行拆分，行内按字拆分
+// todo: Canvas方案，按行拆分，行内按字拆分，chatgpt-4o的方案
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
 
 @Component
@@ -73,7 +73,6 @@ export struct TxtContentHandler {
   @State ShowWidth: number = 0
   @State linesPerPage: number = 0;
   @State isChangeTimer: number = 0;
-  @State paragraphs: string[] = []
   private settings: RenderingContextSettings = new RenderingContextSettings(true);
   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings);
 
@@ -82,18 +81,7 @@ export struct TxtContentHandler {
     return Math.floor(this.lines.length / this.linesPerPage);
   }
 
-  aboutToAppear() {
-    setTimeout(() => {
-      this.paragraphs = this.txtFile[this.CurrentChapters]?.content.split('\n');
-      this.prepareText()
-      this.drawPage();
-      console.log('lines:' + this.lines.length)
-      console.log('linesPerPage:' + this.linesPerPage)
-    }, 300)
-  }
-
   CurrentChaptersChange() {
-    this.paragraphs = this.txtFile[this.CurrentChapters]?.content.split('\n');
     this.currentPage = 0
     this.prepareText()
     this.drawPage();
@@ -141,8 +129,11 @@ export struct TxtContentHandler {
   // 当前章节内容按字分割
   // todo:当前一次性分割一整个章节的文字，需要大佬优化
   wrapText(context: CanvasRenderingContext2D, maxWidth: number = this.ShowWidth) {
+    const paragraphs = this.txtFile[this.CurrentChapters]?.content.split('\n');
     const lines: string[] = [];
-    this.paragraphs.forEach(paragraph => {
+    console.log('paragraphs:' + JSON.stringify(paragraphs))
+
+    paragraphs.forEach(paragraph => {
       const words = paragraph.split(''); // todo:这里性能缓慢，需要优化
       let currentLine = words[0];
 
