@@ -22,7 +22,7 @@ export const addShelfBook = (shelfTye:number, bookData:BookList)=>{
 
   bookList.push(bookData)
 
-  shortUpdateDateList(bookList)
+  shortUpdateDateList(bookList,shelfTye)
 }
 
 export const delBookListByBookId = (shelfTye:number,bookId:string)=>{
@@ -32,7 +32,7 @@ export const delBookListByBookId = (shelfTye:number,bookId:string)=>{
     bookListData = bookListData.filter(book => book.bookId !== bookId);
 
     //重新存放
-  shortUpdateDateList(bookListData)
+  shortUpdateDateList(bookListData,shelfTye)
 }
 
 export const delBookListAll = (shelfTye:number)=>{
@@ -41,7 +41,7 @@ export const delBookListAll = (shelfTye:number)=>{
 
   bookListData = [];
   //重新存放
-  shortUpdateDateList(bookListData)
+  shortUpdateDateList(bookListData,shelfTye)
 }
 
 
@@ -60,7 +60,7 @@ export const updateBookListData = (shelfTye:number,list:BookList[])=>{
       }
     }
   }
-  shortUpdateDateList(bookListData)
+  shortUpdateDateList(bookListData,shelfTye)
 }
 
 export const updateDateListById = (index:number, isJoin:boolean, bookId:string)=>{
@@ -72,10 +72,10 @@ export const updateDateListById = (index:number, isJoin:boolean, bookId:string)=
       break
     }
   }
-  shortUpdateDateList(bookListData)
+  shortUpdateDateList(bookListData,index)
 }
 
-export const shortUpdateDateList = (showBookList:BookList[])=> {
+export const shortUpdateDateList = (showBookList:BookList[],KeyNumber:number)=> {
   //防止topUpdateTime出现string类型
   showBookList.forEach(book => {
     if (typeof book.topUpdateTime === 'string') {
@@ -94,7 +94,7 @@ export const shortUpdateDateList = (showBookList:BookList[])=> {
       return bTime - aTime;
     }
   });
-
+  shelfBookType(KeyNumber)
   AppStorage.set(KEY,showBookList)
   bookDataPreferences.shared.set(KEY,showBookList);
 }
@@ -132,4 +132,14 @@ export const shortDateList = (showBookList:BookList[])=> {
   });
 
   return showBookList
+}
+
+function shelfBookType(shelfTye:number){
+  if (shelfTye === 0) {
+    KEY = CommonConstants.KEY_NOVEL_BOOK_DATA
+  } else if (shelfTye === 1) {
+    KEY = CommonConstants.KEY_CARTOON_BOOK_DATA
+  } else if (shelfTye === 2) {
+    KEY = CommonConstants.KEY_SOUND_BOOK_DATA
+  }
 }
