@@ -7,6 +7,7 @@
   "author": "",
   "license": "",
   "dependencies": {
+    "@ohos/axios": "^2.2.0"
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.17",

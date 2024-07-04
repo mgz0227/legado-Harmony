@@ -13,6 +13,12 @@ import FontConstants from '../../../common/constants/FontConstants';
 import CommonConstants from '../../../common/constants/CommonConstants';
 import { HelpInfo } from '../../../viewData/HelpInfo';
 import PaddingConstants from '../../../common/constants/PaddingConstants';
+import ImportCommon from '../../../componets/import/ImportCommon';
+import axios, { AxiosError, AxiosResponse } from '@ohos/axios';
+import { BookSource } from '../../../componets/dataList/BookSource';
+import { common } from '@kit.AbilityKit';
+import {  picker } from '@kit.CoreFileKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 /**
  * @author 2008
@@ -35,6 +41,8 @@ export default struct IndexFind {
   @State GROUP: string = '标签'
   @State isShowFuction:boolean = false
   @State isShowHelp:boolean = false
+  @State isShowImport: boolean = false
+  @State sourceList:BookSource[]=[]
   build() {
     Column(){
       Flex({
@@ -125,6 +133,14 @@ export default struct IndexFind {
         onDisappear:()=>{
           this.isShowHelp = false
        }
+      })
+      .bindSheet(this.isShowImport,this.dialogImportFunction(),{
+        detents: [SheetSize.FIT_CONTENT, SheetSize.LARGE, 200],
+        dragBar: true,
+        showClose:false,
+        onDisappear:()=>{
+          this.isShowImport = false
+        }
       })
     }
     .linearGradient({
@@ -217,10 +233,57 @@ export default struct IndexFind {
      })
    }
   }
+
+  getDate() {
+    axios<string, AxiosResponse<string>, null>({
+      method: "get",
+      url: 'https://node.wisdoms.xin/static/file/20240704/sy.json'
+    }).then((res: AxiosResponse) => {
+      this.sourceList = res.data;
+      this.isShowImport = true;
+      console.info('result:' + JSON.stringify(res.data));
+    }).catch((error: AxiosError) => {
+      console.error(error.message);
+    })
+  }
+
   findBindMenuFunction(index:number){
     switch (index){
-      case 0: showMessage(this.FIND_Dialog_Right_Fuction[index].title);break;
-      case 1: showMessage(this.FIND_Dialog_Right_Fuction[index].title);break;
+      case 0:
+        showMessage(this.FIND_Dialog_Right_Fuction[index].title);
+        this.getDate();
+        break;
+      case 1:
+        showMessage(this.FIND_Dialog_Right_Fuction[index].title);
+        const documentSelectOptions = new picker.DocumentSelectOptions();
+        // 选择文档的最大数目（可选）
+        documentSelectOptions.maxSelectNumber = 1;
+        // 选择文件的后缀类型，若选择项存在多个后缀名，则每一个后缀名之间用英文逗号进行分隔（可选），后缀类型名不能超过100
+        documentSelectOptions.fileSuffixFilters = ['.json'];
+
+        let context = getContext(this) as common.Context;
+        let documentViewPicker = new picker.DocumentViewPicker(context);
+        documentViewPicker.select(documentSelectOptions).then((documentSelectResult: Array<string>) => {
+          //文件选择成功后，返回被选中文档的uri结果集。
+          const  uri = documentSelectResult[0];
+          console.log('文件目录：' + uri);
+          // let file = fs.openSync(uri, fs.OpenMode.READ_WRITE);
+          // let buf = new ArrayBuffer(40960);
+          // fs.readSync(file.fd, buf);
+          // fs.closeSync(file);
+          // let uint8View = new Uint8Array(buf);
+          // // 设置编码格式为“utf-8”
+          // let textDecoder = util.TextDecoder.create('utf-8', { ignoreBOM: true });
+          // // 解码输后获取对应文本
+          // let readString = textDecoder.decodeWithStream(uint8View, { stream: false });
+          // console.log('读取的数据内容：' + readString);
+          // this.sourceList = JSON.parse(readString);
+          // this.isShowImport = true
+          this.getDate()
+        }).catch((err: BusinessError) => {
+          console.error(`Invoke documentViewPicker.select failed, code is ${err.code}, message is ${err.message}`);
+        })
+        break;
       case 2: showMessage(this.FIND_Dialog_Right_Fuction[index].title);break;
       case 3:
         showMessage(this.FIND_Dialog_Right_Fuction[index].title);
@@ -272,4 +335,12 @@ export default struct IndexFind {
       bottom:PaddingConstants.PADDING_12})
   }
 
+  @Builder dialogImportFunction() {
+    Flex({
+      direction: FlexDirection.Column,
+      justifyContent: FlexAlign.SpaceBetween
+    }) {
+      ImportCommon({sourceList: this.sourceList, show: this.isShowImport})
+    }
+  }
 }
