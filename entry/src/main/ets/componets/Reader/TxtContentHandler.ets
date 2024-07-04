@@ -1,62 +1,4 @@
-//todo: Text方案，用原生Text组件渲染
-// import { display } from '@kit.ArkUI';
-// import { LengthMetrics } from '@ohos.arkui.node';
-// import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
-//
-// @Component
-// export struct TxtContentHandler {
-//   @StorageLink('WindowHeight') WindowHeight: number = 0
-//   @StorageLink('WindowWidth') WindowWidth: number = 0
-//   @State txtChapterContent: string = ''; // 当前章节的文本
-//   @State txtShowContent: string = ''; // 当前章节的文本
-//   @State ContentHeight: number = 0
-//   @Prop txtFile: chaptersItem[] = [];
-//   @Prop CurrentChapters: number = 0;
-//   @Prop LineHeight: string = '';
-//   @Prop CurrentFontSize: number = 0;
-//   @Prop ParagraphSpacing: number = 0;
-//   private settings: RenderingContextSettings = new RenderingContextSettings(true);
-//   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings);
-//
-//   aboutToAppear() {
-//     display.on('foldDisplayModeChange', () => {
-//       let defaultDisplay = display.getDefaultDisplaySync()
-//       this.WindowHeight = px2vp(defaultDisplay.height)
-//       this.WindowWidth = px2vp(defaultDisplay.width)
-//       console.log('WindowHeight:' + this.WindowHeight)
-//       console.log('WindowWidth:' + this.WindowWidth)
-//       // this.drawText(this.startIndex);
-//     });
-//   }
-//
-//   aboutToDisappear(): void {
-//     display.off('foldDisplayModeChange');
-//   }
-//
-//   drawText() {
-//     // this.txtChapterContent = this.txtFile[this.CurrentChapters]?.content
-//     // console.log('content:' + JSON.stringify(this.txtChapterContent))
-//     // console.log('WindowHeight:' + this.WindowHeight)
-//     // console.log('WindowWidth:' + this.WindowWidth)
-//     // if (this.ContentHeight < this.WindowHeight) {
-//     //
-//     // }
-//   }
-//
-//   build() {
-//     Text(this.txtFile[this.CurrentChapters.toFixed(0)]?.content)
-//       .lineHeight(this.LineHeight)
-//       .font({
-//         size: this.CurrentFontSize, // 用px感觉太小了，用vp算了
-//         weight: 400
-//       })
-//       .lineSpacing(LengthMetrics.vp(this.CurrentFontSize + this.ParagraphSpacing))
-//       .fontColor("rgba(0, 0, 0, 0.88)")
-//       .width("100%")
-//   }
-// }
-
-// todo: Canvas方案，按字拆分,taskpool多线程处理
+//Canvas多线程方案，按字拆分,taskpool多线程处理
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
 import { taskpool } from '@kit.ArkTS';
 
@@ -75,7 +17,7 @@ export struct TxtContentHandler {
   @State ShowWidth: number = 0
   @State linesPerPage: number = 0;
   @State isChangeTimer: number = 0;
-  @State isTaskPool: boolean = false;
+  @State isTaskPool: boolean = false; // 只在进页面的时候读一次，改字体大小和canvas边距应该也要重新读取，后面再说
   private settings: RenderingContextSettings = new RenderingContextSettings(true);
   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings);
 
@@ -84,32 +26,48 @@ export struct TxtContentHandler {
     return Math.floor(this.AllChaptersContent[this.CurrentChapters]?.length / this.linesPerPage);
   }
 
+  Sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms))
+  }
+
+  async batchTaskPool(batchStart: number, batchSize: number) {
+    let taskGroup: taskpool.TaskGroup = new taskpool.TaskGroup();
+    for (let i = batchStart; i < Math.min(batchStart + batchSize, this.txtFile.length); i++) {
+      let dataArray: Array<string> = [
+        this.txtFile[i].content,
+        this.CurrentFontSize.toString(),
+        this.ShowWidth.toString(),
+        i.toString(),
+      ]
+
+      let task: taskpool.Task = new taskpool.Task(HandleAllChaptersContentTaskPool, dataArray);
+      taskGroup.addTask(task);
+    }
+    await this.Sleep(40) // 控制任务执行间隔，避免内存不足
+    console.log('start taskpool execute');
+    return taskpool.execute(taskGroup, taskpool.Priority.HIGH).then(res => {
+      // 结果数据处理
+      for (let i = 0; i < res.length; i++) {
+        console.log('taskpool finish:' + JSON.stringify(res[i]))
+        this.AllChaptersContent.push(res[i] as Array<string>)
+      }
+    }).catch((error: Error) => {
+      console.error(`taskpool excute error: ${error}`);
+    })
+  }
+
   // 多线程处理
   HandleTaskPool() {
-    setTimeout(() => {
+    setTimeout(async () => {
       if (this.txtFile.length > 0 && this.ShowWidth > 0 && this.isTaskPool == false) { //需要txt文件加载和showWidth同时准备好
         this.isTaskPool = true
-        let taskGroup: taskpool.TaskGroup = new taskpool.TaskGroup();
-        for (let i = 0; i < this.txtFile.length; i++) {
-          let dataArray: Array<string> = [
-            this.txtFile[i].content,
-            this.CurrentFontSize.toString(),
-            this.ShowWidth.toString(),
-            i.toString(),
-          ]
-
-          let task: taskpool.Task = new taskpool.Task(HandleAllChaptersContentTaskPool, dataArray);
-          taskGroup.addTask(task);
+        const batchSize = 100; // 每批次处理的任务数量
+        for (let batchStart = 0; batchStart < this.txtFile.length; batchStart += batchSize) {
+          console.log('length:' + this.txtFile.length)
+          console.log('batchStart:' + batchStart)
+          await this.batchTaskPool(batchStart, batchSize)
+          this.drawPage()
         }
-        taskpool.execute(taskGroup, taskpool.Priority.HIGH).then((res): void | Promise<void> => {
-          // 结果数据处理
-          for (let i = 0; i < this.txtFile.length; i++) {
-            this.AllChaptersContent.push(((res[i]) as Array<string>[])[i] as Array<string>)
-            console.log('taskpool finish:' + JSON.stringify(((res[i]) as Array<string>)[i]))
-          }
-        }).catch((error: Error) => {
-          console.error(`taskpool excute error: ${error}`);
-        })
       }
     }, 30)
   }
@@ -245,7 +203,6 @@ function HandleAllChaptersContentTaskPool(dataArray: Array<string>) {
     chaptersItemLines.splice(chaptersItemLines.length - 1, 1)
   }
   // console.log('chaptersItemLines:' + JSON.stringify(chaptersItemLines[chaptersItemLines.length-1]))
-  AllChaptersContent[index] = chaptersItemLines
-  return AllChaptersContent
-
+  // console.log('chaptersItemLines:' + JSON.stringify(chaptersItemLines))
+  return chaptersItemLines
 }
