@@ -252,7 +252,7 @@ export default struct IndexFind {
       case 1:
         showMessage(this.FIND_Dialog_Right_Fuction[index].title);
         let context = getContext(this) as common.Context;
-        FileHandler.readJsonFile(context).then((res: BookSource[]) => {
+        FileHandler.pickerFile(context).then((res: BookSource[]) => {
           this.sourceList = res;
           this.isShowImport = true
         })

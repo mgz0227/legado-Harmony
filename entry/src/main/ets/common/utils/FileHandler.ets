@@ -56,7 +56,7 @@ export class FileHandler {
     return chapters
   }
 
-  static async readJsonFile (context: Context) {
+  static async pickerFile (context: Context) {
     try {
       const documentSelectOptions = new picker.DocumentSelectOptions();
       // 选择文档的最大数目（可选）
