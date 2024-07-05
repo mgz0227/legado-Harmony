@@ -4,6 +4,7 @@
  * @className: ImportCommon
  * 通用导入页
  */
+import ClassifyList from '../common/ClassifyList';
 import Score from '../common/Score';
 import Tag from '../common/Tag';
 import { BookSource, GroupList } from '../dataList/BookSource';
@@ -59,51 +60,15 @@ export default struct ImportCommon {
   build() {
     Column() {
       Row({ space: 12 }) {
-        List({ scroller: this.scroll }) {
-          ForEach(this.groupList, (item: GroupList, index: number) => {
-            ListItem() {
-              Stack({ alignContent: Alignment.TopStart }) {
-                Column() {
-                  Text(item.title)
-                    .width('100vp')
-                    .height('48vp')
-                    .textAlign(TextAlign.Center)
-                    .fontWeight(this.currentIndex === index ? FontWeight.Bold : FontWeight.Normal)
-                }
-                .backgroundColor(this.currentIndex === index ? 0xF5F5F5 : Color.White)
-                .borderRadius({
-                  topRight: this.currentIndex + 1 === index ? 12 : 0,
-                  bottomRight: this.currentIndex - 1 === index || this.groupList.length === index + 1 ? 12 : 0
-                })
-                .animation({
-                  duration: 100,
-                  curve: Curve.Linear
-                })
-                .onClick(() => {
-                  this.scrollChangeAction(index, true)
-                })
-
-                if (this.currentIndex === index) {
-                  Row()
-                    .width(3)
-                    .height(16)
-                    .backgroundColor('#FF6600')
-                    .borderRadius(12)
-                    .position({
-                      top: 16
-                    })
-                }
-              }
-            }
-          })
-        }
-        .height('100%')
-        .width(88)
-        .scrollBar(BarState.Off)
-        .borderRadius({
-          topRight: 12,
-          bottomRight: 12
+        ClassifyList({
+          currentIndex: this.currentIndex,
+          classifyList: this.groupList.map(o => o.title),
+          scroller: this.scroll,
+          clickAction: (index: number) => {
+            this.scrollChangeAction(index, true)
+          }
         })
+          .width(88)
 
         List({ scroller: this.secondScroll }) {
           ForEach(this.groupList, (item: GroupList, index: number) => {

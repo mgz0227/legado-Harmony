@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from '@ohos/axios'
+import ClassifyList from '../../../../componets/common/ClassifyList'
 import { showMessage } from '../../../../componets/common/promptShow'
 import Score from '../../../../componets/common/Score'
 import Tag from '../../../../componets/common/Tag'
@@ -101,69 +102,16 @@ export default struct SourceView {
 
         // 内容主体
         Row({ space: 12 }) {
-          List({ scroller: this.scroll }) {
-            ForEach(this.groupList, (item: GroupList, index: number) => {
-              ListItem() {
-                Stack({ alignContent: Alignment.TopStart }) {
-                  Column() {
-                    Stack({ alignContent: Alignment.TopEnd }) {
-                      Text(item.title)
-                        .height('48vp')
-                        .textAlign(TextAlign.Center)
-                        .fontWeight(this.currentIndex === index ? FontWeight.Bold : FontWeight.Normal)
-                      Column() {
-                        Text('12')
-                          .fontSize(10)
-                          .fontWeight(500)
-                          .fontColor(Color.White)
-                          .textAlign(TextAlign.Center)
-                      }
-                      .height(16)
-                      .position({
-                        right: -10
-                      })
-                      .justifyContent(FlexAlign.Center)
-                      .padding({ left: 4, right: 4 })
-                      .borderRadius(20)
-                      .backgroundColor(0xEF4444)
-                    }
-                  }
-                  .width('100%')
-                  .alignItems(HorizontalAlign.Center)
-                  .backgroundColor(this.currentIndex === index ? 0xF5F5F5 : Color.White)
-                  .borderRadius({
-                    topRight: this.currentIndex + 1 === index ? 12 : 0,
-                    bottomRight: this.currentIndex - 1 === index || this.groupList.length === index + 1 ? 12 : 0
-                  })
-                  .animation({
-                    duration: 100,
-                    curve: Curve.Linear
-                  })
-                  .onClick(() => {
-                    this.scrollChangeAction(index, true)
-                  })
-
-                  if (this.currentIndex === index) {
-                    Row()
-                      .width(3)
-                      .height(16)
-                      .backgroundColor('#FF6600')
-                      .borderRadius(12)
-                      .position({
-                        top: 16
-                      })
-                  }
-                }
-              }
-            })
-          }
-          .height('100%')
-          .width(88)
-          .scrollBar(BarState.Off)
-          .borderRadius({
-            topRight: 12,
-            bottomRight: 12
+          ClassifyList({
+            currentIndex: this.currentIndex,
+            classifyList: this.groupList,
+            scroller: this.scroll,
+            clickAction: (index: number) => {
+              this.scrollChangeAction(index, true)
+            },
+            isBadge: true
           })
+            .width(88)
 
           List({ scroller: this.secondScroll }) {
             ForEach(this.groupList, (item: GroupList, index: number) => {
@@ -239,6 +187,7 @@ export default struct SourceView {
 
       Blank()
     }
+    .width('100%')
     .padding({ right: 16 })
     .backgroundColor('#f5f5f5')
     .justifyContent(FlexAlign.Start)
