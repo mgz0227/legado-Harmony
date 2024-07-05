@@ -73,7 +73,7 @@ struct ReaderPage {
                 .onClick(() => {
                   router.back()
                 })
-              Text(`${this.txtFile[this.CurrentChapters.toFixed(0)]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters.toFixed(0)]?.title}`.replace(new RegExp('\\s{1,}',
+              Text(`${this.txtFile[this.CurrentChapters]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters]?.title}`.replace(new RegExp('\\s{1,}',
                 'g'), ' ').replaceAll('=', ''))
                 .layoutWeight(1)
                 .maxLines(1)
@@ -223,7 +223,7 @@ struct ReaderPage {
                   .blockSize({ width: 30, height: 30 })
                   .layoutWeight(1)
                   .onChange((value) => {
-                    this.CurrentChapters = value
+                    this.CurrentChapters = Number(value.toFixed(0))
                   })
 
                 Text("下一章").onClick(() => {
