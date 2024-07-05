@@ -4,15 +4,17 @@
  * @className: ImportCommon
  * 通用导入页
  */
+import Score from '../common/Score';
+import Tag from '../common/Tag';
 import { BookSource, GroupList } from '../dataList/BookSource';
 
 @Component
 @Preview
-export default struct ImportCommon{
+export default struct ImportCommon {
   @Prop sourceList: BookSource[] = []
   @Link show: boolean;
   @State groupList: GroupList[] = []
-  @State currentIndex:number = 0
+  @State currentIndex: number = 0
   @State activeNameMap: Record<string, boolean> = {}
   @State fullActive: boolean = false
   @State waringActive: boolean = false
@@ -20,19 +22,20 @@ export default struct ImportCommon{
   private secondScroll = new Scroller()
 
   aboutToAppear() {
+    this.getGroupList()
+  }
+
+  getGroupList() {
     const groupMap: Record<string, GroupList> = {};
     this.sourceList.forEach((item: BookSource) => {
       const title = item.bookSourceGroup;
-
       // 如果groupMap中还没有这个group，则创建一个新的GroupList对象
       if (!groupMap[title]) {
         groupMap[title] = { title: title, list: [] };
       }
-
       // 向当前group的list中添加BookSource对象
       groupMap[title].list.push(item);
     })
-
     this.groupList = Object.values(groupMap);
   }
 
@@ -55,11 +58,11 @@ export default struct ImportCommon{
 
   build() {
     Column() {
-      Row({space: 12}){
+      Row({ space: 12 }) {
         List({ scroller: this.scroll }) {
           ForEach(this.groupList, (item: GroupList, index: number) => {
             ListItem() {
-              Stack({alignContent: Alignment.TopStart}) {
+              Stack({ alignContent: Alignment.TopStart }) {
                 Column() {
                   Text(item.title)
                     .width('100vp')
@@ -74,11 +77,12 @@ export default struct ImportCommon{
                 })
                 .animation({
                   duration: 100,
-                  curve:Curve.Linear
+                  curve: Curve.Linear
                 })
                 .onClick(() => {
                   this.scrollChangeAction(index, true)
                 })
+
                 if (this.currentIndex === index) {
                   Row()
                     .width(3)
@@ -102,18 +106,18 @@ export default struct ImportCommon{
         })
 
         List({ scroller: this.secondScroll }) {
-            ForEach(this.groupList, (item: GroupList,index:number)=>{
-              ListItemGroup({
-                header: this.classifyHeader(`${item.title} (${item.list.length})`, index),
-                space: 0
-              }) {
-                ForEach(item.list, (bookSource: BookSource, j: number) => {
-                  this.CourseItem(bookSource, index, j)
-                })
-              }
-            })
+          ForEach(this.groupList, (item: GroupList, index: number) => {
+            ListItemGroup({
+              header: this.classifyHeader(`${item.title} (${item.list.length})`, index),
+              space: 0
+            }) {
+              ForEach(item.list, (bookSource: BookSource, j: number) => {
+                this.CourseItem(bookSource, index, j)
+              })
+            }
+          })
         }
-        .padding({right: 20})
+        .padding({ right: 20 })
         .sticky(StickyStyle.Header)
         .onScrollIndex((start) => {
           this.scrollChangeAction(start, false)
@@ -126,24 +130,24 @@ export default struct ImportCommon{
         Checkbox()
           .select(this.fullActive)
           .selectedColor(0xff6600)
-          .onChange((val: boolean)=>{
+          .onChange((val: boolean) => {
             this.fullActive = val
             this.sourceList.forEach((item: BookSource) => {
               this.activeNameMap[item.bookSourceName] = val
             })
           })
 
-        Text(){
+        Text() {
           Span('全选（')
-          Span(Object.values(this.activeNameMap).filter(o=>o).length+'')
+          Span(Object.values(this.activeNameMap).filter(o => o).length + '')
             .fontColor(0xff6600)
           Span(`/${this.sourceList.length})`)
         }
-        .margin({left: 8})
+        .margin({ left: 8 })
       }
       .width('100%')
       .height(40)
-      .padding({left: 20, right: 20})
+      .padding({ left: 20, right: 20 })
       .backgroundColor(Color.White)
 
       Row() {
@@ -154,23 +158,23 @@ export default struct ImportCommon{
         Text('允许对书架中正在使用的书源进行更新')
           .fontSize(14)
           .fontColor('#EF4444')
-          .padding({left:8})
+          .padding({ left: 8 })
 
         Blank()
 
         Checkbox()
           .select(this.waringActive)
           .selectedColor(0xff6600)
-          .onChange((val: boolean)=>{
+          .onChange((val: boolean) => {
             this.waringActive = val
           })
       }
       .width('100%')
       .height(48)
-      .padding({left: 20, right: 20})
+      .padding({ left: 20, right: 20 })
       .backgroundColor('rgba(239, 68, 68, 0.12)')
 
-      Row({space: 20}) {
+      Row({ space: 20 }) {
         Button('取消')
           .height(40)
           .fontColor(0xff6600)
@@ -192,9 +196,14 @@ export default struct ImportCommon{
           })
       }
       .width('100%')
-      .padding({left:20,right:20,top: 12, bottom: 12})
+      .padding({
+        left: 20,
+        right: 20,
+        top: 12,
+        bottom: 12
+      })
     }
-    .padding({top:12,bottom:12})
+    .padding({ top: 12, bottom: 12 })
     .backgroundColor(0xF5F5F5)
   }
 
@@ -214,7 +223,7 @@ export default struct ImportCommon{
         .checkboxShape(CheckBoxShape.CIRCLE)
         .selectedColor(0xff6600)
     }
-    .padding({ right: 16})
+    .padding({ right: 16 })
     .backgroundColor('#f5f5f5')
   }
 
@@ -224,21 +233,11 @@ export default struct ImportCommon{
       Row() {
         Text(item.bookSourceName)
           .fontSize(16)
+          .lineHeight(24)
           .fontWeight(FontWeight.Medium)
 
-        if (i%2===0){
-
-          Column() {
-            Text('正在使用')
-              .fontSize(10)
-              .fontColor('#24B277')
-          }
-          .height(16)
-          .margin({ left: 8 })
-          .padding({left: 6, right: 6})
-          .borderRadius(4)
-          .backgroundColor('rgba(36, 178, 119, 0.12)')
-          .justifyContent(FlexAlign.Center)
+        if (i % 2 === 0) {
+          Tag({ text: '正在使用', color: '#24B277', bgColor: '#1F24B277' })
         }
 
         Blank()
@@ -246,7 +245,7 @@ export default struct ImportCommon{
         Checkbox({ name: 'checkbox' + j, group: 'checkboxGroup' + i })
           .select(this.activeNameMap[item.bookSourceName] ?? false)
           .selectedColor(0xff6600)
-          .onChange((val: boolean)=>{
+          .onChange((val: boolean) => {
             this.activeNameMap[item.bookSourceName] = val
           })
       }
@@ -256,40 +255,7 @@ export default struct ImportCommon{
       Blank()
 
       Row() {
-        Row() {
-          Row() {
-            Stack(){
-              Image($r('app.media.rectangle_icon'))
-                .borderRadius({
-                  topLeft: 4,
-                  bottomLeft: 4
-                })
-                .width(28)
-                .height(16)
-
-              Text('精品')
-                .fontSize(9)
-                .fontColor('#FFE5D4')
-            }
-
-            Text('5.0')
-              .fontSize(12)
-              .fontColor('#854D00')
-          }
-          .width(47)
-          .height(16)
-          .borderRadius(4)
-          .backgroundColor('#FFE5D4')
-
-          Rating({ rating: j, indicator: true })
-            .size({
-              width: 90,
-              height: 20
-            })
-            .stars(5)
-            .stepSize(0.5)
-            .margin({left:8})
-        }
+        Score({ score: j > 5 ? 5 : j, isBoutique: j >= 6 })
 
         Text('更新')
           .fontSize(12)
@@ -304,7 +270,12 @@ export default struct ImportCommon{
       bottom: 12
     })
     .borderRadius(12)
-    .padding({ left: 16, right: 16, top: 12, bottom: 12 })
+    .padding({
+      left: 16,
+      right: 16,
+      top: 12,
+      bottom: 12
+    })
     .backgroundColor(Color.White)
   }
 }
