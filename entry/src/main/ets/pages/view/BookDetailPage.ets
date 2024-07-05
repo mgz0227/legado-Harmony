@@ -79,15 +79,17 @@ struct BookDetailPage {
     cornerRadius: 8,
     offset: { dx: 0, dy: -100 }
   })
-
   @State txtFile: chaptersItem[] = [];
 
-  async onPageShow() {
+  onPageShow() {
     this.isShow = true
     console.log('router BookDetailPage:' + JSON.stringify(router.getParams()))
     if (router.getParams() as BookList) {
       this.bookData = router.getParams() as BookList
-      this.txtFile = await FileHandler.readFile(this.bookData.fileLink) //txt小说
+      setTimeout(async () => {
+        let temp = await FileHandler.readFile(this.bookData.fileLink) //txt小说
+        this.txtFile = temp
+      },0)
     }
   }
 
@@ -125,7 +127,10 @@ struct BookDetailPage {
                   ListItem() {
                     Button({ type: ButtonType.Normal }) {
                       Row() {
-                        Text(`${item.chapterTitleNumber} ${item.title}`.replace(new RegExp('\\s{1,}','g'),' ').replaceAll('=', '')).layoutWeight(1)
+                        Text(`${item.chapterTitleNumber} ${item.title}`
+                          .replace(new RegExp('\\s{1,}', 'g'), ' ')
+                          .replaceAll('=', ''))
+                          .layoutWeight(1)
                       }
                       .width('100%')
                       .padding({
@@ -144,8 +149,9 @@ struct BookDetailPage {
                         url: 'pages/view/Reader/ReaderPage',
                         //跳转到对应的章节，传index过去，对面TotalChapters接收
                         params: {
-                          bookData:this.bookData,
-                          clickBookChapter:index
+                          bookData: this.bookData,
+                          clickBookChapter: index,
+                          txtFile: this.txtFile
                         }
                       })
                     })
@@ -209,16 +215,18 @@ struct BookDetailPage {
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor('#FF6600')
+          .backgroundColor(this.txtFile.length > 0 ? '#FF6600' : 'gray')
           .fontColor('#FFFFFF')
+          .enabled(this.txtFile.length > 0)
           .onClick(() => {
             // 跳转到阅读器
             router.pushUrl({
               url: 'pages/view/Reader/ReaderPage',
               params: {
-                bookData:this.bookData,
+                bookData: this.bookData,
                 //后续持久化后再获取已经读到的章节序号，目前先传默认的0
-                clickBookChapter:0
+                clickBookChapter: 0,
+                txtFile: this.txtFile
               }
             })
           })
