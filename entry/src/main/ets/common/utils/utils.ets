@@ -1,7 +1,7 @@
 import { unifiedDataChannel } from '@kit.ArkData';
 import { pasteboard } from '@kit.BasicServicesKit'
-import { showMessage } from '../../componets/common/promptShow';
 
+// 获取粘贴类型
 export const getPasteDataSync = () => {
   try {
     const data = pasteboard.getSystemPasteboard().getUnifiedDataSync()
@@ -20,6 +20,7 @@ export const isNetworkUrl = (url: string) => {
   url.startsWith('https://');
 }
 
+// 延迟多少毫秒
 export const sleep = (duration: number = 1000): Promise<void> => {
   return new Promise((resolve) => {
     setTimeout(() => {
