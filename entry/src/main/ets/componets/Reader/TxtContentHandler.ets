@@ -1,122 +1,102 @@
-//Canvas多线程方案，按字拆分,taskpool多线程处理
+// Canvas方案，按行拆分，行内按字拆分
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
-import { taskpool } from '@kit.ArkTS';
 
 @Component
 export struct TxtContentHandler {
-  @Prop @Watch('HandleTaskPool') txtFile: chaptersItem[] = [];
+  @Prop txtFile: chaptersItem[] = [];
   @Prop @Watch('CurrentChaptersChange') CurrentChapters: number = 0;
   @Prop @Watch('CurrentFontSizeChange') CurrentFontSize: number = 0;
-  @Prop LineHeight: number = 1.8; // 百分比
+  @Prop LineHeight: number = 1.8;
   @Prop ParagraphSpacing: number = 0;
   @Prop ReaderPadding: number = 0;
-  @State AllChaptersContent: Array<string>[] = [];
-  @State lines: string[] = [];
   @State currentPage: number = 0;
-  @State @Watch('HandleTaskPool') ShowHeight: number = 0
+  @State ShowHeight: number = 0
   @State ShowWidth: number = 0
   @State linesPerPage: number = 0;
-  @State isChangeTimer: number = 0;
-  @State isTaskPool: boolean = false; // 只在进页面的时候读一次，改字体大小和canvas边距应该也要重新读取，后面再说
+  @State timer: number = 0;
+  @State CurrentChaptersContent: Array<string> = []; // 存放需要显示在页面上，每个章节重排段落的字符串，一层数组索引为章节，二层数组索引为段落
   private settings: RenderingContextSettings = new RenderingContextSettings(true);
   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings);
 
   // 获取总页数
   GetTotalPages() {
-    return Math.floor(this.AllChaptersContent[this.CurrentChapters]?.length / this.linesPerPage);
-  }
-
-  Sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
-  }
-
-  async batchTaskPool(batchStart: number, batchSize: number) {
-    let taskGroup: taskpool.TaskGroup = new taskpool.TaskGroup();
-    for (let i = batchStart; i < Math.min(batchStart + batchSize, this.txtFile.length); i++) {
-      let dataArray: Array<string> = [
-        this.txtFile[i].content,
-        this.CurrentFontSize.toString(),
-        this.ShowWidth.toString(),
-        i.toString(),
-      ]
-
-      let task: taskpool.Task = new taskpool.Task(HandleAllChaptersContentTaskPool, dataArray);
-      taskGroup.addTask(task);
-    }
-    await this.Sleep(40) // 控制任务执行间隔，避免内存不足
-    console.log('start taskpool execute');
-    return taskpool.execute(taskGroup, taskpool.Priority.HIGH).then(res => {
-      // 结果数据处理
-      for (let i = 0; i < res.length; i++) {
-        console.log('taskpool finish:' + JSON.stringify(res[i]))
-        this.AllChaptersContent.push(res[i] as Array<string>)
-      }
-    }).catch((error: Error) => {
-      console.error(`taskpool excute error: ${error}`);
-    })
-  }
-
-  // 多线程处理
-  HandleTaskPool() {
-    setTimeout(async () => {
-      if (this.txtFile.length > 0 && this.ShowWidth > 0 && this.isTaskPool == false) { //需要txt文件加载和showWidth同时准备好
-        this.isTaskPool = true
-        const batchSize = 100; // 每批次处理的任务数量
-        for (let batchStart = 0; batchStart < this.txtFile.length; batchStart += batchSize) {
-          console.log('length:' + this.txtFile.length)
-          console.log('batchStart:' + batchStart)
-          await this.batchTaskPool(batchStart, batchSize)
-          this.drawPage()
-        }
-      }
-    }, 30)
+    return Math.floor(this.CurrentChaptersContent.length / this.linesPerPage);
   }
 
   CurrentChaptersChange() {
     this.currentPage = 0
-    this.drawPage();
-    console.log('currentPage:' + this.currentPage + '\ntotalPages:' + this.GetTotalPages())
+    clearTimeout(this.timer)
+    this.timer = setTimeout(() => {
+      this.wrapText(this.context, this.ShowWidth);
+      console.log('CurrentChapters:' + this.CurrentChapters)
+      console.log('currentPage:' + this.currentPage)
+      console.log('totalPages:' + this.GetTotalPages())
+    }, 100)
   }
 
   CurrentFontSizeChange() {
-    console.log('isCurrentFontSizeChangeTimer:' + this.isChangeTimer)
-    this.drawPage();
-
-    if (this.isChangeTimer) {
-      // 防抖
-      clearTimeout(this.isChangeTimer)
-    }
-
-    this.isChangeTimer = setTimeout(() => {
-      if (this.currentPage > this.GetTotalPages()) {
-        this.currentPage = this.GetTotalPages()
-      }
-      this.drawPage();
-      console.log('currentPage:' + this.currentPage + '\ntotalPages:' + this.GetTotalPages())
-    }, 1000)
+    this.drawPage()
+    clearTimeout(this.timer)
+    this.timer = setTimeout(() => {
+      this.wrapText(this.context, this.ShowWidth);
+      console.log('CurrentFontSize:' + this.CurrentFontSize)
+      console.log('totalPages:' + this.GetTotalPages())
+    }, 100)
   }
 
   drawPage() {
     this.context.font = `${vp2px(this.CurrentFontSize)}px`;
-    this.linesPerPage = Math.floor((this.ShowHeight) / (this.CurrentFontSize * this.LineHeight));
-    if (this.context && this.AllChaptersContent[this.CurrentChapters]) {
+    this.linesPerPage = Math.floor(this.ShowHeight / (this.CurrentFontSize * this.LineHeight));
+    if (this.context) {
+      this.context.clearRect(0, 0, this.ShowWidth, this.ShowHeight);
       this.context.font = `${vp2px(this.CurrentFontSize)}px`;
       this.context.fillStyle = 'black';
+
       const start = this.currentPage * this.linesPerPage;
       const end = start + this.linesPerPage;
-      const pageLines = this.AllChaptersContent[this.CurrentChapters].slice(start, end);
+      const pageLines = this.CurrentChaptersContent.slice(start, end);
       console.log('当前页面渲染内容:' + JSON.stringify(pageLines)) // 当前页面需求渲染的内容
-      this.context.clearRect(0, 0, this.ShowWidth, this.ShowHeight);
       pageLines.forEach((line, index) => {
         this.context.fillText(line, 0, (index + 1) * this.CurrentFontSize * Number(this.LineHeight));
       });
     }
   }
 
+  // 当前章节内容按字分割
+  wrapText(context: CanvasRenderingContext2D, maxWidth: number = this.ShowWidth) {
+    let content: string = this.txtFile[this.CurrentChapters].content
+    let chaptersItemLines: string[] = []
+    let currentLine: string = ''
+    let pattern = /\n/
+    let i = 1
+    while (i < content.length) {
+      let temp = content[i] + content[i+1]
+      if (!pattern.test(temp)) {
+        if (context.measureText(currentLine + ' ' + content[i]).width < Number((this.ShowWidth - 10).toFixed(0))) {
+          currentLine += content[i];
+        } else {
+          chaptersItemLines.push(currentLine);
+          currentLine = content[i];
+        }
+        i++
+      } else {
+        chaptersItemLines.push(currentLine);
+        i = i + 2
+        currentLine = content[i];
+      }
+    }
+    if (pattern.test(chaptersItemLines[chaptersItemLines.length-1])) {
+      chaptersItemLines.splice(chaptersItemLines.length - 1, 1)
+    }
+    this.CurrentChaptersContent = chaptersItemLines
+    this.drawPage();
+  }
+
   nextPage() {
     if (this.currentPage < this.GetTotalPages()) {
       this.currentPage++;
-      console.log('currentPage:' + this.currentPage + '\ntotalPages:' + this.GetTotalPages())
+      console.log('currentPage:' + this.currentPage)
+      console.log('totalPages:' + this.GetTotalPages())
       this.drawPage();
     }
   }
@@ -124,7 +104,7 @@ export struct TxtContentHandler {
   prevPage() {
     if (this.currentPage > 0) {
       this.currentPage--;
-      console.log('prevPage:' + this.currentPage)
+      console.log('currentPage:' + this.currentPage)
       this.drawPage();
     }
   }
@@ -132,24 +112,20 @@ export struct TxtContentHandler {
   build() {
     Column() {
       Canvas(this.context)
+        .width("100%")
         .layoutWeight(1)
+        .borderWidth(1)
         .onSizeChange((oldValue: SizeOptions, newValue: SizeOptions) => {
           this.ShowHeight = Number(newValue.height)
           this.ShowWidth = Number(newValue.width)
-          this.drawPage()
-
-          if (this.isChangeTimer) {
-            // 防抖
-            clearTimeout(this.isChangeTimer)
-          }
-          this.isChangeTimer = setTimeout(() => {
-            this.drawPage();
-            console.log('currentPage:' + this.currentPage + '\ntotalPages:' + this.GetTotalPages())
-          }, 1000)
-
+          this.drawPage();
+          clearTimeout(this.timer)
+          this.timer = setTimeout(() => {
+            this.wrapText(this.context, this.ShowWidth);
+          }, 100)
           console.log('ShowHeight:' + this.ShowHeight)
           console.log('ShowWidth:' + this.ShowWidth)
-          console.log('currentPage:' + this.currentPage + '\ntotalPages:' + this.GetTotalPages())
+          console.log('totalPages:' + this.GetTotalPages())
         })
       Row() {
         Button('上一页')
@@ -168,41 +144,4 @@ export struct TxtContentHandler {
       .margin({ top: 10 })
     }
   }
-}
-
-@Concurrent
-function HandleAllChaptersContentTaskPool(dataArray: Array<string>) {
-  let CurrentFontSize = Number(dataArray[1])
-  let ShowWidth = Number(dataArray[2])
-  let index = Number(dataArray[3])
-  // console.log('CurrentFontSize:' + CurrentFontSize)
-  // console.log('ShowWidth:' + ShowWidth)
-  let content: string = dataArray[0]
-  let AllChaptersContent: Array<string>[] = []
-  let chaptersItemLines: string[] = []
-  let currentLine: string = ''
-  let pattern = /\n/
-  let i = 1
-  while (i < content.length) {
-    let temp = content[i] + content[i+1]
-    if (!pattern.test(temp)) {
-      if (Number(currentLine.length + 1) * CurrentFontSize < Number((ShowWidth - 10).toFixed(0))) {
-        currentLine += content[i];
-      } else {
-        chaptersItemLines.push(currentLine);
-        currentLine = content[i];
-      }
-      i++
-    } else {
-      chaptersItemLines.push(currentLine);
-      i = i + 2
-      currentLine = content[i];
-    }
-  }
-  if (pattern.test(chaptersItemLines[chaptersItemLines.length-1])) {
-    chaptersItemLines.splice(chaptersItemLines.length - 1, 1)
-  }
-  // console.log('chaptersItemLines:' + JSON.stringify(chaptersItemLines[chaptersItemLines.length-1]))
-  // console.log('chaptersItemLines:' + JSON.stringify(chaptersItemLines))
-  return chaptersItemLines
 }
