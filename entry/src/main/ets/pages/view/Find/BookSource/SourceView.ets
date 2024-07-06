@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from '@ohos/axios'
 import ClassifyList from '../../../../componets/common/ClassifyList'
+import Header from '../../../../componets/common/Header'
 import { showMessage } from '../../../../componets/common/promptShow'
 import Score from '../../../../componets/common/Score'
 import Tag from '../../../../componets/common/Tag'
@@ -8,6 +9,7 @@ import { BookSource, GroupList } from '../../../../componets/dataList/BookSource
 @Component
 export default struct SourceView {
   item: string = ''
+  @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State currentIndex: number = 0
   @State activeNameMap: Record<string, boolean> = {}
@@ -16,6 +18,9 @@ export default struct SourceView {
   @State sourceList: BookSource[] = []
   @State searchValue: string = ''
   @State clickNameMap: Record<string, boolean> = {}
+  @State selectNameMap: Record<string, boolean> = {}
+  @Link isBatch: boolean
+  @State longCount: number = 0
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
 
@@ -30,10 +35,18 @@ export default struct SourceView {
     })
   }
 
+  aboutToDisappear(): void {
+    this.searchValue = ''
+  }
+
   getGroupList() {
     const groupMap: Record<string, GroupList> = {};
     this.sourceList.forEach((item: BookSource) => {
       const title = item.bookSourceGroup;
+      const bookSourceName = item.bookSourceName;
+      if (bookSourceName.indexOf(this.searchValue) === -1) {
+        return
+      }
       // 如果groupMap中还没有这个group，则创建一个新的GroupList对象
       if (!groupMap[title]) {
         groupMap[title] = { title: title, list: [] };
@@ -57,6 +70,7 @@ export default struct SourceView {
 
   build() {
     Stack() {
+      // 头部区域
       Column() {
         // 搜索框
         Column() {
@@ -68,6 +82,10 @@ export default struct SourceView {
             .width("100%")
             .height(40)
             .backgroundColor(Color.White)
+            .onChange((value: string) => {
+              this.searchValue = value
+              this.getGroupList()
+            })
         }
         .padding({
           left: 20,
@@ -99,7 +117,33 @@ export default struct SourceView {
         })
         .width('100%')
         .height(50)
+      }
+      .backgroundColor('#f5f5f5')
+      .height(122)
+      .translate({y: !this.isBatch ? 0 : -122 - this.topRectHeight})
+      .zIndex(99)
+      .animation({
+        duration: 700
+      })
+      // 批量操作头部内容
+      Header({
+        customLeftBuilder: () => {
+          this.selectAll()
+        },
+        title: `已选${Object.values(this.activeNameMap).filter(o => o).length}项`,
+        customRightBuilder: () => {
+          this.complete()
+        }
+      })
+        .backgroundColor('#f5f5f5')
+        .translate({y: this.isBatch ? 0 : -50 - this.topRectHeight})
+        .zIndex(99)
+        .animation({
+          duration: this.isBatch ?  300 : 0,
+          delay: this.isBatch ?  300 : 0
+        })
 
+      Column() {
         // 内容主体
         Row({ space: 12 }) {
           ClassifyList({
@@ -109,7 +153,7 @@ export default struct SourceView {
             clickAction: (index: number) => {
               this.scrollChangeAction(index, true)
             },
-            isBadge: true
+            isBadge: !this.isBatch
           })
             .width(88)
 
@@ -133,10 +177,110 @@ export default struct SourceView {
           .layoutWeight(1)
         }
         .layoutWeight(1)
+        .animation({
+          duration: 300
+        })
       }
       .height('100%')
+      .padding({
+        top: this.isBatch ? 50 + this.topRectHeight : 122,
+        bottom: this.isBatch ? 68 + this.bottomRectHeight : this.bottomRectHeight
+      })
+
+      Row() {
+        Row() {
+          Column() {
+            Image($r('app.media.verify'))
+              .width(24)
+              .margin({bottom: 4})
+            Text('校验')
+              .fontSize(12)
+          }
+          .layoutWeight(1)
+
+          Row().width(12)
+          Column() {
+            Toggle({ type: ToggleType.Switch, isOn: true })
+              .selectedColor(0xff6600)
+              .margin({bottom: 4})
+              .onChange((val: boolean) => {
+                console.log(val + '')
+              })
+
+            Text('禁用')
+              .fontSize(12)
+          }
+          .layoutWeight(1)
+
+          Row().width(12)
+          Column() {
+            Image($r('app.media.export_1'))
+              .width(24)
+              .margin({bottom: 4})
+            Text('导出')
+              .fontSize(12)
+          }
+          .layoutWeight(1)
+
+          Row().width(12)
+          Column() {
+            Image($r('app.media.delete'))
+              .width(24)
+              .margin({bottom: 4})
+            Text('删除')
+              .fontSize(12)
+          }
+          .layoutWeight(1)
+
+          Row().width(12)
+          Column() {
+            Image($r('app.media.more'))
+              .width(24)
+              .margin({bottom: 4})
+            Text('更多')
+              .fontSize(12)
+          }
+          .layoutWeight(1)
+        }
+        .padding({
+          left: 20,
+          right: 20,
+        })
+        .alignItems(VerticalAlign.Center)
+        .width('100%')
+        .height(68)
+      }
+      .backgroundColor(Color.White)
+      .position({bottom: 0})
+      .zIndex(99)
+      .translate({y: this.isBatch ? 0 : 68 + this.bottomRectHeight})
+      .animation({
+        duration: 500
+      })
+      .padding({ bottom: this.bottomRectHeight })
     }
-    .padding({ bottom: this.bottomRectHeight })
+    .alignContent(Alignment.Top)
+  }
+
+  @Builder selectAll () {
+    Column() {
+      Text('全选')
+    }
+    .onClick(() => {
+      this.sourceList.forEach((item: BookSource) => {
+        this.activeNameMap[item.bookSourceName] = true
+      })
+    })
+  }
+
+  @Builder complete () {
+    Column() {
+      Text('完成')
+    }
+    .onClick(() => {
+      this.isBatch = false
+      this.activeNameMap = {}
+    })
   }
 
   @Builder
@@ -179,13 +323,33 @@ export default struct SourceView {
         })
         .maxLines(1)
 
-      Text('长按批量管理')
-        .fontSize(12)
-        .fontWeight(400)
-        .lineHeight(20)
-        .padding({left: 8})
-
-      Blank()
+      if (this.isBatch) {
+        Blank()
+        CheckboxGroup({ group: 'checkboxGroup' + index })
+          .checkboxShape(CheckBoxShape.CIRCLE)
+          .selectedColor(0xff6600)
+      } else {
+        Text('长按批量管理')
+          .fontSize(12)
+          .fontWeight(400)
+          .lineHeight(20)
+          .padding({left: 8})
+          .gesture(
+            LongPressGesture({ repeat: true, duration: 100 })
+              .onAction((event: GestureEvent) => {
+                if (event && event.repeat) {
+                  if (this.longCount>= 4) {
+                    this.isBatch = true
+                  }
+                  this.longCount++
+                }
+              })
+              .onActionEnd(() => {
+                this.longCount = 0
+              })
+          )
+        Blank()
+      }
     }
     .width('100%')
     .padding({ right: 16 })
@@ -217,7 +381,16 @@ export default struct SourceView {
 
         Blank()
 
-        Image($r('app.media.more_vertical')).width(24).fillColor('#73000000')
+        if (this.isBatch) {
+          Checkbox({ name: 'checkbox' + j, group: 'checkboxGroup' + i })
+            .select(this.activeNameMap[item.bookSourceName] ?? false)
+            .selectedColor(0xff6600)
+            .onChange((val: boolean) => {
+              this.activeNameMap[item.bookSourceName] = val
+            })
+        } else {
+          Image($r('app.media.more_vertical')).width(24).fillColor('#73000000')
+        }
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
@@ -240,10 +413,10 @@ export default struct SourceView {
           .lineHeight(20)
           .fontColor('rgba(0, 0, 0, 0.45)')
         Blank()
-        Toggle({ type: ToggleType.Switch, isOn: this.activeNameMap[item.bookSourceName] ?? false })
+        Toggle({ type: ToggleType.Switch, isOn: this.selectNameMap[item.bookSourceName] ?? false })
           .selectedColor(0xff6600)
           .onChange((val: boolean) => {
-            this.activeNameMap[item.bookSourceName] = val
+            this.selectNameMap[item.bookSourceName] = val
           })
       }
       .width('100%')
