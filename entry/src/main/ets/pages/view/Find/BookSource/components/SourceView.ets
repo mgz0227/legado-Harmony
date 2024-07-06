@@ -1,10 +1,10 @@
 import axios, { AxiosError, AxiosResponse } from '@ohos/axios'
-import ClassifyList from '../../../../componets/common/ClassifyList'
-import Header from '../../../../componets/common/Header'
-import { showMessage } from '../../../../componets/common/promptShow'
-import Score from '../../../../componets/common/Score'
-import Tag from '../../../../componets/common/Tag'
-import { BookSource, GroupList } from '../../../../componets/dataList/BookSource'
+import ClassifyList from '../../../../../componets/common/ClassifyList'
+import Header from '../../../../../componets/common/Header'
+import { showMessage } from '../../../../../componets/common/promptShow'
+import Score from '../../../../../componets/common/Score'
+import Tag from '../../../../../componets/common/Tag'
+import { BookSource, GroupList } from '../../../../../componets/dataList/BookSource'
 
 @Component
 export default struct SourceView {
@@ -21,17 +21,24 @@ export default struct SourceView {
   @State selectNameMap: Record<string, boolean> = {}
   @Link isBatch: boolean
   @State longCount: number = 0
+  @State loading: boolean = true
+  @State errorText: string = ''
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
 
   aboutToAppear() {
+    this.loading = true
     axios
       .get('https://node.wisdoms.xin/static/file/20240704/sy.json')
       .then((res: AxiosResponse) => {
         this.sourceList = res.data;
         this.getGroupList()
+        this.loading = false
+        this.errorText= ''
       }).catch((error: AxiosError) => {
       console.error(error.message);
+        this.loading = false
+        this.errorText = '获取失败'
     })
   }
 
@@ -258,6 +265,26 @@ export default struct SourceView {
         duration: 500
       })
       .padding({ bottom: this.bottomRectHeight })
+
+      Column() {
+        if (this.errorText) {
+          Text(this.errorText)
+        } else {
+          LoadingProgress()
+            .color(0xff6600)
+            .width('50%')
+          Text('加载中...')
+        }
+      }
+      .justifyContent(FlexAlign.Center)
+      .zIndex(this.loading ? 9 : -1)
+      .opacity(this.loading ? 1 : 0)
+      .width('100%')
+      .height('100%')
+      .backgroundColor('#f5f5f5')
+      .animation({
+        duration: 300
+      })
     }
     .alignContent(Alignment.Top)
   }

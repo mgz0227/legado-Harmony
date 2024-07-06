@@ -21,6 +21,7 @@
     "pages/view/bookShelf/LocalImportPage",
     "pages/view/bookShelf/DownloadManagementPage",
     "pages/view/Reader/ReaderPage",
-    "pages/view/Find/BookSource/Index"
+    "pages/view/Find/BookSource/Index",
+    "pages/view/Find/BookSource/AddSourcePage"
   ]
 }
