@@ -7,12 +7,14 @@ import { IconTitleVo } from '../../../../componetsmodel/IconTitleVo'
 import { FileHandler } from '../../../../common/utils/FileHandler'
 import ImportCommon from '../../../../componets/import/ImportCommon'
 import { showMessage } from '../../../../componets/common/promptShow';
-import SourceView from './SourceView'
+import SourceView from './components/SourceView'
 import BookMark from '../../../../componets/head/BookMark'
 import { getPasteDataSync, isNetworkUrl, sleep } from '../../../../common/utils/utils'
+import { router } from '@kit.ArkUI'
 
 @Entry
 @Component
+@Preview
 struct BookSourcePage {
   titleArray: Array<string> = ['小说', '漫画', '有声书']
   dialogRightData: IconTitleVo[] = [
@@ -74,10 +76,9 @@ struct BookSourcePage {
                     })
                   break;
                 case 2:
-                  showMessage(this.dialogRightData[index].title);
+                  router.pushUrl({ url: 'pages/view/Find/BookSource/AddSourcePage' })
                   break;
                 case 3:
-                  showMessage(this.dialogRightData[index].title);
                   this.isBatch = true
                   break;
                 case 4:

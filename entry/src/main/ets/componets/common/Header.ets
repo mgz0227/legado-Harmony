@@ -26,7 +26,7 @@ export default struct Header {
 
   paddingTop: number = 0
   @Prop title: string = ''
-  dialogRightData: IconTitleVo[] = []
+  dialogRightData: IconTitleVo[] | string[] = []
   dialogRightChange: Function = (_index: number) => {}
   @State showFunction: boolean = false
   flexAlign?: FlexAlign = FlexAlign.SpaceBetween
@@ -89,6 +89,7 @@ export default struct Header {
           }
         }
       }
+      .alignItems(VerticalAlign.Center)
       .justifyContent(this.flexAlign)
       .padding({
         left: 12,
@@ -107,10 +108,11 @@ export default struct Header {
   @Builder
   dialogRightFuction() {
     Column() {
-      ForEach(this.dialogRightData, (item: IconTitleVo, index) => {
+      ForEach(this.dialogRightData, (item: IconTitleVo | string, index) => {
         dialogTitleFuction({
-          title: item.title,
-          icon: item.icon,
+          title: typeof item === 'string' ? item : item.title,
+          icon: typeof item === 'string' ? undefined : item.icon,
+          isBorder: this.dialogRightData.length !== index + 1
         })
           .onClick(() => {
             this.dialogRightChange(index)

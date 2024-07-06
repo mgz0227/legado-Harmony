@@ -225,6 +225,7 @@ export default struct IndexFind {
        dialogTitleFuction({
          title:item.title,
          icon:item.icon,
+         isBorder: this.FIND_Dialog_Right_Fuction.length !== index + 1
        })
          .onClick(()=>{
            this.findBindMenuFunction(index)

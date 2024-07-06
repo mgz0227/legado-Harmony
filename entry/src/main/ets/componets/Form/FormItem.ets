@@ -1,0 +1,61 @@
+export enum FormItemType {
+  Input
+}
+
+@Component
+export  default  struct FormItem {
+  @Prop value: string
+  type: FormItemType = FormItemType.Input
+  label: string = ''
+  required: boolean = false
+  isLength: boolean = false
+  maxLength: number = 10
+  onChange: Function = (_value: string) => {}
+
+  build() {
+    Column() {
+      Row() {
+        Row() {
+          Text(this.label)
+            .fontSize(16)
+
+          if (this.required) {
+            Text('*')
+              .fontSize(16)
+              .padding({ left: 10 })
+              .fontColor(Color.Red)
+          }
+        }
+        .alignItems(VerticalAlign.Center)
+      }
+      .justifyContent(FlexAlign.SpaceBetween)
+
+      Stack() {
+        if (this.type === FormItemType.Input) {
+          TextInput({ text: this.value ?? '', placeholder: `请输入${this.label}` })
+            .placeholderColor('#73000000')
+            .placeholderFont({ size: 14, weight: 400 })
+            .caretColor('#FF6600')
+            .height(38)
+            .margin({ top: 10, bottom: 10 })
+            .fontSize(14)
+            .fontColor('#E0000000')
+            .borderRadius(4)
+            .onChange((value: string) => {
+              this.onChange(value)
+            })
+        }
+
+        if (this.isLength) {
+          Text(`${this.value?.length ?? 0}/${this.maxLength}`)
+            .fontSize(14)
+            .fontColor('#73000000')
+            .position({ top: 20, right: 10 })
+        }
+      }.width('100%')
+    }
+    .margin({ top: 12 })
+    .width('100%')
+    .alignItems(HorizontalAlign.Start)
+  }
+}

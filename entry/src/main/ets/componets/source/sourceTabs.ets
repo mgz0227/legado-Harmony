@@ -4,6 +4,7 @@ import { dataItem } from '../dataList/dataItem'
 
 @Component
 export struct sourceTabs{
+  @Prop marginY: number = 12
   @Prop sourceList:dataItem[]
   @Link read_index:number
   @State translateNum:number=0
@@ -61,7 +62,7 @@ export struct sourceTabs{
       normal:this.readListStyles
     })
     .padding(2)
-    .margin({top:12,bottom:12})
+    .margin({top:this.marginY,bottom:this.marginY})
   }
 
   @Styles readListStyles(){
