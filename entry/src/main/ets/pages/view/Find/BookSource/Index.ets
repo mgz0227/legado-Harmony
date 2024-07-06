@@ -27,6 +27,7 @@ struct BookSourcePage {
   @State isShowHelp: boolean = false
   @State isShowImport: boolean = false
   @State sourceList: BookSource[] = []
+  @State isBatch: boolean = false
 
   async pasteAnalyze() {
     try {
@@ -53,35 +54,39 @@ struct BookSourcePage {
     Column() {
       // 公共头部、搜索框
       Column() {
-        Header({
-          customTitleBuilder: () => {
-            this.titleBuilder(this.tabsController)
-          },
-          dialogRightData: this.dialogRightData,
-          dialogRightChange: (index: number) => {
-            switch (index) {
-              case 0:
-                this.pasteAnalyze()
-                break;
-              case 1:
-                let context = getContext(this) as common.Context;
-                FileHandler.pickerFile(context)
-                  .then((res: BookSource[]) => {
-                    this.sourceList = res;
-                    this.isShowImport = true
-                  })
-                break;
-              case 2:
-              case 3:
-                showMessage(this.dialogRightData[index].title);
-                break;
-              case 4:
-                console.log('dd')
-                this.isShowHelp = true;
-                break;
+        if (!this.isBatch) {
+          Header({
+            customTitleBuilder: () => {
+                this.titleBuilder(this.tabsController)
+            },
+            dialogRightData: this.dialogRightData,
+            dialogRightChange: (index: number) => {
+              switch (index) {
+                case 0:
+                  this.pasteAnalyze()
+                  break;
+                case 1:
+                  let context = getContext(this) as common.Context;
+                  FileHandler.pickerFile(context)
+                    .then((res: BookSource[]) => {
+                      this.sourceList = res;
+                      this.isShowImport = true
+                    })
+                  break;
+                case 2:
+                  showMessage(this.dialogRightData[index].title);
+                  break;
+                case 3:
+                  showMessage(this.dialogRightData[index].title);
+                  this.isBatch = true
+                  break;
+                case 4:
+                  this.isShowHelp = true;
+                  break;
+              }
             }
-          }
-        })
+          })
+        }
       }
 
       // 头部卡片下方视图
@@ -91,7 +96,7 @@ struct BookSourcePage {
       }) {
         ForEach(this.titleArray, (item: string) => {
           TabContent() {
-            SourceView({ item: item })
+            SourceView({ item: item, isBatch: this.isBatch })
           }
           .align(Alignment.Top)
         })
@@ -103,7 +108,7 @@ struct BookSourcePage {
         this.tabsController.changeIndex(index)
         this.currentIndex = index
       })
-      .scrollable(true)
+      .scrollable(this.isBatch ? false : true)
 
       Flex()
         .bindSheet(this.isShowHelp, this.dialogHelpFuction(), {

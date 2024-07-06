@@ -25,7 +25,7 @@ export default struct Header {
   @StorageLink('topRectHeight') topRectHeight: number = 0
 
   paddingTop: number = 0
-  title: string = ''
+  @Prop title: string = ''
   dialogRightData: IconTitleVo[] = []
   dialogRightChange: Function = (_index: number) => {}
   @State showFunction: boolean = false
