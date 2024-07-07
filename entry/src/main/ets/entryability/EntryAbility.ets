@@ -39,6 +39,9 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageCreate(windowStage: window.WindowStage) {
+    // 获取本地文件存储路径
+    const pathDir = this.context.filesDir;
+    AppStorage.setOrCreate('pathDir', pathDir);
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
     // 全屏
