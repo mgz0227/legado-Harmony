@@ -427,7 +427,6 @@ struct ReaderPage {
             LineHeight: this.LineHeight,
             CurrentFontSize: this.CurrentFontSize,
             ParagraphSpacing: this.ParagraphSpacing,
-            // ReaderPadding:this.ReaderPadding
           })
         }
         .padding({
