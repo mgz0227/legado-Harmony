@@ -4,6 +4,9 @@ export enum FormItemType {
 
 @Component
 export  default  struct FormItem {
+  @Builder rightBuilder() {}
+  // 自定义右侧区域
+  @BuilderParam customRightBuilder: () => void = this.rightBuilder
   @Prop value: string
   type: FormItemType = FormItemType.Input
   label: string = ''
@@ -27,7 +30,12 @@ export  default  struct FormItem {
           }
         }
         .alignItems(VerticalAlign.Center)
+
+        if (this.customRightBuilder !== this.rightBuilder) {
+          this.customRightBuilder()
+        }
       }
+      .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
 
       Stack() {
