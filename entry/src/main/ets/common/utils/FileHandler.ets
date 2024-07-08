@@ -1,5 +1,5 @@
 import { BusinessError } from '@ohos.base';
-import fs, { Options } from '@ohos.file.fs';
+import fs, { Options, WriteOptions } from '@ohos.file.fs';
 import { common, Context } from '@kit.AbilityKit';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
 import { BookList } from '../../componets/dataList/bookList';
@@ -19,7 +19,9 @@ export class FileHandler {
   static CopyFile(srcUrl: string) {
     let file = fs.openSync(srcUrl, fs.OpenMode.READ_WRITE);
     let dstPath = filePath + '/' + file.name; // file.name:《幽影之冰》.txt
-    addShelfBook(0,new BookList('',file.name,'会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'),'测试作者','未分组',dstPath))
+    addShelfBook(0,
+      new BookList('', file.name, '会说话的肘子·未读过1', '更新至·第340章 镇压', $r('app.media.cover_list'), '测试作者',
+        '未分组', dstPath))
     showMessage('添加到书架成功')
     fs.copyFile(file.fd, dstPath, 0).then(() => {
       showMessage('导入沙箱成功')
@@ -35,7 +37,8 @@ export class FileHandler {
     const chapters: chaptersItem[] = [];
     console.info('readFileUrl:' + readFileUrl)
     //const regex = /===第(.*?)章 (.*?)===/g;
-    const regex = /^[=|<]{0,4}((?:序章|楔子|番外|第\s{0,4})([\d〇零一二两三四五六七八九十百千万壹贰叁肆伍陆柒捌玖拾佰仟]+?\s{0,4})(?:章|回(?!合)|话(?!说)|节(?!课)|卷|篇(?!张)))(.{0,30})/g;
+    const regex =
+      /^[=|<]{0,4}((?:序章|楔子|番外|第\s{0,4})([\d〇零一二两三四五六七八九十百千万壹贰叁肆伍陆柒捌玖拾佰仟]+?\s{0,4})(?:章|回(?!合)|话(?!说)|节(?!课)|卷|篇(?!张)))(.{0,30})/g;
     await fs.readLines(readFileUrl, options).then((readerIterator: fs.ReaderIterator) => {
       for (let it = readerIterator.next();!it.done; it = readerIterator.next()) {
         const match = regex.exec(it.value);
@@ -56,7 +59,7 @@ export class FileHandler {
     return chapters
   }
 
-  static async pickerFile (context: Context) {
+  static async pickerFile(context: Context) {
     try {
       const documentSelectOptions = new picker.DocumentSelectOptions();
       // 选择文档的最大数目（可选）
@@ -65,7 +68,7 @@ export class FileHandler {
       documentSelectOptions.fileSuffixFilters = ['.json'];
       let documentViewPicker = new picker.DocumentViewPicker(context);
       const documentSelectResult: Array<string> = await documentViewPicker.select(documentSelectOptions)
-      const  pathUrl = documentSelectResult[0];
+      const pathUrl = documentSelectResult[0];
       console.info('文件目录：' + pathUrl);
       let file = fs.openSync(pathUrl, fs.OpenMode.READ_WRITE);
       let buf = new ArrayBuffer(40960000);
@@ -81,6 +84,54 @@ export class FileHandler {
     } catch (err) {
       console.error(`读取失败：${err}`);
       return Promise.reject(err)
+    }
+  }
+
+  static async readJsonFile(pathUrl: string) {
+    try {
+      console.info('文件目录：' + pathUrl);
+      let file = fs.openSync(pathUrl, fs.OpenMode.READ_WRITE);
+      let buf = new ArrayBuffer(40960000);
+      fs.readSync(file.fd, buf);
+      fs.closeSync(file);
+      let uint8View = new Uint8Array(buf);
+      // 设置编码格式为“utf-8”
+      let textDecoder = util.TextDecoder.create('utf-8', { ignoreBOM: true });
+      // 解码输后获取对应文本
+      let readString = textDecoder.decodeWithStream(uint8View, { stream: false });
+      console.log('读取的数据内容：' + readString);
+      return JSON.parse(readString)
+    } catch (err) {
+      console.error(`读取失败：${err}`);
+      return Promise.reject(err)
+    }
+  }
+
+  // TODO 目前写入存在问题，等官方回复
+  static async writeJsonFile(pathUrl: string, context: ArrayBuffer | string) {
+    console.info('文件目录：' + pathUrl);
+    try {
+      let file = fs.openSync(filePath, fs.OpenMode.TRUNC);
+      try {
+        let writeLen = fs.writeSync(file.fd, context);
+        fs.closeSync(file);
+        console.info('文件写入成功，文件长度：' + writeLen);
+      } catch (e) {
+        return Promise.reject('写入失败')
+      }
+      return Promise.resolve('写入成功')
+    } catch (e) {
+      console.info("文件不存在,开始创建文件");
+      try {
+        let file = fs.openSync(filePath, fs.OpenMode.CREATE);
+        let writeLen = fs.writeSync(file.fd, context);
+        fs.closeSync(file);
+        console.info('文件写入成功，文件长度：' + writeLen);
+        return Promise.resolve('写入成功')
+      } catch (e) {
+        console.error('写入失败'+JSON.stringify(e))
+        return Promise.reject('写入失败'+JSON.stringify(e))
+      }
     }
   }
 }
