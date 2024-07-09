@@ -69,20 +69,20 @@ export interface BookSource {
   bookSourceUrl: string;
   bookSourceType: number;
   bookSourceGroup: string;
-  grade: number,
-  score: string,
-  bookSourceComment: string;
-  loginUrl: string;
-  loginUi: string;
-  loginCheckJs: string;
-  bookUrlPattern: string;
-  coverDecodeJs: string;
-  header: string;
-  variableComment: string;
-  concurrentRate: string;
-  jsLib: string;
+  bookSourceGrade?: number,
+  bookSourceScore?: string,
+  bookSourceComment?: string;
+  loginUrl?: string;
+  loginUi?: string;
+  loginCheckJs?: string;
+  bookUrlPattern?: string;
+  coverDecodeJs?: string;
+  header?: string;
+  variableComment?: string;
+  concurrentRate?: string;
+  jsLib?: string;
   enabled: boolean;
-  enabledCookieJar: boolean;
+  enabledCookieJar?: boolean;
   enabledExplore: boolean;
   lastUpdateTime: number;
   respondTime: number;
@@ -91,10 +91,10 @@ export interface BookSource {
   exploreRule?: ExploreRule;
   searchRule?: SearchRule;
   tocRule?: TocRule;
-  searchUrl: string;
+  searchUrl?: string;
 
   customOrder: number;
-  exploreUrl: string;
+  exploreUrl?: string;
   weight: number;
 }
 

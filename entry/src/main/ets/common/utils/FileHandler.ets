@@ -5,7 +5,7 @@ import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
 import { BookList } from '../../componets/dataList/bookList';
 import { addShelfBook } from '../../storage/bookListData';
 import { showMessage } from '../../componets/common/promptShow';
-import { picker } from '@kit.CoreFileKit';
+import { fileIo, picker } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
 
 let context = getContext(this) as common.UIAbilityContext;
@@ -87,51 +87,46 @@ export class FileHandler {
     }
   }
 
-  static async readJsonFile(pathUrl: string) {
+  static async readJsonFile<T>(pathUrl: string): Promise<T | undefined> {
+    console.info('TagInfo', '文件路径：' + pathUrl);
     try {
-      console.info('文件目录：' + pathUrl);
-      let file = fs.openSync(pathUrl, fs.OpenMode.READ_WRITE);
-      let buf = new ArrayBuffer(40960000);
-      fs.readSync(file.fd, buf);
-      fs.closeSync(file);
-      let uint8View = new Uint8Array(buf);
-      // 设置编码格式为“utf-8”
-      let textDecoder = util.TextDecoder.create('utf-8', { ignoreBOM: true });
-      // 解码输后获取对应文本
-      let readString = textDecoder.decodeWithStream(uint8View, { stream: false });
-      console.log('读取的数据内容：' + readString);
-      return JSON.parse(readString)
+      const readString = await fs.readText(pathUrl);
+      console.info('TagInfo', '读取的数据内容：' + readString);
+      const data: T = JSON.parse(readString)
+      return data
     } catch (err) {
-      console.error(`读取失败：${err}`);
-      return Promise.reject(err)
+      console.error('TagInfo', `未读取到：${err}`);
+      return undefined
     }
   }
 
-  // TODO 目前写入存在问题，等官方回复
-  static async writeJsonFile(pathUrl: string, context: ArrayBuffer | string) {
-    console.info('文件目录：' + pathUrl);
+  static writeJsonFile(pathUrl: string, context: ArrayBuffer | string) {
+    console.info('TagInfo', '文件地址：' + pathUrl);
     try {
-      let file = fs.openSync(filePath, fs.OpenMode.TRUNC);
-      try {
-        let writeLen = fs.writeSync(file.fd, context);
-        fs.closeSync(file);
-        console.info('文件写入成功，文件长度：' + writeLen);
-      } catch (e) {
-        return Promise.reject('写入失败')
+      // 创建文件，并且写入内容，若是存在则重写内容
+      let res = fs.accessSync(pathUrl);
+      let file: fs.File
+      if (res) {
+        file = fs.openSync(pathUrl, fs.OpenMode.WRITE_ONLY | fs.OpenMode.TRUNC);
+      } else {
+        file = fs.openSync(pathUrl, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
       }
-      return Promise.resolve('写入成功')
+      fs.writeSync(file.fd, context)
+      fs.close(file);
+      return '写入成功'
     } catch (e) {
-      console.info("文件不存在,开始创建文件");
-      try {
-        let file = fs.openSync(filePath, fs.OpenMode.CREATE);
-        let writeLen = fs.writeSync(file.fd, context);
-        fs.closeSync(file);
-        console.info('文件写入成功，文件长度：' + writeLen);
-        return Promise.resolve('写入成功')
-      } catch (e) {
-        console.error('写入失败'+JSON.stringify(e))
-        return Promise.reject('写入失败'+JSON.stringify(e))
-      }
+      console.error('TagInfo', '写入失败' + JSON.stringify(e))
+      return '写入失败' + JSON.stringify(e)
+    }
+  }
+
+  static deleteJsonFile(pathUrl: string) {
+    try {
+      fs.unlinkSync(pathUrl);
+      return '删除成功'
+    } catch (e) {
+      console.error('TagError', '删除失败' + JSON.stringify(e))
+      return '删除失败'
     }
   }
 }

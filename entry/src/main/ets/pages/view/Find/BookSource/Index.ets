@@ -95,9 +95,9 @@ struct BookSourcePage {
         barPosition: BarPosition.Start,
         controller: this.tabsController
       }) {
-        ForEach(this.titleArray, (item: string) => {
+        ForEach(this.titleArray, (item: string, index: number) => {
           TabContent() {
-            SourceView({ item: item, isBatch: this.isBatch })
+            SourceView({ index,  isBatch: this.isBatch })
           }
           .align(Alignment.Top)
         })

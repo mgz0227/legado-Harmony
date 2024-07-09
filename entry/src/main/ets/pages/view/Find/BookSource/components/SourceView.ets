@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from '@ohos/axios'
+import { FileHandler } from '../../../../../common/utils/FileHandler'
 import ClassifyList from '../../../../../componets/common/ClassifyList'
 import Header from '../../../../../componets/common/Header'
 import { showMessage } from '../../../../../componets/common/promptShow'
@@ -8,7 +9,9 @@ import { BookSource, GroupList } from '../../../../../componets/dataList/BookSou
 
 @Component
 export default struct SourceView {
-  item: string = ''
+  titleArray: Array<string> = ['小说', '漫画', '有声书']
+  index: number = 0
+  @StorageProp('pathBookSource') pathBookSource: string = ''
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State currentIndex: number = 0
@@ -27,18 +30,17 @@ export default struct SourceView {
   private secondScroll = new Scroller()
 
   aboutToAppear() {
+    console.info('TagInfo', '当前下标： ' + this.index)
     this.loading = true
-    axios
-      .get('https://node.wisdoms.xin/static/file/20240704/sy.json')
-      .then((res: AxiosResponse) => {
-        this.sourceList = res.data;
-        this.getGroupList()
-        this.loading = false
-        this.errorText= ''
-      }).catch((error: AxiosError) => {
-      console.error(error.message);
-        this.loading = false
-        this.errorText = '获取失败'
+    FileHandler.readJsonFile<BookSource[]>(this.pathBookSource).then(data => {
+      const bookSource = data ?? []
+      this.sourceList = bookSource.filter(item => item.bookSourceType === this.index)
+      this.getGroupList()
+      this.loading = false
+      console.info('TagInfo', '数量 ' + this.sourceList.length)
+      if (!this.sourceList.length) {
+        this.errorText = `当前${this.titleArray[this.index]}还没有添加源`
+      }
     })
   }
 
@@ -83,7 +85,7 @@ export default struct SourceView {
         Column() {
           Search({
             value: this.searchValue,
-            placeholder: `搜索${this.item}`,
+            placeholder: `搜索${this.titleArray[this.index]}`,
             icon: "/common/images/search.svg"
           })
             .width("100%")
@@ -182,6 +184,20 @@ export default struct SourceView {
             this.scrollChangeAction(start, false)
           })
           .layoutWeight(1)
+          .gesture(
+            LongPressGesture({ repeat: true, duration: 500 })
+              .onAction((event: GestureEvent) => {
+                if (event && event.repeat) {
+                  if (this.longCount>= 1) {
+                    this.isBatch = true
+                  }
+                  this.longCount++
+                }
+              })
+              .onActionEnd(() => {
+                this.longCount = 0
+              })
+          )
         }
         .layoutWeight(1)
         .animation({
@@ -267,7 +283,7 @@ export default struct SourceView {
       .padding({ bottom: this.bottomRectHeight })
 
       Column() {
-        if (this.errorText) {
+        if (this.errorText && !this.sourceList.length) {
           Text(this.errorText)
         } else {
           LoadingProgress()
@@ -277,8 +293,8 @@ export default struct SourceView {
         }
       }
       .justifyContent(FlexAlign.Center)
-      .zIndex(this.loading ? 9 : -1)
-      .opacity(this.loading ? 1 : 0)
+      .zIndex(this.loading || (this.errorText && !this.sourceList.length) ? 9 : -1)
+      .opacity(this.loading || (this.errorText && !this.sourceList.length) ? 1 : 0)
       .width('100%')
       .height('100%')
       .backgroundColor('#f5f5f5')
@@ -361,20 +377,6 @@ export default struct SourceView {
           .fontWeight(400)
           .lineHeight(20)
           .padding({left: 8})
-          .gesture(
-            LongPressGesture({ repeat: true, duration: 100 })
-              .onAction((event: GestureEvent) => {
-                if (event && event.repeat) {
-                  if (this.longCount>= 4) {
-                    this.isBatch = true
-                  }
-                  this.longCount++
-                }
-              })
-              .onActionEnd(() => {
-                this.longCount = 0
-              })
-          )
         Blank()
       }
     }

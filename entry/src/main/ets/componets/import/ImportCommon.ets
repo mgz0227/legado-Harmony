@@ -4,7 +4,9 @@
  * @className: ImportCommon
  * 通用导入页
  */
+import { FileHandler } from '../../common/utils/FileHandler';
 import ClassifyList from '../common/ClassifyList';
+import { showMessage } from '../common/promptShow';
 import Score from '../common/Score';
 import Tag from '../common/Tag';
 import { BookSource, GroupList } from '../dataList/BookSource';
@@ -12,6 +14,8 @@ import { BookSource, GroupList } from '../dataList/BookSource';
 @Component
 @Preview
 export default struct ImportCommon {
+  @StorageProp('pathBookSource') pathBookSource: string = ''
+  @State localSourceList: BookSource[] = []
   @Prop sourceList: BookSource[] = []
   @Link show: boolean;
   @State groupList: GroupList[] = []
@@ -23,6 +27,10 @@ export default struct ImportCommon {
   private secondScroll = new Scroller()
 
   aboutToAppear() {
+    FileHandler.readJsonFile<BookSource[]>(this.pathBookSource).then(data => {
+      const bookSource = data ?? []
+      this.localSourceList = bookSource
+    })
     this.getGroupList()
   }
 
@@ -155,9 +163,11 @@ export default struct ImportCommon {
           .backgroundColor(0xff6600)
           .layoutWeight(1)
           .onClick(() => {
+            const dataList = this.sourceList.filter(item => this.activeNameMap[item.bookSourceName] ?? false)
+            FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(dataList))
             this.show = false;
             this.resetState()
-            console.log('确定')
+            showMessage('添加成功')
           })
       }
       .width('100%')
