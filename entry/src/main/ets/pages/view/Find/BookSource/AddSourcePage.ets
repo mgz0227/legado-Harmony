@@ -15,7 +15,7 @@ import SourceDebug from './components/SourceDebug';
 struct AddSourcePage {
   titleArray: string[] = ['小说', '漫画', '有声书']
   dialogRightData: string[] = ['搜索源码', '书籍源码', '目录源码', '正文源码', '帮助']
-  @StorageProp('pathDir') pathDir: string = ''
+  @StorageProp('pathBookSource') pathBookSource: string = ''
   @State isShowHelp: boolean = false
   @State sourceList: dataItem[] = [
     new dataItem("编辑", 1),
@@ -27,12 +27,19 @@ struct AddSourcePage {
   private scroller: Scroller = new Scroller()
   private controller: TabsController = new TabsController()
   private headController: TabsController = new TabsController()
-  @State formModel: Partial<BookSource> = {
-    bookInfoRule: {},
-    contentRule: {},
-    exploreRule: {},
-    searchRule: {},
-    tocRule: {}
+  @State formModel: BookSource = {
+    bookSourceName: '',
+    bookSourceUrl: '',
+    bookSourceType: 0,
+    bookSourceGroup: '男频',
+    bookSourceGrade: 2,
+    bookSourceScore: '5.0分',
+    enabled: true,
+    enabledExplore: true,
+    lastUpdateTime: 0,
+    respondTime: 180000,
+    customOrder: 0,
+    weight: 0
   }
 
   onReadChange() {
@@ -131,15 +138,21 @@ struct AddSourcePage {
           .fontColor(Color.White)
           .backgroundColor(0xff6600)
           .layoutWeight(1)
-          .onClick(() => {
+          .onClick(async  () => {
             if (!this.formModel.bookSourceName || !this.formModel.bookSourceUrl) {
               this.readIndex = 0
               this.currentIndex = 0
               this.controller.changeIndex(0)
               this.scroller.scrollEdge(Edge.Top)
+              showMessage('红星标记的内容不能为空')
             }
-            // FileHandler.writeJsonFile(this.pathDir+'/tests.json', JSON.stringify(this.formModel))
-            console.log('保存', JSON.stringify(this.formModel))
+            const data = await FileHandler.readJsonFile<BookSource[]>(this.pathBookSource) ?? [];
+            data.push(this.formModel as BookSource)
+            FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(data))
+            showMessage('保存成功')
+            setTimeout(() => {
+              router.back()
+            }, 1000)
           })
           .opacity(1)
       }
@@ -246,7 +259,7 @@ struct AddSourcePage {
               .value(this.formModel.bookSourceGroup ?? '男频')
               .borderRadius(4)
               .fontColor(this.formModel.bookSourceGroup ? '#E0000000' : '#73000000')
-              .onSelect((index: number, text?: string | undefined) => {
+              .onSelect((index: number, text: string) => {
                 this.formModel.bookSourceGroup = text
               })
               .backgroundColor('#f5f5f5')
@@ -274,11 +287,11 @@ struct AddSourcePage {
               { value: '优质' },
               { value: '精品' }
             ])
-              .value(GRADE_TYPE[this.formModel.grade ?? 0])
+              .value(GRADE_TYPE[this.formModel.bookSourceGrade ?? 0])
               .borderRadius(4)
-              .fontColor(this.formModel.grade !== undefined ? '#E0000000' : '#73000000')
+              .fontColor(this.formModel.bookSourceGrade !== undefined ? '#E0000000' : '#73000000')
               .onSelect((index: number, text?: string | undefined) => {
-                this.formModel.grade = index
+                this.formModel.bookSourceGrade = index
               })
               .backgroundColor('#f5f5f5')
               .layoutWeight(1)
@@ -290,11 +303,11 @@ struct AddSourcePage {
               { value: '2.0分' },
               { value: '1.0分' },
             ])
-              .value(this.formModel.score ?? '5.0分')
+              .value(this.formModel.bookSourceScore ?? '5.0分')
               .borderRadius(4)
-              .fontColor(this.formModel.score ? '#E0000000' : '#73000000')
+              .fontColor(this.formModel.bookSourceScore ? '#E0000000' : '#73000000')
               .onSelect((index: number, text?: string | undefined) => {
-                this.formModel.score = text
+                this.formModel.bookSourceScore = text
               })
               .backgroundColor('#f5f5f5')
               .layoutWeight(1)
