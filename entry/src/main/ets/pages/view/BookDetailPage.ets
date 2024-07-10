@@ -6,6 +6,7 @@ import NoteIndex from '../../componets/bookDetail/note/NoteIndex'
 import { BookList } from 'ets/componets/dataList/bookList'
 import { chaptersItem } from '../../componets/dataList/ReaderChaptersItem'
 import { FileHandler } from '../../common/utils/FileHandler'
+import ChaptersDataSource from '../../common/LazyIDataSource/ChaptersDataSource'
 
 /**
  * 标题图片样式
@@ -79,8 +80,8 @@ struct BookDetailPage {
     cornerRadius: 8,
     offset: { dx: 0, dy: -100 }
   })
-  @State txtFile: chaptersItem[] = [];
-
+  @State txtFiles: chaptersItem[] = [];
+  @State txtFile: ChaptersDataSource = new ChaptersDataSource()
   onPageShow() {
     this.isShow = true
     console.log('router BookDetailPage:' + JSON.stringify(router.getParams()))
@@ -88,7 +89,8 @@ struct BookDetailPage {
       this.bookData = router.getParams() as BookList
       setTimeout(async () => {
         let temp = await FileHandler.readFile(this.bookData.fileLink) //txt小说
-        this.txtFile = temp
+        this.txtFile.pushAllData(temp)
+        this.txtFiles = this.txtFile.getListData()
       },0)
     }
   }
@@ -116,14 +118,14 @@ struct BookDetailPage {
       Tabs({ barPosition: BarPosition.Start }) {
         TabContent() {
           Column() {
-            if (this.txtFile.length === 0 || undefined) {
+            if (this.txtFiles.length=== 0 || undefined) {
               SwipeRefresher({
                 content: '目录加载中...',
                 isLoading: true
               })
             } else {
               List() {
-                ForEach(this.txtFile, (item: chaptersItem, index: number) => {
+                LazyForEach(this.txtFile, (item: chaptersItem, index: number) => {
                   ListItem() {
                     Button({ type: ButtonType.Normal }) {
                       Row() {
@@ -151,12 +153,13 @@ struct BookDetailPage {
                         params: {
                           bookData: this.bookData,
                           clickBookChapter: index,
-                          txtFile: this.txtFile
+                          txtFile: this.txtFiles
                         }
                       })
                     })
                   }
                 })
+
               }
               .divider({
                 strokeWidth: 0.8,
@@ -167,7 +170,7 @@ struct BookDetailPage {
             }
           }
         }
-        .tabBar(this.catalogTab(0, '目录', this.txtFile.length))
+        .tabBar(this.catalogTab(0, '目录', this.txtFile.totalCount()))
 
         TabContent() {
           Column() {
@@ -215,9 +218,9 @@ struct BookDetailPage {
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor(this.txtFile.length > 0 ? '#FF6600' : 'gray')
+          .backgroundColor(this.txtFile.totalCount() ? '#FF6600' : 'gray')
           .fontColor('#FFFFFF')
-          .enabled(this.txtFile.length > 0)
+          .enabled(this.txtFile.totalCount() > 0)
           .onClick(() => {
             // 跳转到阅读器
             router.pushUrl({
@@ -226,7 +229,7 @@ struct BookDetailPage {
                 bookData: this.bookData,
                 //后续持久化后再获取已经读到的章节序号，目前先传默认的0
                 clickBookChapter: 0,
-                txtFile: this.txtFile
+                txtFile: this.txtFiles
               }
             })
           })
