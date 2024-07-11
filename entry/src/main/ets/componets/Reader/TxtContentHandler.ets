@@ -60,10 +60,27 @@ export struct TxtContentHandler {
 
       const start = this.currentPage * this.linesPerPage;
       const end = start + this.linesPerPage;
-      const pageLines = this.CurrentChaptersContent.slice(start, end);
-      console.log('当前页面渲染内容:' + JSON.stringify(pageLines)) // 当前页面需求渲染的内容
-      pageLines.forEach((line, index) => {
-        this.context.fillText(line, 0, (index + 1) * this.CurrentFontSize * Number(this.LineHeight));
+      const CurrentPageLines = this.CurrentChaptersContent.slice(start, end);
+
+      // 上一页和下一页的内容
+      const PreStart = start - this.linesPerPage;
+      const NextEnd = start + this.linesPerPage * 2;
+      const PrePageLines = this.CurrentChaptersContent.slice(PreStart, start);
+      const NextPageLines = this.CurrentChaptersContent.slice(end, NextEnd);
+      CurrentPageLines.forEach((line, index) => {
+        this.context.fillText(line, 0 + this.offsetX, (index + 1) * this.CurrentFontSize * Number(this.LineHeight));
+      });
+
+      // 下一页内容
+      PrePageLines.forEach((line, index) => {
+        this.context.fillText(line, 0 - this.ShowWidth + this.offsetX,
+          (index + 1) * this.CurrentFontSize * Number(this.LineHeight));
+      });
+
+      // 下一页内容
+      NextPageLines.forEach((line, index) => {
+        this.context.fillText(line, this.ShowWidth + this.offsetX,
+          (index + 1) * this.CurrentFontSize * Number(this.LineHeight));
       });
     }
   }
@@ -98,26 +115,8 @@ export struct TxtContentHandler {
     this.drawPage();
   }
 
-  nextPage() {
-    if (this.currentPage < this.GetTotalPages()) {
-      this.currentPage++;
-      console.log('currentPage:' + this.currentPage)
-      console.log('totalPages:' + this.GetTotalPages())
-      this.drawPage();
-    }
-  }
-
-  prevPage() {
-    if (this.currentPage > 0) {
-      this.currentPage--;
-      console.log('currentPage:' + this.currentPage)
-      this.drawPage();
-    }
-  }
-
   build() {
     Canvas(this.context)
-      .translate({ x: this.offsetX, y: 0, z: 0 })
       .width("100%")
       .layoutWeight(1)
       .borderWidth(1)
@@ -140,16 +139,24 @@ export struct TxtContentHandler {
               return;
             }
             this.offsetX = event.offsetX;
+            this.drawPage();
           })
           .onActionEnd((event: GestureEvent) => {
-            if (event.offsetX > 200) {
-              this.prevPage()
+            console.log('currentPage:' + this.currentPage)
+            if (event.offsetX > 200 && this.currentPage > 0) {
+              this.currentPage--;
               console.log('prevPage')
-            } else if (event.offsetX < -200) {
-              this.nextPage()
+              this.offsetX = 0
+              this.drawPage();
+            } else if (event.offsetX < -200 && this.currentPage < this.GetTotalPages()) {
+              this.currentPage++;
               console.log('nextPage')
+              this.offsetX = 0
+              this.drawPage();
+            } else {
+              this.offsetX = 0
+              this.drawPage();
             }
-            this.offsetX = 0
           })
       )
   }
