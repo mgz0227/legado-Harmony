@@ -2,7 +2,6 @@ import battery from 'ets/componets/common/battery';
 import Dialog from 'ets/componets/common/Dialog';
 import { router } from '@kit.ArkUI';
 import sourceView from './sourceView';
-import { FileHandler } from 'ets/common/utils/FileHandler';
 import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
 import DownloadSettingDialog from '../../../componets/Reader/DownloadSettingDialog';
 import LayoutMoreDialog from '../../../componets/Reader/LayoutMoreDialog';
@@ -15,7 +14,7 @@ import { BookList } from 'ets/componets/dataList/bookList';
 interface ParamsObj {
   bookData: BookList,
   clickBookChapter: number,
-  txtFile:chaptersItem[]
+  txtFile: chaptersItem[]
 }
 
 @Entry
@@ -75,7 +74,7 @@ struct ReaderPage {
                   router.back()
                 })
               Text(`${this.txtFile[this.CurrentChapters]?.chapterTitleNumber} ${this.txtFile[this.CurrentChapters]?.title}`
-                .replace(new RegExp('\\s{1,}','g'), ' ')
+                .replace(new RegExp('\\s{1,}', 'g'), ' ')
                 .replaceAll('=', ''))
                 .layoutWeight(1)
                 .maxLines(1)
@@ -427,7 +426,6 @@ struct ReaderPage {
             LineHeight: this.LineHeight,
             CurrentFontSize: this.CurrentFontSize,
             ParagraphSpacing: this.ParagraphSpacing,
-            // ReaderPadding:this.ReaderPadding
           })
         }
         .padding({

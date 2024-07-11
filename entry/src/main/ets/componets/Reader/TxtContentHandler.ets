@@ -8,15 +8,16 @@ export struct TxtContentHandler {
   @Prop @Watch('CurrentFontSizeChange') CurrentFontSize: number = 0;
   @Prop LineHeight: number = 1.8;
   @Prop ParagraphSpacing: number = 0;
-  @Prop ReaderPadding: number = 0;
   @State currentPage: number = 0;
   @State ShowHeight: number = 0
   @State ShowWidth: number = 0
   @State linesPerPage: number = 0;
   @State timer: number = 0;
-  @State CurrentChaptersContent: Array<string> = []; // 存放需要显示在页面上，每个章节重排段落的字符串，一层数组索引为章节，二层数组索引为段落
+  @State offsetX: number = 0;
+  @State CurrentChaptersContent: Array<string> = []; // 当前章节内容
   private settings: RenderingContextSettings = new RenderingContextSettings(true);
   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings);
+  private panOption: PanGestureOptions = new PanGestureOptions({ direction: PanDirection.Left | PanDirection.Right })
 
   // 获取总页数
   GetTotalPages() {
@@ -24,14 +25,14 @@ export struct TxtContentHandler {
   }
 
   CurrentChaptersChange() {
-    this.currentPage = 0
     clearTimeout(this.timer)
     this.timer = setTimeout(() => {
+      this.currentPage = 0
       this.wrapText(this.context, this.ShowWidth);
       console.log('CurrentChapters:' + this.CurrentChapters)
       console.log('currentPage:' + this.currentPage)
       console.log('totalPages:' + this.GetTotalPages())
-    }, 100)
+    }, 200)
   }
 
   CurrentFontSizeChange() {
@@ -39,9 +40,14 @@ export struct TxtContentHandler {
     clearTimeout(this.timer)
     this.timer = setTimeout(() => {
       this.wrapText(this.context, this.ShowWidth);
+      if (this.currentPage > this.GetTotalPages()) {
+        console.log('currentPage:' + this.currentPage)
+        this.currentPage = this.GetTotalPages()
+        this.drawPage()
+      }
       console.log('CurrentFontSize:' + this.CurrentFontSize)
       console.log('totalPages:' + this.GetTotalPages())
-    }, 100)
+    }, 200)
   }
 
   drawPage() {
@@ -110,38 +116,41 @@ export struct TxtContentHandler {
   }
 
   build() {
-    Column() {
-      Canvas(this.context)
-        .width("100%")
-        .layoutWeight(1)
-        .borderWidth(1)
-        .onSizeChange((oldValue: SizeOptions, newValue: SizeOptions) => {
-          this.ShowHeight = Number(newValue.height)
-          this.ShowWidth = Number(newValue.width)
-          this.drawPage();
-          clearTimeout(this.timer)
-          this.timer = setTimeout(() => {
-            this.wrapText(this.context, this.ShowWidth);
-          }, 100)
-          console.log('ShowHeight:' + this.ShowHeight)
-          console.log('ShowWidth:' + this.ShowWidth)
-          console.log('totalPages:' + this.GetTotalPages())
-        })
-      Row() {
-        Button('上一页')
-          .onClick(() => {
-            this.prevPage()
-          })
-          .backgroundColor(this.currentPage > 0 ? 'blue' : 'gray')
-
-        Button('下一页')
-          .onClick(() => {
-            this.nextPage()
-          })
-          .backgroundColor(this.currentPage < this.GetTotalPages() ? 'blue' : 'gray')
-      }
+    Canvas(this.context)
+      .translate({ x: this.offsetX, y: 0, z: 0 })
+      .width("100%")
+      .layoutWeight(1)
       .borderWidth(1)
-      .margin({ top: 10 })
-    }
+      .onSizeChange((oldValue: SizeOptions, newValue: SizeOptions) => {
+        this.ShowHeight = Number(newValue.height)
+        this.ShowWidth = Number(newValue.width)
+        this.drawPage();
+        clearTimeout(this.timer)
+        this.timer = setTimeout(() => {
+          this.wrapText(this.context, this.ShowWidth);
+        }, 100)
+        console.log('ShowHeight:' + this.ShowHeight)
+        console.log('ShowWidth:' + this.ShowWidth)
+        console.log('totalPages:' + this.GetTotalPages())
+      })
+      .gesture(
+        PanGesture(this.panOption)
+          .onActionUpdate((event?: GestureEvent) => {
+            if (!event) {
+              return;
+            }
+            this.offsetX = event.offsetX;
+          })
+          .onActionEnd((event: GestureEvent) => {
+            if (event.offsetX > 200) {
+              this.prevPage()
+              console.log('prevPage')
+            } else if (event.offsetX < -200) {
+              this.nextPage()
+              console.log('nextPage')
+            }
+            this.offsetX = 0
+          })
+      )
   }
 }
