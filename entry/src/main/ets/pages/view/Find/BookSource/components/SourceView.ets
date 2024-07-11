@@ -1,11 +1,15 @@
 import axios, { AxiosError, AxiosResponse } from '@ohos/axios'
 import { FileHandler } from '../../../../../common/utils/FileHandler'
 import ClassifyList from '../../../../../componets/common/ClassifyList'
+import dialogTitleFuction from '../../../../../componets/common/dialogTitleFuction'
 import Header from '../../../../../componets/common/Header'
 import { showMessage } from '../../../../../componets/common/promptShow'
 import Score from '../../../../../componets/common/Score'
 import Tag from '../../../../../componets/common/Tag'
 import { BookSource, GroupList } from '../../../../../componets/dataList/BookSource'
+import { IconTitleVo } from '../../../../../componetsmodel/IconTitleVo'
+import { router } from '@kit.ArkUI'
+import { JSON } from '@kit.ArkTS'
 
 @Component
 export default struct SourceView {
@@ -21,17 +25,31 @@ export default struct SourceView {
   @State sourceList: BookSource[] = []
   @State searchValue: string = ''
   @State clickNameMap: Record<string, boolean> = {}
-  @State selectNameMap: Record<string, boolean> = {}
+  @State enabledMap: Record<string, boolean> = {}
   @Link isBatch: boolean
   @State longCount: number = 0
   @State loading: boolean = true
   @State errorText: string = ''
+  @State showRightDialogMap: Record<string, boolean> = {}
+  @State showMoreDialog: boolean = false
+  @State toggleAll: boolean = true
+  @Link @Watch('getList')refresh: number
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
 
   aboutToAppear() {
     console.info('TagInfo', '当前下标： ' + this.index)
     this.loading = true
+    this.getList()
+  }
+
+  aboutToDisappear(): void {
+    this.searchValue = ''
+  }
+
+  getList() {
+    // axios.get('https://node.wisdoms.xin/static/file/20240704/sy.json').then((res: AxiosResponse) => {
+    //   const bookSource: BookSource[] = res.data ?? []
     FileHandler.readJsonFile<BookSource[]>(this.pathBookSource).then(data => {
       const bookSource = data ?? []
       this.sourceList = bookSource.filter(item => item.bookSourceType === this.index)
@@ -42,10 +60,6 @@ export default struct SourceView {
         this.errorText = `当前${this.titleArray[this.index]}还没有添加源`
       }
     })
-  }
-
-  aboutToDisappear(): void {
-    this.searchValue = ''
   }
 
   getGroupList() {
@@ -129,11 +143,12 @@ export default struct SourceView {
       }
       .backgroundColor('#f5f5f5')
       .height(122)
-      .translate({y: !this.isBatch ? 0 : -122 - this.topRectHeight})
+      .translate({ y: !this.isBatch ? 0 : -122 - this.topRectHeight })
       .zIndex(99)
       .animation({
         duration: 700
       })
+
       // 批量操作头部内容
       Header({
         customLeftBuilder: () => {
@@ -145,11 +160,11 @@ export default struct SourceView {
         }
       })
         .backgroundColor('#f5f5f5')
-        .translate({y: this.isBatch ? 0 : -50 - this.topRectHeight})
+        .translate({ y: this.isBatch ? 0 : -50 - this.topRectHeight })
         .zIndex(99)
         .animation({
-          duration: this.isBatch ?  300 : 0,
-          delay: this.isBatch ?  300 : 0
+          duration: this.isBatch ? 300 : 0,
+          delay: this.isBatch ? 300 : 0
         })
 
       Column() {
@@ -188,7 +203,7 @@ export default struct SourceView {
             LongPressGesture({ repeat: true, duration: 500 })
               .onAction((event: GestureEvent) => {
                 if (event && event.repeat) {
-                  if (this.longCount>= 1) {
+                  if (this.longCount >= 1) {
                     this.isBatch = true
                   }
                   this.longCount++
@@ -215,22 +230,33 @@ export default struct SourceView {
           Column() {
             Image($r('app.media.verify'))
               .width(24)
-              .margin({bottom: 4})
+              .margin({ bottom: 4 })
             Text('校验')
               .fontSize(12)
           }
           .layoutWeight(1)
+          .onClick(() => {
+            showMessage('校验')
+          })
 
           Row().width(12)
           Column() {
-            Toggle({ type: ToggleType.Switch, isOn: true })
+            Toggle({ type: ToggleType.Switch, isOn: this.toggleAll })
               .selectedColor(0xff6600)
-              .margin({bottom: 4})
+              .margin({ bottom: 4 })
               .onChange((val: boolean) => {
-                console.log(val + '')
+                this.toggleAll = val
+                this.sourceList.forEach((item, i) => {
+                  if (this.activeNameMap[item.bookSourceGroup+item.bookSourceName]) {
+                    item.enabled = val
+                    this.sourceList[i] = item
+                  }
+                })
+                FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(this.sourceList))
+                this.getList()
               })
 
-            Text('禁用')
+            Text(this.toggleAll ? '禁用' : '启用')
               .fontSize(12)
           }
           .layoutWeight(1)
@@ -239,31 +265,68 @@ export default struct SourceView {
           Column() {
             Image($r('app.media.export_1'))
               .width(24)
-              .margin({bottom: 4})
+              .margin({ bottom: 4 })
             Text('导出')
               .fontSize(12)
           }
           .layoutWeight(1)
+          .onClick(() => {
+            showMessage('导出')
+          })
 
           Row().width(12)
           Column() {
             Image($r('app.media.delete'))
               .width(24)
-              .margin({bottom: 4})
+              .margin({ bottom: 4 })
             Text('删除')
               .fontSize(12)
           }
           .layoutWeight(1)
+          .onClick(async () => {
+            if (!Object.values(this.activeNameMap).filter(o => o).length) {
+              return showMessage('请至少选择一个')
+            }
+            let removeIds: number[] = []
+            this.sourceList.forEach((item, index) => {
+              if (this.activeNameMap[item.bookSourceGroup + item.bookSourceName]) {
+                removeIds.push(index)
+              }
+            })
+            removeIds.forEach(index => this.sourceList.splice(index, 1))
+            await FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(this.sourceList))
+            showMessage('删除成功')
+            this.activeNameMap = {}
+            this.getList()
+          })
 
           Row().width(12)
           Column() {
             Image($r('app.media.more'))
               .width(24)
-              .margin({bottom: 4})
+              .margin({ bottom: 4 })
             Text('更多')
               .fontSize(12)
           }
-          .layoutWeight(1)
+          .layoutWeight(1).bindMenu(
+            this.showMoreDialog,
+            this.rightDialogBuilder(this.More_Right_Dialog_Data, async (index: number) => {
+              switch (index) {
+                case 0:
+                case 1:
+                case 2:
+                  showMessage(this.More_Right_Dialog_Data[index].title)
+                  break;
+              }
+            }),
+            {
+              onDisappear: () => {
+                this.showMoreDialog = false
+              }
+            })
+          .onClick(() => {
+            this.showMoreDialog = true
+          })
         }
         .padding({
           left: 20,
@@ -274,9 +337,9 @@ export default struct SourceView {
         .height(68)
       }
       .backgroundColor(Color.White)
-      .position({bottom: 0})
+      .position({ bottom: 0 })
       .zIndex(99)
-      .translate({y: this.isBatch ? 0 : 68 + this.bottomRectHeight})
+      .translate({ y: this.isBatch ? 0 : 68 + this.bottomRectHeight })
       .animation({
         duration: 500
       })
@@ -305,24 +368,28 @@ export default struct SourceView {
     .alignContent(Alignment.Top)
   }
 
-  @Builder selectAll () {
+  @Builder
+  selectAll() {
     Column() {
       Text('全选')
     }
     .onClick(() => {
       this.sourceList.forEach((item: BookSource) => {
-        this.activeNameMap[item.bookSourceName] = true
+        this.activeNameMap[item.bookSourceGroup + item.bookSourceName] = true
       })
     })
   }
 
-  @Builder complete () {
+  @Builder
+  complete() {
     Column() {
       Text('完成')
     }
-    .onClick(() => {
+    .onClick(async () => {
       this.isBatch = false
       this.activeNameMap = {}
+      await FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(this.sourceList))
+      this.getList()
     })
   }
 
@@ -376,7 +443,7 @@ export default struct SourceView {
           .fontSize(12)
           .fontWeight(400)
           .lineHeight(20)
-          .padding({left: 8})
+          .padding({ left: 8 })
         Blank()
       }
     }
@@ -412,20 +479,63 @@ export default struct SourceView {
 
         if (this.isBatch) {
           Checkbox({ name: 'checkbox' + j, group: 'checkboxGroup' + i })
-            .select(this.activeNameMap[item.bookSourceName] ?? false)
+            .select(this.activeNameMap[item.bookSourceGroup + item.bookSourceName] ?? false)
             .selectedColor(0xff6600)
             .onChange((val: boolean) => {
-              this.activeNameMap[item.bookSourceName] = val
+              this.activeNameMap[item.bookSourceGroup + item.bookSourceName] = val
             })
         } else {
-          Image($r('app.media.more_vertical')).width(24).fillColor('#73000000')
+          Image($r('app.media.more_vertical'))
+            .width(24).fillColor('#73000000')
+            .bindMenu(
+              this.showRightDialogMap[item.bookSourceGroup + item.bookSourceName],
+              this.rightDialogBuilder(this.Item_Right_Dialog_Data, async (index: number) => {
+                switch (index) {
+                  case 0:
+                    router.pushUrl({
+                      url: 'pages/view/Find/BookSource/AddSourcePage', params: {
+                        id: item.bookSourceGroup + item.bookSourceName
+                      }
+                    })
+                    break;
+                  case 1:
+                  case 2:
+                  case 3:
+                    showMessage(this.Item_Right_Dialog_Data[index].title)
+                    break;
+                  case 4:
+                    router.pushUrl({
+                      url: 'pages/view/Find/BookSource/AddSourcePage', params: {
+                        id: item.bookSourceGroup + item.bookSourceName, type: 1
+                      }
+                    })
+                    break;
+                  case 5:
+                    const localIndex =
+                      this.sourceList.findIndex(localItem => localItem.bookSourceGrade + localItem.bookSourceName ===
+                        item.bookSourceGrade + item.bookSourceName)
+                    this.sourceList.splice(localIndex, 1)
+                    await FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(this.sourceList))
+                    showMessage('删除成功')
+                    this.getList()
+                    break;
+                }
+              }),
+              {
+                onDisappear: () => {
+                  this.showRightDialogMap[item.bookSourceGroup + item.bookSourceName] = false
+                }
+              })
+            .onClick(() => {
+              this.showRightDialogMap[item.bookSourceGroup + item.bookSourceName] = true
+            })
         }
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
 
       Row() {
-        Score({ score: j > 5 ? 5 : j, isBoutique: j >= 6 })
+        Score({ grade: item.bookSourceGrade, score: item.bookSourceScore })
       }
       .width('100%')
       .margin({ top: 10 })
@@ -442,10 +552,11 @@ export default struct SourceView {
           .lineHeight(20)
           .fontColor('rgba(0, 0, 0, 0.45)')
         Blank()
-        Toggle({ type: ToggleType.Switch, isOn: this.selectNameMap[item.bookSourceName] ?? false })
+        Toggle({ type: ToggleType.Switch, isOn: item.enabled })
           .selectedColor(0xff6600)
-          .onChange((val: boolean) => {
-            this.selectNameMap[item.bookSourceName] = val
+          .onChange(async (val: boolean) => {
+            item.enabled = val
+            await FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(this.sourceList))
           })
       }
       .width('100%')
@@ -498,5 +609,35 @@ export default struct SourceView {
       bottom: 12
     })
     .backgroundColor(Color.White)
+  }
+
+  Item_Right_Dialog_Data: IconTitleVo[] = [
+    new IconTitleVo($r('app.media.edit'), '编辑'),
+    new IconTitleVo($r('app.media.icon_no_source_find'), '评分'),
+    new IconTitleVo($r('app.media.search'), '搜索'),
+    new IconTitleVo($r('app.media.ic_logout'), '登录'),
+    new IconTitleVo($r('app.media.icon_rule_help'), '调试'),
+    new IconTitleVo($r('app.media.delete'), '删除')
+  ]
+  More_Right_Dialog_Data: IconTitleVo[] = [
+    new IconTitleVo($r('app.media.ic_folder'), '移动至'),
+    new IconTitleVo($r('app.media.icon_no_source_find'), '评分'),
+    new IconTitleVo($r('app.media.icon_share'), '分享'),
+  ]
+
+  @Builder
+  rightDialogBuilder(list: IconTitleVo[], dialogRightChange: (_index: number) => void) {
+    Column() {
+      ForEach(list, (item: IconTitleVo, index) => {
+        dialogTitleFuction({
+          title: item.title,
+          icon: item.icon,
+          isBorder: list.length !== index + 1
+        })
+          .onClick(() => {
+            dialogRightChange(index)
+          })
+      })
+    }
   }
 }

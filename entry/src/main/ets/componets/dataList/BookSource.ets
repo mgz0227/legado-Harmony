@@ -86,11 +86,11 @@ export interface BookSource {
   enabledExplore: boolean;
   lastUpdateTime: number;
   respondTime: number;
-  bookInfoRule?: BookInfoRule;
-  contentRule?: ContentRule;
-  exploreRule?: ExploreRule;
-  searchRule?: SearchRule;
-  tocRule?: TocRule;
+  ruleBookInfo?: BookInfoRule;
+  ruleContent?: ContentRule;
+  ruleExplore?: ExploreRule;
+  ruleSearch?: SearchRule;
+  ruleToc?: TocRule;
   searchUrl?: string;
 
   customOrder: number;
