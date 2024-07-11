@@ -56,6 +56,13 @@ export class FileHandler {
     }).catch((err: BusinessError) => {
       console.error("readLines failed with error message: " + err.message + ", error code: " + err.code);
     });
+    // 移除chapters中content内容字符不超过5个字符的删除
+    for (let i = 0; i < chapters.length; i++) {
+      if (chapters[i].content.length < 5) {
+        chapters.splice(i, 1)
+        i--
+      }
+    }
     return chapters
   }
 
