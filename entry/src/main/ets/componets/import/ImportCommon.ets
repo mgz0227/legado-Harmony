@@ -10,6 +10,9 @@ import { showMessage } from '../common/promptShow';
 import Score from '../common/Score';
 import Tag from '../common/Tag';
 import { BookSource, GroupList } from '../dataList/BookSource';
+import { JSON } from '@kit.ArkTS';
+import json from '@ohos.util.json';
+import { deduplicateObjects } from '../../common/utils/utils';
 
 @Component
 export default struct ImportCommon {
@@ -20,6 +23,8 @@ export default struct ImportCommon {
   @State groupList: GroupList[] = []
   @State currentIndex: number = 0
   @State activeNameMap: Record<string, boolean> = {}
+  @State alreadyNameMap: Record<string, boolean> = {}
+  @State updateNameMap: Record<string, boolean> = {}
   @State fullActive: boolean = false
   @State waringActive: boolean = false
   private scroll: Scroller = new Scroller()
@@ -29,20 +34,34 @@ export default struct ImportCommon {
     FileHandler.readJsonFile<BookSource[]>(this.pathBookSource).then(data => {
       const bookSource = data ?? []
       this.localSourceList = bookSource
+      this.getGroupList()
+    }).catch(() => {
+      this.getGroupList()
     })
-    this.getGroupList()
   }
 
   getGroupList() {
     const groupMap: Record<string, GroupList> = {};
     this.sourceList.forEach((item: BookSource) => {
       const title = item.bookSourceGroup;
+      const bookSourceName = item.bookSourceName;
       // 如果groupMap中还没有这个group，则创建一个新的GroupList对象
       if (!groupMap[title]) {
         groupMap[title] = { title: title, list: [] };
       }
       // 向当前group的list中添加BookSource对象
       groupMap[title].list.push(item);
+      for (let i = 0; i < this.localSourceList.length; i++) {
+        const localItem = this.localSourceList[i];
+        if (localItem.bookSourceGroup + localItem.bookSourceName === title + bookSourceName) {
+          this.alreadyNameMap[title + bookSourceName] = true
+          if (JSON.stringify(localItem) !== JSON.stringify(item)) {
+            this.activeNameMap[title + bookSourceName] = true
+            this.updateNameMap[title + bookSourceName] = true
+          }
+          break;
+        }
+      }
     })
     this.groupList = Object.values(groupMap);
   }
@@ -105,7 +124,7 @@ export default struct ImportCommon {
           .onChange((val: boolean) => {
             this.fullActive = val
             this.sourceList.forEach((item: BookSource) => {
-              this.activeNameMap[item.bookSourceName] = val
+              this.activeNameMap[item.bookSourceGroup + item.bookSourceName] = val
             })
           })
 
@@ -162,8 +181,18 @@ export default struct ImportCommon {
           .backgroundColor(0xff6600)
           .layoutWeight(1)
           .onClick(() => {
-            const dataList = this.sourceList.filter(item => this.activeNameMap[item.bookSourceName] ?? false)
-            FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(dataList))
+            const newDataList = [...this.localSourceList];
+            const activeDataList =
+              this.sourceList.filter(item => this.activeNameMap[item.bookSourceGroup + item.bookSourceName] ?? false)
+            activeDataList.forEach(item => {
+              const localIndex = newDataList.findIndex(localItem => localItem.bookSourceGrade + localItem.bookSourceName === item.bookSourceGrade + item.bookSourceName)
+              if (localIndex != -1) {
+                newDataList[localIndex] = item
+              } else {
+                newDataList.push(item)
+              }
+            })
+            FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(deduplicateObjects(newDataList)))
             this.show = false;
             this.resetState()
             showMessage('添加成功')
@@ -217,10 +246,10 @@ export default struct ImportCommon {
         Blank()
 
         Checkbox({ name: 'checkbox' + j, group: 'checkboxGroup' + i })
-          .select(this.activeNameMap[item.bookSourceName] ?? false)
+          .select(this.activeNameMap[item.bookSourceGroup + item.bookSourceName] ?? false)
           .selectedColor(0xff6600)
           .onChange((val: boolean) => {
-            this.activeNameMap[item.bookSourceName] = val
+            this.activeNameMap[item.bookSourceGroup + item.bookSourceName] = val
           })
       }
       .width('100%')
@@ -231,7 +260,8 @@ export default struct ImportCommon {
       Row() {
         Score({ score: j > 5 ? 5 : j, isBoutique: j >= 6 })
 
-        Text('更新')
+        Text(this.updateNameMap[item.bookSourceGroup + item.bookSourceName] ?? false ?
+          '更新' : (this.alreadyNameMap[item.bookSourceGroup + item.bookSourceName] ?? false ? '已有' : '新增'))
           .fontSize(12)
           .fontColor('rgba(0, 0, 0, 0.45)')
       }

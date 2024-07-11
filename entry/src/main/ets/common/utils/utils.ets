@@ -28,3 +28,9 @@ export const sleep = (duration: number = 1000): Promise<void> => {
     }, duration)
   })
 }
+
+// 去除对象数组中重复的内容
+export const deduplicateObjects = <T>(list: T[]): T[] => {
+  const uniqueSet = new Set(list.map(item => JSON.stringify(item)));
+  return Array.from(uniqueSet).map(strItem => JSON.parse(strItem) as T);
+};
