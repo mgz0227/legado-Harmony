@@ -12,7 +12,6 @@ import Tag from '../common/Tag';
 import { BookSource, GroupList } from '../dataList/BookSource';
 
 @Component
-@Preview
 export default struct ImportCommon {
   @StorageProp('pathBookSource') pathBookSource: string = ''
   @State localSourceList: BookSource[] = []
