@@ -215,7 +215,9 @@ export default class CommonConstants {
   /**
    * space间距
    */
+  static readonly SPACE_6: number = 6;
   static readonly SPACE_10: number = 10;
+  static readonly SPACE_12: number = 12;
   static readonly SPACE_20: number = 20;
 
   /**
@@ -248,4 +250,12 @@ export default class CommonConstants {
    * 字体样式
    */
   static readonly FAMILY_PingFANG: string = 'PingFang SC'
+
+  /**
+   * 通用宽高
+   */
+  static readonly COMMON_WIDTH_45_36: number = 45.36;
+  static readonly COMMON_HEIGHT_21_6: number = 21.6;
+  static readonly COMMON_WIDTH_40: number = 40;
+  static readonly COMMON_HEIGHT_40: number = 40;
 }
