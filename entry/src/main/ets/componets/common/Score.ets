@@ -14,21 +14,14 @@ const SCORE_STYLE: Record<number, ScoreStyle> = {
     scoreColor: '#ffffff',
     background: '#D8ECFF'
   },
-  4: {
+  1: {
     img: 'rectangle_5',
     text: '优质',
     textColor: '#ffffff',
     scoreColor: '#C07000',
     background: '#FFDDAD'
   },
-  5: {
-    img: 'rectangle_5',
-    text: '优质',
-    textColor: '#ffffff',
-    scoreColor: '#C07000',
-    background: '#FFDDAD'
-  },
-  99: {
+  2: {
     img: 'rectangle_icon',
     text: '精品',
     textColor: '#FFE5D4',
@@ -39,14 +32,14 @@ const SCORE_STYLE: Record<number, ScoreStyle> = {
 
 @Component
 export default struct Score {
-  @Prop score: number = 0
-  @Prop isBoutique: boolean = false
+  @Prop score: string = '0'
+  @Prop grade: number = 0
 
   build() {
     Row() {
       Row() {
         Stack() {
-          Image($r(`app.media.${SCORE_STYLE[this.isBoutique?99:this.score]?.img ?? SCORE_STYLE[0].img}`))
+          Image($r(`app.media.${SCORE_STYLE[this.grade ?? 2].img}`))
             .borderRadius({
               topLeft: 4,
               bottomLeft: 4
@@ -54,24 +47,24 @@ export default struct Score {
             .width(28)
             .height(16)
 
-          Text(SCORE_STYLE[this.isBoutique?99:this.score]?.text ?? SCORE_STYLE[0].text)
+          Text(SCORE_STYLE[this.grade ?? 2].text)
             .fontSize(9)
-            .fontColor(SCORE_STYLE[this.isBoutique?99:this.score]?.textColor ?? SCORE_STYLE[0].textColor)
+            .fontColor(SCORE_STYLE[this.grade ?? 2].textColor)
         }
 
-        Text(this.score.toFixed(1))
+        Text(parseInt(this.score.replace('分', '')).toFixed(1))
           .padding({left: 1})
           .fontSize(11)
           .fontWeight(400)
           .lineHeight(12)
-          .fontColor(SCORE_STYLE[this.isBoutique?99:this.score]?.scoreColor ?? SCORE_STYLE[0].scoreColor)
+          .fontColor(SCORE_STYLE[this.grade ?? 2].scoreColor)
       }
       .width(47)
       .height(16)
       .borderRadius(4)
-      .backgroundColor(SCORE_STYLE[this.isBoutique?99:this.score]?.background ?? SCORE_STYLE[0].background)
+      .backgroundColor(SCORE_STYLE[this.grade ?? 2].background)
 
-      Rating({ rating: this.score, indicator: true })
+      Rating({ rating: parseInt(this.score.replace('分', '')), indicator: true })
         .size({
           width: 90,
           height: 20

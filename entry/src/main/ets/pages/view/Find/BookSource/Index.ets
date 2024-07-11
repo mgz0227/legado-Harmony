@@ -30,6 +30,14 @@ struct BookSourcePage {
   @State isShowImport: boolean = false
   @State sourceList: BookSource[] = []
   @State isBatch: boolean = false
+  @State refresh: number = 0
+
+  aboutToAppear() {
+  }
+
+  onPageShow() {
+    this.refresh += 1
+  }
 
   async pasteAnalyze() {
     try {
@@ -97,7 +105,7 @@ struct BookSourcePage {
       }) {
         ForEach(this.titleArray, (item: string, index: number) => {
           TabContent() {
-            SourceView({ index,  isBatch: this.isBatch })
+            SourceView({ index,  isBatch: this.isBatch, refresh: this.refresh })
           }
           .align(Alignment.Top)
         })

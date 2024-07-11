@@ -8,6 +8,12 @@ import { BookSource, BOOK_SOURCE_TYPE, GRADE_TYPE } from '../../../../componets/
 import FormItem from '../../../../componets/Form/FormItem';
 import { FileHandler } from '../../../../common/utils/FileHandler';
 import SourceDebug from './components/SourceDebug';
+import { JSON } from '@kit.ArkTS';
+
+interface RouteParams {
+  id: string,
+  type?: number
+}
 
 @Entry
 @Component
@@ -24,6 +30,7 @@ struct AddSourcePage {
   @State @Watch('onReadChange')readIndex: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State currentIndex: number = 0
+  @State isDebug: boolean = false
   private scroller: Scroller = new Scroller()
   private controller: TabsController = new TabsController()
   private headController: TabsController = new TabsController()
@@ -40,6 +47,21 @@ struct AddSourcePage {
     respondTime: 180000,
     customOrder: 0,
     weight: 0
+  }
+
+  async  aboutToAppear() {
+    const params  = router.getParams() as RouteParams;
+    console.log('TagInfo', JSON.stringify(params))
+    const data = await FileHandler.readJsonFile<BookSource[]>(this.pathBookSource) ?? [];
+    const localItem = data.find((localItem) => localItem.bookSourceGroup + localItem.bookSourceName === params.id)
+    if (localItem) {
+      this.formModel = localItem
+    }
+    this.isDebug = params.type === 1
+    if (params.type ===  1) {
+      this.readIndex = 1
+      this.headController.changeIndex(1)
+    }
   }
 
   onReadChange() {
@@ -147,7 +169,12 @@ struct AddSourcePage {
               showMessage('红星标记的内容不能为空')
             }
             const data = await FileHandler.readJsonFile<BookSource[]>(this.pathBookSource) ?? [];
-            data.push(this.formModel as BookSource)
+            const localIndex = data.findIndex((localItem) => localItem.bookSourceGroup + localItem.bookSourceName === this.formModel.bookSourceGroup + this.formModel.bookSourceName)
+            if (localIndex != -1) {
+              data[localIndex] = this.formModel
+            } else {
+              data.push(this.formModel)
+            }
             FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(data))
             showMessage('保存成功')
             setTimeout(() => {
@@ -414,101 +441,101 @@ struct AddSourcePage {
           }
         });
         FormItem({
-          value: this.formModel.searchRule?.checkKeyWord,
+          value: this.formModel.ruleSearch?.checkKeyWord,
           label: '校验关键词',
           onChange: (value: string) => {
-            if (this.formModel.searchRule) {
-              this.formModel.searchRule.checkKeyWord = value
+            if (this.formModel.ruleSearch) {
+              this.formModel.ruleSearch.checkKeyWord = value
             }
           }
         });
         FormItem({
-          value: this.formModel.searchRule?.bookList,
+          value: this.formModel.ruleSearch?.bookList,
           label: '书籍列表规则',
           onChange: (value: string) => {
-            if (this.formModel.searchRule) {
-              this.formModel.searchRule.bookList = value
+            if (this.formModel.ruleSearch) {
+              this.formModel.ruleSearch.bookList = value
             }
           }
         });
         FormItem({
-          value: this.formModel.searchRule?.name,
+          value: this.formModel.ruleSearch?.name,
           label: '书名规则',
           onChange: (value: string) => {
-            if (this.formModel.searchRule) {
-              this.formModel.searchRule.name = value
+            if (this.formModel.ruleSearch) {
+              this.formModel.ruleSearch.name = value
             }
           }
         });
         FormItem({
-          value: this.formModel.searchRule?.author,
+          value: this.formModel.ruleSearch?.author,
           label: '作者规则',
           onChange: (value: string) => {
-            if (this.formModel.searchRule) {
-              this.formModel.searchRule.author = value
+            if (this.formModel.ruleSearch) {
+              this.formModel.ruleSearch.author = value
             }
           }
         });
         FormItem({
-          value: this.formModel.searchRule?.name,
+          value: this.formModel.ruleSearch?.name,
           label: '书名规则',
           onChange: (value: string) => {
-            if (this.formModel.searchRule) {
-              this.formModel.searchRule.name = value
+            if (this.formModel.ruleSearch) {
+              this.formModel.ruleSearch.name = value
             }
           }
         });
         FormItem({
-          value: this.formModel.searchRule?.kind,
+          value: this.formModel.ruleSearch?.kind,
           label: '分类规则',
           onChange: (value: string) => {
-            if (this.formModel.searchRule) {
-              this.formModel.searchRule.kind = value
+            if (this.formModel.ruleSearch) {
+              this.formModel.ruleSearch.kind = value
             }
           }
         });
         FormItem({
-          value: this.formModel.searchRule?.wordCount,
+          value: this.formModel.ruleSearch?.wordCount,
           label: '字数规则',
           onChange: (value: string) => {
-            if (this.formModel.searchRule) {
-              this.formModel.searchRule.wordCount = value
+            if (this.formModel.ruleSearch) {
+              this.formModel.ruleSearch.wordCount = value
             }
           }
         });
         FormItem({
-          value: this.formModel.searchRule?.lastChapter,
+          value: this.formModel.ruleSearch?.lastChapter,
           label: '最新章节规则',
           onChange: (value: string) => {
-            if (this.formModel.searchRule) {
-              this.formModel.searchRule.lastChapter = value
+            if (this.formModel.ruleSearch) {
+              this.formModel.ruleSearch.lastChapter = value
             }
           }
         });
         FormItem({
-          value: this.formModel.searchRule?.intro,
+          value: this.formModel.ruleSearch?.intro,
           label: '简介规则',
           onChange: (value: string) => {
-            if (this.formModel.searchRule) {
-              this.formModel.searchRule.intro = value
+            if (this.formModel.ruleSearch) {
+              this.formModel.ruleSearch.intro = value
             }
           }
         });
         FormItem({
-          value: this.formModel.searchRule?.coverUrl,
+          value: this.formModel.ruleSearch?.coverUrl,
           label: '封面规则',
           onChange: (value: string) => {
-            if (this.formModel.searchRule) {
-              this.formModel.searchRule.coverUrl = value
+            if (this.formModel.ruleSearch) {
+              this.formModel.ruleSearch.coverUrl = value
             }
           }
         });
         FormItem({
-          value: this.formModel.searchRule?.bookUrl,
+          value: this.formModel.ruleSearch?.bookUrl,
           label: '详情页URL规则',
           onChange: (value: string) => {
-            if (this.formModel.searchRule) {
-              this.formModel.searchRule.bookUrl = value
+            if (this.formModel.ruleSearch) {
+              this.formModel.ruleSearch.bookUrl = value
             }
           }
         });
@@ -531,83 +558,83 @@ struct AddSourcePage {
           }
         });
         FormItem({
-          value: this.formModel.exploreRule?.bookList,
+          value: this.formModel.ruleExplore?.bookList,
           label: '书籍列表规则',
           onChange: (value: string) => {
-            if (this.formModel.exploreRule) {
-              this.formModel.exploreRule.bookList = value
+            if (this.formModel.ruleExplore) {
+              this.formModel.ruleExplore.bookList = value
             }
           }
         });
         FormItem({
-          value: this.formModel.exploreRule?.name,
+          value: this.formModel.ruleExplore?.name,
           label: '书名规则',
           onChange: (value: string) => {
-            if (this.formModel.exploreRule) {
-              this.formModel.exploreRule.name = value
+            if (this.formModel.ruleExplore) {
+              this.formModel.ruleExplore.name = value
             }
           }
         });
         FormItem({
-          value: this.formModel.exploreRule?.author,
+          value: this.formModel.ruleExplore?.author,
           label: '作者规则',
           onChange: (value: string) => {
-            if (this.formModel.exploreRule) {
-              this.formModel.exploreRule.author = value
+            if (this.formModel.ruleExplore) {
+              this.formModel.ruleExplore.author = value
             }
           }
         });
         FormItem({
-          value: this.formModel.exploreRule?.kind,
+          value: this.formModel.ruleExplore?.kind,
           label: '分类规则',
           onChange: (value: string) => {
-            if (this.formModel.exploreRule) {
-              this.formModel.exploreRule.kind = value
+            if (this.formModel.ruleExplore) {
+              this.formModel.ruleExplore.kind = value
             }
           }
         });
         FormItem({
-          value: this.formModel.exploreRule?.wordCount,
+          value: this.formModel.ruleExplore?.wordCount,
           label: '字数规则',
           onChange: (value: string) => {
-            if (this.formModel.exploreRule) {
-              this.formModel.exploreRule.wordCount = value
+            if (this.formModel.ruleExplore) {
+              this.formModel.ruleExplore.wordCount = value
             }
           }
         });
         FormItem({
-          value: this.formModel.exploreRule?.lastChapter,
+          value: this.formModel.ruleExplore?.lastChapter,
           label: '最新章节规则',
           onChange: (value: string) => {
-            if (this.formModel.exploreRule) {
-              this.formModel.exploreRule.lastChapter = value
+            if (this.formModel.ruleExplore) {
+              this.formModel.ruleExplore.lastChapter = value
             }
           }
         });
         FormItem({
-          value: this.formModel.exploreRule?.intro,
+          value: this.formModel.ruleExplore?.intro,
           label: '简介规则',
           onChange: (value: string) => {
-            if (this.formModel.exploreRule) {
-              this.formModel.exploreRule.intro = value
+            if (this.formModel.ruleExplore) {
+              this.formModel.ruleExplore.intro = value
             }
           }
         });
         FormItem({
-          value: this.formModel.exploreRule?.coverUrl,
+          value: this.formModel.ruleExplore?.coverUrl,
           label: '封面规则',
           onChange: (value: string) => {
-            if (this.formModel.exploreRule) {
-              this.formModel.exploreRule.coverUrl = value
+            if (this.formModel.ruleExplore) {
+              this.formModel.ruleExplore.coverUrl = value
             }
           }
         });
         FormItem({
-          value: this.formModel.exploreRule?.bookUrl,
+          value: this.formModel.ruleExplore?.bookUrl,
           label: '详情页URL规则',
           onChange: (value: string) => {
-            if (this.formModel.exploreRule) {
-              this.formModel.exploreRule.bookUrl = value
+            if (this.formModel.ruleExplore) {
+              this.formModel.ruleExplore.bookUrl = value
             }
           }
         });
@@ -623,101 +650,101 @@ struct AddSourcePage {
     Scroll() {
       Column() {
         FormItem({
-          value: this.formModel.bookInfoRule?.init,
+          value: this.formModel.ruleBookInfo?.init,
           label: '预处理规则',
           onChange: (value: string) => {
-            if (this.formModel.bookInfoRule) {
-              this.formModel.bookInfoRule.init = value
+            if (this.formModel.ruleBookInfo) {
+              this.formModel.ruleBookInfo.init = value
             }
           }
         });
         FormItem({
-          value: this.formModel.bookInfoRule?.name,
+          value: this.formModel.ruleBookInfo?.name,
           label: '书名规则',
           onChange: (value: string) => {
-            if (this.formModel.bookInfoRule) {
-              this.formModel.bookInfoRule.name = value
+            if (this.formModel.ruleBookInfo) {
+              this.formModel.ruleBookInfo.name = value
             }
           }
         });
         FormItem({
-          value: this.formModel.bookInfoRule?.author,
+          value: this.formModel.ruleBookInfo?.author,
           label: '作者规则',
           onChange: (value: string) => {
-            if (this.formModel.bookInfoRule) {
-              this.formModel.bookInfoRule.author = value
+            if (this.formModel.ruleBookInfo) {
+              this.formModel.ruleBookInfo.author = value
             }
           }
         });
         FormItem({
-          value: this.formModel.bookInfoRule?.kind,
+          value: this.formModel.ruleBookInfo?.kind,
           label: '分类规则',
           onChange: (value: string) => {
-            if (this.formModel.bookInfoRule) {
-              this.formModel.bookInfoRule.kind = value
+            if (this.formModel.ruleBookInfo) {
+              this.formModel.ruleBookInfo.kind = value
             }
           }
         });
         FormItem({
-          value: this.formModel.bookInfoRule?.wordCount,
+          value: this.formModel.ruleBookInfo?.wordCount,
           label: '字数规则',
           onChange: (value: string) => {
-            if (this.formModel.bookInfoRule) {
-              this.formModel.bookInfoRule.wordCount = value
+            if (this.formModel.ruleBookInfo) {
+              this.formModel.ruleBookInfo.wordCount = value
             }
           }
         });
         FormItem({
-          value: this.formModel.bookInfoRule?.lastChapter,
+          value: this.formModel.ruleBookInfo?.lastChapter,
           label: '最新章节规则',
           onChange: (value: string) => {
-            if (this.formModel.bookInfoRule) {
-              this.formModel.bookInfoRule.lastChapter = value
+            if (this.formModel.ruleBookInfo) {
+              this.formModel.ruleBookInfo.lastChapter = value
             }
           }
         });
         FormItem({
-          value: this.formModel.bookInfoRule?.intro,
+          value: this.formModel.ruleBookInfo?.intro,
           label: '简介规则',
           onChange: (value: string) => {
-            if (this.formModel.bookInfoRule) {
-              this.formModel.bookInfoRule.intro = value
+            if (this.formModel.ruleBookInfo) {
+              this.formModel.ruleBookInfo.intro = value
             }
           }
         });
         FormItem({
-          value: this.formModel.bookInfoRule?.coverUrl,
+          value: this.formModel.ruleBookInfo?.coverUrl,
           label: '封面规则',
           onChange: (value: string) => {
-            if (this.formModel.bookInfoRule) {
-              this.formModel.bookInfoRule.coverUrl = value
+            if (this.formModel.ruleBookInfo) {
+              this.formModel.ruleBookInfo.coverUrl = value
             }
           }
         });
         FormItem({
-          value: this.formModel.bookInfoRule?.tocUrl,
+          value: this.formModel.ruleBookInfo?.tocUrl,
           label: '目录规则',
           onChange: (value: string) => {
-            if (this.formModel.bookInfoRule) {
-              this.formModel.bookInfoRule.tocUrl = value
+            if (this.formModel.ruleBookInfo) {
+              this.formModel.ruleBookInfo.tocUrl = value
             }
           }
         });
         FormItem({
-          value: this.formModel.bookInfoRule?.canReName,
+          value: this.formModel.ruleBookInfo?.canReName,
           label: '允许修改书名作者',
           onChange: (value: string) => {
-            if (this.formModel.bookInfoRule) {
-              this.formModel.bookInfoRule.canReName = value
+            if (this.formModel.ruleBookInfo) {
+              this.formModel.ruleBookInfo.canReName = value
             }
           }
         });
         FormItem({
-          value: this.formModel.bookInfoRule?.downloadUrls,
+          value: this.formModel.ruleBookInfo?.downloadUrls,
           label: '下载URL规则',
           onChange: (value: string) => {
-            if (this.formModel.bookInfoRule) {
-              this.formModel.bookInfoRule.downloadUrls = value
+            if (this.formModel.ruleBookInfo) {
+              this.formModel.ruleBookInfo.downloadUrls = value
             }
           }
         });
@@ -733,92 +760,92 @@ struct AddSourcePage {
     Scroll() {
       Column() {
         FormItem({
-          value: this.formModel.tocRule?.preUpdateJs,
+          value: this.formModel.ruleToc?.preUpdateJs,
           label: '更新之前JS',
           onChange: (value: string) => {
-            if (this.formModel.tocRule) {
-              this.formModel.tocRule.preUpdateJs = value
+            if (this.formModel.ruleToc) {
+              this.formModel.ruleToc.preUpdateJs = value
             }
           }
         });
         FormItem({
-          value: this.formModel.tocRule?.chapterList,
+          value: this.formModel.ruleToc?.chapterList,
           label: '目录列表规则',
           onChange: (value: string) => {
-            if (this.formModel.tocRule) {
-              this.formModel.tocRule.chapterList = value
+            if (this.formModel.ruleToc) {
+              this.formModel.ruleToc.chapterList = value
             }
           }
         });
         FormItem({
-          value: this.formModel.tocRule?.chapterName,
+          value: this.formModel.ruleToc?.chapterName,
           label: '章节名称规则',
           onChange: (value: string) => {
-            if (this.formModel.tocRule) {
-              this.formModel.tocRule.chapterName = value
+            if (this.formModel.ruleToc) {
+              this.formModel.ruleToc.chapterName = value
             }
           }
         });
         FormItem({
-          value: this.formModel.tocRule?.chapterUrl,
+          value: this.formModel.ruleToc?.chapterUrl,
           label: '章节URL规则',
           onChange: (value: string) => {
-            if (this.formModel.tocRule) {
-              this.formModel.tocRule.chapterUrl = value
+            if (this.formModel.ruleToc) {
+              this.formModel.ruleToc.chapterUrl = value
             }
           }
         });
         FormItem({
-          value: this.formModel.tocRule?.formatJs,
+          value: this.formModel.ruleToc?.formatJs,
           label: '格式化规则',
           onChange: (value: string) => {
-            if (this.formModel.tocRule) {
-              this.formModel.tocRule.formatJs = value
+            if (this.formModel.ruleToc) {
+              this.formModel.ruleToc.formatJs = value
             }
           }
         });
         FormItem({
-          value: this.formModel.tocRule?.isVolume,
+          value: this.formModel.ruleToc?.isVolume,
           label: 'Volume 标识',
           onChange: (value: string) => {
-            if (this.formModel.tocRule) {
-              this.formModel.tocRule.isVolume = value
+            if (this.formModel.ruleToc) {
+              this.formModel.ruleToc.isVolume = value
             }
           }
         });
         FormItem({
-          value: this.formModel.tocRule?.updateTime,
+          value: this.formModel.ruleToc?.updateTime,
           label: '更新时间',
           onChange: (value: string) => {
-            if (this.formModel.tocRule) {
-              this.formModel.tocRule.updateTime = value
+            if (this.formModel.ruleToc) {
+              this.formModel.ruleToc.updateTime = value
             }
           }
         });
         FormItem({
-          value: this.formModel.tocRule?.isVip,
+          value: this.formModel.ruleToc?.isVip,
           label: 'VIP 标识',
           onChange: (value: string) => {
-            if (this.formModel.tocRule) {
-              this.formModel.tocRule.isVip = value
+            if (this.formModel.ruleToc) {
+              this.formModel.ruleToc.isVip = value
             }
           }
         });
         FormItem({
-          value: this.formModel.tocRule?.isPay,
+          value: this.formModel.ruleToc?.isPay,
           label: '购买标识',
           onChange: (value: string) => {
-            if (this.formModel.tocRule) {
-              this.formModel.tocRule.isPay = value
+            if (this.formModel.ruleToc) {
+              this.formModel.ruleToc.isPay = value
             }
           }
         });
         FormItem({
-          value: this.formModel.tocRule?.nextTocUrl,
+          value: this.formModel.ruleToc?.nextTocUrl,
           label: '目录下一页规则',
           onChange: (value: string) => {
-            if (this.formModel.tocRule) {
-              this.formModel.tocRule.nextTocUrl = value
+            if (this.formModel.ruleToc) {
+              this.formModel.ruleToc.nextTocUrl = value
             }
           }
         });
@@ -834,83 +861,83 @@ struct AddSourcePage {
     Scroll() {
       Column() {
         FormItem({
-          value: this.formModel.contentRule?.content,
+          value: this.formModel.ruleContent?.content,
           label: '正文规则',
           onChange: (value: string) => {
-            if (this.formModel.contentRule) {
-              this.formModel.contentRule.content = value
+            if (this.formModel.ruleContent) {
+              this.formModel.ruleContent.content = value
             }
           }
         });
         FormItem({
-          value: this.formModel.contentRule?.title,
+          value: this.formModel.ruleContent?.title,
           label: '章节名称规则',
           onChange: (value: string) => {
-            if (this.formModel.contentRule) {
-              this.formModel.contentRule.title = value
+            if (this.formModel.ruleContent) {
+              this.formModel.ruleContent.title = value
             }
           }
         });
         FormItem({
-          value: this.formModel.contentRule?.nextContentUrl,
+          value: this.formModel.ruleContent?.nextContentUrl,
           label: '正文下一页URL规则',
           onChange: (value: string) => {
-            if (this.formModel.contentRule) {
-              this.formModel.contentRule.nextContentUrl = value
+            if (this.formModel.ruleContent) {
+              this.formModel.ruleContent.nextContentUrl = value
             }
           }
         });
         FormItem({
-          value: this.formModel.contentRule?.webJs,
+          value: this.formModel.ruleContent?.webJs,
           label: 'WebView JS',
           onChange: (value: string) => {
-            if (this.formModel.contentRule) {
-              this.formModel.contentRule.webJs = value
+            if (this.formModel.ruleContent) {
+              this.formModel.ruleContent.webJs = value
             }
           }
         });
         FormItem({
-          value: this.formModel.contentRule?.sourceRegex,
+          value: this.formModel.ruleContent?.sourceRegex,
           label: '资源正则',
           onChange: (value: string) => {
-            if (this.formModel.contentRule) {
-              this.formModel.contentRule.sourceRegex = value
+            if (this.formModel.ruleContent) {
+              this.formModel.ruleContent.sourceRegex = value
             }
           }
         });
         FormItem({
-          value: this.formModel.contentRule?.replaceRegex,
+          value: this.formModel.ruleContent?.replaceRegex,
           label: '替换规则',
           onChange: (value: string) => {
-            if (this.formModel.contentRule) {
-              this.formModel.contentRule.replaceRegex = value
+            if (this.formModel.ruleContent) {
+              this.formModel.ruleContent.replaceRegex = value
             }
           }
         });
         FormItem({
-          value: this.formModel.contentRule?.imageStyle,
+          value: this.formModel.ruleContent?.imageStyle,
           label: '图片样式',
           onChange: (value: string) => {
-            if (this.formModel.contentRule) {
-              this.formModel.contentRule.imageStyle = value
+            if (this.formModel.ruleContent) {
+              this.formModel.ruleContent.imageStyle = value
             }
           }
         });
         FormItem({
-          value: this.formModel.contentRule?.imageDecode,
+          value: this.formModel.ruleContent?.imageDecode,
           label: '图片解密',
           onChange: (value: string) => {
-            if (this.formModel.contentRule) {
-              this.formModel.contentRule.imageDecode = value
+            if (this.formModel.ruleContent) {
+              this.formModel.ruleContent.imageDecode = value
             }
           }
         });
         FormItem({
-          value: this.formModel.contentRule?.payAction,
+          value: this.formModel.ruleContent?.payAction,
           label: '购买操作',
           onChange: (value: string) => {
-            if (this.formModel.contentRule) {
-              this.formModel.contentRule.payAction = value
+            if (this.formModel.ruleContent) {
+              this.formModel.ruleContent.payAction = value
             }
           }
         });

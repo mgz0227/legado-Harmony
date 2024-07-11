@@ -258,7 +258,7 @@ export default struct ImportCommon {
       Blank()
 
       Row() {
-        Score({ score: j > 5 ? 5 : j, isBoutique: j >= 6 })
+        Score({ grade: item.bookSourceGrade, score: item.bookSourceScore })
 
         Text(this.updateNameMap[item.bookSourceGroup + item.bookSourceName] ?? false ?
           '更新' : (this.alreadyNameMap[item.bookSourceGroup + item.bookSourceName] ?? false ? '已有' : '新增'))
