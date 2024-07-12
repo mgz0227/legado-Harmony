@@ -12,6 +12,7 @@ export interface ColumnInfo{
   columnName: string
   // 列类型
   type: ColumnType
+  defaultValue?: string | number
 }
 // 数据类型
 export enum ColumnType{
@@ -20,4 +21,11 @@ export enum ColumnType{
   STRING,
   BLOB,
   BOOLEAN
+}
+
+export type ColumnKeys = 'INTEGER' | 'TEXT'
+
+export const ColumnValue: Record<ColumnKeys, ColumnType> = {
+  'INTEGER': ColumnType.LONG,
+  'TEXT': ColumnType.STRING
 }

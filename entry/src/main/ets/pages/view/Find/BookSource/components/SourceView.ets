@@ -1,15 +1,14 @@
 import axios, { AxiosError, AxiosResponse } from '@ohos/axios'
-import { FileHandler } from '../../../../../common/utils/FileHandler'
 import ClassifyList from '../../../../../componets/common/ClassifyList'
 import dialogTitleFuction from '../../../../../componets/common/dialogTitleFuction'
 import Header from '../../../../../componets/common/Header'
 import { showMessage } from '../../../../../componets/common/promptShow'
 import Score from '../../../../../componets/common/Score'
 import Tag from '../../../../../componets/common/Tag'
-import { BookSource, GroupList } from '../../../../../componets/dataList/BookSource'
 import { IconTitleVo } from '../../../../../componetsmodel/IconTitleVo'
 import { router } from '@kit.ArkUI'
-import { JSON } from '@kit.ArkTS'
+import BookSourceDao from '../../../../../database/dao/BookSourceDao'
+import { BookSource, GroupList } from '../../../../../database/entities/BookSource'
 
 @Component
 export default struct SourceView {
@@ -33,7 +32,7 @@ export default struct SourceView {
   @State showRightDialogMap: Record<string, boolean> = {}
   @State showMoreDialog: boolean = false
   @State toggleAll: boolean = true
-  @Link @Watch('getList')refresh: number
+  @Link @Watch('getList') refresh: number
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
 
@@ -50,8 +49,10 @@ export default struct SourceView {
   getList() {
     // axios.get('https://node.wisdoms.xin/static/file/20240704/sy.json').then((res: AxiosResponse) => {
     //   const bookSource: BookSource[] = res.data ?? []
-    FileHandler.readJsonFile<BookSource[]>(this.pathBookSource).then(data => {
+    //     FileHandler.readJsonFile<BookSource[]>(this.pathBookSource)
+    BookSourceDao.search(this.searchValue).then(data => {
       const bookSource = data ?? []
+      console.info('TagInfo', JSON.stringify(bookSource.slice(0, 3)))
       this.sourceList = bookSource.filter(item => item.bookSourceType === this.index)
       this.getGroupList()
       this.loading = false
@@ -68,6 +69,9 @@ export default struct SourceView {
       const title = item.bookSourceGroup;
       const bookSourceName = item.bookSourceName;
       if (bookSourceName.indexOf(this.searchValue) === -1) {
+        return
+      }
+      if (!title) {
         return
       }
       // 如果groupMap中还没有这个group，则创建一个新的GroupList对象
@@ -107,7 +111,7 @@ export default struct SourceView {
             .backgroundColor(Color.White)
             .onChange((value: string) => {
               this.searchValue = value
-              this.getGroupList()
+              this.getList()
             })
         }
         .padding({
@@ -198,6 +202,7 @@ export default struct SourceView {
           .onScrollIndex((start) => {
             this.scrollChangeAction(start, false)
           })
+          .height('100%')
           .layoutWeight(1)
           .gesture(
             LongPressGesture({ repeat: true, duration: 500 })
@@ -244,15 +249,15 @@ export default struct SourceView {
             Toggle({ type: ToggleType.Switch, isOn: this.toggleAll })
               .selectedColor(0xff6600)
               .margin({ bottom: 4 })
-              .onChange((val: boolean) => {
+              .onChange(async (val: boolean) => {
                 this.toggleAll = val
                 this.sourceList.forEach((item, i) => {
-                  if (this.activeNameMap[item.bookSourceGroup+item.bookSourceName]) {
+                  if (this.activeNameMap[item.bookSourceUrl]) {
                     item.enabled = val
                     this.sourceList[i] = item
                   }
                 })
-                FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(this.sourceList))
+                await BookSourceDao.batchUpdate(this.sourceList)
                 this.getList()
               })
 
@@ -287,14 +292,7 @@ export default struct SourceView {
             if (!Object.values(this.activeNameMap).filter(o => o).length) {
               return showMessage('请至少选择一个')
             }
-            let removeIds: number[] = []
-            this.sourceList.forEach((item, index) => {
-              if (this.activeNameMap[item.bookSourceGroup + item.bookSourceName]) {
-                removeIds.push(index)
-              }
-            })
-            removeIds.forEach(index => this.sourceList.splice(index, 1))
-            await FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(this.sourceList))
+            await BookSourceDao.batchDelete(Object.keys(this.activeNameMap))
             showMessage('删除成功')
             this.activeNameMap = {}
             this.getList()
@@ -375,7 +373,7 @@ export default struct SourceView {
     }
     .onClick(() => {
       this.sourceList.forEach((item: BookSource) => {
-        this.activeNameMap[item.bookSourceGroup + item.bookSourceName] = true
+        this.activeNameMap[item.bookSourceUrl] = true
       })
     })
   }
@@ -388,7 +386,7 @@ export default struct SourceView {
     .onClick(async () => {
       this.isBatch = false
       this.activeNameMap = {}
-      await FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(this.sourceList))
+      BookSourceDao.batchUpdate(this.sourceList)
       this.getList()
     })
   }
@@ -479,22 +477,22 @@ export default struct SourceView {
 
         if (this.isBatch) {
           Checkbox({ name: 'checkbox' + j, group: 'checkboxGroup' + i })
-            .select(this.activeNameMap[item.bookSourceGroup + item.bookSourceName] ?? false)
+            .select(this.activeNameMap[item.bookSourceUrl] ?? false)
             .selectedColor(0xff6600)
             .onChange((val: boolean) => {
-              this.activeNameMap[item.bookSourceGroup + item.bookSourceName] = val
+              this.activeNameMap[item.bookSourceUrl] = val
             })
         } else {
           Image($r('app.media.more_vertical'))
             .width(24).fillColor('#73000000')
             .bindMenu(
-              this.showRightDialogMap[item.bookSourceGroup + item.bookSourceName],
+              this.showRightDialogMap[item.bookSourceUrl],
               this.rightDialogBuilder(this.Item_Right_Dialog_Data, async (index: number) => {
                 switch (index) {
                   case 0:
                     router.pushUrl({
                       url: 'pages/view/Find/BookSource/AddSourcePage', params: {
-                        id: item.bookSourceGroup + item.bookSourceName
+                        id: item.bookSourceUrl
                       }
                     })
                     break;
@@ -506,16 +504,12 @@ export default struct SourceView {
                   case 4:
                     router.pushUrl({
                       url: 'pages/view/Find/BookSource/AddSourcePage', params: {
-                        id: item.bookSourceGroup + item.bookSourceName, type: 1
+                        id: item.bookSourceUrl, type: 1
                       }
                     })
                     break;
                   case 5:
-                    const localIndex =
-                      this.sourceList.findIndex(localItem => localItem.bookSourceGrade + localItem.bookSourceName ===
-                        item.bookSourceGrade + item.bookSourceName)
-                    this.sourceList.splice(localIndex, 1)
-                    await FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(this.sourceList))
+                    await BookSourceDao.delete(item.bookSourceUrl)
                     showMessage('删除成功')
                     this.getList()
                     break;
@@ -523,11 +517,11 @@ export default struct SourceView {
               }),
               {
                 onDisappear: () => {
-                  this.showRightDialogMap[item.bookSourceGroup + item.bookSourceName] = false
+                  this.showRightDialogMap[item.bookSourceUrl] = false
                 }
               })
             .onClick(() => {
-              this.showRightDialogMap[item.bookSourceGroup + item.bookSourceName] = true
+              this.showRightDialogMap[item.bookSourceUrl] = true
             })
         }
       }
@@ -556,7 +550,7 @@ export default struct SourceView {
           .selectedColor(0xff6600)
           .onChange(async (val: boolean) => {
             item.enabled = val
-            await FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(this.sourceList))
+            await BookSourceDao.update(item)
           })
       }
       .width('100%')
@@ -571,13 +565,13 @@ export default struct SourceView {
             .textOverflow({
               overflow: TextOverflow.Ellipsis
             })
-            .maxLines(this.clickNameMap[item.bookSourceName] ? 99 : 1)
+            .maxLines(this.clickNameMap[item.bookSourceUrl] ? 99 : 1)
             .layoutWeight(1)
             .animation({
               duration: 300
             })
             .onClick(() => {
-              this.clickNameMap[item.bookSourceName] = !this.clickNameMap[item.bookSourceName]
+              this.clickNameMap[item.bookSourceUrl] = !this.clickNameMap[item.bookSourceUrl]
             })
 
           Image($r('app.media.down_arrow'))

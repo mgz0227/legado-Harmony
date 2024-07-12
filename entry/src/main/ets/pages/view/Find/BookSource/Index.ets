@@ -27,7 +27,7 @@ struct BookSourcePage {
   @State currentIndex: number = 0
   tabsController: TabsController = new TabsController();
   @State isShowHelp: boolean = false
-  @State isShowImport: boolean = false
+  @State @Watch('onChange')isShowImport: boolean = false
   @State sourceList: BookSource[] = []
   @State isBatch: boolean = false
   @State refresh: number = 0
@@ -37,6 +37,13 @@ struct BookSourcePage {
 
   onPageShow() {
     this.refresh += 1
+  }
+
+  onChange() {
+    if (!this.isShowImport) {
+      console.log('TagInfo', 111)
+      this.refresh += 1
+    }
   }
 
   async pasteAnalyze() {
@@ -67,7 +74,7 @@ struct BookSourcePage {
         if (!this.isBatch) {
           Header({
             customTitleBuilder: () => {
-                this.titleBuilder(this.tabsController)
+              this.titleBuilder(this.tabsController)
             },
             dialogRightData: this.dialogRightData,
             dialogRightChange: (index: number) => {
@@ -105,7 +112,7 @@ struct BookSourcePage {
       }) {
         ForEach(this.titleArray, (item: string, index: number) => {
           TabContent() {
-            SourceView({ index,  isBatch: this.isBatch, refresh: this.refresh })
+            SourceView({ index, isBatch: this.isBatch, refresh: this.refresh })
           }
           .align(Alignment.Top)
         })
@@ -145,7 +152,12 @@ struct BookSourcePage {
   titleBuilder(tabsController: TabsController) {
     List() {
       ListItem() {
-        BookMark({ title: '小说', index: 0, currentIndex: this.currentIndex, isBackground: false }).onClick(() => {
+        BookMark({
+          title: '小说',
+          index: 0,
+          currentIndex: this.currentIndex,
+          isBackground: false
+        }).onClick(() => {
           this.currentIndex = 0
           tabsController.changeIndex(0)
           console.log(this.currentIndex + '')
@@ -153,7 +165,12 @@ struct BookSourcePage {
       }
 
       ListItem() {
-        BookMark({ title: '漫画', index: 1, currentIndex: this.currentIndex, isBackground: false }).onClick(() => {
+        BookMark({
+          title: '漫画',
+          index: 1,
+          currentIndex: this.currentIndex,
+          isBackground: false
+        }).onClick(() => {
           this.currentIndex = 1
           tabsController.changeIndex(1)
           console.log(this.currentIndex + '')
@@ -161,7 +178,12 @@ struct BookSourcePage {
       }
 
       ListItem() {
-        BookMark({ title: '有声书', index: 2, currentIndex: this.currentIndex, isBackground: false }).onClick(() => {
+        BookMark({
+          title: '有声书',
+          index: 2,
+          currentIndex: this.currentIndex,
+          isBackground: false
+        }).onClick(() => {
           this.currentIndex = 2
           tabsController.changeIndex(2)
           console.log(this.currentIndex + '')
