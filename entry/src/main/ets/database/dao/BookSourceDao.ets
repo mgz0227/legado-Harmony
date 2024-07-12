@@ -1,5 +1,5 @@
 import { ColumnInfo } from '../types/ColumnInfo';
-import { BookSource, toBookSource, toBookSourceDb, BookSourceDb } from '../entities/BookSource';
+import { BookSource, BookSourceDb, ToBookSource, ToBookSourceDb } from '../entities/BookSource';
 import AppDatabaseUtil from '../AppDatabaseUtil'
 import { JSON } from '@kit.ArkTS';
 import DbUtil from '../../common/utils/DbUtil';
@@ -34,7 +34,7 @@ class BookSourceDao {
         .contains('bookSourceComment', searchKey)
         .orderByAsc('customOrder')
       const bookSourceDbList = await DbUtil.queryForList<BookSourceDb>(predicates, column);
-      const bookSourceList = bookSourceDbList.map((item): BookSource => toBookSource(item));
+      const bookSourceList = bookSourceDbList.map((item): BookSource => ToBookSource(item));
       console.log("TagInfo", '书源数量：' + bookSourceList.length)
       return bookSourceList
     } catch (err) {
@@ -49,7 +49,7 @@ class BookSourceDao {
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
       predicates.equalTo('bookSourceUrl', key)
       const bookSourceDbList = await DbUtil.queryForList<BookSourceDb>(predicates, column);
-      const bookSourceList = bookSourceDbList.map((item): BookSource => toBookSource(item));
+      const bookSourceList = bookSourceDbList.map((item): BookSource => ToBookSource(item));
       if (bookSourceList.length > 0) {
         return bookSourceList[0]
       }
@@ -70,8 +70,7 @@ class BookSourceDao {
         this.update(bookSource)
         return true
       }
-      const bookSourceDb = toBookSourceDb(bookSource)
-      await DbUtil.insert(this.TABLE_NAME, bookSourceDb, column)
+      await DbUtil.insert(this.TABLE_NAME, ToBookSourceDb(bookSource), column)
       console.log('TagInfo', '创建成功')
       return true
     } catch (err) {
@@ -103,8 +102,7 @@ class BookSourceDao {
         this.insert(bookSource)
         return true
       }
-      const bookSourceDb = toBookSourceDb(bookSource)
-      await DbUtil.update(predicates, bookSourceDb, column)
+      await DbUtil.update(predicates, ToBookSourceDb(bookSource), column)
       return true
     } catch (err) {
       console.log('TagInfo, Error, ', JSON.stringify(err))

@@ -210,7 +210,7 @@ export interface BookSourceDb extends Omit<BookSource, 'ruleExplore' | 'ruleSear
   ruleReview?: string
 }
 
-export const toBookSource = (bookSourceDb: BookSourceDb) => {
+export const ToBookSource = (bookSourceDb: BookSourceDb) => {
   const ruleExplore = GSON.toJson<ExploreRule>(bookSourceDb.ruleExplore);
   const ruleSearch = GSON.toJson<SearchRule>(bookSourceDb.ruleSearch);
   const ruleBookInfo = GSON.toJson<BookInfoRule>(bookSourceDb.ruleBookInfo);
@@ -254,7 +254,7 @@ export const toBookSource = (bookSourceDb: BookSourceDb) => {
   return bookSource
 }
 
-export const toBookSourceDb = (bookSource: BookSource) => {
+export const ToBookSourceDb = (bookSource: BookSource) => {
   const ruleExplore = GSON.toString(bookSource.ruleExplore);
   const ruleSearch = GSON.toString(bookSource.ruleSearch);
   const ruleBookInfo = GSON.toString(bookSource.ruleBookInfo);
