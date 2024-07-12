@@ -4,11 +4,12 @@ import { dataItem } from '../../../../componets/dataList/dataItem';
 import Help from '../../../../componets/dialog/help';
 import { sourceTabs } from '../../../../componets/source/sourceTabs';
 import { router } from '@kit.ArkUI';
-import { BookSource, BOOK_SOURCE_TYPE, GRADE_TYPE } from '../../../../componets/dataList/BookSource';
+import { BOOK_SOURCE_TYPE, GRADE_TYPE } from '../../../../componets/dataList/BookSource';
 import FormItem from '../../../../componets/Form/FormItem';
-import { FileHandler } from '../../../../common/utils/FileHandler';
 import SourceDebug from './components/SourceDebug';
 import { JSON } from '@kit.ArkTS';
+import BookSourceDao from '../../../../database/dao/BookSourceDao';
+import { BookSource } from '../../../../database/entities/BookSource';
 
 interface RouteParams {
   id: string,
@@ -27,7 +28,7 @@ struct AddSourcePage {
     new dataItem("编辑", 1),
     new dataItem("调试", 2)
   ]
-  @State @Watch('onReadChange')readIndex: number = 0
+  @State @Watch('onReadChange') readIndex: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State currentIndex: number = 0
   @State isDebug: boolean = false
@@ -49,23 +50,23 @@ struct AddSourcePage {
     weight: 0
   }
 
-  async  aboutToAppear() {
-    const params  = router.getParams() as RouteParams;
+  async aboutToAppear() {
+    BookSourceDao.search()
+    const params = router.getParams() as RouteParams;
     console.log('TagInfo', JSON.stringify(params))
-    const data = await FileHandler.readJsonFile<BookSource[]>(this.pathBookSource) ?? [];
-    const localItem = data.find((localItem) => localItem.bookSourceGroup + localItem.bookSourceName === params.id)
+    const localItem = await BookSourceDao.getBookSource(params.id)
     if (localItem) {
       this.formModel = localItem
     }
     this.isDebug = params.type === 1
-    if (params.type ===  1) {
+    if (params.type === 1) {
       this.readIndex = 1
       this.headController.changeIndex(1)
     }
   }
 
   onReadChange() {
-    console.log(this.readIndex+'')
+    console.log(this.readIndex + '')
     this.headController.changeIndex(this.readIndex)
   }
 
@@ -131,6 +132,7 @@ struct AddSourcePage {
           }
           .layoutWeight(1)
         }.layoutWeight(1)
+
         TabContent() {
           SourceDebug()
         }.layoutWeight(1)
@@ -160,7 +162,7 @@ struct AddSourcePage {
           .fontColor(Color.White)
           .backgroundColor(0xff6600)
           .layoutWeight(1)
-          .onClick(async  () => {
+          .onClick(async () => {
             if (!this.formModel.bookSourceName || !this.formModel.bookSourceUrl) {
               this.readIndex = 0
               this.currentIndex = 0
@@ -168,14 +170,7 @@ struct AddSourcePage {
               this.scroller.scrollEdge(Edge.Top)
               showMessage('红星标记的内容不能为空')
             }
-            const data = await FileHandler.readJsonFile<BookSource[]>(this.pathBookSource) ?? [];
-            const localIndex = data.findIndex((localItem) => localItem.bookSourceGroup + localItem.bookSourceName === this.formModel.bookSourceGroup + this.formModel.bookSourceName)
-            if (localIndex != -1) {
-              data[localIndex] = this.formModel
-            } else {
-              data.push(this.formModel)
-            }
-            FileHandler.writeJsonFile(this.pathBookSource, JSON.stringify(data))
+            await BookSourceDao.insert(this.formModel)
             showMessage('保存成功')
             setTimeout(() => {
               router.back()

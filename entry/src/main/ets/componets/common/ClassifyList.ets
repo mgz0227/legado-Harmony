@@ -4,7 +4,7 @@
  * @className: ClassifyList
  * 分类左侧列表，支持是否开启角标
  */
-import { GroupList } from '../dataList/BookSource'
+import { GroupList } from '../../database/entities/BookSource'
 
 @Component
 export default struct ClassifyList {
