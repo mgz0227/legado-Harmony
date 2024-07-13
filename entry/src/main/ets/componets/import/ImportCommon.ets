@@ -4,11 +4,10 @@
  * @className: ImportCommon
  * 通用导入页
  */
-import ClassifyList from '../common/ClassifyList';
+import SideBar from '../common/SideBar';
 import { showMessage } from '../common/promptShow';
 import Score from '../common/Score';
 import Tag from '../common/Tag';
-import { JSON } from '@kit.ArkTS';
 import BookSourceDao from '../../database/dao/BookSourceDao';
 import { BookSource, GroupList } from '../../database/entities/BookSource';
 
@@ -91,9 +90,9 @@ export default struct ImportCommon {
   build() {
     Column() {
       Row({ space: 12 }) {
-        ClassifyList({
+        SideBar({
           currentIndex: this.currentIndex,
-          classifyList: this.groupList.map(o => o.title),
+          sideBarList: this.groupList.map(o => o.title),
           scroller: this.scroll,
           clickAction: (index: number) => {
             this.scrollChangeAction(index, true)
