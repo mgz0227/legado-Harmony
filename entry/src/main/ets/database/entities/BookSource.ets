@@ -1,4 +1,5 @@
 import { GSON } from '../../common/utils/utils'
+import { BookSourcePart } from './BookSourcePart'
 import { BookInfoRule, ContentRule, ExploreRule, ReviewRule, SearchRule, TocRule } from './rule'
 
 // class BaseBookSource {
@@ -182,6 +183,12 @@ export interface GroupList {
   title: string
   list: BookSource[]
 }
+
+export interface GroupPartList {
+  title: string
+  list: BookSourcePart[]
+}
+
 
 export const GRADE_TYPE: Record<number, string> = {
   0: '常规',

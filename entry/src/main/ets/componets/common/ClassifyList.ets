@@ -4,12 +4,12 @@
  * @className: ClassifyList
  * 分类左侧列表，支持是否开启角标
  */
-import { GroupList } from '../../database/entities/BookSource'
+import { GroupList, GroupPartList } from '../../database/entities/BookSource'
 
 @Component
 export default struct ClassifyList {
   @Link currentIndex: number
-  @Prop classifyList: GroupList[] | string[] = []
+  @Prop classifyList: GroupList[] | GroupPartList[] | string[] = []
   @Prop isBadge: boolean = false
   clickAction: Function = (_index: number) => {}
   scroller?: Scroller = undefined

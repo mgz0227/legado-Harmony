@@ -1,8 +1,9 @@
-import { ColumnInfo } from '../types/ColumnInfo';
+import { ColumnInfo, ColumnType } from '../types/ColumnInfo';
 import { BookSource, BookSourceDb, ToBookSource, ToBookSourceDb } from '../entities/BookSource';
 import AppDatabaseUtil from '../AppDatabaseUtil'
 import { JSON } from '@kit.ArkTS';
 import DbUtil from '../../common/utils/DbUtil';
+import { BookSourcePart } from '../entities/BookSourcePart';
 
 class BookSourceDao {
   TABLE_NAME: string = 'book_sources'
@@ -20,7 +21,58 @@ class BookSourceDao {
     }
   }
 
-  async search(searchKey: string = '') {
+  getFlowColumn() {
+    const column: ColumnInfo[] = AppDatabaseUtil.getAssignColumn(this.TABLE_NAME,
+      ['bookSourceUrl', 'bookSourceName', 'bookSourceGroup', 'bookSourceGrade', 'bookSourceScore', 'customOrder', 'enabled', 'enabledExplore',
+        'lastUpdateTime', 'respondTime', 'weight']);
+    column.push(...[
+      {
+        name: 'hasLoginUrl',
+        columnName: 'hasLoginUrl',
+        type: ColumnType.BOOLEAN
+      },
+      {
+        name: 'hasExploreUrl',
+        columnName: 'hasExploreUrl',
+        type: ColumnType.BOOLEAN
+      }
+    ] as ColumnInfo[])
+    return column;
+  }
+
+  async flowAll(): Promise<BookSourcePart[]> {
+    try {
+      const sql = `select bookSourceUrl, bookSourceName, bookSourceGroup, bookSourceGrade, bookSourceScore, customOrder, enabled, enabledExplore,
+      trim(loginUrl) <> '' hasLoginUrl, lastUpdateTime, respondTime, weight, trim(exploreUrl) <> '' hasExploreUrl
+      from book_sources order by customOrder asc`
+      const column: ColumnInfo[] = this.getFlowColumn()
+      return await DbUtil.querySqlForList<BookSourcePart>(sql, column)
+    } catch (err) {
+      console.log("TagInfo", JSON.stringify(err))
+      return []
+    }
+  }
+
+  async flowSearch(searchKey: string = '', type?: number): Promise<BookSourcePart[]> {
+    try {
+      const sql = `select bookSourceUrl, bookSourceName, bookSourceGroup, bookSourceGrade, bookSourceScore, customOrder, enabled, enabledExplore,
+        trim(loginUrl) <> '' hasLoginUrl, lastUpdateTime, respondTime, weight, trim(exploreUrl) <> '' hasExploreUrl
+        from book_sources
+        where ${type !== undefined ? 'bookSourceType = ' + type : ''}
+        or bookSourceName like '%${searchKey}%'
+        or bookSourceGroup like '%${searchKey}%'
+        or bookSourceUrl like '%${searchKey}%'
+        or bookSourceComment like '%${searchKey}%'
+        order by customOrder asc`
+      const column: ColumnInfo[] = this.getFlowColumn()
+      return await DbUtil.querySqlForList<BookSourcePart>(sql, column)
+    } catch (err) {
+      console.log("TagInfo", JSON.stringify(err))
+      return []
+    }
+  }
+
+  async search(searchKey: string = '', type?: number) {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
@@ -32,7 +84,11 @@ class BookSourceDao {
         .contains('bookSourceUrl', searchKey)
         .or()
         .contains('bookSourceComment', searchKey)
+        .and()
         .orderByAsc('customOrder')
+      if (type !== undefined) {
+        predicates.equalTo('bookSourceType', type)
+      }
       const bookSourceDbList = await DbUtil.queryForList<BookSourceDb>(predicates, column);
       const bookSourceList = bookSourceDbList.map((item): BookSource => ToBookSource(item));
       console.log("TagInfo", '书源数量：' + bookSourceList.length)
@@ -70,7 +126,9 @@ class BookSourceDao {
         this.update(bookSource)
         return true
       }
-      await DbUtil.insert(this.TABLE_NAME, ToBookSourceDb(bookSource), column)
+      const bookSourceDb = ToBookSourceDb(bookSource)
+      bookSourceDb.lastUpdateTime = Date.now()
+      await DbUtil.insert(this.TABLE_NAME, bookSourceDb, column)
       console.log('TagInfo', '创建成功')
       return true
     } catch (err) {
@@ -92,17 +150,25 @@ class BookSourceDao {
     }
   }
 
-  async update(bookSource: BookSource) {
+  async update(bookSource: BookSource | BookSourcePart) {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
       predicates.equalTo('bookSourceUrl', bookSource.bookSourceUrl)
       const count = await DbUtil.queryForCount(predicates, column)
-      if (count === 0) {
+      if (count === 0 && bookSource instanceof BookSource) {
         this.insert(bookSource)
         return true
       }
-      await DbUtil.update(predicates, ToBookSourceDb(bookSource), column)
+      if (bookSource instanceof BookSource) {
+        const bookSourceDb = ToBookSourceDb(bookSource)
+        bookSourceDb.lastUpdateTime = Date.now()
+        await DbUtil.update(predicates, bookSourceDb, column)
+        return true
+      }
+      bookSource.lastUpdateTime = Date.now()
+      const columnPart: ColumnInfo[] = this.getFlowColumn().slice(0, -2)
+      await DbUtil.update(predicates, bookSource, columnPart)
       return true
     } catch (err) {
       console.log('TagInfo, Error, ', JSON.stringify(err))
@@ -110,7 +176,7 @@ class BookSourceDao {
     }
   }
 
-  async batchUpdate(bookSources: BookSource[]) {
+  async batchUpdate(bookSources: BookSource[] | BookSourcePart[]) {
     try {
       for (let index = 0; index < bookSources.length; index++) {
         const bookSource = bookSources[index];

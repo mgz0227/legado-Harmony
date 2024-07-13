@@ -15,6 +15,11 @@ class AppDatabaseUtil {
     return this.fieldsToColumnInfo(tableInfo?.fields || [])
   }
 
+  getAssignColumn(tableName: string, assignColumn: string[]) {
+    const columns = this.getColumn(tableName)
+    return columns.filter(item => assignColumn.includes(item.columnName))
+  }
+
   fieldsToColumnInfo(fields: FieldsType[]): ColumnInfo[] {
     return fields.map(item => {
       const columnInfo: ColumnInfo = {

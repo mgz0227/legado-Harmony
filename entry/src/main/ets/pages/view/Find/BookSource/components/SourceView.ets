@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from '@ohos/axios'
+import dayjs from 'dayjs'
 import ClassifyList from '../../../../../componets/common/ClassifyList'
 import dialogTitleFuction from '../../../../../componets/common/dialogTitleFuction'
 import Header from '../../../../../componets/common/Header'
@@ -6,9 +7,11 @@ import { showMessage } from '../../../../../componets/common/promptShow'
 import Score from '../../../../../componets/common/Score'
 import Tag from '../../../../../componets/common/Tag'
 import { IconTitleVo } from '../../../../../componetsmodel/IconTitleVo'
-import { router } from '@kit.ArkUI'
+import { CustomContentDialog, router } from '@kit.ArkUI'
 import BookSourceDao from '../../../../../database/dao/BookSourceDao'
-import { BookSource, GroupList } from '../../../../../database/entities/BookSource'
+import { GroupPartList } from '../../../../../database/entities/BookSource'
+import { BookSourcePart } from '../../../../../database/entities/BookSourcePart'
+import { JSON } from '@kit.ArkTS'
 
 @Component
 export default struct SourceView {
@@ -20,8 +23,8 @@ export default struct SourceView {
   @State currentIndex: number = 0
   @State activeNameMap: Record<string, boolean> = {}
   @State fullActive: boolean = false
-  @State groupList: GroupList[] = []
-  @State sourceList: BookSource[] = []
+  @State groupList: GroupPartList[] = []
+  @State sourceList: BookSourcePart[] = []
   @State searchValue: string = ''
   @State clickNameMap: Record<string, boolean> = {}
   @State enabledMap: Record<string, boolean> = {}
@@ -35,6 +38,48 @@ export default struct SourceView {
   @Link @Watch('getList') refresh: number
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
+  @State dialogItem: Partial<BookSourcePart> = {}
+  private dialogController: CustomDialogController = new CustomDialogController({
+    builder: CustomContentDialog({
+      primaryTitle: '书源评分',
+      contentAreaPadding: {
+        left: 10,
+        top: 10,
+        right: 10,
+        bottom: 10
+      },
+      contentBuilder: () => {
+        this.buildContent();
+      },
+      buttons: [
+        {
+          value: '取消',
+          background: '#1FFF6600',
+          fontColor: '#FF6600',
+          action: () => {
+            this.dialogItem = {}
+            this.dialogController.close()
+          }
+        },
+        {
+          value: '确认',
+          background: '#FF6600',
+          fontColor: '#FFFFFF',
+          action: async () => {
+            await BookSourceDao.update(this.dialogItem as BookSourcePart)
+            this.getList()
+            this.dialogItem = {}
+            this.dialogController.close()
+          }
+        }
+      ],
+      theme: {
+        colors: {
+          confirm: 0xff6600
+        }
+      }
+    }),
+  });
 
   aboutToAppear() {
     console.info('TagInfo', '当前下标： ' + this.index)
@@ -50,10 +95,10 @@ export default struct SourceView {
     // axios.get('https://node.wisdoms.xin/static/file/20240704/sy.json').then((res: AxiosResponse) => {
     //   const bookSource: BookSource[] = res.data ?? []
     //     FileHandler.readJsonFile<BookSource[]>(this.pathBookSource)
-    BookSourceDao.search(this.searchValue).then(data => {
+    BookSourceDao.flowSearch(this.searchValue, this.index).then(data => {
       const bookSource = data ?? []
       console.info('TagInfo', JSON.stringify(bookSource.slice(0, 3)))
-      this.sourceList = bookSource.filter(item => item.bookSourceType === this.index)
+      this.sourceList = bookSource
       this.getGroupList()
       this.loading = false
       console.info('TagInfo', '数量 ' + this.sourceList.length)
@@ -64,8 +109,8 @@ export default struct SourceView {
   }
 
   getGroupList() {
-    const groupMap: Record<string, GroupList> = {};
-    this.sourceList.forEach((item: BookSource) => {
+    const groupMap: Record<string, GroupPartList> = {};
+    this.sourceList.forEach((item: BookSourcePart) => {
       const title = item.bookSourceGroup;
       const bookSourceName = item.bookSourceName;
       if (bookSourceName.indexOf(this.searchValue) === -1) {
@@ -186,12 +231,12 @@ export default struct SourceView {
             .width(88)
 
           List({ scroller: this.secondScroll }) {
-            ForEach(this.groupList, (item: GroupList, index: number) => {
+            ForEach(this.groupList, (item: GroupPartList, index: number) => {
               ListItemGroup({
                 header: this.classifyHeader(`${item.title} (${item.list.length})`, index),
                 space: 0
               }) {
-                ForEach(item.list, (bookSource: BookSource, j: number) => {
+                ForEach(item.list, (bookSource: BookSourcePart, j: number) => {
                   this.CourseItem(bookSource, index, j)
                 })
               }
@@ -372,7 +417,7 @@ export default struct SourceView {
       Text('全选')
     }
     .onClick(() => {
-      this.sourceList.forEach((item: BookSource) => {
+      this.sourceList.forEach((item: BookSourcePart) => {
         this.activeNameMap[item.bookSourceUrl] = true
       })
     })
@@ -417,6 +462,79 @@ export default struct SourceView {
     .justifyContent(FlexAlign.Center)
   }
 
+  @Builder
+  buildContent() {
+    Column() {
+      Rating({ rating: parseInt(this.dialogItem?.bookSourceScore?.replace('分', '') ?? '0') })
+        .size({
+          width: 192,
+          height: 32
+        })
+        .stars(5)
+        .stepSize(1)
+        .margin({ bottom: 16 })
+        .onChange((value: number) => {
+          this.dialogItem.bookSourceScore = value.toFixed(1) + '分'
+        })
+
+      Row() {
+        Row() {
+          Radio({ value: '2', group: 'radioGroup' })
+            .checked(this.dialogItem?.bookSourceGrade === 2)
+            .radioStyle({
+              checkedBackgroundColor: 0xff6600
+            })
+            .height(20)
+            .width(20)
+            .onChange((isChecked: boolean) => {
+              if (isChecked) {
+                this.dialogItem.bookSourceGrade = 2
+              }
+            })
+          Text('精品')
+            .padding({ left: 6 })
+        }
+
+        Row() {
+          Radio({ value: '1', group: 'radioGroup' })
+            .checked(this.dialogItem?.bookSourceGrade === 1)
+            .radioStyle({
+              checkedBackgroundColor: 0xff6600
+            })
+            .height(20)
+            .width(20)
+            .onChange((isChecked: boolean) => {
+              if (isChecked) {
+                this.dialogItem.bookSourceGrade = 1
+              }
+            })
+          Text('优质')
+            .padding({ left: 6 })
+        }
+        .padding({ left: 10 })
+
+        Row() {
+          Radio({ value: '0', group: 'radioGroup' })
+            .checked(this.dialogItem?.bookSourceGrade === 0)
+            .radioStyle({
+              checkedBackgroundColor: 0xff6600
+            })
+            .height(20)
+            .width(20)
+            .onChange((isChecked: boolean) => {
+              if (isChecked) {
+                this.dialogItem.bookSourceGrade = 0
+              }
+            })
+          Text('普通')
+            .padding({ left: 6 })
+        }
+        .padding({ left: 10 })
+      }
+      .justifyContent(FlexAlign.SpaceAround)
+    }
+  }
+
   // 分类标题
   @Builder
   classifyHeader(title: string, index: number) {
@@ -453,7 +571,7 @@ export default struct SourceView {
 
   // 每个分类的内容主体
   @Builder
-  CourseItem(item: BookSource, i: number, j: number) {
+  CourseItem(item: BookSourcePart, i: number, j: number) {
     Column() {
       Row() {
         Text(item.bookSourceName)
@@ -465,11 +583,11 @@ export default struct SourceView {
           })
           .maxLines(1)
 
-        if (i === 0) {
+        if (item.hasLoginUrl) {
           Tag({ text: '登录', color: '#188BFF', bgColor: '#1F188BFF' })
         }
 
-        if (j * i % 2 === 0) {
+        if (item.hasExploreUrl) {
           Tag({ text: '发现', color: '#FF6600', bgColor: '#1FFF6600' })
         }
 
@@ -497,6 +615,9 @@ export default struct SourceView {
                     })
                     break;
                   case 1:
+                    this.dialogItem = JSON.parse(JSON.stringify(item)) as BookSourcePart
+                    this.dialogController.open()
+                    break;
                   case 2:
                   case 3:
                     showMessage(this.Item_Right_Dialog_Data[index].title)
@@ -536,7 +657,7 @@ export default struct SourceView {
       .justifyContent(FlexAlign.Start)
 
       Row() {
-        Text('2023-07-23 12:34:23')
+        Text(dayjs(item.lastUpdateTime).format('YYYY-MM-DD HH:mm'))
           .fontSize(12)
           .lineHeight(20)
           .fontColor('rgba(0, 0, 0, 0.45)')
