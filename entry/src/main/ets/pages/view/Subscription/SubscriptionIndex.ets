@@ -9,6 +9,7 @@ import FontConstants from '../../../common/constants/FontConstants'
 import ImageConstants from '../../../common/constants/ImageConstants'
 import PaddingConstants from '../../../common/constants/PaddingConstants'
 import { IconTitleVo } from '../../../componetsmodel/IconTitleVo'
+import { router } from '@kit.ArkUI'
 
 @Component
 @Preview
@@ -42,6 +43,12 @@ export default struct SubscriptionIndex {
             .layoutWeight(1)
             .height(CommonConstants.COMMON_HEIGHT_40)
             .backgroundColor(Color.White)
+            .onClick(()=>{
+              router.pushUrl({
+                url: 'pages/view/Subscription/components/SubscriptionSearch'
+              })
+            })
+            .focusOnTouch(false) //不可获取焦点
         }
         .padding({right: PaddingConstants.PADDING_16})
         Image($r('app.media.addSubscription')).width(ImageConstants.IMG_WIDTH_24).height(ImageConstants.IMG_HEIGHT_24).bindMenu(this.MenuBuilder)
