@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from '@ohos/axios'
 import dayjs from 'dayjs'
-import ClassifyList from '../../../../../componets/common/ClassifyList'
+import SideBar from '../../../../../componets/common/SideBar'
 import dialogTitleFuction from '../../../../../componets/common/dialogTitleFuction'
 import Header from '../../../../../componets/common/Header'
 import { showMessage } from '../../../../../componets/common/promptShow'
@@ -219,9 +219,9 @@ export default struct SourceView {
       Column() {
         // 内容主体
         Row({ space: 12 }) {
-          ClassifyList({
+          SideBar({
             currentIndex: this.currentIndex,
-            classifyList: this.groupList,
+            sideBarList: this.groupList,
             scroller: this.scroll,
             clickAction: (index: number) => {
               this.scrollChangeAction(index, true)

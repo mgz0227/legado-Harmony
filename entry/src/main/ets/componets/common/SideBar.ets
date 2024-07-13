@@ -1,22 +1,22 @@
 /**
  * @author Andy
  * @datetime 2024/7/6 01:06
- * @className: ClassifyList
+ * @className: SideBar
  * 分类左侧列表，支持是否开启角标
  */
 import { GroupList, GroupPartList } from '../../database/entities/BookSource'
 
 @Component
-export default struct ClassifyList {
+export default struct SideBar {
   @Link currentIndex: number
-  @Prop classifyList: GroupList[] | GroupPartList[] | string[] = []
+  @Prop sideBarList: GroupList[] | GroupPartList[] | string[] = []
   @Prop isBadge: boolean = false
   clickAction: Function = (_index: number) => {}
   scroller?: Scroller = undefined
 
   build() {
     List({ scroller: this.scroller }) {
-      ForEach(this.classifyList, (item: GroupList | string, index: number) => {
+      ForEach(this.sideBarList, (item: GroupList | string, index: number) => {
         ListItem() {
           Stack({ alignContent: Alignment.TopStart }) {
             Column() {
@@ -50,7 +50,7 @@ export default struct ClassifyList {
             .backgroundColor(this.currentIndex === index ? 0xF5F5F5 : Color.White)
             .borderRadius({
               topRight: this.currentIndex + 1 === index ? 12 : 0,
-              bottomRight: this.currentIndex - 1 === index || this.classifyList.length === index + 1 ? 12 : 0
+              bottomRight: this.currentIndex - 1 === index || this.sideBarList.length === index + 1 ? 12 : 0
             })
             .animation({
               duration: 100,
