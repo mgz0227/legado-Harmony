@@ -10,7 +10,6 @@ import BodyContent from './BodyContent';
 @Component
 export default struct FindContent{
   @Prop currentIndex:number
-  @State RefreshingTitle: string = '松开刷新'
   build() {
     Column(){
       Search({

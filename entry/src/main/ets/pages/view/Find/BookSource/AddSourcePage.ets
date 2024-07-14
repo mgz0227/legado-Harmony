@@ -4,12 +4,11 @@ import { dataItem } from '../../../../componets/dataList/dataItem';
 import Help from '../../../../componets/dialog/help';
 import { sourceTabs } from '../../../../componets/source/sourceTabs';
 import { router } from '@kit.ArkUI';
-import { BOOK_SOURCE_TYPE, GRADE_TYPE } from '../../../../componets/dataList/BookSource';
 import FormItem from '../../../../componets/Form/FormItem';
 import SourceDebug from './components/SourceDebug';
 import { JSON } from '@kit.ArkTS';
 import BookSourceDao from '../../../../database/dao/BookSourceDao';
-import { BookSource } from '../../../../database/entities/BookSource';
+import { BookSource, BOOK_SOURCE_TYPE, GRADE_TYPE } from '../../../../database/entities/BookSource';
 
 interface RouteParams {
   id: string,

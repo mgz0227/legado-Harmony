@@ -1,24 +1,16 @@
 import BookMark from '../../../componets/head/BookMark';
 import { router } from '@kit.ArkUI';
-import novelFind from './novelFind';
-import RefreshComponent from '../../../componets/common/RefreshComponent';
-import noSourceFind from '../../../componets/common/noSourceFind';
-import cartoonFind from './cartoonFind';
-import soundFind from './soundFind';
 import dialogTitleFuction from '../../../componets/common/dialogTitleFuction';
 import { IconTitleVo } from '../../../componetsmodel/IconTitleVo';
-import FindGroupSource from '../../../componets/group/FindGroupSource';
-import PaddingConstants from '../../../common/constants/PaddingConstants';
 import ImportCommon from '../../../componets/import/ImportCommon';
-import { BookSource } from '../../../componets/dataList/BookSource';
 import { FileHandler } from '../../../common/utils/FileHandler';
 import axios, { AxiosResponse } from '@ohos/axios';
 import { common } from '@kit.AbilityKit';
 import Help from '../../../componets/dialog/help';
 import { getPasteDataSync, isNetworkUrl, sleep } from '../../../common/utils/utils';
 import { showMessage } from '../../../componets/common/promptShow';
-import BookSourceDao from '../../../database/dao/BookSourceDao';
 import FindContent from './components/FindContent';
+import { BookSource } from '../../../database/entities/BookSource';
 
 /**
  * @author 2008
@@ -31,47 +23,43 @@ import FindContent from './components/FindContent';
 @Preview
 export default struct IndexFind {
   private scrollController: Scroller = new Scroller();
-  titleArray:Array<string> = ['小说', '漫画', '有声书']
-  @State currentIndex:number = 0
+  titleArray: Array<string> = ['小说', '漫画', '有声书']
+  @State currentIndex: number = 0
   tabsController: TabsController = new TabsController();
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
   @State groupCoverShow: boolean = false
   @State bookType: string = '全部'
   @State GROUP: string = '标签'
-  @State isShowFuction:boolean = false
-  @State isShowHelp:boolean = false
+  @State isShowFuction: boolean = false
+  @State isShowHelp: boolean = false
   @State isShowImport: boolean = false
-  @State sourceList:BookSource[]=[]
-
-  aboutToAppear() {
-    BookSourceDao.search().then(bookSources => {
-      console.info('TagInfo', JSON.stringify(bookSources.slice(0, 3)))
-    })
-  }
+  @State sourceList: BookSource[] = []
 
   build() {
-    Column(){
+    Column() {
       Flex({
-        justifyContent:FlexAlign.SpaceBetween
-      }){
-        Row(){
-          List({scroller:this.scrollController}){
-            ListItem(){
+        justifyContent: FlexAlign.SpaceBetween
+      }) {
+        Row() {
+          List({ scroller: this.scrollController }) {
+            ListItem() {
               BookMark({ title: '小说', index: 0, currentIndex: this.currentIndex }).onClick(() => {
                 this.currentIndex = 0
                 this.tabsController.changeIndex(0)
                 console.log(this.currentIndex + '')
               })
             }
-            ListItem(){
+
+            ListItem() {
               BookMark({ title: '漫画', index: 1, currentIndex: this.currentIndex }).onClick(() => {
                 this.currentIndex = 1
                 this.tabsController.changeIndex(1)
                 console.log(this.currentIndex + '')
               })
             }
-            ListItem(){
+
+            ListItem() {
               BookMark({ title: '有声书', index: 2, currentIndex: this.currentIndex }).onClick(() => {
                 this.currentIndex = 2
                 this.tabsController.changeIndex(2)
@@ -83,31 +71,32 @@ export default struct IndexFind {
           .scrollBar(BarState.Off)
           .listDirection(Axis.Horizontal)
         }
+
         Image($r('app.media.addSubscription')).width(24)
-          .bindMenu(this.isShowFuction,this.dialogRightFuction()
-          , {
-          onDisappear:()=>{
-            this.isShowFuction = false
-          }
-        })
-          .onClick(()=>{
+          .bindMenu(this.isShowFuction, this.dialogRightFuction()
+            , {
+              onDisappear: () => {
+                this.isShowFuction = false
+              }
+            })
+          .onClick(() => {
             this.isShowFuction = true
           })
       }
-      .padding({top:this.topRectHeight === 0 ? 30 : this.topRectHeight,left:20,right:20})
+      .padding({ top: this.topRectHeight === 0 ? 30 : this.topRectHeight, left: 20, right: 20 })
 
       Tabs({
         barPosition: BarPosition.Start,
         controller: this.tabsController
       }) {
-       ForEach(this.titleArray,(item:string)=>{
-         TabContent() {
-           FindContent({
-             currentIndex:this.currentIndex
-           })
-         }
-         .align(Alignment.Top)
-       })
+        ForEach(this.titleArray, (item: string) => {
+          TabContent() {
+            FindContent({
+              currentIndex: this.currentIndex
+            })
+          }
+          .align(Alignment.Top)
+        })
       }
       .layoutWeight(1)
       .barWidth(0)
@@ -117,21 +106,22 @@ export default struct IndexFind {
         this.currentIndex = index
       })
       .scrollable(this.APP_INDEX_SCROLLABLE)
+
       Flex()
-        .bindSheet(this.isShowHelp,this.dialogHelpFuction(),{
+        .bindSheet(this.isShowHelp, this.dialogHelpFuction(), {
           height: '50%',
-          showClose:false,
-          dragBar:false,
-          onDisappear:()=>{
+          showClose: false,
+          dragBar: false,
+          onDisappear: () => {
             this.isShowHelp = false
-         }
+          }
         })
       Flex()
-        .bindSheet(this.isShowImport,this.dialogImportFunction(),{
+        .bindSheet(this.isShowImport, this.dialogImportFunction(), {
           detents: [SheetSize.FIT_CONTENT, SheetSize.LARGE, 200],
           dragBar: true,
-          showClose:false,
-          onDisappear:()=>{
+          showClose: false,
+          onDisappear: () => {
             this.isShowImport = false
           }
         })
@@ -140,9 +130,10 @@ export default struct IndexFind {
       direction: GradientDirection.Bottom, // 渐变方向
       colors: [
         ["rgb(254, 203, 169)", 0], ["RGB(245, 245, 245)", 0.15]
-        ,["RGB254, 203, 169)", 0.25]] // 数组末尾元素占比小于1时满足重复着色效果
+        , ["RGB254, 203, 169)", 0.25]] // 数组末尾元素占比小于1时满足重复着色效果
     })
   }
+
   //'粘贴导入', '本地导入', '书源管理', '导入帮助'
   FIND_Dialog_Right_Fuction: IconTitleVo[] = [
     new IconTitleVo($r('app.media.icon_rule_paste'), '粘贴导入'),
@@ -151,19 +142,20 @@ export default struct IndexFind {
     new IconTitleVo($r('app.media.icon_rule_help'), '导入帮助')
   ]
 
-  @Builder dialogRightFuction(){
-   Column(){
-     ForEach(this.FIND_Dialog_Right_Fuction,(item:IconTitleVo,index)=>{
-       dialogTitleFuction({
-         title:item.title,
-         icon:item.icon,
-         isBorder: this.FIND_Dialog_Right_Fuction.length !== index + 1
-       })
-         .onClick(()=>{
-           this.findBindMenuFunction(index)
-         })
-     })
-   }
+  @Builder
+  dialogRightFuction() {
+    Column() {
+      ForEach(this.FIND_Dialog_Right_Fuction, (item: IconTitleVo, index) => {
+        dialogTitleFuction({
+          title: item.title,
+          icon: item.icon,
+          isBorder: this.FIND_Dialog_Right_Fuction.length !== index + 1
+        })
+          .onClick(() => {
+            this.findBindMenuFunction(index)
+          })
+      })
+    }
   }
 
   async pasteAnalyze() {
@@ -187,8 +179,8 @@ export default struct IndexFind {
     }
   }
 
-  findBindMenuFunction(index:number){
-    switch (index){
+  findBindMenuFunction(index: number) {
+    switch (index) {
       case 0:
         this.pasteAnalyze();
         break;
@@ -210,7 +202,8 @@ export default struct IndexFind {
     }
   }
 
-  @Builder dialogHelpFuction(){
+  @Builder
+  dialogHelpFuction() {
     Flex() {
       Help({
         btnClick: () => {
@@ -220,9 +213,10 @@ export default struct IndexFind {
     }
   }
 
-  @Builder dialogImportFunction() {
+  @Builder
+  dialogImportFunction() {
     Flex() {
-      ImportCommon({sourceList: this.sourceList, show: this.isShowImport})
+      ImportCommon({ sourceList: this.sourceList, show: this.isShowImport })
     }
   }
 }
