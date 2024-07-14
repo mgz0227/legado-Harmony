@@ -123,32 +123,41 @@ class BookSourceDao {
   async search(searchParams?: BookSourceSearchParams) {
     const searchKey = searchParams?.searchKey ?? '';
     const type = searchParams?.type;
+    const enabled = searchParams?.enabled;
     const hasExploreUrl = searchParams?.hasExploreUrl;
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
-      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates
-        .contains('bookSourceName', searchKey)
-        .or()
-        .contains('bookSourceGroup', searchKey)
-        .or()
-        .contains('bookSourceUrl', searchKey)
-        .or()
-        .contains('bookSourceComment', searchKey)
-        .and()
-        .equalTo('enabled', 1)
+      let sql = `SELECT * FROM book_sources`;
+      // 动态添加 WHERE 子句
+      let whereClause: string[] = [];
       if (type !== undefined) {
-        predicates.and().equalTo('bookSourceType', type)
+        whereClause.push(`bookSourceType = ${type}`);
+      }
+      if (enabled !== undefined) {
+        whereClause.push(`enabled = ${enabled ? 1 : 0}`);
       }
       if (hasExploreUrl !== undefined) {
-        if (hasExploreUrl) {
-          predicates.and().notEqualTo('exploreUrl', '').and().notEqualTo('exploreUrl', null)
-        } else {
-          predicates.and().equalTo('exploreUrl', '').and().equalTo('exploreUrl', null)
-        }
+        whereClause.push(`COALESCE(exploreUrl, '') ${hasExploreUrl ? '<>' : '='} ''`);
       }
-      predicates.orderByAsc('customOrder')
-      const bookSourceDbList = await DbUtil.queryForList<BookSourceDb>(predicates, column);
+      if (searchKey) { // 确保 searchKey 不为空或未定义
+        whereClause.push(`(
+    bookSourceName LIKE '%${searchKey}%'
+    OR bookSourceGroup LIKE '%${searchKey}%'
+    OR bookSourceUrl LIKE '%${searchKey}%'
+    OR bookSourceComment LIKE '%${searchKey}%'
+  )`);
+      }
+
+      // 如果有 where 子句，添加 WHERE 关键字
+      if (whereClause.length > 0) {
+        sql += ` WHERE ${whereClause.join(' AND ')}`;
+      }
+
+      sql += `
+  ORDER BY
+    customOrder ASC
+`;
+      const bookSourceDbList = await DbUtil.querySqlForList<BookSourceDb>(sql, column);
       const bookSourceList = bookSourceDbList.map((item): BookSource => ToBookSource(item));
       console.log("TagInfo", '书源数量：' + bookSourceList.length)
       return bookSourceList
