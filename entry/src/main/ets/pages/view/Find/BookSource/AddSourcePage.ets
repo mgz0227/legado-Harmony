@@ -51,7 +51,6 @@ struct AddSourcePage {
   }
 
   async aboutToAppear() {
-    BookSourceDao.search()
     const params = router.getParams() as RouteParams;
     console.log('TagInfo', JSON.stringify(params))
     const localItem = await BookSourceDao.getBookSource(params.id)

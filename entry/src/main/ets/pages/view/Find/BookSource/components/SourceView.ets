@@ -95,7 +95,10 @@ export default struct SourceView {
     // axios.get('https://node.wisdoms.xin/static/file/20240704/sy.json').then((res: AxiosResponse) => {
     //   const bookSource: BookSource[] = res.data ?? []
     //     FileHandler.readJsonFile<BookSource[]>(this.pathBookSource)
-    BookSourceDao.flowSearch(this.searchValue, this.index).then(data => {
+    BookSourceDao.flowSearch({
+      type: this.index,
+      searchKey: this.searchValue
+    }).then(data => {
       const bookSource = data ?? []
       console.info('TagInfo', JSON.stringify(bookSource.slice(0, 3)))
       this.sourceList = bookSource
