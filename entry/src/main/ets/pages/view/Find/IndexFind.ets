@@ -18,6 +18,7 @@ import Help from '../../../componets/dialog/help';
 import { getPasteDataSync, isNetworkUrl, sleep } from '../../../common/utils/utils';
 import { showMessage } from '../../../componets/common/promptShow';
 import BookSourceDao from '../../../database/dao/BookSourceDao';
+import FindContent from './components/FindContent';
 
 /**
  * @author 2008
@@ -85,9 +86,6 @@ export default struct IndexFind {
         Image($r('app.media.addSubscription')).width(24)
           .bindMenu(this.isShowFuction,this.dialogRightFuction()
           , {
-          // enableArrow:true,
-          //
-          // arrowOffset:Placement.Right,
           onDisappear:()=>{
             this.isShowFuction = false
           }
@@ -98,27 +96,15 @@ export default struct IndexFind {
       }
       .padding({top:this.topRectHeight === 0 ? 30 : this.topRectHeight,left:20,right:20})
 
-      Search({
-        placeholder:'搜索书名或作者'
-      })
-        .margin({
-          top:8,bottom:8,
-          left:20,right:20
-        })
-        .backgroundColor(Color.White)
-        .onClick(() => {
-          router.pushUrl({
-            url: 'pages/view/search/SearchBook'
-          });
-        })
-
       Tabs({
         barPosition: BarPosition.Start,
         controller: this.tabsController
       }) {
        ForEach(this.titleArray,(item:string)=>{
          TabContent() {
-           this.indexFind()
+           FindContent({
+             currentIndex:this.currentIndex
+           })
          }
          .align(Alignment.Top)
        })
@@ -155,68 +141,6 @@ export default struct IndexFind {
       colors: [
         ["rgb(254, 203, 169)", 0], ["RGB(245, 245, 245)", 0.15]
         ,["RGB254, 203, 169)", 0.25]] // 数组末尾元素占比小于1时满足重复着色效果
-    })
-  }
-  @State isRefreshing: boolean = false
-  @State counter: number = 0
-  @State RefreshingTitle: string = '松开刷新'
-  @State isShowNoFind:boolean = true
-  @Builder
-  indexFind() {
-    Column(){
-      FindGroupSource()
-        .padding(5)
-        .zIndex(999)
-      if (this.isShowNoFind){
-        noSourceFind({
-          setOnclick: () => {
-            this.isShowNoFind = false
-          }
-        })
-          .margin({
-            top:PaddingConstants.PADDING_20
-          })
-
-      } else {
-        Refresh({ refreshing: $$this.isRefreshing, builder: this.refreshComponent }) {
-          Scroll(){
-            Stack({ alignContent: Alignment.Center }) {
-              if (this.currentIndex === 0){
-                novelFind()
-              } else if (this.currentIndex === 1){
-                cartoonFind()
-              } else if (this.currentIndex === 2){
-                soundFind()
-              }
-            }
-            .padding({
-              left:20,right:20,bottom:20
-            })
-          }
-          .scrollBar(BarState.Off)
-        }
-        .layoutWeight(1)
-        .onStateChange((refreshStatus: RefreshStatus) => {
-          if (refreshStatus === 1 || refreshStatus === 2) {
-            this.RefreshingTitle = '松开刷新'
-          } else {
-            this.RefreshingTitle = '刷新中...'
-          }
-        })
-        .onRefreshing(() => {
-          setTimeout(() => {
-            this.counter++
-            this.isRefreshing = false
-          }, 1000)
-        })
-      }
-    }
-  }
-
-  @Builder
-  refreshComponent() {
-    RefreshComponent({
-      RefreshingTitle: this.RefreshingTitle,
     })
   }
   //'粘贴导入', '本地导入', '书源管理', '导入帮助'
