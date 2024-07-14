@@ -1,6 +1,5 @@
 import { common } from '@kit.AbilityKit'
 import axios, { AxiosResponse } from '@ohos/axios'
-import { BookSource } from '../../../../componets/dataList/BookSource'
 import Header from '../../../../componets/common/Header'
 import Help from '../../../../componets/dialog/help'
 import { IconTitleVo } from '../../../../componetsmodel/IconTitleVo'
@@ -11,6 +10,7 @@ import SourceView from './components/SourceView'
 import BookMark from '../../../../componets/head/BookMark'
 import { getPasteDataSync, isNetworkUrl, sleep } from '../../../../common/utils/utils'
 import { router } from '@kit.ArkUI'
+import { BookSource } from '../../../../database/entities/BookSource'
 
 @Entry
 @Component

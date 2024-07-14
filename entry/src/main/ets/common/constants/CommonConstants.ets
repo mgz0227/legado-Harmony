@@ -231,6 +231,7 @@ export default class CommonConstants {
   static readonly KEY_CARTOON_BOOK_DATA:string = 'KEY_CARTOON_BOOK_DATA'
   static readonly GROUP_LIST_DATA:string = 'GROUP_LIST_DATA'
   static readonly SHELF_LIST_DATA:string = 'SHELF_LIST_DATA'
+  static readonly HAS_EXPLORE_URL:string = 'HAS_EXPLORE_URL'
   /**
    * 数据库日志标签
    */
