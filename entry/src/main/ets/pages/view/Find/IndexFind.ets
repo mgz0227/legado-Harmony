@@ -17,6 +17,7 @@ import { common } from '@kit.AbilityKit';
 import Help from '../../../componets/dialog/help';
 import { getPasteDataSync, isNetworkUrl, sleep } from '../../../common/utils/utils';
 import { showMessage } from '../../../componets/common/promptShow';
+import BookSourceDao from '../../../database/dao/BookSourceDao';
 
 /**
  * @author 2008
@@ -41,6 +42,13 @@ export default struct IndexFind {
   @State isShowHelp:boolean = false
   @State isShowImport: boolean = false
   @State sourceList:BookSource[]=[]
+
+  aboutToAppear() {
+    BookSourceDao.search().then(bookSources => {
+      console.info('TagInfo', JSON.stringify(bookSources.slice(0, 3)))
+    })
+  }
+
   build() {
     Column(){
       Flex({
