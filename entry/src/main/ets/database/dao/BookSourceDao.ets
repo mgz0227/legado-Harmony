@@ -61,18 +61,57 @@ class BookSourceDao {
     const bookSourceGrade = searchParams?.bookSourceGrade;
     const hasLoginUrl = searchParams?.hasLoginUrl;
     try {
-      const sql = `select bookSourceUrl, bookSourceName, bookSourceGroup, bookSourceGrade, bookSourceScore, customOrder, enabled, enabledExplore,
-        trim(loginUrl) <> '' hasLoginUrl, lastUpdateTime, respondTime, weight, trim(exploreUrl) <> '' hasExploreUrl
-        from book_sources
-        where bookSourceName like '%${searchKey}%'
-        or bookSourceGroup like '%${searchKey}%'
-        or bookSourceUrl like '%${searchKey}%'
-        or bookSourceComment like '%${searchKey}%'
-        ${type !== undefined ? 'and bookSourceType = ' + type : ''}
-        ${enabled !== undefined ? 'and enabled = ' + enabled ? 1 : 0 : ''}
-        ${bookSourceGrade !== undefined ? 'and bookSourceGrade = ' + bookSourceGrade : ''}
-        ${hasLoginUrl !== undefined ? "AND COALESCE(loginUrl, '') " + hasLoginUrl ? '<>' : '=' + " ''" : ''}
-        order by customOrder asc`
+      let sql = `
+  SELECT
+    bookSourceUrl,
+    bookSourceName,
+    bookSourceGroup,
+    bookSourceGrade,
+    bookSourceScore,
+    customOrder,
+    enabled,
+    enabledExplore,
+    trim(loginUrl) <> '' AS hasLoginUrl,
+    lastUpdateTime,
+    respondTime,
+    weight,
+    trim(exploreUrl) <> '' AS hasExploreUrl
+  FROM
+    book_sources
+`;
+
+      // 动态添加 WHERE 子句
+      let whereClause: string[] = [];
+      if (type !== undefined) {
+        whereClause.push(`bookSourceType = ${type}`);
+      }
+      if (enabled !== undefined) {
+        whereClause.push(`enabled = ${enabled ? 1 : 0}`);
+      }
+      if (bookSourceGrade !== undefined) {
+        whereClause.push(`bookSourceGrade = ${bookSourceGrade}`);
+      }
+      if (hasLoginUrl !== undefined) {
+        whereClause.push(`COALESCE(loginUrl, '') ${hasLoginUrl ? '<>' : '='} ''`);
+      }
+      if (searchKey) { // 确保 searchKey 不为空或未定义
+        whereClause.push(`(
+    bookSourceName LIKE '%${searchKey}%'
+    OR bookSourceGroup LIKE '%${searchKey}%'
+    OR bookSourceUrl LIKE '%${searchKey}%'
+    OR bookSourceComment LIKE '%${searchKey}%'
+  )`);
+      }
+
+      // 如果有 where 子句，添加 WHERE 关键字
+      if (whereClause.length > 0) {
+        sql += ` WHERE ${whereClause.join(' AND ')}`;
+      }
+
+      sql += `
+  ORDER BY
+    customOrder ASC
+`;
       const column: ColumnInfo[] = this.getFlowColumn()
       return await DbUtil.querySqlForList<BookSourcePart>(sql, column)
     } catch (err) {
