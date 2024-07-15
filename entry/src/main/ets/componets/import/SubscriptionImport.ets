@@ -6,7 +6,6 @@
  */
 import SideBar from '../common/SideBar';
 import { showMessage } from '../common/promptShow';
-import Score from '../common/Score';
 import Tag from '../common/Tag';
 import subscriptionDao from '../../database/dao/SubscriptionDao';
 import { rssGroupList, rssSources } from '../../database/entities/rssSources';

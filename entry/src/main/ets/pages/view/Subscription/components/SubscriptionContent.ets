@@ -9,11 +9,15 @@ import FontConstants from '../../../../common/constants/FontConstants'
 import ImageConstants from '../../../../common/constants/ImageConstants'
 import PaddingConstants from '../../../../common/constants/PaddingConstants'
 import { IconTitleVo } from '../../../../componetsmodel/IconTitleVo'
+import { rssSources } from '../../../../database/entities/rssSources'
 
 @Component
 export default struct SubscriptionContent{
   @Prop subscriptionTitle: string
-
+  @Prop contentList: rssSources[] = []
+  aboutToAppear(): void {
+    console.log(`-----------${this.contentList[0].sourceIcon}`)
+  }
   build() {
     Column(){
       Column({
@@ -57,9 +61,19 @@ export default struct SubscriptionContent{
             .width(ImageConstants.IMG_WIDTH_24)
             .height(ImageConstants.IMG_HEIGHT_24)
         }
+        ForEach(this.contentList,(item:rssSources,index:number)=>{
+          if (index < 2){
+            Flex({
+              justifyContent:FlexAlign.SpaceBetween
+            }){
+              this.contentCoverBuilder(item.sourceName, item.sourceIcon)
+            }
 
-        this.contentCoverBuilder()
-        this.contentListBuilder()
+          } else {
+            this.contentListBuilder(item.sourceName, item.sourceIcon)
+          }
+        })
+
       }
       .margin({top: PaddingConstants.PADDING_12})
       .borderRadius(12)
@@ -69,80 +83,58 @@ export default struct SubscriptionContent{
   }
 
   @Builder
-  contentCoverBuilder(){
-    Flex({
-      justifyContent:FlexAlign.SpaceBetween
+  contentCoverBuilder(title:string, icon:string| Resource){
+    Row({
+      space:12
     }){
-      Row({
-        space:12
-      }){
-        Image($r('app.media.icon_subscription_tencent'))
-          .width(ImageConstants.IMG_WIDTH_24)
-          .height(ImageConstants.IMG_HEIGHT_24)
-          .borderRadius(4)
-        Text('腾讯动漫')
-          .font({
-            size:14,
-            weight:FontConstants.FONT_WEIGHT_500,
-            family: CommonConstants.FAMILY_PingFANG
-          })
-          .lineHeight(22)
-          .fontColor($r('app.string.color_black_88'))
-      }
-      .borderRadius(12)
-      .backgroundColor('#FFE5D4')
-      .padding(PaddingConstants.PADDING_12)
-      .width('48%')
-
-      Row({
-        space:12
-      }){
-        Image($r('app.media.bilibili'))
-          .width(ImageConstants.IMG_WIDTH_24)
-          .height(ImageConstants.IMG_HEIGHT_24)
-          .borderRadius(4)
-        Text('bilibili漫画')
-          .font({
-            size:14,
-            weight:FontConstants.FONT_WEIGHT_500,
-            family: CommonConstants.FAMILY_PingFANG
-          })
-          .lineHeight(22)
-          .fontColor($r('app.string.color_black_88'))
-      }
-      .borderRadius(12)
-      .backgroundColor('#FFE3ED')
-      .padding(PaddingConstants.PADDING_12)
-      .width('48%')
+      // Image(icon?icon:$r('app.media.icon'))
+      //   .width(ImageConstants.IMG_WIDTH_24)
+      //   .height(ImageConstants.IMG_HEIGHT_24)
+      //   .borderRadius(4)
+      Image($r('app.media.icon'))
+        .width(ImageConstants.IMG_WIDTH_24)
+        .height(ImageConstants.IMG_HEIGHT_24)
+        .borderRadius(4)
+      Text(title)
+        .font({
+          size:14,
+          weight:FontConstants.FONT_WEIGHT_500,
+          family: CommonConstants.FAMILY_PingFANG
+        })
+        .lineHeight(22)
+        .fontColor($r('app.string.color_black_88'))
     }
+    .borderRadius(12)
+    .backgroundColor('#FFE5D4')
+    .padding(PaddingConstants.PADDING_12)
+    .width('48%')
   }
 
-  //漫画列
-  @Prop
-  contentList: IconTitleVo[] = []
   @Builder
-  contentListBuilder(){
+  contentListBuilder(title:string, icon:string| Resource){
     GridRow({
       columns: 5
     }){
-      ForEach(this.contentList,(item:IconTitleVo)=>{
-        GridCol(){
-          Column({
-            space: CommonConstants.SPACE_6
-          }){
-            Image(item.icon)
-              .width(ImageConstants.IMG_WIDTH_40)
-              .height(ImageConstants.IMG_HEIGHT_40)
-              .borderRadius(8)
+      GridCol(){
+        Column({
+          space: CommonConstants.SPACE_6
+        }){
+          // Image(icon)
+          //   .width(ImageConstants.IMG_WIDTH_40)
+          //   .height(ImageConstants.IMG_HEIGHT_40)
+          //   .borderRadius(8)
+          Image($r('app.media.icon'))
+            .width(ImageConstants.IMG_WIDTH_40)
+            .height(ImageConstants.IMG_HEIGHT_40)
+            .borderRadius(4)
 
-            Text(`${item.title}`).fontSize(10)
-              .fontColor($r('app.string.color_black_88'))
-              .lineHeight(18)
-              .fontFamily(CommonConstants.FAMILY_PingFANG)
-              .fontWeight(FontConstants.FONT_WEIGHT_400)
-          }.margin({bottom:20})
-        }
-      })
+          Text(`${title}`).fontSize(10)
+            .fontColor($r('app.string.color_black_88'))
+            .lineHeight(18)
+            .fontFamily(CommonConstants.FAMILY_PingFANG)
+            .fontWeight(FontConstants.FONT_WEIGHT_400)
+        }.margin({bottom:20})
+      }
 
     }
   }
