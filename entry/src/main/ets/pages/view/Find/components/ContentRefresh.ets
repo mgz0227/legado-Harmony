@@ -34,16 +34,26 @@ export default struct ContentRefresh {
   @State RefreshingTitle: string = '松开刷新'
   @State counter: number = 0
   @Link hasExploreUrl: boolean
+  @State pageSize: number = 4
+  @State pageNum: number = 1
   @State exploreList: ExploreItem[] = []
+  @State showExploreList: ExploreItem[] = []
 
   aboutToAppear() {
     try {
       console.info('TagInfo: 书源地址：', this.bookSource.bookSourceUrl)
       console.info('TagInfo: 发现地址：', JSON.stringify(JSON.parse(this.bookSource.exploreUrl ?? '[]')))
-      this.exploreList = JSON.parse(this.bookSource.exploreUrl ?? '[]') as ExploreItem[]
+      const exploreList = JSON.parse(this.bookSource.exploreUrl ?? '[]') as ExploreItem[]
+      this.exploreList = exploreList.filter(item =>!!item.url)
+      this.pageNum = 1
+      this.getShowExploreList()
     } catch (err) {
       console.info('TagInfo', JSON.stringify(err))
     }
+  }
+
+  getShowExploreList() {
+    this.showExploreList = this.exploreList.slice(0, this.pageNum * this.pageSize)
   }
 
   build() {
@@ -59,21 +69,24 @@ export default struct ContentRefresh {
     } else {
       Refresh({ refreshing: $$this.isRefreshing, builder: this.refreshComponent }) {
         Scroll() {
-          Column(){
+          Column() {
             ForEach(this.exploreList, (item: ExploreItem) => {
-              if (item.url) {
-                BookFindContent({
-                  currentIndex: this.currentIndex,
-                  bookSourceUrl: this.bookSource.bookSourceUrl,
-                  exploreItem: item,
-                  counter: this.counter
-                })
-              }
+              BookFindContent({
+                currentIndex: this.currentIndex,
+                bookSourceUrl: this.bookSource.bookSourceUrl,
+                exploreItem: item,
+                counter: this.counter
+              })
             })
           }
-          .padding({left: 16, right: 16})
+          .padding({ left: 16, right: 16 })
         }
+        .padding({ bottom: 16 })
         .scrollBar(BarState.Off)
+        .onReachEnd(() => {
+          this.pageNum += 1
+          this.getShowExploreList()
+        })
       }
       .onStateChange((refreshStatus: RefreshStatus) => {
         if (refreshStatus === 1 || refreshStatus === 2) {
@@ -85,6 +98,8 @@ export default struct ContentRefresh {
       .height('100%')
       .onRefreshing(() => {
         setTimeout(() => {
+          this.pageNum = 1
+          this.getShowExploreList()
           this.counter++
           this.isRefreshing = false
         }, 1000)

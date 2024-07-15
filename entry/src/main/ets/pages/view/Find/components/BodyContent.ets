@@ -14,6 +14,7 @@ import ContentRefresh from './ContentRefresh'
 @Component
 export default struct BodyContent {
   titleArray: string[] = ['小说', '漫画', '有声书']
+  @State loading: boolean = true
   @State sourceList: BookSource[] = []
   @State currentSourceIndex: number = 0
   @State isShowDialog: boolean = false
@@ -26,6 +27,7 @@ export default struct BodyContent {
   }
 
   getList() {
+    this.loading = true
     BookSourceDao.search({
       type: this.currentIndex,
       enabled: true,
@@ -33,6 +35,9 @@ export default struct BodyContent {
     }).then(bookSources => {
       console.info('TagInfo', JSON.stringify(bookSources.slice(0, 3)))
       this.sourceList = bookSources
+      this.loading = false
+    }).catch(() => {
+      this.loading = false
     })
   }
 
@@ -45,7 +50,14 @@ export default struct BodyContent {
           justifyContent: FlexAlign.SpaceBetween
         }
       ) {
-        if (this.sourceList.length) {
+        if (this.loading) {
+          Row() {
+            LoadingProgress()
+              .color(0xff6600)
+              .width(30)
+            Text('加载中...')
+          }
+        } else if (this.sourceList.length) {
           Scroll() {
             Row({ space: 20 }) {
               ForEach(this.sourceList, (item: BookSource, index: number) => {
@@ -89,7 +101,17 @@ export default struct BodyContent {
       }
       .margin({ left: 15 })
 
-      if (!this.sourceList.length) {
+
+      if (this.loading) {
+          Column() {
+            LoadingProgress()
+              .color(0xff6600)
+              .width('50%')
+            Text('加载中...')
+          }
+          .justifyContent(FlexAlign.Center)
+          .layoutWeight(1)
+      } else if (!this.sourceList.length) {
         Column() {
           Image($r('app.media.find_empty'))
             .width(124)

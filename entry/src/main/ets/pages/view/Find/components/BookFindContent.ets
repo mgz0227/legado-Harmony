@@ -16,6 +16,7 @@ export default struct BookFindContent {
   @Prop bookSourceUrl: string
   @Prop exploreItem: ExploreItem
   @Prop @Watch('getList')counter: number = 0
+  @State loading: boolean = true
   @State errorExplore: boolean = false
   @State contentExplore: string = ''
 
@@ -24,6 +25,7 @@ export default struct BookFindContent {
   }
 
   getList() {
+    this.loading = true
     let url = this.exploreItem.url.replace('{{page}}', "1")
     if (!isNetworkUrl(url)) {
       url = this.bookSourceUrl + url
@@ -31,10 +33,12 @@ export default struct BookFindContent {
     console.info('TagInfo 请求地址：', url)
     // TODO 需要可正常使用的进行调试
     axios.get(url).then((res: AxiosResponse) => {
+      this.loading = false
       console.info('TagInfo 请求成功：', JSON.stringify(res.data))
       this.contentExplore = JSON.stringify(res.data)
     }).catch((err: AxiosError) => {
       console.log('TagInfo 请求失败：', JSON.stringify(err.message));
+      this.loading = false
       this.errorExplore = true
     })
   }
@@ -47,7 +51,16 @@ export default struct BookFindContent {
         mayAlsoLike({
           mayAlsoLike: this.exploreItem.title
         })
-        if (this.errorExplore) {
+        if (this.loading) {
+          Column() {
+            LoadingProgress()
+              .color(0xff6600)
+              .width('50%')
+            Text('加载中...')
+          }
+          .justifyContent(FlexAlign.Center)
+          .layoutWeight(1)
+        } else if (this.errorExplore) {
           noFind().padding({
             top: 75
           })
@@ -55,13 +68,13 @@ export default struct BookFindContent {
           Text('请求成功，需要解析')
           Text(this.contentExplore)
             .textOverflow({overflow: TextOverflow.Ellipsis})
-            .maxLines(8)
+            .maxLines(15)
         }
       }
-      .padding({left: 16, right: 16, bottom: 16})
+      .padding({left: 16, right: 16, top: 20, bottom: 20})
       .borderRadius(12)
       .backgroundColor(Color.White)
-      // .height(436)
+      .height(436)
     }
     .margin({ top: 12 })
   }
