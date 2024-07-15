@@ -14,12 +14,13 @@ import SubscriptionContent from './components/SubscriptionContent'
 import { showMessage } from '../../../componets/common/promptShow'
 import { getPasteDataSync, sleep } from '../../../common/utils/utils'
 import axios, { AxiosResponse } from '@ohos/axios'
-import { rssSources } from '../../../database/entities/rssSources'
+import { rssGroupList, rssSources } from '../../../database/entities/rssSources'
 import SubscriptionImport from '../../../componets/import/SubscriptionImport'
+import subscriptionDao from '../../../database/dao/SubscriptionDao'
+import rssSourcesDataSource from '../../../common/LazyIDataSource/rssSourcesDataSource'
 
 @Component
 @Preview
-@Entry
 export default struct SubscriptionIndex {
   @State isShowImport: boolean = false
   @StorageLink('topRectHeight') topRectHeight: number = 0
@@ -33,6 +34,44 @@ export default struct SubscriptionIndex {
   ]
 
   @State subscriptionList:rssSources[]=[]
+
+
+  @State rssSourcesList:rssSources[] = []
+  @State groupList: rssSourcesDataSource = new rssSourcesDataSource()
+
+  aboutToAppear() {
+    this.getList()
+
+  }
+
+  getList() {
+    subscriptionDao.search().then(data => {
+      const rssSources = data ?? []
+      console.info('TagInfo', JSON.stringify(rssSources.slice(0, 3)))
+      this.rssSourcesList = rssSources
+      this.getGroupList()
+    }).catch(() => {
+
+    })
+  }
+
+  getGroupList() {
+    const groupMap: Record<string, rssGroupList> = {};
+    this.rssSourcesList.forEach((item: rssSources) => {
+      const title = item.sourceGroup;
+      if (title) {
+        // 如果groupMap中还没有这个group，则创建一个新的GroupList对象
+        if (!groupMap[title]) {
+          groupMap[title] = { title: title, list: [] };
+        }
+        // 向当前group的list中添加BookSource对象
+        groupMap[title].list.push(item);
+      }
+
+    })
+    this.groupList.pushAllData(Object.values(groupMap))
+  }
+
 
 
   build() {
@@ -104,24 +143,32 @@ export default struct SubscriptionIndex {
               this.RecentlyUsedBuilder()
             }
           }
-          //最近使用End
-          SubscriptionContent({
-            subscriptionTitle: '漫画',
-            contentList: this.cartoonList
+
+          LazyForEach(this.groupList,(item:rssGroupList)=>{
+            SubscriptionContent({
+              subscriptionTitle: item.title,
+              contentList: item.list
+            })
           })
 
-          SubscriptionContent({
-            subscriptionTitle: '小说',
-            contentList: this.novelList
-          })
-          // //小说End
-
-          //收藏夹Start
-          SubscriptionContent({
-            subscriptionTitle: '收藏夹',
-            contentList: this.cartoonList
-          })
-          //收藏夹End
+          // //最近使用End
+          // SubscriptionContent({
+          //   subscriptionTitle: '漫画',
+          //   contentList: this.cartoonList
+          // })
+          //
+          // SubscriptionContent({
+          //   subscriptionTitle: '小说',
+          //   contentList: this.novelList
+          // })
+          // // //小说End
+          //
+          // //收藏夹Start
+          // SubscriptionContent({
+          //   subscriptionTitle: '收藏夹',
+          //   contentList: this.cartoonList
+          // })
+          // //收藏夹End
         }
       }
       .align(Alignment.Top)
