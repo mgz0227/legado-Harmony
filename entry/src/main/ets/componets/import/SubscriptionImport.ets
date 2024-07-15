@@ -8,16 +8,17 @@ import SideBar from '../common/SideBar';
 import { showMessage } from '../common/promptShow';
 import Score from '../common/Score';
 import Tag from '../common/Tag';
-import BookSourceDao from '../../database/dao/BookSourceDao';
-import { BookSource, GroupList } from '../../database/entities/BookSource';
+import subscriptionDao from '../../database/dao/SubscriptionDao';
+import { rssGroupList, rssSources } from '../../database/entities/rssSources';
+import SubscriptionDao from '../../database/dao/SubscriptionDao';
 
 @Component
 export default struct SubscriptionImport {
 
-  @State localSourceList: BookSource[] = []
-  @Prop sourceList: BookSource[] = []
+  @State localSourceList: rssSources[] = []
+  @Prop subscriptionList: rssSources[] = []
   @Link show: boolean;
-  @State groupList: GroupList[] = []
+  @State groupList: rssGroupList[] = []
   @State currentIndex: number = 0
   @State insertMap: Record<string, boolean> = {}
   @State alreadyNameMap: Record<string, boolean> = {}
@@ -28,9 +29,9 @@ export default struct SubscriptionImport {
   private secondScroll = new Scroller()
 
   aboutToAppear() {
-    BookSourceDao.search().then(data => {
-      const bookSource = data ?? []
-      this.localSourceList = bookSource
+    subscriptionDao.search().then(data => {
+      const rssSources = data ?? []
+      this.localSourceList = rssSources
       this.getGroupList()
     }).catch(() => {
       this.getGroupList()
@@ -38,10 +39,10 @@ export default struct SubscriptionImport {
   }
 
   getGroupList() {
-    const groupMap: Record<string, GroupList> = {};
-    this.sourceList.forEach((item: BookSource) => {
-      const title = item.bookSourceGroup;
-      const bookSourceName = item.bookSourceName;
+    const groupMap: Record<string, rssGroupList> = {};
+    this.subscriptionList.forEach((item: rssSources) => {
+      const title = item.sourceGroup;
+      const rssSourceName = item.sourceName;
       if (title) {
         // 如果groupMap中还没有这个group，则创建一个新的GroupList对象
         if (!groupMap[title]) {
@@ -52,16 +53,16 @@ export default struct SubscriptionImport {
       }
       for (let i = 0; i < this.localSourceList.length; i++) {
         const localItem = this.localSourceList[i];
-        if (localItem.bookSourceUrl === item.bookSourceUrl) {
-          this.alreadyNameMap[item.bookSourceUrl] = true
+        if (localItem.sourceUrl === item.sourceUrl) {
+          this.alreadyNameMap[item.sourceUrl] = true
           if (
-            localItem.bookSourceName !== item.bookSourceName ||
-            localItem.searchUrl !== item.searchUrl ||
-            localItem.ruleSearch?.bookList !== item.ruleSearch?.bookList ||
-            localItem.ruleContent?.content !== item.ruleContent?.content
+            localItem.sourceName !== item.sourceName ||
+            localItem.sourceUrl !== item.sourceUrl ||
+            localItem.rssListRule?.ruleTitle !== item.rssListRule?.ruleTitle ||
+            localItem.rssWebViewRule?.ruleContent !== item.rssWebViewRule?.ruleContent
           ) {
-            this.insertMap[item.bookSourceUrl] = true
-            this.updateNameMap[item.bookSourceUrl] = true
+            this.insertMap[item.sourceUrl] = true
+            this.updateNameMap[item.sourceUrl] = true
           }
           break;
         }
@@ -82,7 +83,7 @@ export default struct SubscriptionImport {
   }
 
   resetState() {
-    this.sourceList = []
+    this.subscriptionList = []
     this.groupList = []
     this.currentIndex = 0
   }
@@ -101,13 +102,13 @@ export default struct SubscriptionImport {
           .width(88)
 
         List({ scroller: this.secondScroll }) {
-          ForEach(this.groupList, (item: GroupList, index: number) => {
+          ForEach(this.groupList, (item: rssGroupList, index: number) => {
             ListItemGroup({
               header: this.classifyHeader(`${item.title} (${item.list.length})`, index),
               space: 0
             }) {
-              ForEach(item.list, (bookSource: BookSource, j: number) => {
-                this.CourseItem(bookSource, index, j)
+              ForEach(item.list, (rssSource: rssSources, j: number) => {
+                this.CourseItem(rssSource, index, j)
               })
             }
           })
@@ -127,8 +128,8 @@ export default struct SubscriptionImport {
           .selectedColor(0xff6600)
           .onChange((val: boolean) => {
             this.fullActive = val
-            this.sourceList.forEach((item: BookSource) => {
-              this.insertMap[item.bookSourceUrl] = val
+            this.subscriptionList.forEach((item: rssSources) => {
+              this.insertMap[item.sourceUrl] = val
             })
           })
 
@@ -136,7 +137,7 @@ export default struct SubscriptionImport {
           Span('全选（')
           Span(Object.values(this.insertMap).filter(o => o).length + '')
             .fontColor(0xff6600)
-          Span(`/${this.sourceList.length})`)
+          Span(`/${this.subscriptionList.length})`)
         }
         .margin({ left: 8 })
       }
@@ -162,8 +163,8 @@ export default struct SubscriptionImport {
           .backgroundColor(0xff6600)
           .layoutWeight(1)
           .onClick(async  () => {
-            const insertBookSources = this.sourceList.filter(item => this.insertMap[item.bookSourceUrl] ?? false)
-            await BookSourceDao.batchInsert(insertBookSources)
+            const insertRssSources = this.subscriptionList.filter(item => this.insertMap[item.sourceUrl] ?? false)
+            await SubscriptionDao.batchInsert(insertRssSources)
             this.show = false;
             this.resetState()
             showMessage('添加成功')
@@ -202,10 +203,10 @@ export default struct SubscriptionImport {
   }
 
   @Builder
-  CourseItem(item: BookSource, i: number, j: number) {
+  CourseItem(item: rssSources, i: number, j: number) {
     Column() {
       Row() {
-        Text(item.bookSourceName)
+        Text(item.sourceName)
           .fontSize(16)
           .lineHeight(24)
           .fontWeight(FontWeight.Medium)
@@ -217,10 +218,10 @@ export default struct SubscriptionImport {
         Blank()
 
         Checkbox({ name: 'checkbox' + j, group: 'checkboxGroup' + i })
-          .select(this.insertMap[item.bookSourceUrl] ?? false)
+          .select(this.insertMap[item.sourceUrl] ?? false)
           .selectedColor(0xff6600)
           .onChange((val: boolean) => {
-            this.insertMap[item.bookSourceUrl] = val
+            this.insertMap[item.sourceUrl] = val
           })
       }
       .width('100%')
@@ -229,10 +230,8 @@ export default struct SubscriptionImport {
       Blank()
 
       Row() {
-        Score({ grade: item.bookSourceGrade, score: item.bookSourceScore })
-
-        Text(this.updateNameMap[item.bookSourceUrl] ?? false ?
-          '更新' : (this.alreadyNameMap[item.bookSourceUrl] ?? false ? '已有' : '新增'))
+        Text(this.updateNameMap[item.sourceUrl] ?? false ?
+          '更新' : (this.alreadyNameMap[item.sourceUrl] ?? false ? '已有' : '新增'))
           .fontSize(12)
           .fontColor('rgba(0, 0, 0, 0.45)')
       }

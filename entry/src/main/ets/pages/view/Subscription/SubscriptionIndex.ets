@@ -14,7 +14,7 @@ import SubscriptionContent from './components/SubscriptionContent'
 import { showMessage } from '../../../componets/common/promptShow'
 import { getPasteDataSync, sleep } from '../../../common/utils/utils'
 import axios, { AxiosResponse } from '@ohos/axios'
-import { Subscription } from '../../../componets/dataList/SubscriptionContent'
+import { rssSources } from '../../../database/entities/rssSources'
 import SubscriptionImport from '../../../componets/import/SubscriptionImport'
 
 @Component
@@ -32,7 +32,7 @@ export default struct SubscriptionIndex {
     new IconTitleVo($r('app.media.icon_rule_batch'), '批量管理'),
   ]
 
-  @State subscriptionList:Subscription[]=[]
+  @State subscriptionList:rssSources[]=[]
 
 
   build() {
@@ -131,7 +131,7 @@ export default struct SubscriptionIndex {
       .scrollable(ScrollDirection.Vertical)
 
       Flex()
-        .bindSheet(this.isShowImport,this.dialogImportFunction(),{
+        .bindSheet($$this.isShowImport,this.dialogImportFunction(),{
           detents: [SheetSize.FIT_CONTENT, SheetSize.LARGE, 200],
           dragBar: true,
           showClose:false,
@@ -203,7 +203,9 @@ export default struct SubscriptionIndex {
 
   @Builder dialogImportFunction() {
     Flex() {
-      SubscriptionImport({show: this.isShowImport})
+      SubscriptionImport({
+      subscriptionList:this.subscriptionList
+      ,show: this.isShowImport})
     }
   }
 
@@ -337,7 +339,8 @@ export default struct SubscriptionIndex {
       //   return
       // }
       const res: AxiosResponse = await axios
-        .get(url ?? 'https://node.wisdoms.xin/static/file/20240704/sy.json');
+        .get(url ?? 'http://yuedu.miaogongzi.net/shuyuan/miaogongziDY.json');
+      console.log('res', JSON.stringify(res))
       this.subscriptionList = res.data;
       this.isShowImport = true;
     } catch (err) {
