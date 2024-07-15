@@ -31,7 +31,7 @@ jobs:
       - name: Determine if PR should be merged
         id: determine-merge
         run: |
-          ALLOWED_USERS=("yindushenwen" "linxunxr" "c386522459" "Sunny-316" "thfgjy" "stupchen" "MaoXiaoone" "ouzechang" "polo3584" "YiQingZi")
+          ALLOWED_USERS=("yindushenwen" "linxunxr" "c386522459" "Sunny-316" "thfgjy" "stupchen" "MaoXiaoone" "ouzechang" "polo3584" "YiQingZi"yi-boide")
           PR_AUTHOR=$(jq -r .pull_request.user.login < "$GITHUB_EVENT_PATH")
           if printf '%s\n' "${ALLOWED_USERS[@]}" | grep -qx "${PR_AUTHOR}"; then
             echo "PR author ${PR_AUTHOR} is allowed. Proceeding to merge."
