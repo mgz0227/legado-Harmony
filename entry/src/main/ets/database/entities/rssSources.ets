@@ -15,15 +15,15 @@ export class rssSources{
   //地址url
   sourceUrl:string = ''
   //图标
-  sourceIcon:string|Resource = ''
+  sourceIcon:string = ''
   // 图标是否使用链接
   sourceIconIsUrl:boolean = false
   // 分组
-  sourceGroup?:string
+  sourceGroup:string = SUBSCRIPTION_GROUP_TYPE[0]
   //源注解
   sourceComment?:string
   //是否启用
-  enabled?: boolean = true
+  enabled: boolean = true
   // 自定义变量说明
   variableComment?:string
   // js库
@@ -45,7 +45,7 @@ export class rssSources{
   // 分类地址
   sortUrl?:string
   // 单URL
-  singleUrl?:boolean
+  singleUrl:boolean = true
   // 文章样式
   articleStyle?:string
   //最后更新时间
@@ -60,6 +60,8 @@ export class rssSources{
   rssListRule?:rssListRule
   //webView
   rssWebViewRule?:rssWebViewRule
+  //订阅源类型0.常规网站 1.订阅源
+  sourceType?:number
 }
 
 export interface rssGroupList {
@@ -103,11 +105,11 @@ export class rssStars {
 
 //订阅源分组类别
 export const SUBSCRIPTION_GROUP_TYPE: Record<number, string> ={
-  0: '收藏夹',
-  1: '小说',
-  2: '漫画',
-  3: '影视',
-  4: '咨询'
+  0: '小说',
+  1: '漫画',
+  2: '影视',
+  3: '咨询',
+  4: '收藏夹'
 }
 
 //订阅源分组类别
@@ -152,6 +154,7 @@ export const ToRssSources = (rssSourceDb: rssSourceDb) => {
     customOrder: rssSourceDb.customOrder,
     variable: rssSourceDb.variable,
     autoComplete: rssSourceDb.autoComplete,
+    sourceType: rssSourceDb.sourceType,
     rssListRule,
     rssWebViewRule
   }
@@ -186,6 +189,7 @@ export const ToRssSourcesDb = (rssSourceDb: rssSources) => {
     customOrder: rssSourceDb.customOrder,
     variable: rssSourceDb.variable,
     autoComplete: rssSourceDb.autoComplete,
+    sourceType: rssSourceDb.sourceType,
     rssListRule,
     rssWebViewRule
   }

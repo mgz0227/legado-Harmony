@@ -7,14 +7,17 @@ import CommonConstants from '../../../../common/constants/CommonConstants'
 import FontConstants from '../../../../common/constants/FontConstants'
 import ImageConstants from '../../../../common/constants/ImageConstants'
 import PaddingConstants from '../../../../common/constants/PaddingConstants'
-import { showMessage } from '../../../../componets/common/promptShow'
 import { IconTitleVo } from '../../../../componetsmodel/IconTitleVo'
+import newSources from './newSources'
+import newSourcesNetWork from './newSourcesNetWork'
 
 @Component
 @Preview
 export default struct dialogNewSources{
   btnClick: Function = () => {
   }
+  @State isShowNewSourcesNetwork: boolean = false
+  @State isShowNewSources: boolean = false
   @State
   newSources: IconTitleVo[] = [
     new IconTitleVo($r('app.media.icon_dialog_new_sources_network'), '常规网站'),
@@ -33,8 +36,50 @@ export default struct dialogNewSources{
         .onClick(()=>{
           this.btnClick()
         })
+      Flex()
+        .bindSheet($$this.isShowNewSourcesNetwork,this.newSourcesNetworkBuilder(),{
+          height: '95%',
+          dragBar: true,
+          showClose:false,
+          onDisappear:()=>{
+            this.isShowNewSourcesNetwork = false
+          }
+        })
 
+      Flex()
+        .bindSheet($$this.isShowNewSources,this.newSourcesBuilder(),{
+          height: '95%',
+          dragBar: true,
+          showClose:false,
+          onDisappear:()=>{
+            this.isShowNewSources = false
+          }
+        })
     }.padding({ top: 16})
+  }
+
+  @Builder
+  newSourcesNetworkBuilder(){
+    Flex(){
+      newSourcesNetWork({
+        hideNewWork:()=>{
+          this.btnClick()
+          this.isShowNewSourcesNetwork = false
+        }
+      })
+    }
+  }
+
+  @Builder
+  newSourcesBuilder(){
+    Flex(){
+      newSources({
+        hideNewSources:()=>{
+          this.btnClick()
+          this.isShowNewSourcesNetwork = false
+        },
+      })
+    }
   }
 
 
@@ -75,17 +120,20 @@ export default struct dialogNewSources{
       })
     }
   }
+
+
+
   onClickShowNewSources(index:number){
     switch (index){
       case 0:
-        showMessage(this.newSources[index].title)
+        this.isShowNewSourcesNetwork = true
         break;
       case 1:
-        showMessage(this.newSources[index].title)
+        this.isShowNewSources = true
         break;
       default:
         break;
     }
-    this.btnClick()
+    // this.btnClick()
   }
 }
