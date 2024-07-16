@@ -12,19 +12,20 @@ import { IconTitleVo } from '../../../componetsmodel/IconTitleVo'
 import { router } from '@kit.ArkUI'
 import SubscriptionContent from './components/SubscriptionContent'
 import { showMessage } from '../../../componets/common/promptShow'
-import { getPasteDataSync, sleep } from '../../../common/utils/utils'
+import { getPasteDataSync, isNetworkUrl, sleep } from '../../../common/utils/utils'
 import axios, { AxiosResponse } from '@ohos/axios'
 import { rssGroupList, rssSources } from '../../../database/entities/rssSources'
 import SubscriptionImport from '../../../componets/import/SubscriptionImport'
 import subscriptionDao from '../../../database/dao/SubscriptionDao'
 import rssSourcesDataSource from '../../../common/LazyIDataSource/rssSourcesDataSource'
+import dialogNewSources from './components/dialogNewSources'
 
 @Component
 @Preview
 export default struct SubscriptionIndex {
   @State isShowImport: boolean = false
+  @State isShowNewSources:boolean = false
   @StorageLink('topRectHeight') topRectHeight: number = 0
-  @State NewSubscription: Boolean = false
   @State
   moreList: IconTitleVo[] = [
     new IconTitleVo($r('app.media.icon_rule_paste'), '粘贴导入'),
@@ -150,25 +151,6 @@ export default struct SubscriptionIndex {
               contentList: item.list
             })
           })
-
-          // //最近使用End
-          // SubscriptionContent({
-          //   subscriptionTitle: '漫画',
-          //   contentList: this.cartoonList
-          // })
-          //
-          // SubscriptionContent({
-          //   subscriptionTitle: '小说',
-          //   contentList: this.novelList
-          // })
-          // // //小说End
-          //
-          // //收藏夹Start
-          // SubscriptionContent({
-          //   subscriptionTitle: '收藏夹',
-          //   contentList: this.cartoonList
-          // })
-          // //收藏夹End
         }
       }
       .align(Alignment.Top)
@@ -180,6 +162,16 @@ export default struct SubscriptionIndex {
       Flex()
         .bindSheet($$this.isShowImport,this.dialogImportFunction(),{
           detents: [SheetSize.FIT_CONTENT, SheetSize.LARGE, 200],
+          dragBar: true,
+          showClose:false,
+          onDisappear:()=>{
+            this.isShowImport = false
+          }
+        })
+
+      Flex()
+        .bindSheet($$this.isShowNewSources,this.dialogNewSourcesFunction(),{
+          height: 200,
           dragBar: true,
           showClose:false,
           onDisappear:()=>{
@@ -256,6 +248,16 @@ export default struct SubscriptionIndex {
     }
   }
 
+  @Builder dialogNewSourcesFunction() {
+    Column(){
+      dialogNewSources({
+        btnClick:()=>{
+          this.isShowNewSources = false
+        }
+      })
+    }
+  }
+
 
   //小说列
   @State
@@ -302,66 +304,22 @@ export default struct SubscriptionIndex {
         .margin({ bottom: 20 })
       })
     }
-    // 点击 本地导入 时的半模态转场
-    .bindSheet($$this.NewSubscription, this.NewSubscriptionDialog(), {
-      height: 300,
-      showClose: false,
-      dragBar: false,
-      blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
-      onDisappear: () => {
-        // this.clickBookType = ''
-      }
-    })
     .width(100)
   }
 
 
-  @Builder
-  NewSubscriptionDialog() {
-    Column() {
-      Scroll() {
-        Flex({
-          direction: FlexDirection.Row, wrap: FlexWrap.Wrap, alignContent: FlexAlign.Center,
-          justifyContent: FlexAlign.Start
-        }) {
-          // ForEach(this.BooTypeList, (item: string) => {
-          //   this.title(item)
-          // })
-        }
-      }
-      .height('65%')
-      .scrollBar(BarState.Off)
-
-      Divider()
-
-      Column() {
-        Text('取消').fontSize(16).fontWeight(400)
-          .lineHeight(24)
-      }
-      .onClick(() => {
-        this.NewSubscription = false
-      })
-      .alignItems(HorizontalAlign.Center)
-      .padding({
-        left: 32,
-        right: 32,
-        top: 16
-      })
-    }
-  }
 
   MenuOnclick(value:number|string){
     switch (value){
       case 0:
         this.pasteAnalyze();
         break;
-        break
       case 1:
 
         break
       case 2:
-        this.NewSubscription =true
-        break
+        this.isShowNewSources =true
+        break;
       case 3:
         break
       case 4:
@@ -379,7 +337,6 @@ export default struct SubscriptionIndex {
         await sleep()
         // return
       }
-
       showMessage('订阅加载中')
       // if (!isNetworkUrl(url ?? '')) {
       //   showMessage('复制的链接不正确')
