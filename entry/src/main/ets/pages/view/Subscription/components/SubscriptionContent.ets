@@ -8,7 +8,7 @@ import CommonConstants from '../../../../common/constants/CommonConstants'
 import FontConstants from '../../../../common/constants/FontConstants'
 import ImageConstants from '../../../../common/constants/ImageConstants'
 import PaddingConstants from '../../../../common/constants/PaddingConstants'
-import { IconTitleVo } from '../../../../componetsmodel/IconTitleVo'
+import web_webview from '@ohos.web.webview'
 import { rssSources } from '../../../../database/entities/rssSources'
 
 @Component
@@ -18,6 +18,8 @@ export default struct SubscriptionContent{
   aboutToAppear(): void {
     console.log(`-----------${this.contentList[0].sourceIcon}`)
   }
+  // controller: web_webview.WebviewController = new web_webview.WebviewController()
+
   build() {
     Column(){
       Column({
@@ -61,18 +63,35 @@ export default struct SubscriptionContent{
             .width(ImageConstants.IMG_WIDTH_24)
             .height(ImageConstants.IMG_HEIGHT_24)
         }
-        ForEach(this.contentList,(item:rssSources,index:number)=>{
-          if (index < 2){
-            Flex({
-              justifyContent:FlexAlign.SpaceBetween
-            }){
-              this.contentCoverBuilder(item.sourceName, item.sourceIcon)
-            }
 
-          } else {
-            this.contentListBuilder(item.sourceName, item.sourceIcon)
-          }
-        })
+        GridRow({
+          columns:2
+        }){
+          ForEach(this.contentList,(item:rssSources,index:number)=>{
+            if (index < 2){
+              GridCol({
+                span:1
+              }){
+                Row(){
+                  this.contentCoverBuilder(item.sourceName, item.sourceIcon)
+                }
+              }
+            }
+          })
+        }
+
+        GridRow({
+          columns: 5
+        }){
+          ForEach(this.contentList,(item:rssSources,index:number)=>{
+            if (index >= 2) {
+              GridCol(){
+                this.contentListBuilder(item.sourceName, item.sourceIcon)
+              }
+            }
+          })
+        }
+        // Web({ src: this.contentList[0].sourceUrl, controller: this.controller })
 
       }
       .margin({top: PaddingConstants.PADDING_12})
@@ -92,8 +111,8 @@ export default struct SubscriptionContent{
       //   .height(ImageConstants.IMG_HEIGHT_24)
       //   .borderRadius(4)
       Image($r('app.media.icon'))
-        .width(ImageConstants.IMG_WIDTH_24)
-        .height(ImageConstants.IMG_HEIGHT_24)
+        .width(ImageConstants.IMG_WIDTH_40)
+        .height(ImageConstants.IMG_HEIGHT_40)
         .borderRadius(4)
       Text(title)
         .font({
@@ -101,41 +120,36 @@ export default struct SubscriptionContent{
           weight:FontConstants.FONT_WEIGHT_500,
           family: CommonConstants.FAMILY_PingFANG
         })
+        .layoutWeight(1)
         .lineHeight(22)
         .fontColor($r('app.string.color_black_88'))
     }
+    .margin({right:20,bottom:20})
     .borderRadius(12)
     .backgroundColor('#FFE5D4')
     .padding(PaddingConstants.PADDING_12)
-    .width('48%')
+
   }
 
   @Builder
   contentListBuilder(title:string, icon:string| Resource){
-    GridRow({
-      columns: 5
+    Column({
+      space: CommonConstants.SPACE_6
     }){
-      GridCol(){
-        Column({
-          space: CommonConstants.SPACE_6
-        }){
-          // Image(icon)
-          //   .width(ImageConstants.IMG_WIDTH_40)
-          //   .height(ImageConstants.IMG_HEIGHT_40)
-          //   .borderRadius(8)
-          Image($r('app.media.icon'))
-            .width(ImageConstants.IMG_WIDTH_40)
-            .height(ImageConstants.IMG_HEIGHT_40)
-            .borderRadius(4)
+      // Image(icon)
+      //   .width(ImageConstants.IMG_WIDTH_40)
+      //   .height(ImageConstants.IMG_HEIGHT_40)
+      //   .borderRadius(8)
+      Image($r('app.media.icon'))
+        .width(ImageConstants.IMG_WIDTH_40)
+        .height(ImageConstants.IMG_HEIGHT_40)
+        .borderRadius(4)
 
-          Text(`${title}`).fontSize(10)
-            .fontColor($r('app.string.color_black_88'))
-            .lineHeight(18)
-            .fontFamily(CommonConstants.FAMILY_PingFANG)
-            .fontWeight(FontConstants.FONT_WEIGHT_400)
-        }.margin({bottom:20})
-      }
-
-    }
+      Text(`${title}`).fontSize(10)
+        .fontColor($r('app.string.color_black_88'))
+        .lineHeight(18)
+        .fontFamily(CommonConstants.FAMILY_PingFANG)
+        .fontWeight(FontConstants.FONT_WEIGHT_400)
+    }.margin({bottom:20})
   }
 }
