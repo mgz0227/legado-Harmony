@@ -27,6 +27,8 @@ export class rssSourcesPart {
   customOrder:number = 0
   //设置源变量
   variable?:string
+  //订阅源类型0.常规网站 1.订阅源
+  sourceType?: number = 1
 }
 
 

@@ -80,7 +80,9 @@ struct Main {
               } else if (item.index === 1){
                 Find()
               } else if (item.index === 2){
-                Subscription()
+                Subscription({
+                  currentTabIndex:this.currentTabIndex
+                })
               }
               if (item.index === 3){
                 MyCenter()

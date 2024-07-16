@@ -12,19 +12,18 @@ import { IconTitleVo } from '../../../componetsmodel/IconTitleVo'
 import { router } from '@kit.ArkUI'
 import SubscriptionContent from './components/SubscriptionContent'
 import { showMessage } from '../../../componets/common/promptShow'
-import { getPasteDataSync, isNetworkUrl, sleep } from '../../../common/utils/utils'
+import { getPasteDataSync, sleep } from '../../../common/utils/utils'
 import axios, { AxiosResponse } from '@ohos/axios'
 import { rssGroupList, rssSources } from '../../../database/entities/rssSources'
 import SubscriptionImport from '../../../componets/import/SubscriptionImport'
 import subscriptionDao from '../../../database/dao/SubscriptionDao'
-import rssSourcesDataSource from '../../../common/LazyIDataSource/rssSourcesDataSource'
 import dialogNewSources from './components/dialogNewSources'
 
 @Component
-@Preview
 export default struct SubscriptionIndex {
   @State isShowImport: boolean = false
   @State isShowNewSources:boolean = false
+  @Prop @Watch('currentTabIndexChange')currentTabIndex: number
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @State
   moreList: IconTitleVo[] = [
@@ -38,11 +37,18 @@ export default struct SubscriptionIndex {
 
 
   @State rssSourcesList:rssSources[] = []
-  @State groupList: rssSourcesDataSource = new rssSourcesDataSource()
-
+  @State groupList: rssGroupList[] =[]
+  currentTabIndexChange(){
+    this.getList()
+  }
   aboutToAppear() {
     this.getList()
+  }
 
+  resetState() {
+    this.subscriptionList = []
+    this.groupList = []
+    this.currentTabIndex = 2
   }
 
   getList() {
@@ -70,7 +76,7 @@ export default struct SubscriptionIndex {
       }
 
     })
-    this.groupList.pushAllData(Object.values(groupMap))
+    this.groupList = Object.values(groupMap)
   }
 
 
@@ -145,7 +151,7 @@ export default struct SubscriptionIndex {
             }
           }
 
-          LazyForEach(this.groupList,(item:rssGroupList)=>{
+          ForEach(this.groupList,(item:rssGroupList)=>{
             SubscriptionContent({
               subscriptionTitle: item.title,
               contentList: item.list
@@ -175,7 +181,9 @@ export default struct SubscriptionIndex {
           dragBar: true,
           showClose:false,
           onDisappear:()=>{
-            this.isShowImport = false
+            this.isShowNewSources = false
+            this.resetState()
+            this.getList()
           }
         })
     }
@@ -253,6 +261,8 @@ export default struct SubscriptionIndex {
       dialogNewSources({
         btnClick:()=>{
           this.isShowNewSources = false
+          this.resetState()
+          this.getList()
         }
       })
     }
