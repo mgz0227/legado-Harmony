@@ -8,18 +8,24 @@ import CommonConstants from '../../../../common/constants/CommonConstants'
 import FontConstants from '../../../../common/constants/FontConstants'
 import ImageConstants from '../../../../common/constants/ImageConstants'
 import PaddingConstants from '../../../../common/constants/PaddingConstants'
-import web_webview from '@ohos.web.webview'
 import { rssSources } from '../../../../database/entities/rssSources'
+import { IconTitleVo } from '../../../../componetsmodel/IconTitleVo'
+import dialogTitleFuction from '../../../../componets/common/dialogTitleFuction'
+import { showMessage } from '../../../../componets/common/promptShow'
+import newSourcesNetWork from '../RssSources/newSourcesNetWork'
+import newSources from '../RssSources/newSources'
+import { router } from '@kit.ArkUI'
 
 @Component
 export default struct SubscriptionContent{
   @Prop subscriptionTitle: string
   @Prop contentList: rssSources[] = []
-  aboutToAppear(): void {
-    console.log(`-----------${this.contentList[0].sourceIcon}`)
-  }
-  // controller: web_webview.WebviewController = new web_webview.WebviewController()
 
+  @State contentIndex:number = 0
+  // controller: web_webview.WebviewController = new web_webview.WebviewController()
+  refresh: () => void = () => {
+
+  }
   build() {
     Column(){
       Column({
@@ -62,6 +68,31 @@ export default struct SubscriptionContent{
             .fillColor($r('app.string.color_black_45'))
             .width(ImageConstants.IMG_WIDTH_24)
             .height(ImageConstants.IMG_HEIGHT_24)
+            .bindMenu(
+              this.rightDialogBuilder(this.Item_Right_Dialog_Data, async (index: number) => {
+                switch (index) {
+                  case 0:
+                    showMessage('编辑')
+                    break
+                  case 1:
+                    showMessage('置顶')
+                    break
+                  case 2:
+                    showMessage('移动至')
+                    break
+                  case 3:
+                    showMessage('删除')
+                    break
+                }
+              }),
+              {
+                onDisappear: () => {
+
+                }
+              })
+            .onClick(() => {
+
+            })
         }
 
         GridRow({
@@ -75,6 +106,20 @@ export default struct SubscriptionContent{
                 Row(){
                   this.contentCoverBuilder(item.sourceName, item.sourceIcon)
                 }
+                .gesture(
+                  LongPressGesture({ repeat: true,duration:1000 })
+                    .onAction((event: GestureEvent) => {
+                      showMessage('编辑' + JSON.stringify(item.sourceType))
+                      this.contentIndex = index
+                      switch (item.sourceType){
+                        case 0:
+                          this.isShowNewSourcesNetwork = true
+                          break
+                        case 1:
+                          this.isShowNewSources = true
+                          break
+                      }
+                    }))
               }
             }
           })
@@ -88,6 +133,20 @@ export default struct SubscriptionContent{
               GridCol(){
                 this.contentListBuilder(item.sourceName, item.sourceIcon)
               }
+              .gesture(
+                LongPressGesture({ repeat: true,duration:500 })
+                  .onAction((event: GestureEvent) => {
+                    showMessage('编辑' + JSON.stringify(item.sourceType))
+                    this.contentIndex = index
+                    switch (item.sourceType){
+                      case 0:
+                        this.isShowNewSourcesNetwork = true
+                        break
+                      case 1:
+                        this.isShowNewSources = true
+                        break
+                    }
+                  }))
             }
           })
         }
@@ -98,7 +157,83 @@ export default struct SubscriptionContent{
       .borderRadius(12)
       .backgroundColor(Color.White)
       .padding(20)
+
+      Flex()
+        .bindSheet($$this.isShowNewSourcesNetwork,this.newSourcesNetworkBuilder(),{
+          height: '95%',
+          dragBar: true,
+          showClose:false,
+          onDisappear:()=>{
+            this.isShowNewSourcesNetwork = false
+          }
+        })
+
+      Flex()
+        .bindSheet($$this.isShowNewSources,this.newSourcesBuilder(),{
+          height: '95%',
+          dragBar: true,
+          showClose:false,
+          onDisappear:()=>{
+            this.isShowNewSources = false
+          }
+        })
     }
+  }
+  @State isShowNewSourcesNetwork:boolean = false
+  @State isShowNewSources:boolean = false
+  @Builder
+  newSourcesNetworkBuilder(){
+    Flex(){
+      newSourcesNetWork({
+        isEdit:true,
+        hideNewWork:()=>{
+          this.isShowNewSourcesNetwork = false
+          this.refresh()
+        },
+        formModel:this.contentList[this.contentIndex]
+      })
+    }
+  }
+
+  @Builder
+  newSourcesBuilder(){
+    Flex(){
+      newSources({
+        isEdit:true,
+        hideNewSources:()=>{
+          this.isShowNewSources = false
+          this.refresh()
+        },
+        formModel:this.contentList[this.contentIndex]
+      })
+    }
+  }
+
+  Item_Right_Dialog_Data: IconTitleVo[] = [
+    new IconTitleVo($r('app.media.icon_operate_top'), '编辑'),
+    new IconTitleVo($r('app.media.icon_operate_export'), '置顶'),
+    new IconTitleVo($r('app.media.icon_operate_move'), '移动至'),
+    new IconTitleVo($r('app.media.delete_svg'), '删除'),
+  ]
+
+  @Builder
+  rightDialogBuilder(list: IconTitleVo[], dialogRightChange: (_index: number) => void) {
+    Flex({
+      justifyContent:FlexAlign.Start,
+      direction:FlexDirection.Column
+    }){
+      ForEach(list, (item: IconTitleVo, index) => {
+        dialogTitleFuction({
+          title: item.title,
+          icon: item.icon,
+          isBorder: list.length !== index + 1
+        })
+          .onClick(() => {
+            dialogRightChange(index)
+          })
+      })
+    }
+
   }
 
   @Builder

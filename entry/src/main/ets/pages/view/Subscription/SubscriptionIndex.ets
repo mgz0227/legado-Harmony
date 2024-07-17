@@ -17,7 +17,7 @@ import axios, { AxiosResponse } from '@ohos/axios'
 import { rssGroupList, rssSources } from '../../../database/entities/rssSources'
 import SubscriptionImport from '../../../componets/import/SubscriptionImport'
 import subscriptionDao from '../../../database/dao/SubscriptionDao'
-import dialogNewSources from './components/dialogNewSources'
+import dialogNewSources from './RssSources/dialogNewSources'
 
 @Component
 export default struct SubscriptionIndex {
@@ -33,6 +33,12 @@ export default struct SubscriptionIndex {
     new IconTitleVo($r('app.media.icon_rule_batch'), '批量管理'),
   ]
 
+  //刷新
+  refresh = ()=>{
+    this.resetState()
+    this.getList()
+  }
+
   @State subscriptionList:rssSources[]=[]
 
 
@@ -41,14 +47,15 @@ export default struct SubscriptionIndex {
   currentTabIndexChange(){
     this.getList()
   }
-  aboutToAppear() {
-    this.getList()
-  }
+
+  // aboutToAppear() {
+  //   showMessage('显示了')
+  //   this.getList()
+  // }
 
   resetState() {
     this.subscriptionList = []
     this.groupList = []
-    this.currentTabIndex = 2
   }
 
   getList() {
@@ -111,50 +118,53 @@ export default struct SubscriptionIndex {
       }
       .height('8%')
       //搜索End
+      //最近使用Start
+      if (this.RecentlyUsed.length !== 0){
+        Column(){
+          Flex({
+            justifyContent:FlexAlign.SpaceBetween,
+            alignItems: ItemAlign.Center
+          }) {
+            Text('最近使用')
+              .font({
+                size:12,
+                weight:FontConstants.FONT_WEIGHT_500,
+                family: CommonConstants.FAMILY_PingFANG
+              })
+              .fontColor($r('app.string.color_black_88'))
+              .lineHeight(20)
+              .padding({
+                top: PaddingConstants.PADDING_12,
+                bottom: PaddingConstants.PADDING_12
+              })
 
+            Text('清空')
+              .font({
+                size:12,
+                weight:FontConstants.FONT_WEIGHT_400,
+                family: CommonConstants.FAMILY_PingFANG
+              })
+              .fontColor($r('app.string.color_black_45'))
+              .lineHeight(20)
+              .padding({
+                top: PaddingConstants.PADDING_12,
+                bottom: PaddingConstants.PADDING_12
+              })
+              .onClick(()=>{
+                this.RecentlyUsed = []
+                showMessage('已清空最近使用')
+              })
+          }
+          this.RecentlyUsedBuilder()
+        }
+      }
       Scroll(){
         Column(){
-          //最近使用Start
-          if (this.RecentlyUsed.length !== 0){
-            Column(){
-              Flex({
-                justifyContent:FlexAlign.SpaceBetween,
-                alignItems: ItemAlign.Center
-              }) {
-                Text('最近使用')
-                  .font({
-                    size:12,
-                    weight:FontConstants.FONT_WEIGHT_500,
-                    family: CommonConstants.FAMILY_PingFANG
-                  })
-                  .fontColor($r('app.string.color_black_88'))
-                  .lineHeight(20)
-                  .padding({
-                    top: PaddingConstants.PADDING_12,
-                    bottom: PaddingConstants.PADDING_12
-                  })
-
-                Text('清空')
-                  .font({
-                    size:12,
-                    weight:FontConstants.FONT_WEIGHT_400,
-                    family: CommonConstants.FAMILY_PingFANG
-                  })
-                  .fontColor($r('app.string.color_black_45'))
-                  .lineHeight(20)
-                  .padding({
-                    top: PaddingConstants.PADDING_12,
-                    bottom: PaddingConstants.PADDING_12
-                  })
-              }
-              this.RecentlyUsedBuilder()
-            }
-          }
-
           ForEach(this.groupList,(item:rssGroupList)=>{
             SubscriptionContent({
               subscriptionTitle: item.title,
-              contentList: item.list
+              contentList: item.list,
+              refresh:this.refresh
             })
           })
         }
@@ -182,8 +192,6 @@ export default struct SubscriptionIndex {
           showClose:false,
           onDisappear:()=>{
             this.isShowNewSources = false
-            this.resetState()
-            this.getList()
           }
         })
     }
@@ -230,7 +238,7 @@ export default struct SubscriptionIndex {
               .lineHeight(18)
               .fontFamily(CommonConstants.FAMILY_PingFANG)
               .fontWeight(FontConstants.FONT_WEIGHT_400)
-          }.margin({bottom:20})
+          }
         }
       })
 
@@ -261,8 +269,7 @@ export default struct SubscriptionIndex {
       dialogNewSources({
         btnClick:()=>{
           this.isShowNewSources = false
-          this.resetState()
-          this.getList()
+          this.refresh()
         }
       })
     }
