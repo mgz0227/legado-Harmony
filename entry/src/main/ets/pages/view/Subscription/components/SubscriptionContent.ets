@@ -104,8 +104,16 @@ export default struct SubscriptionContent{
                 span:1
               }){
                 Row(){
-                  this.contentCoverBuilder(item.sourceName, item.sourceIcon)
+                  this.contentCoverBuilder(item)
                 }
+                .onClick(()=>{
+                  router.pushUrl({
+                    url: 'pages/view/Subscription/rssWebView',
+                    params: {
+                      url: item.sourceUrl
+                    }
+                  })
+                })
                 .gesture(
                   LongPressGesture({ repeat: true,duration:1000 })
                     .onAction((event: GestureEvent) => {
@@ -131,8 +139,16 @@ export default struct SubscriptionContent{
           ForEach(this.contentList,(item:rssSources,index:number)=>{
             if (index >= 2) {
               GridCol(){
-                this.contentListBuilder(item.sourceName, item.sourceIcon)
+                this.contentListBuilder(item)
               }
+              .onClick(()=>{
+                router.pushUrl({
+                  url: 'pages/view/Subscription/rssWebView',
+                  params: {
+                    url: item.sourceUrl
+                  }
+                })
+              })
               .gesture(
                 LongPressGesture({ repeat: true,duration:500 })
                   .onAction((event: GestureEvent) => {
@@ -237,7 +253,7 @@ export default struct SubscriptionContent{
   }
 
   @Builder
-  contentCoverBuilder(title:string, icon:string| Resource){
+  contentCoverBuilder(item:rssSources){
     Row({
       space:12
     }){
@@ -249,7 +265,7 @@ export default struct SubscriptionContent{
         .width(ImageConstants.IMG_WIDTH_40)
         .height(ImageConstants.IMG_HEIGHT_40)
         .borderRadius(4)
-      Text(title)
+      Text(item.sourceName)
         .font({
           size:14,
           weight:FontConstants.FONT_WEIGHT_500,
@@ -267,7 +283,7 @@ export default struct SubscriptionContent{
   }
 
   @Builder
-  contentListBuilder(title:string, icon:string| Resource){
+  contentListBuilder(item:rssSources){
     Column({
       space: CommonConstants.SPACE_6
     }){
@@ -280,7 +296,7 @@ export default struct SubscriptionContent{
         .height(ImageConstants.IMG_HEIGHT_40)
         .borderRadius(4)
 
-      Text(`${title}`).fontSize(10)
+      Text(`${item.sourceName}`).fontSize(10)
         .fontColor($r('app.string.color_black_88'))
         .lineHeight(18)
         .fontFamily(CommonConstants.FAMILY_PingFANG)
