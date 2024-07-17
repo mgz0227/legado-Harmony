@@ -13,7 +13,6 @@ import SubscriptionDao from '../../../../database/dao/SubscriptionDao'
 import { rssSources, SUBSCRIPTION_GROUP_TYPE } from '../../../../database/entities/rssSources'
 
 @Component
-@Preview
 export default struct newSourcesNetWork{
   hideNewWork:Function = ()=>{}
   @Prop isEdit:boolean = false
@@ -50,7 +49,9 @@ export default struct newSourcesNetWork{
           } else {
             showMessage('保存失败')
           }
-          this.hideNewWork()
+          setTimeout(() => {
+            this.hideNewWork()
+          },1000)
         },
       })
     }

@@ -62,6 +62,7 @@ export default struct dialogNewSources{
   newSourcesNetworkBuilder(){
     Flex(){
       newSourcesNetWork({
+        isEdit:false,
         hideNewWork:()=>{
           this.btnClick()
           this.isShowNewSourcesNetwork = false
@@ -74,9 +75,10 @@ export default struct dialogNewSources{
   newSourcesBuilder(){
     Flex(){
       newSources({
+        isEdit:false,
         hideNewSources:()=>{
           this.btnClick()
-          this.isShowNewSourcesNetwork = false
+          this.isShowNewSources = false
         },
       })
     }

@@ -101,13 +101,15 @@ export default struct newSources{
           } else {
             showMessage('保存失败')
           }
-          this.hideNewSources()
+          setTimeout(() => {
+            this.hideNewSources()
+          },1000)
         },
       })
     }
   }
   private scroller: Scroller = new Scroller()
-  @State formModel: rssSources = {
+  @Prop formModel: rssSources = {
     sourceName: '',
     sourceUrl: '',
     sourceIcon: '',

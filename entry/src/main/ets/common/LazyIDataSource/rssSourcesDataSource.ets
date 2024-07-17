@@ -4,7 +4,7 @@
  * @className: rssSourcesDataSource
  * 懒加载
  */
-import { rssGroupList, rssSources } from '../../database/entities/rssSources';
+import { rssGroupList } from '../../database/entities/rssSources';
 import BasicDataSource from './BasicDataSource';
 
 export default class rssSourcesDataSource extends BasicDataSource{

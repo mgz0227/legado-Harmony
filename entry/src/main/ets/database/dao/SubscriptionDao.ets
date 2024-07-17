@@ -130,10 +130,27 @@ class SubscriptionDao {
 
   }
 
+  async getRssSources(key: string): Promise<rssSources | null> {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('sourceUrl', key)
+      const rssDbList = await DbUtil.queryForList<rssSourceDb>(predicates, column);
+      const rss = rssDbList.map((item): rssSources => ToRssSources(item));
+      if (rss.length > 0) {
+        return rss[0]
+      }
+      return null
+    } catch (err) {
+      console.log("TagInfo", JSON.stringify(err))
+      return null
+    }
+  }
+
   getFlowColumn() {
     const column: ColumnInfo[] = AppDatabaseUtil.getAssignColumn(this.TABLE_NAME,
       ['sourceName', 'sourceUrl', 'sourceGroup', 'sourceGroup', 'enabled', 'variableComment',
-        'sortUrl', 'singleUrl', 'lastUpdateTime','customOrder','variable']);
+        'sortUrl', 'singleUrl', 'lastUpdateTime','customOrder','variable','sourceType']);
     return column;
   }
 }

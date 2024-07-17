@@ -86,7 +86,8 @@ export default struct SubscriptionImport {
     this.groupList = []
     this.currentIndex = 0
   }
-
+  @State longCount: number = 0
+  @State isBatch: boolean = false
   build() {
     Column() {
       Row({ space: 12 }) {
@@ -112,12 +113,27 @@ export default struct SubscriptionImport {
             }
           })
         }
+        .height('100%')
         .padding({ right: 20 })
         .sticky(StickyStyle.Header)
         .onScrollIndex((start) => {
           this.scrollChangeAction(start, false)
         })
         .layoutWeight(1)
+        .gesture(
+          LongPressGesture({ repeat: true, duration: 500 })
+            .onAction((event: GestureEvent) => {
+              if (event && event.repeat) {
+                if (this.longCount >= 1) {
+                  this.isBatch = true
+                }
+                this.longCount++
+              }
+            })
+            .onActionEnd(() => {
+              this.longCount = 0
+            })
+        )
       }
       .layoutWeight(1)
 

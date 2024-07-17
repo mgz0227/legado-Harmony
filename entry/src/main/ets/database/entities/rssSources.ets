@@ -10,6 +10,8 @@ import { rssWebViewRule } from './rule/rssWebViewRule'
 
 @Observed
 export class rssSources{
+  //订阅源类型0.常规网站 1.订阅源
+  sourceType:number = 0
   //名称
   sourceName:string = ''
   //地址url
@@ -60,8 +62,6 @@ export class rssSources{
   rssListRule?:rssListRule
   //webView
   rssWebViewRule?:rssWebViewRule
-  //订阅源类型0.常规网站 1.订阅源
-  sourceType?:number
 }
 
 export interface rssGroupList {
@@ -131,6 +131,7 @@ export const ToRssSources = (rssSourceDb: rssSourceDb) => {
   const rssListRule = GSON.toJson<rssListRule>(rssSourceDb.rssListRule);
   const rssWebViewRule = GSON.toJson<rssWebViewRule>(rssSourceDb.rssWebViewRule);
   const rssSources: rssSources = {
+    sourceType: rssSourceDb.sourceType,
     sourceName: rssSourceDb.sourceName,
     sourceUrl: rssSourceDb.sourceUrl,
     sourceIcon: rssSourceDb.sourceIcon,
@@ -154,7 +155,6 @@ export const ToRssSources = (rssSourceDb: rssSourceDb) => {
     customOrder: rssSourceDb.customOrder,
     variable: rssSourceDb.variable,
     autoComplete: rssSourceDb.autoComplete,
-    sourceType: rssSourceDb.sourceType,
     rssListRule,
     rssWebViewRule
   }
@@ -166,6 +166,7 @@ export const ToRssSourcesDb = (rssSourceDb: rssSources) => {
   const rssListRule = GSON.toString(rssSourceDb.rssListRule);
   const rssWebViewRule = GSON.toString(rssSourceDb.rssWebViewRule);
   const rssSourcesDb: rssSourceDb = {
+    sourceType: rssSourceDb.sourceType,
     sourceName: rssSourceDb.sourceName,
     sourceUrl: rssSourceDb.sourceUrl,
     sourceIcon: rssSourceDb.sourceIcon,
@@ -189,7 +190,6 @@ export const ToRssSourcesDb = (rssSourceDb: rssSources) => {
     customOrder: rssSourceDb.customOrder,
     variable: rssSourceDb.variable,
     autoComplete: rssSourceDb.autoComplete,
-    sourceType: rssSourceDb.sourceType,
     rssListRule,
     rssWebViewRule
   }
