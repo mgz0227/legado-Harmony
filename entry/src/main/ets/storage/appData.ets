@@ -6,6 +6,8 @@ import { groupInitAppData } from './groupData'
 import { shelfInitAppData } from './shelfListData'
 import { initBookPreferences } from '../preferences/bookDataPreferences'
 import { initFindData } from './findData'
+import programDataPreferences from '../preferences/programDataPreferences'
+
 
 let APP_INDEX_SCROLLABLE = 'APP_INDEX_SCROLLABLE'
 
@@ -16,9 +18,10 @@ export const initAppData = ()=>{
   shelfInitAppData()
   if (!bookDataPreferences.shared.get(CommonConstants.PREFERENCES_BOOK_INIT_KEY) as boolean) {
     initBookPreferences()
-    showMessage(`初始化成功${CommonConstants.PREFERENCES_BOOK_DATA_KEY} ${bookDataPreferences.shared.get(CommonConstants.PREFERENCES_BOOK_INIT_KEY) as boolean}`)
-  } else {
-    showMessage(`已经初始化过${CommonConstants.PREFERENCES_BOOK_DATA_KEY} ${bookDataPreferences.shared.get(CommonConstants.PREFERENCES_BOOK_INIT_KEY) as boolean}`)
+  }
+  if (!bookDataPreferences.shared.get(CommonConstants.RSS_SOURCES_GROUP_INIT) as boolean) {
+    programDataPreferences.initProgramDataPreferences()
+    programDataPreferences.initRssSourcesListData()
   }
   initBookListData()
   groupInitAppData()

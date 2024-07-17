@@ -260,7 +260,10 @@ export default struct SubscriptionIndex {
     Flex() {
       SubscriptionImport({
       subscriptionList:this.subscriptionList
-      ,show: this.isShowImport})
+      ,show: this.isShowImport
+      }).onDisAppear(()=>{
+        this.refresh()
+      })
     }
   }
 
@@ -269,9 +272,11 @@ export default struct SubscriptionIndex {
       dialogNewSources({
         btnClick:()=>{
           this.isShowNewSources = false
-          this.refresh()
         }
+      }).onDisAppear(()=>{
+        this.refresh()
       })
+
     }
   }
 
