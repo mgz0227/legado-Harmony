@@ -5,7 +5,7 @@ import {showMessage} from '../../../../componets/common/promptShow'
 import CommonConstants from '../../../../common/constants/CommonConstants';
 import addBookTypeDialog from '../../../../componets/common/addBookTypeDialog';
 import confirmDialogExample from '../../../../componets/common/confirmDialog';
-import { initBookListData, updateBookListData } from '../../../../storage/bookListData';
+import { initBookListData, shortDateList, updateBookListData } from '../../../../storage/bookListData';
 import { folderList } from '../../../../componets/dataList/folderList';
 import BookFolderManages from './bookManage/BookFolderManages';
 import newBookShelf from './bookManage/newBookShelf';
@@ -134,20 +134,21 @@ struct BookManagePage {
     } else {
       this.showBookList = []
     }
-    this.showBookSort()
+    this.showBookList = shortDateList(this.showBookList)
   }
   //showBookList根据isTop字段排序true最上面
-  showBookSort() {
-    this.showBookList.sort((a, b) => {
-      if (a.isTop && !b.isTop) {
-        return -1
-      } else if (!a.isTop && b.isTop) {
-        return 1
-      } else {
-        return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
-      }
-    })
-  }
+  // showBookSort() {
+  //   this.showBookList.sort((a, b) => {
+  //     if (a.isTop && !b.isTop) {
+  //       return -1
+  //     } else if (!a.isTop && b.isTop) {
+  //       return 1
+  //     } else {
+  //       // return 0
+  //       return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+  //     }
+  //   })
+  // }
 
   onPageShow(): void {
     // initBookListData()
@@ -718,6 +719,7 @@ struct BookManagePage {
       } else if (!a.isTop && b.isTop) {
         return 1
       } else {
+        // return 0
         return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
       }
     })

@@ -215,17 +215,28 @@ export default class CommonConstants {
   /**
    * space间距
    */
+  static readonly SPACE_6: number = 6;
   static readonly SPACE_10: number = 10;
+  static readonly SPACE_12: number = 12;
   static readonly SPACE_20: number = 20;
 
   /**
    * 小说AppStorage存储key
    */
+  static readonly PREFERENCES_BOOK_TYPE_NUMBER:string = 'PREFERENCES_BOOK_TYPE_NUMBER'
+  static readonly PREFERENCES_BOOK_INIT_KEY:string = 'PREFERENCES_BOOK_INIT_KEY'
+  static readonly PREFERENCES_BOOK_DATA_KEY:string = 'PREFERENCES_BOOK_DATA_KEY'
   static readonly KEY_NOVEL_BOOK_DATA:string = 'KEY_NOVEL_BOOK_DATA'
   static readonly KEY_SOUND_BOOK_DATA:string = 'KEY_SOUND_BOOK_DATA'
   static readonly KEY_CARTOON_BOOK_DATA:string = 'KEY_CARTOON_BOOK_DATA'
   static readonly GROUP_LIST_DATA:string = 'GROUP_LIST_DATA'
   static readonly SHELF_LIST_DATA:string = 'SHELF_LIST_DATA'
+  static readonly HAS_EXPLORE_URL:string = 'HAS_EXPLORE_URL'
+  // 订阅源分组数据
+  //分组是否初始化key
+  static readonly RSS_SOURCES_GROUP_INIT:string = 'RSS_SOURCES_GROUP_INIT'
+  //分组key
+  static readonly RSS_SOURCES_GROUP_LIST_DATA_KEY:string = 'RSS_SOURCES_GROUP_LIST_DATA_KEY'
   /**
    * 数据库日志标签
    */
@@ -245,4 +256,12 @@ export default class CommonConstants {
    * 字体样式
    */
   static readonly FAMILY_PingFANG: string = 'PingFang SC'
+
+  /**
+   * 通用宽高
+   */
+  static readonly COMMON_WIDTH_45_36: number = 45.36;
+  static readonly COMMON_HEIGHT_21_6: number = 21.6;
+  static readonly COMMON_WIDTH_40: number = 40;
+  static readonly COMMON_HEIGHT_40: number = 40;
 }

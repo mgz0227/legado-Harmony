@@ -1,8 +1,7 @@
 import { showMessage } from '../componets/common/promptShow'
 import ReadShow from '../componets/common/ReadShow'
-import { MainScrollBar, NavItem } from '../componets/dataList/type'
+import { NavItem } from '../componets/dataList/type'
 import { updateAppData } from '../storage/appData'
-import { initBookListData } from '../storage/bookListData'
 import BookShelf from './view/BookShelf'
 import Find from './view/Find/Find'
 import MyCenter from './view/myCenter/MyCenter'
@@ -81,7 +80,9 @@ struct Main {
               } else if (item.index === 1){
                 Find()
               } else if (item.index === 2){
-                Subscription()
+                Subscription({
+                  currentTabIndex:this.currentTabIndex
+                })
               }
               if (item.index === 3){
                 MyCenter()

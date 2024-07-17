@@ -4,7 +4,7 @@ import BookInfoManage from './BookInfoManage'
 import BookInfoGridManage from './BookInfoGridManage'
 import confirmDialogExample from '../../../../../componets/common/confirmDialog'
 import {showMessage} from '../../../../../componets/common/promptShow'
-import { delBookListByBookId, updateBookListData } from '../../../../../storage/bookListData'
+import { delBookListByBookId, shortDateList, updateBookListData } from '../../../../../storage/bookListData'
 
 @Component
 export default struct bookListManage{
@@ -44,22 +44,22 @@ export default struct bookListManage{
       //更新缓存
       updateBookListData(this.shelfType,this.showBookList)
       this.checkBookList = []
-      this.showBookSort()
+      this.showBookList = shortDateList(this.showBookList)
     }
   }
 
-  //showBookList根据isTop字段true且围绕topUpdateTime时间字段进行排序
-  showBookSort() {
-    this.showBookList.sort((a, b) => {
-      if (a.isTop && !b.isTop) {
-        return -1
-      } else if (!a.isTop && b.isTop) {
-        return 1
-      } else {
-        return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
-      }
-    })
-  }
+  // //showBookList根据isTop字段true且围绕topUpdateTime时间字段进行排序
+  // showBookSort() {
+  //   this.showBookList.sort((a, b) => {
+  //     if (a.isTop && !b.isTop) {
+  //       return -1
+  //     } else if (!a.isTop && b.isTop) {
+  //       return 1
+  //     } else {
+  //       return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+  //     }
+  //   })
+  // }
 
   //监听isClear变化
   onIsClearChange() {

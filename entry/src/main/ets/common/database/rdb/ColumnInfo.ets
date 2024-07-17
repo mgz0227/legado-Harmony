@@ -18,5 +18,6 @@ export enum ColumnType{
   LONG,
   DOUBLE,
   STRING,
-  BLOB
+  BLOB,
+  BOOLEAN
 }

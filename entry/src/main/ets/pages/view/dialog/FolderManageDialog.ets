@@ -95,17 +95,18 @@ export default struct FolderManageDialog {
 
   @StorageLink('GROUP_LIST_DATA') groupData:folderList[] = []
   //showBookList根据isTop字段排序true最上面
-  showBookSort() {
-    this.bookList.sort((a, b) => {
-      if (a.isTop && !b.isTop) {
-        return -1
-      } else if (!a.isTop && b.isTop) {
-        return 1
-      } else {
-        return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
-      }
-    })
-  }
+  // showBookSort() {
+  //   this.bookList.sort((a, b) => {
+  //     if (a.isTop && !b.isTop) {
+  //       return -1
+  //     } else if (!a.isTop && b.isTop) {
+  //       return 1
+  //     } else {
+  //       // return 0
+  //       return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
+  //     }
+  //   })
+  // }
 
   @State @Watch('folderCheckNumber')folderCheckList:folderList[] = []
   folderCheckNumber(){
@@ -632,6 +633,7 @@ export default struct FolderManageDialog {
       } else if (!a.isTop && b.isTop) {
         return 1
       } else {
+        // return 0
         return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
       }
     })

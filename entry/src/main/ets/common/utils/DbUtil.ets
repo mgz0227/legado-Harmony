@@ -9,7 +9,7 @@ import { relationalStore, ValuesBucket, ValueType } from '@kit.ArkData';
 import { common } from '@kit.AbilityKit';
 import CommonConstants from '../constants/CommonConstants';
 import Logger from './Logger';
-import { ColumnInfo, ColumnType } from '../database/rdb/ColumnInfo';
+import { ColumnInfo, ColumnType } from '../../database/types/ColumnInfo';
 
 class DbUtil {
   // 数据库实例
@@ -32,6 +32,15 @@ class DbUtil {
           reject(reason);
         })
     });
+  }
+
+  /**
+   * 创建relationalStore.RdbPredicates对象
+   * @param tableName
+   * @returns relationalStore.RdbPredicates
+   */
+  getPredicates (tableName: string) {
+    return new relationalStore.RdbPredicates(tableName)
   }
   /**
    * 删除数据库
@@ -118,6 +127,26 @@ class DbUtil {
    * @param columns
    * @returns
    */
+  querySqlForList<T> (sql: string, columns: ColumnInfo[]): Promise<T[]> {
+    return new Promise((resolve, reject) => {
+      this.rdbStore?.querySql(sql, (err, result) => {
+        if (err) {
+          Logger.error(`[${CommonConstants.RDB_TAG}]`,'查询失败!',JSON.stringify(err));
+          reject(err);
+        } else {
+          Logger.debug(`[${CommonConstants.RDB_TAG}]`,'查询成功！查询行数：', result.rowCount.toString());
+          resolve(this.parseResultSet(result, columns));
+          result.close();
+        }
+      })
+    });
+  }
+  /**
+   * 查询数据
+   * @param predicates 条件
+   * @param columns
+   * @returns
+   */
   queryForList<T> (predicates: relationalStore.RdbPredicates, columns: ColumnInfo[]): Promise<T[]> {
     return new Promise((resolve, reject) => {
       this.rdbStore?.query(predicates, columns.map(info => info.columnName), (err, result) => {
@@ -193,9 +222,9 @@ class DbUtil {
       // 3.1 去下一行
       result.goToNextRow();
       // 3.2 解析这行数据，转为对象
-      let obj: ValuesBucket = {};
+      let obj: ValuesBucket | Record<string, undefined> = {};
       columns.forEach(info => {
-        let val: ValueType | Uint8Array | null = null;
+        let val: ValueType | Uint8Array | undefined = undefined;
         switch (info.type) {
           case ColumnType.LONG:
             val = result.getLong(result.getColumnIndex(info.columnName));
@@ -209,8 +238,11 @@ class DbUtil {
           case ColumnType.BLOB:
             val = result.getBlob(result.getColumnIndex(info.columnName));
             break;
+          case ColumnType.BOOLEAN:
+            val = !!result.getLong(result.getColumnIndex(info.columnName))
+            break;
         }
-        obj[info.name] = val;
+        obj[info.name] = val === '' ? undefined : val;
       })
       // 3.3 将对象填入结果数组
       arr.push(obj as T);
@@ -226,7 +258,7 @@ class DbUtil {
   buildValueBucket(obj: object, columns: ColumnInfo[]): ValuesBucket {
     let value: ValuesBucket = {};
     columns.forEach(info => {
-      if (typeof obj[info.name] !== 'undefined') {
+        if (typeof obj[info.name] !== 'undefined') {
         value[info.columnName] = obj[info.columnName];
       }
     });

@@ -1,32 +1,41 @@
 import CommonConstants from '../../common/constants/CommonConstants'
 import ReadRecordItem from '../../componets/bookDetail/ReadRecordItem'
 import TagIndex from '../../componets/bookDetail/TagIndex'
-import { router, Router, SwipeRefresher } from '@kit.ArkUI'
+import { router, SwipeRefresher } from '@kit.ArkUI'
 import NoteIndex from '../../componets/bookDetail/note/NoteIndex'
+import { BookList } from 'ets/componets/dataList/bookList'
+import { chaptersItem } from '../../componets/dataList/ReaderChaptersItem'
+import { FileHandler } from '../../common/utils/FileHandler'
+import ChaptersDataSource from '../../common/LazyIDataSource/ChaptersDataSource'
 
 /**
  * 标题图片样式
  */
-@Extend(Image) function titleImageStyle(){
+@Extend(Image)
+function titleImageStyle() {
   .fillColor(Color.White)
   .width(CommonConstants.TITLE_IMG_SIZE)
   .height(CommonConstants.TITLE_IMG_SIZE)
 }
+
 /**
  * 分割线样式
  */
-@Extend(Divider) function recordDividerStyle() {
+@Extend(Divider)
+function recordDividerStyle() {
   .vertical(true)
   .width(0.5)
   .height(24)
   .color('#40ffffff')
 }
+
 /**
  * 加入书架dialog
  */
 @CustomDialog
 struct AddBookShelfDialog {
   controller?: CustomDialogController;
+
   build() {
     Row() {
       Image($r('app.media.ic_public_confirm'))
@@ -47,10 +56,16 @@ struct AddBookShelfDialog {
     }
     .height(56)
     .width(CommonConstants.FULL_WIDTH)
-    .padding({left: 20, right: 20, top: 16, bottom: 16})
+    .padding({
+      left: 20,
+      right: 20,
+      top: 16,
+      bottom: 16
+    })
     .backgroundColor('#333333')
   }
 }
+
 @Entry
 @Component
 struct BookDetailPage {
@@ -58,15 +73,28 @@ struct BookDetailPage {
   @State currentIndex: number = 0;
   // 是否加入书架
   @State isAddBookShelf: boolean = false;
-  onPageShow(): void {
-    console.log(JSON.stringify(router.getParams()))
-  }
+  @State bookData: BookList = router.getParams() as BookList
   // 加入书架dialog
   dialogController: CustomDialogController = new CustomDialogController({
     builder: AddBookShelfDialog(),
     cornerRadius: 8,
-    offset: {dx: 0, dy: -100}
+    offset: { dx: 0, dy: -100 }
   })
+  @State txtFiles: chaptersItem[] = [];
+  @State txtFile: ChaptersDataSource = new ChaptersDataSource()
+  onPageShow() {
+    this.isShow = true
+    console.log('router BookDetailPage:' + JSON.stringify(router.getParams()))
+    if (router.getParams() as BookList) {
+      this.bookData = router.getParams() as BookList
+      setTimeout(async () => {
+        let temp = await FileHandler.readFile(this.bookData.fileLink) //txt小说
+        this.txtFile.pushAllData(temp)
+        this.txtFiles = this.txtFile.getListData()
+      },0)
+    }
+  }
+
   // 加入书架函数
   addBookShelf() {
     this.dialogController.open();
@@ -77,33 +105,83 @@ struct BookDetailPage {
     }, 1000);
     clearTimeout(timeoutID);
   }
+
   /**
    * Panel
    */
-  @Builder catalogPanel() {
+  @Builder
+  catalogPanel() {
     Column() {
-      Search({placeholder: '搜索目录'})
+      Search({ placeholder: '搜索目录' })
         .height(34)
-        .padding({top: 8, bottom: 8})
-      Tabs({barPosition: BarPosition.Start}) {
+        .padding({ top: 8, bottom: 8 })
+      Tabs({ barPosition: BarPosition.Start }) {
         TabContent() {
           Column() {
-            SwipeRefresher({
-              content: '目录加载中...',
-              isLoading: true
-            })
+            if (this.txtFiles.length=== 0 || undefined) {
+              SwipeRefresher({
+                content: '目录加载中...',
+                isLoading: true
+              })
+            } else {
+              List() {
+                LazyForEach(this.txtFile, (item: chaptersItem, index: number) => {
+                  ListItem() {
+                    Button({ type: ButtonType.Normal }) {
+                      Row() {
+                        Text(`${item.chapterTitleNumber} ${item.title}`
+                          .replace(new RegExp('\\s{1,}', 'g'), ' ')
+                          .replaceAll('=', ''))
+                          .layoutWeight(1)
+                      }
+                      .width('100%')
+                      .padding({
+                        left: 20,
+                        right: 20,
+                        top: 12,
+                        bottom: 12
+                      })
+                    }
+                    .borderRadius(10)
+                    .width('100%')
+                    .backgroundColor(Color.White)
+                    .onClick(() => {
+                      // 跳转到阅读器
+                      router.pushUrl({
+                        url: 'pages/view/Reader/ReaderPage',
+                        //跳转到对应的章节，传index过去，对面TotalChapters接收
+                        params: {
+                          bookData: this.bookData,
+                          clickBookChapter: index,
+                          txtFile: this.txtFiles
+                        }
+                      })
+                    })
+                  }
+                })
+
+              }
+              .divider({
+                strokeWidth: 0.8,
+                color: '#cccccc',
+                startMargin: 12,
+                endMargin: 12
+              })
+            }
           }
         }
-        .tabBar(this.catalogTab(0, '目录', 548))
+        .tabBar(this.catalogTab(0, '目录', this.txtFile.totalCount()))
+
         TabContent() {
           Column() {
             SwipeRefresher({
-              content: '目录加载中...',
+              content: '书源加载中...',
               isLoading: true
             })
           }
         }
         .tabBar(this.catalogTab(1, '书源', 24))
+
         TabContent() {
           NoteIndex()
         }
@@ -113,9 +191,15 @@ struct BookDetailPage {
       .onChange((index: number) => {
         this.currentIndex = index;
       })
-      Row({space: 20}) {
-        Button(this.isAddBookShelf ? '已加书架' :'加入书架')
-          .padding({left: 32, right: 32, top: 8, bottom: 8})
+
+      Row({ space: 20 }) {
+        Button(this.isAddBookShelf ? '已加书架' : '加入书架')
+          .padding({
+            left: 32,
+            right: 32,
+            top: 8,
+            bottom: 8
+          })
           .width(150)
           .height(40)
           .borderRadius(200)
@@ -125,36 +209,47 @@ struct BookDetailPage {
             this.addBookShelf();
           })
         Button('立即阅读')
-          .padding({left: 32, right: 32, top: 8, bottom: 8})
+          .padding({
+            left: 32,
+            right: 32,
+            top: 8,
+            bottom: 8
+          })
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor('#FF6600')
+          .backgroundColor(this.txtFile.totalCount() ? '#FF6600' : 'gray')
           .fontColor('#FFFFFF')
-          .onClick(()=>{
+          .enabled(this.txtFile.totalCount() > 0)
+          .onClick(() => {
             // 跳转到阅读器
             router.pushUrl({
               url: 'pages/view/Reader/ReaderPage',
               params: {
-                bookUrl:"/data/local/tmp"
+                bookData: this.bookData,
+                //后续持久化后再获取已经读到的章节序号，目前先传默认的0
+                clickBookChapter: 0,
+                txtFile: this.txtFiles
               }
             })
           })
       }
-      .padding({top: 12, bottom: 12})
+      .padding({ top: 12, bottom: 12 })
       .justifyContent(FlexAlign.Center)
       .width(CommonConstants.FULL_WIDTH)
       .height(64)
     }
-    .padding({left: 20, right: 20, bottom: 12})
+    .padding({ left: 20, right: 20, bottom: 12 })
     .width(CommonConstants.FULL_WIDTH)
     .height(CommonConstants.FULL_HEIGHT)
     .borderRadius(16)
   }
+
   /**
    * tab页签
    */
-  @Builder catalogTab(index: number, name: string, count: number) {
+  @Builder
+  catalogTab(index: number, name: string, count: number) {
     Column() {
       Row() {
         Text(name)
@@ -168,6 +263,7 @@ struct BookDetailPage {
           .fontColor(this.currentIndex === index ? '#e0000000' : '#73000000')
           .fontWeight(500)
       }
+
       Divider()
         .width(10)
         .strokeWidth(3)
@@ -175,10 +271,11 @@ struct BookDetailPage {
         .color('#FF6600')
         .opacity(this.currentIndex === index ? 1 : 0)
     }
-    .padding({top: 8, bottom: 8})
+    .padding({ top: 8, bottom: 8 })
     .width(59)
     .height(40)
   }
+
   build() {
     Column() {
       // todo 状态栏
@@ -187,13 +284,14 @@ struct BookDetailPage {
       }
       .width(CommonConstants.FULL_WIDTH)
       .height(40)
+
       // 标题栏
       Row() {
         // 返回与标题
-        Row({space: 12}) {
+        Row({ space: 12 }) {
           Image($r("app.media.ic_public_return_left"))
             .titleImageStyle()
-            .onClick(()=>{
+            .onClick(() => {
               router.back()
             })
           Text('书籍详情')
@@ -201,9 +299,10 @@ struct BookDetailPage {
             .fontSize(16)
         }
         .height(24)
+
         Blank()
         // 右侧功能
-        Row({space: 24}) {
+        Row({ space: 24 }) {
           Image($r('app.media.ic_public_edit'))
             .titleImageStyle()
             .onClick(() => {
@@ -218,17 +317,23 @@ struct BookDetailPage {
         }
         .height(24)
       }
-      .padding({left: 20, right: 20, top: 12, bottom: 12})
+      .padding({
+        left: 20,
+        right: 20,
+        top: 12,
+        bottom: 12
+      })
       .height(36)
       .width(CommonConstants.FULL_WIDTH)
+
       // 小说标题
-      Row({space: CommonConstants.SPACE_20}) {
+      Row({ space: CommonConstants.SPACE_20 }) {
         Image($r('app.media.cover_list'))
           .width(CommonConstants.NOVEL_IMG_WIDTH)
           .height(CommonConstants.NOVEL_IMG_HEIGHT)
           .borderRadius(5)
-        Column({space: 8}) {
-          Text('大奉打更人')
+        Column({ space: 8 }) {
+          Text(this.bookData.title.replace(new RegExp('\\..*', 'g'), ''))
             .fontColor(Color.White)
             .fontSize(20)
           Blank()
@@ -243,38 +348,51 @@ struct BookDetailPage {
               .fillColor('#FFF')
               .opacity(0.45)
           }
-          Row({space: 8}) {
-            TagIndex({tag: '幻想修仙'})
-            TagIndex({tag: '完本'})
-            TagIndex({tag: '300万字'})
+
+          Row({ space: 8 }) {
+            TagIndex({ tag: '幻想修仙' })
+            TagIndex({ tag: '完本' })
+            TagIndex({ tag: '300万字' })
           }
         }
         .height(CommonConstants.NOVEL_IMG_HEIGHT)
         .alignItems(HorizontalAlign.Start)
       }
-      .padding({left: 20, right: 20, top: 12, bottom: 12})
+      .padding({
+        left: 20,
+        right: 20,
+        top: 12,
+        bottom: 12
+      })
       .width(CommonConstants.FULL_WIDTH)
       .height(116)
+
       // 阅读记录
       Row() {
         Row() {
           ReadRecordItem()
           Divider()
             .recordDividerStyle()
-          ReadRecordItem({count: 16, unit: '天', placeText: '阅读天数'})
+          ReadRecordItem({ count: 16, unit: '天', placeText: '阅读天数' })
           Divider()
             .recordDividerStyle()
-          ReadRecordItem({count: 3, unit: '次', placeText: 'N刷次数'})
+          ReadRecordItem({ count: 3, unit: '次', placeText: 'N刷次数' })
         }
         .borderRadius(12)
-        .padding({top: 16, bottom: 16})
+        .padding({ top: 16, bottom: 16 })
         .height(60)
         .width(CommonConstants.FULL_WIDTH)
         .backgroundColor('#14ffffff')
       }
-      .padding({left: 20, right: 20, top: 12, bottom: 12})
+      .padding({
+        left: 20,
+        right: 20,
+        top: 12,
+        bottom: 12
+      })
       .width(CommonConstants.FULL_WIDTH)
       .height(88)
+
       // 书籍简介
       Flex() {
         Text('《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... ' +
@@ -286,7 +404,12 @@ struct BookDetailPage {
           .fontWeight(400)
           .lineHeight(22)
       }
-      .padding({left: 20, right: 20, top: 12, bottom: 12})
+      .padding({
+        left: 20,
+        right: 20,
+        top: 12,
+        bottom: 12
+      })
       .width(CommonConstants.FULL_WIDTH)
       .bindSheet($$this.isShow, this.catalogPanel(), {
         detents: [SheetSize.MEDIUM, SheetSize.LARGE, 200],
@@ -295,6 +418,7 @@ struct BookDetailPage {
         dragBar: true,
         enableOutsideInteractive: true,
       })
+
       // 章节目录Panel
       /*Panel(this.isValue) {
         Column() {

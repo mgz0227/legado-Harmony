@@ -14,6 +14,7 @@ import ShelfBookList from './Shelf/ShelfBookList'
 import picker from '@ohos.file.picker'
 import { FileHandler } from 'ets/common/utils/FileHandler'
 import RefreshComponent from '../../../componets/common/RefreshComponent'
+import CommonConstants from '../../../common/constants/CommonConstants'
 
 @Component
 export default struct IndexShelf {
@@ -369,6 +370,7 @@ export default struct IndexShelf {
             }
             .padding({ left: 10, right: 10 ,bottom:10})
           }
+          // .margin({ bottom: 110 + (this.topRectHeight === 0 ? 10 : this.topRectHeight) })
           .align(Alignment.TopStart)
           .scrollBar(BarState.Off)
         }

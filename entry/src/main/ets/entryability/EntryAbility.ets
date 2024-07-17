@@ -4,6 +4,8 @@ import window from '@ohos.window';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { AbilityConstant, Want } from '@kit.AbilityKit';
 import display from '@ohos.display';
+import DbUtil from '../common/utils/DbUtil';
+import DataBase from '../database'
 
 export default class EntryAbility extends UIAbility {
 
@@ -39,6 +41,15 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageCreate(windowStage: window.WindowStage) {
+    // 初始化db数据库/创建相关数据表
+    DbUtil.initDB(this.context).then(() => {
+      DataBase.initAllTable()
+    })
+    // 获取本地文件存储路径
+    const pathDir = this.context.filesDir;
+    AppStorage.setOrCreate('pathDir', pathDir);
+    // 书源存入的地址
+    AppStorage.setOrCreate('pathBookSource', pathDir + '/bookSource.json');
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
     // 全屏

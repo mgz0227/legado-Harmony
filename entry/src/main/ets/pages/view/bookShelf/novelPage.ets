@@ -4,6 +4,8 @@ import { promptAction } from '@kit.ArkUI'
 import BookInfoGrid from './BookInfoGrid'
 import CommonConstants from '../../../common/constants/CommonConstants'
 import { delBookListAll, delBookListByBookId } from '../../../storage/bookListData'
+import { updateShelfBookData } from '../../../preferences/bookDataPreferences'
+
 
 @Component
 export default struct novelPage{
@@ -13,8 +15,12 @@ export default struct novelPage{
   @State lastIndex:string = '9999'
   @Prop bookType:string
   @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
-  @StorageProp(CommonConstants.KEY_NOVEL_BOOK_DATA)
-  bookList:BookList[] = []
+
+  @StorageLink(CommonConstants.KEY_NOVEL_BOOK_DATA)
+  @Watch('updatePreferences')bookList:BookList[] = []
+  updatePreferences(){
+    updateShelfBookData(this.bookList, 0)
+  }
 
   //监听isClear变化
   onIsClearChange() {
@@ -27,25 +33,6 @@ export default struct novelPage{
       })
     }
   }
-
-  // isChangeManageDelete() {
-  //   if (this.manageDelete) {
-  //     if (this.checkBookList === null || this.checkBookList.length === 0) {
-  //       promptAction.showToast({
-  //         message: '请选择要删除的内容',
-  //         duration: 1000,
-  //       })
-  //       this.manageDelete = false
-  //       return
-  //     }
-  //     this.bookList = []
-  //     console.log('删除')
-  //     this.manageDelete = false
-  //   }
-  // }
-  // isChangeBookList() {
-  //   console.log(this.checkBookList + '')
-  // }
 
   //监听EXHIBIT变化
   onIsEXHIBITChange() {

@@ -1,4 +1,3 @@
-import { data } from '@kit.TelephonyKit'
 
 export class BookList {
 
@@ -39,7 +38,9 @@ export class BookList {
 
   author:string
 
-  constructor(bookId:string, title:string,describe:string , chapter:string,  bookImage:Resource,author:string = '卖报小郎君',bookType:string ='玄幻', topUpdateTime:Date = new Date(),isJoin:boolean = false,isTop:boolean = false) {
+  fileLink:string
+
+  constructor(bookId:string = '', title:string,describe:string , chapter:string,  bookImage:Resource,author:string = '卖报小郎君',bookType:string ='玄幻',fileLink:string = '', topUpdateTime:Date = new Date(),isJoin:boolean = false,isTop:boolean = false) {
     this.bookId = bookId
     this.title = title
     this.isJoin = isJoin
@@ -50,5 +51,6 @@ export class BookList {
     this.isTop = isTop
     this.topUpdateTime = topUpdateTime
     this.author = author
+    this.fileLink = fileLink
   }
 }
