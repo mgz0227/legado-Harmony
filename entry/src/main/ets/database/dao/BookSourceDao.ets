@@ -16,7 +16,9 @@ class BookSourceDao {
       if (!createSql) {
         return
       }
-      return await DbUtil.createTable(createSql)
+      await DbUtil.createTable(createSql);
+      AppDatabaseUtil.existsTable(this.TABLE_NAME)
+      return
     } catch (err) {
       console.info('TagInfo', JSON.stringify(err))
     }
