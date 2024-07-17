@@ -11,6 +11,7 @@ import { showMessage } from '../../../../componets/common/promptShow'
 import FormItem from '../../../../componets/Form/FormItem'
 import SubscriptionDao from '../../../../database/dao/SubscriptionDao'
 import { rssSources, SUBSCRIPTION_GROUP_TYPE } from '../../../../database/entities/rssSources'
+import programDataPreferences from '../../../../preferences/programDataPreferences'
 
 @Component
 export default struct newSources{
@@ -123,6 +124,21 @@ export default struct newSources{
     enabled: true,
     singleUrl: true
   }
+
+  @State sourceGroupList:SelectOption[] = []
+  getRssSourceList() {
+    let list = programDataPreferences.getRssSourcesListData()
+    //将list存放到sourceGroupList
+    list.forEach((item) => {
+      this.sourceGroupList.push({
+        value: item
+      })
+    })
+  }
+  aboutToAppear(): void {
+    this.getRssSourceList()
+  }
+
   @Builder
   baseForm() {
     Scroll(this.scroller) {
@@ -169,13 +185,7 @@ export default struct newSources{
           .justifyContent(FlexAlign.SpaceBetween)
 
           Row() {
-            Select([
-              { value: '小说' },
-              { value: '漫画' },
-              { value: '影视' },
-              { value: '咨询' },
-              { value: '收藏夹' }
-            ])
+            Select(this.sourceGroupList)
               .value(this.formModel.sourceGroup.length === 0?SUBSCRIPTION_GROUP_TYPE[0]:this.formModel.sourceGroup)
               .borderRadius(4)
               .fontColor(this.formModel.sourceGroup !== undefined ? '#E0000000' : '#73000000')
