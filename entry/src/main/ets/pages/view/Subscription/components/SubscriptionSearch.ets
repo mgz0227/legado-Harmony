@@ -11,21 +11,25 @@ import { router } from '@kit.ArkUI';
 import PaddingConstants from '../../../../common/constants/PaddingConstants';
 import { IconTitleVo } from '../../../../componetsmodel/IconTitleVo';
 import ImageConstants from '../../../../common/constants/ImageConstants';
+import { rssSources } from '../../../../database/entities/rssSources';
+import SubscriptionDao from '../../../../database/dao/SubscriptionDao';
+import { showMessage } from '../../../../componets/common/promptShow';
 
 @Entry
 @Component
 struct SubscriptionSearch {
   @State @Watch('changeSearchValue')searchValue: string = '起点';
   @StorageLink('topRectHeight') topRectHeight: number = 0
-  @State searchResult:IconTitleVo[] = []
   @State
-  searchList: IconTitleVo[] = [
-    new IconTitleVo($r('app.media.icon_subscription_lazy'), '懒人听书'),
-    new IconTitleVo($r('app.media.icon_subscription_inn'), '漫客栈'),
-    new IconTitleVo($r('app.media.icon_subscription_start'), '起点中文'),
-    new IconTitleVo($r('app.media.icon_subscription_tencent'), '腾讯动漫'),
-    new IconTitleVo($r('app.media.icon_subscription_college'), '潇湘书院'),
-  ]
+  searchList: rssSources[] = []
+  //
+  //   IconTitleVo[] = [
+  //   new IconTitleVo($r('app.media.icon_subscription_lazy'), '懒人听书'),
+  //   new IconTitleVo($r('app.media.icon_subscription_inn'), '漫客栈'),
+  //   new IconTitleVo($r('app.media.icon_subscription_start'), '起点中文'),
+  //   new IconTitleVo($r('app.media.icon_subscription_tencent'), '腾讯动漫'),
+  //   new IconTitleVo($r('app.media.icon_subscription_college'), '潇湘书院'),
+  // ]
 
   onPageShow(): void {
     this.changeSearchValue()
@@ -33,28 +37,38 @@ struct SubscriptionSearch {
 
   onPageHide(): void {
     this.searchValue = ''
-    this.searchResult = []
+    this.searchList = []
   }
-  aboutToAppear(): void {
-    this.changeSearchValue()
-  }
+  // aboutToAppear(): void {
+  //   this.changeSearchValue()
+  // }
 
-  aboutToDisappear(): void {
-    this.searchValue = ''
-    this.searchResult = []
-  }
+  // aboutToDisappear(): void {
+  //   this.searchValue = ''
+  //   this.searchList = []
+  // }
 
 
   changeSearchValue(){
-    console.log('模糊匹配中')
+    showMessage('模糊匹配中')
     if(this.searchValue.length > 0){
-      this.searchResult = this.searchList.filter((item)=>{
-        return item.title.indexOf(this.searchValue) !== -1
-      })
+      this.searchSources()
     } else {
-      this.searchResult = []
+      this.searchList = []
     }
   }
+
+  searchSources(){
+    SubscriptionDao.search({
+      searchKey: this.searchValue,
+      enabled: true
+    }).then(data =>{
+      this.searchList = data
+    })
+  }
+
+
+
   build() {
     Column(){
       Flex(
@@ -87,14 +101,14 @@ struct SubscriptionSearch {
       Scroll(){
         Column(){
 
-          if (this.searchResult.length === 0){
+          if (this.searchList.length === 0){
             this.noResultLog()
           } else {
             this.searchBuilder()
           }
         }
       }
-      .align(this.searchResult.length === 0? Alignment.Center:Alignment.Top)
+      .align(this.searchList.length === 0? Alignment.Center:Alignment.Top)
       .padding({bottom:20})
       .layoutWeight(1)
       .scrollBar(BarState.Off)
@@ -118,17 +132,17 @@ struct SubscriptionSearch {
     GridRow({
       columns: 5
     }){
-      ForEach(this.searchResult,(item:IconTitleVo)=>{
+      ForEach(this.searchList,(item:rssSources)=>{
         GridCol(){
           Column({
             space: CommonConstants.SPACE_6
           }){
-            Image(item.icon)
+            Image(item.sourceIcon.concat('app.media')?$r(item.sourceIcon):item.sourceIcon)
               .width(ImageConstants.IMG_WIDTH_40)
               .height(ImageConstants.IMG_HEIGHT_40)
               .borderRadius(50)
 
-            Text(`${item.title}`).fontSize(10)
+            Text(`${item.sourceName}`).fontSize(10)
               .fontColor($r('app.string.color_black_88'))
               .lineHeight(18)
               .fontFamily(CommonConstants.FAMILY_PingFANG)
