@@ -68,7 +68,7 @@ export default struct newSourcesNetWork{
     customOrder: 0,
     autoComplete: false,
     sourceGroup: SUBSCRIPTION_GROUP_TYPE[0],
-    enabled: false,
+    enabled: true,
     singleUrl: true
   }
   @Builder
