@@ -1,4 +1,4 @@
-import web_webview from '@ohos.web.webview'
+import { webview } from '@kit.ArkWeb';
 import { router } from '@kit.ArkUI';
 import { showMessage } from '../../../componets/common/promptShow';
 
@@ -12,13 +12,13 @@ struct RssWebView {
   @State sourcesUrl:string = ''
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  webviewController: webview.WebviewController = new webview.WebviewController();
   aboutToAppear(): void {
     const params = router.getParams() as RouteParams;
     this.sourcesUrl = params.url
     showMessage(this.sourcesUrl)
-    console.log("url:" + this.sourcesUrl)
   }
-  controller: web_webview.WebviewController = new web_webview.WebviewController()
+
   build() {
     Column(){
       Row({ space: 15 }) {
@@ -33,7 +33,10 @@ struct RssWebView {
       .margin({left:5})
       .width("100%")
       Column(){
-        Web({ src: this.sourcesUrl, controller: this.controller })
+        Web({ src: this.sourcesUrl, controller: this.webviewController })
+          .onPageBegin(()=>{
+            showMessage(this.webviewController.getUserAgent())
+          })
       }
 
     }

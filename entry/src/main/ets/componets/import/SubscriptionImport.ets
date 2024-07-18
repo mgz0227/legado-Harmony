@@ -408,7 +408,9 @@ export default struct SubscriptionImport {
   addNewGroupType: CustomDialogController | null = new CustomDialogController({
     builder: addBookTypeDialog({
       cancel: ()=> { this.addNewGroupType?.close() },
-      confirm: ()=> { this.addGroupType() },
+      confirm: ()=> {
+        this.addGroupType()
+      },
       bookType: this.newGroupType
     }),
     autoCancel: true,
@@ -417,12 +419,23 @@ export default struct SubscriptionImport {
     customStyle: false,
     cornerRadius: 25
   })
-
+  @State isInsert:boolean = false
   addGroupType(){
-    programDataPreferences.updateRssSourcesData(this.newGroupType)
-    //添加分组后再次刷新分组列表
-    this.getRssSourceList()
-    showMessage(`添加${this.newGroupType}成功!`)
+    programDataPreferences.getRssSourcesListData().map((data:string)=>{
+      if(data === this.newGroupType){
+        this.isInsert = true
+      }
+    })
+    if (this.isInsert) {
+      showMessage('分组名称重复')
+      this.isInsert = false
+    } else {
+      programDataPreferences.updateRssSourcesData(this.newGroupType)
+      //添加分组后再次刷新分组列表
+      this.getRssSourceList()
+      showMessage(`添加分组${this.newGroupType}成功!`)
+    }
+    this.newGroupType = ''
   }
 }
 
