@@ -109,6 +109,9 @@ struct AboutUsPage {
               .onClick(() => {
                 router.back()
               })
+              .margin({
+                left:20
+              })
           }
           .alignItems(HorizontalAlign.Start)
           .width('33%')
@@ -131,7 +134,13 @@ struct AboutUsPage {
         .height(48)
         .width("100%")
 
-        this.middleClick(this.first_list, "app.media.right", this.version, "first")
+        Column() {
+          this.middleClick(this.first_list, "app.media.right", this.version, "first")
+        }
+        .padding({
+          left: 20,
+          right: 20
+        })
 
         Grid() {
           GridItem() {
@@ -151,6 +160,7 @@ struct AboutUsPage {
           }
         }
         .columnsTemplate('1fr 1fr 1fr 1fr')
+        .width('100%')
         .height(80)
         // QQ群的半模态框 不知道绑定在哪里，鸿蒙官方怎么想的，非要绑定一个元素？
         .bindSheet($$this.isShowQQ, this.QQDialog(), {
@@ -163,11 +173,15 @@ struct AboutUsPage {
           }
         })
 
-        this.middleClick(this.end_list, "app.media.right", null, "end")
+        Column() {
+          this.middleClick(this.end_list, "app.media.right", null, "end")
+        }
+        .padding({
+          left: 20,
+          right: 20
+        })
       }
       .padding({
-        left: 20,
-        right: 20,
         top: this.topRectHeight,
         bottom: this.bottomRectHeight
       })
