@@ -39,7 +39,6 @@ export default struct mayAlsoLike {
     }
     .width('100%')
     .height(28)
-    .margin({ bottom: 20 })
     .justifyContent(FlexAlign.SpaceBetween)
     .alignItems(VerticalAlign.Center)
   }

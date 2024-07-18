@@ -7,18 +7,35 @@
 import axios, { AxiosResponse, AxiosError } from '@ohos/axios'
 import { isNetworkUrl } from '../../../../common/utils/utils'
 import noFind from '../../../../componets/common/noFind'
+import { ExploreRule } from '../../../../database/entities/rule'
 import mayAlsoLike from '../mayAlsoLike'
+import { CardItem } from './CardItem'
 import { ExploreItem } from './ContentRefresh'
+
+interface ExploreQuery {
+  url: string,
+  pageSize: number,
+  bookList?: string
+  name?: string
+  author?: string
+  intro?: string
+  kind?: string
+  lastChapter?: string
+  bookUrl?: string
+  coverUrl?: string
+  wordCount?: string
+}
 
 @Component
 export default struct BookFindContent {
   @Prop currentIndex: number
   @Prop bookSourceUrl: string
   @Prop exploreItem: ExploreItem
-  @Prop @Watch('getList')counter: number = 0
+  @Prop @Watch('getList') counter: number = 0
   @State loading: boolean = true
   @State errorExplore: boolean = false
-  @State contentExplore: string = ''
+  @State bookList: ExploreRule[] = []
+  @Prop exploreRule: ExploreRule = {}
 
   aboutToAppear() {
     this.getList()
@@ -30,12 +47,23 @@ export default struct BookFindContent {
     if (!isNetworkUrl(url)) {
       url = this.bookSourceUrl + url
     }
-    console.info('TagInfo 请求地址：', url)
-    // TODO 需要可正常使用的进行调试
-    axios.get(url).then((res: AxiosResponse) => {
+    const exploreQuery: ExploreQuery = {
+      url,
+      bookList: this.exploreRule.bookList,
+      pageSize: 3,
+      name: this.exploreRule.name,
+      author: this.exploreRule.author,
+      intro: this.exploreRule.intro,
+      kind: this.exploreRule.kind,
+      lastChapter: this.exploreRule.lastChapter,
+      bookUrl: this.exploreRule.bookUrl,
+      coverUrl: this.exploreRule.coverUrl,
+      wordCount: this.exploreRule.wordCount
+    }
+    axios.post('http://legado.wisdoms.xin/analysisRules', exploreQuery).then((res: AxiosResponse) => {
+      console.info('TagInfo, 解析内容：', JSON.stringify(res.data))
+      this.bookList = res.data
       this.loading = false
-      console.info('TagInfo 请求成功：', JSON.stringify(res.data))
-      this.contentExplore = JSON.stringify(res.data)
     }).catch((err: AxiosError) => {
       console.log('TagInfo 请求失败：', JSON.stringify(err.message));
       this.loading = false
@@ -61,17 +89,40 @@ export default struct BookFindContent {
           .justifyContent(FlexAlign.Center)
           .layoutWeight(1)
         } else if (this.errorExplore) {
-          noFind().padding({
+          noFind({
+            onclick: () => {
+              this.getList()
+            }
+          }).padding({
             top: 75
           })
         } else {
-          Text('请求成功，需要解析')
-          Text(this.contentExplore)
-            .textOverflow({overflow: TextOverflow.Ellipsis})
-            .maxLines(15)
+          Column() {
+            ForEach(this.bookList, (item: ExploreRule, index) => {
+              CardItem({ item: item })
+            })
+            Column() {
+              Text('查看更多')
+                .lineHeight(20)
+                .fontColor('#73000000')
+            }
+            .width('100%')
+            .padding({ top: 8, bottom: 8 })
+            .margin({ top: 20 })
+            .backgroundColor('#0F000000')
+            .borderRadius(4)
+          }
+          .height('100%')
+          .alignItems(HorizontalAlign.Start)
+          .justifyContent(FlexAlign.Start)
         }
       }
-      .padding({left: 16, right: 16, top: 20, bottom: 20})
+      .padding({
+        left: 16,
+        right: 16,
+        top: 20,
+        bottom: 20
+      })
       .borderRadius(12)
       .backgroundColor(Color.White)
       .height(436)
