@@ -64,6 +64,7 @@ export default struct BookFindContent {
       console.info('TagInfo, 解析内容：', JSON.stringify(res.data))
       this.bookList = res.data
       this.loading = false
+      this.errorExplore = false
     }).catch((err: AxiosError) => {
       console.log('TagInfo 请求失败：', JSON.stringify(err.message));
       this.loading = false
@@ -96,21 +97,29 @@ export default struct BookFindContent {
           }).padding({
             top: 75
           })
+        } else if (this.bookList.length===0) {
+          noFind({
+            hintIndex: 0
+          }).padding({
+            top: 75
+          })
         } else {
           Column() {
             ForEach(this.bookList, (item: ExploreRule, index) => {
               CardItem({ item: item })
             })
-            Column() {
-              Text('查看更多')
-                .lineHeight(20)
-                .fontColor('#73000000')
+            if (this.bookList.length === 3) {
+              Column() {
+                Text('查看更多')
+                  .lineHeight(20)
+                  .fontColor('#73000000')
+              }
+              .width('100%')
+              .padding({ top: 8, bottom: 8 })
+              .margin({ top: 20 })
+              .backgroundColor('#0F000000')
+              .borderRadius(4)
             }
-            .width('100%')
-            .padding({ top: 8, bottom: 8 })
-            .margin({ top: 20 })
-            .backgroundColor('#0F000000')
-            .borderRadius(4)
           }
           .height('100%')
           .alignItems(HorizontalAlign.Start)
