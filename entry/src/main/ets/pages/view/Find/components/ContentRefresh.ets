@@ -4,6 +4,7 @@ import RefreshComponent from '../../../../componets/common/RefreshComponent'
 import { BookSource } from '../../../../database/entities/BookSource'
 import BookFindContent from './BookFindContent'
 import { JSON } from '@kit.ArkTS'
+import { ExploreRule } from '../../../../database/entities/rule'
 
 interface ExploreItemStyle {
   layout_flexGrow: number;
@@ -38,9 +39,11 @@ export default struct ContentRefresh {
   @State pageNum: number = 1
   @State exploreList: ExploreItem[] = []
   @State showExploreList: ExploreItem[] = []
+  @State exploreRule?: ExploreRule = {}
 
   aboutToAppear() {
     try {
+      this.exploreRule = this.bookSource.ruleExplore
       console.info('TagInfo: 书源地址：', this.bookSource.bookSourceUrl)
       console.info('TagInfo: 发现地址：', JSON.stringify(JSON.parse(this.bookSource.exploreUrl ?? '[]')))
       const exploreList = JSON.parse(this.bookSource.exploreUrl ?? '[]') as ExploreItem[]
@@ -70,11 +73,12 @@ export default struct ContentRefresh {
       Refresh({ refreshing: $$this.isRefreshing, builder: this.refreshComponent }) {
         Scroll() {
           Column() {
-            ForEach(this.exploreList, (item: ExploreItem) => {
+            ForEach(this.showExploreList, (item: ExploreItem) => {
               BookFindContent({
                 currentIndex: this.currentIndex,
                 bookSourceUrl: this.bookSource.bookSourceUrl,
                 exploreItem: item,
+                exploreRule: this.exploreRule,
                 counter: this.counter
               })
             })
