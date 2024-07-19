@@ -125,7 +125,9 @@ export default struct newSources{
     sourceGroup: SUBSCRIPTION_GROUP_TYPE[0],
     enabled: true,
     singleUrl: true,
-    showRecentIcon: true
+    showRecentIcon: true,
+    rssListRule: new rssListRule(),
+    rssWebViewRule: new rssWebViewRule(),
   }
 
   @State sourceGroupList:SelectOption[] = []
@@ -171,8 +173,9 @@ export default struct newSources{
           customRightBuilder: () => {
             this.cookieJar(
               this.formModel.enabledCookieJar ?? false,
-              (val) => {
+              (val:boolean) => {
                 this.formModel.enabledCookieJar = val
+                showMessage('已开启CookieJar' + JSON.stringify(this.formModel.enabledCookieJar))
               })
           }
         });
@@ -219,8 +222,9 @@ export default struct newSources{
             Row(){
               this.sourceIconIsUrl(
                 this.formModel.sourceIconIsUrl ?? false,
-                (val) => {
+                (val:boolean) => {
                   this.formModel.sourceIconIsUrl = val
+                  showMessage(JSON.stringify(this.formModel.sourceIconIsUrl))
                 })
             }
           }
@@ -429,6 +433,7 @@ export default struct newSources{
             .onChange((val: boolean) => {
               if ( this.formModel.rssWebViewRule) {
                 this.formModel.rssWebViewRule.enableJs = val
+                showMessage(JSON.stringify(this.formModel.rssWebViewRule.enableJs ))
               }
             })
         }

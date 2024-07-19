@@ -8,7 +8,6 @@ import DbUtil from '../../common/utils/DbUtil';
 import { showMessage } from '../../componets/common/promptShow';
 import AppDatabaseUtil from '../AppDatabaseUtil';
 import { rssSourceDb, rssSources, ToRssSources, ToRssSourcesDb } from '../entities/rssSources';
-import { rssSourcesPart } from '../entities/rssSourcesPart';
 import { ColumnInfo, ColumnType } from '../types/ColumnInfo';
 import { rssSourcesTypeParams } from '../types/rssSourcesType';
 
@@ -94,9 +93,9 @@ class SubscriptionDao {
         this.update(rssSource)
         return true
       }
-      const bookSourceDb = ToRssSourcesDb(rssSource)
-      bookSourceDb.lastUpdateTime = Date.now()
-      await DbUtil.insert(this.TABLE_NAME, bookSourceDb, column)
+      const rssSourceDb = ToRssSourcesDb(rssSource)
+      rssSourceDb.lastUpdateTime = Date.now()
+      await DbUtil.insert(this.TABLE_NAME, rssSourceDb, column)
       console.log('TagInfo', '创建成功')
       return true
     } catch (err) {
@@ -105,7 +104,7 @@ class SubscriptionDao {
     }
   }
 
-  async update(rssSource: rssSources | rssSourcesPart) {
+  async update(rssSource: rssSources) {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
@@ -115,17 +114,10 @@ class SubscriptionDao {
         this.insert(rssSource)
         return true
       }
-      if (rssSource instanceof rssSources) {
-        const rssSourceDb = ToRssSourcesDb(rssSource)
-        rssSourceDb.lastUpdateTime = Date.now()
-        rssSourceDb.showRecentIcon = true
-        await DbUtil.update(predicates, rssSourceDb, column)
-        return true
-      }
-      rssSource.lastUpdateTime = Date.now()
-      rssSource.showRecentIcon = true
-      const columnPart: ColumnInfo[] = this.getFlowColumn().slice(0, -2)
-      await DbUtil.update(predicates, rssSource, columnPart)
+      const rssSourceDb = ToRssSourcesDb(rssSource)
+      rssSourceDb.lastUpdateTime = Date.now()
+      rssSourceDb.showRecentIcon = true
+      await DbUtil.update(predicates, rssSourceDb, column)
       return true
     } catch (err) {
       console.log('TagInfo, Error, ', JSON.stringify(err))
