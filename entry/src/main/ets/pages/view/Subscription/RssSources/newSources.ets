@@ -11,6 +11,8 @@ import { showMessage } from '../../../../componets/common/promptShow'
 import FormItem from '../../../../componets/Form/FormItem'
 import SubscriptionDao from '../../../../database/dao/SubscriptionDao'
 import { rssSources, SUBSCRIPTION_GROUP_TYPE } from '../../../../database/entities/rssSources'
+import { rssListRule } from '../../../../database/entities/rule/rssListRule'
+import { rssWebViewRule } from '../../../../database/entities/rule/rssWebViewRule'
 import programDataPreferences from '../../../../preferences/programDataPreferences'
 
 @Component
@@ -122,7 +124,8 @@ export default struct newSources{
     autoComplete: false,
     sourceGroup: SUBSCRIPTION_GROUP_TYPE[0],
     enabled: true,
-    singleUrl: true
+    singleUrl: true,
+    showRecentIcon: true
   }
 
   @State sourceGroupList:SelectOption[] = []

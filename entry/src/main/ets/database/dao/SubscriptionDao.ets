@@ -118,10 +118,12 @@ class SubscriptionDao {
       if (rssSource instanceof rssSources) {
         const rssSourceDb = ToRssSourcesDb(rssSource)
         rssSourceDb.lastUpdateTime = Date.now()
+        rssSourceDb.showRecentIcon = true
         await DbUtil.update(predicates, rssSourceDb, column)
         return true
       }
       rssSource.lastUpdateTime = Date.now()
+      rssSource.showRecentIcon = true
       const columnPart: ColumnInfo[] = this.getFlowColumn().slice(0, -2)
       await DbUtil.update(predicates, rssSource, columnPart)
       return true
@@ -131,6 +133,23 @@ class SubscriptionDao {
     }
 
   }
+
+  async updateRecentIcon(rssSource: rssSources) {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      const rssSourceDb = ToRssSourcesDb(rssSource)
+      rssSourceDb.showRecentIcon = false
+      await DbUtil.update(predicates, rssSourceDb, column)
+      return true
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
+
+  }
+
 
   async getRssSources(key: string): Promise<rssSources | null> {
     try {
@@ -152,7 +171,7 @@ class SubscriptionDao {
   getFlowColumn() {
     const column: ColumnInfo[] = AppDatabaseUtil.getAssignColumn(this.TABLE_NAME,
       ['sourceName', 'sourceUrl', 'sourceGroup', 'sourceGroup', 'enabled', 'variableComment',
-        'sortUrl', 'singleUrl', 'lastUpdateTime','customOrder','variable','sourceType']);
+        'sortUrl', 'singleUrl', 'lastUpdateTime','customOrder','variable','sourceType','showRecentIcon',]);
     return column;
   }
 }

@@ -69,7 +69,8 @@ export default struct newSourcesNetWork{
     autoComplete: false,
     sourceGroup: SUBSCRIPTION_GROUP_TYPE[0],
     enabled: true,
-    singleUrl: true
+    singleUrl: true,
+    showRecentIcon: true
   }
   @Builder
   baseForm() {

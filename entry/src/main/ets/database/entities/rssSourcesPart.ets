@@ -29,6 +29,8 @@ export class rssSourcesPart {
   variable?:string
   //订阅源类型0.常规网站 1.订阅源
   sourceType?: number = 1
+
+  showRecentIcon:boolean = true
 }
 
 

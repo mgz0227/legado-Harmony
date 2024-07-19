@@ -16,7 +16,6 @@ struct RssWebView {
   aboutToAppear(): void {
     const params = router.getParams() as RouteParams;
     this.sourcesUrl = params.url
-    showMessage(this.sourcesUrl)
   }
 
   build() {
