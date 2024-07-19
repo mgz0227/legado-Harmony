@@ -80,6 +80,44 @@ class DbUtil {
         })
     });
   }
+  executeSql(executeSql: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      this.rdbStore?.executeSql(executeSql)
+        .then(() => {
+          console.info('TagInfo', '执行成功')
+          Logger.debug(`[${CommonConstants.RDB_TAG}]`,'执行成功');
+          resolve();
+        })
+        .catch((reason: string) => {
+          console.info('TagInfo Error:', reason)
+          Logger.error(`[${CommonConstants.RDB_TAG}]`,'执行失败', JSON.stringify(reason));
+          reject(reason);
+        })
+    });
+  }
+  queryRowNames(tableName: string): Promise<string[]> {
+    return new Promise<string[]>((resolve, reject) => {
+      this.rdbStore?.querySql(`PRAGMA  table_info(${tableName})`)
+        .then((result) => {
+          let rowNames: string[] = [];
+          if (result.rowCount <= 0) {
+            Logger.debug('无结果');
+            resolve(rowNames);
+          }
+          while (!result.isAtLastRow) {
+            result.goToNextRow();
+            const row = result.getRow()
+            rowNames.push(row.name as string)
+          }
+          Logger.debug(`[${CommonConstants.RDB_TAG}]`,'执行成功');
+          resolve(rowNames);
+        })
+        .catch((reason: string) => {
+          Logger.error(`[${CommonConstants.RDB_TAG}]`,'执行失败', JSON.stringify(reason));
+          reject(reason);
+        })
+    });
+  }
   /**
    * 插入数据
    * @param tableName 表名

@@ -16,18 +16,25 @@ class AppDatabaseUtil {
     return tableInfo?.fields
   }
 
-  existsTable(tableName: string) {
-    const fields = this.getFields(tableName)
-    if (fields?.length) {
+  async existsTable(tableName: string) {
+    try {
+      const rowNames = await DbUtil.queryRowNames(tableName);
+      const fields = this.getFields(tableName)
+      if (!fields?.length) return
       for (let index = 0; index < fields.length; index++) {
         const element = fields[index];
-        const sql = `IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${tableName}' AND column_name = '${element.columnName}')
-BEGIN
-    -- 如果不存在，则添加新字段
-    ALTER TABLE ${tableName} ADD ${element.columnName} ${element.affinity};
-END;`
-        DbUtil.createTable(sql);
+        if (!rowNames.includes(element.columnName)) {
+          console.info(`TagInfo 数据表【${tableName}】缺失字段，开始新增字段：`, element.columnName)
+          let executeSql =  `ALTER TABLE '${tableName}' ADD COLUMN '${element.columnName}' ${element.affinity}`
+          if (element.defaultValue) {
+            executeSql += ` DEFAULT '${element.defaultValue}'`
+          }
+          await DbUtil.executeSql(executeSql)
+          console.info('TagInfo', `数据表【${tableName}】新增字段【${element.columnName}】成功`)
+        }
       }
+    } catch (e) {
+      console.info('TagInfo Error:', JSON.stringify(e))
     }
   }
 
