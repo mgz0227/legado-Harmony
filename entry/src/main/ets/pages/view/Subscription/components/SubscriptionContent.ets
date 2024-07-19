@@ -120,7 +120,6 @@ export default struct SubscriptionContent{
                 .gesture(
                   LongPressGesture({ repeat: true,duration:1000 })
                     .onAction((event: GestureEvent) => {
-                      showMessage('编辑' + JSON.stringify(item.sourceType))
                       this.contentIndex = index
                       switch (item.sourceType){
                         case 0:
@@ -157,7 +156,7 @@ export default struct SubscriptionContent{
               .gesture(
                 LongPressGesture({ repeat: true,duration:500 })
                   .onAction((event: GestureEvent) => {
-                    showMessage('编辑' + JSON.stringify(item.sourceType))
+
                     this.contentIndex = index
                     switch (item.sourceType){
                       case 0:
