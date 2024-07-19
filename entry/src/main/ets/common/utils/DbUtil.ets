@@ -68,18 +68,13 @@ class DbUtil {
    * @returns
    */
   createTable(createSQL: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.rdbStore?.executeSql(createSQL)
-        .then(() => {
-          Logger.debug(`[${CommonConstants.RDB_TAG}]`,'创建表成功');
-          resolve();
-        })
-        .catch((reason: string) => {
-          Logger.error(`[${CommonConstants.RDB_TAG}]`,'创建表失败', JSON.stringify(reason));
-          reject(reason);
-        })
-    });
+    return this.executeSql(createSQL)
   }
+  /**
+   * 执行任意sql语句
+   * @param executeSql 任意sql语句
+   * @returns
+   */
   executeSql(executeSql: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.rdbStore?.executeSql(executeSql)
@@ -95,6 +90,11 @@ class DbUtil {
         })
     });
   }
+  /**
+   * 获取数据表的所有列名
+   * @param tableName 表名
+   * @returns string[]
+   */
   queryRowNames(tableName: string): Promise<string[]> {
     return new Promise<string[]>((resolve, reject) => {
       this.rdbStore?.querySql(`PRAGMA  table_info(${tableName})`)

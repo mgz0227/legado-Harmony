@@ -16,6 +16,7 @@ class AppDatabaseUtil {
     return tableInfo?.fields
   }
 
+  // 检测表中的字段是否缺失，若是缺失则新增
   async existsTable(tableName: string) {
     try {
       const rowNames = await DbUtil.queryRowNames(tableName);
