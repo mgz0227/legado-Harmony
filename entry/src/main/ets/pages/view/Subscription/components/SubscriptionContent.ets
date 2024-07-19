@@ -204,7 +204,6 @@ export default struct SubscriptionContent{
           dragBar: true,
           showClose:false,
           onDisappear:()=>{
-            this.contentIndex = -1
             this.isShowGroup = false
           }
         })
@@ -249,10 +248,6 @@ export default struct SubscriptionContent{
       RssSourceGroup({
         moveGroup:this.moveGroup,
         confirm:()=>{
-          if (this.contentIndex === undefined){
-            showMessage('数据丢失请重新选择')
-            return
-          }
           if (this.moveGroup) {
             this.contentList[this.contentIndex].sourceGroup = this.moveGroup
             SubscriptionDao.update(this.contentList[this.contentIndex]).then((val)=>{
@@ -261,6 +256,7 @@ export default struct SubscriptionContent{
                   this.isButtonFunction = false
                   this.isShowGroup = false
                   this.moveGroup = ''
+                  this.contentIndex = -1
                   showMessage('移动成功')
                   this.refresh()
                 },500)
@@ -275,6 +271,7 @@ export default struct SubscriptionContent{
         },
         cancel:()=>{
           this.isShowGroup = false
+          this.moveGroup = ''
         }
       })
     }
