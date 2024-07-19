@@ -142,6 +142,12 @@ export default struct newSources{
   }
   aboutToAppear(): void {
     this.getRssSourceList()
+    if (!this.formModel.rssListRule) {
+      this.formModel.rssListRule = new rssListRule()
+    }
+    if (!this.formModel.rssWebViewRule) {
+      this.formModel.rssWebViewRule = new rssWebViewRule()
+    }
   }
 
   @Builder
