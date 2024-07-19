@@ -175,7 +175,6 @@ export default struct newSources{
               this.formModel.enabledCookieJar ?? false,
               (val:boolean) => {
                 this.formModel.enabledCookieJar = val
-                showMessage('已开启CookieJar' + JSON.stringify(this.formModel.enabledCookieJar))
               })
           }
         });
@@ -224,7 +223,6 @@ export default struct newSources{
                 this.formModel.sourceIconIsUrl ?? false,
                 (val:boolean) => {
                   this.formModel.sourceIconIsUrl = val
-                  showMessage(JSON.stringify(this.formModel.sourceIconIsUrl))
                 })
             }
           }
