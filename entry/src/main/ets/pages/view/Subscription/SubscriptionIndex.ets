@@ -33,6 +33,7 @@ export default struct SubscriptionIndex {
     new IconTitleVo($r('app.media.icon_rule_batch'), '批量管理'),
   ]
 
+  @State loading: boolean = false
   //刷新
   refresh = ()=>{
     this.resetState()
@@ -45,7 +46,7 @@ export default struct SubscriptionIndex {
   @State rssSourcesList:rssSources[] = []
   @State groupList: rssGroupList[] =[]
   currentTabIndexChange(){
-    this.getList()
+    this.refresh()
   }
 
   // aboutToAppear() {
@@ -158,22 +159,46 @@ export default struct SubscriptionIndex {
           this.RecentlyUsedBuilder()
         }
       }
-      Scroll(){
-        Column(){
-          ForEach(this.groupList,(item:rssGroupList)=>{
-            SubscriptionContent({
-              subscriptionTitle: item.title,
-              contentList: item.list,
-              refresh:this.refresh
-            })
-          })
+      if (this.loading) {
+        Column() {
+          LoadingProgress()
+            .color(0xff6600)
+            .width('50%')
+          Text('加载中...')
         }
+        .justifyContent(FlexAlign.Center)
+        .layoutWeight(1)
+      } else if (!this.groupList.length) {
+        Column() {
+          Image($r('app.media.find_empty'))
+            .width(124)
+            .height(120)
+
+          Text(`暂无订阅源，点击右上角加号添加吧~`)
+            .fontSize(14)
+            .fontColor('#73000000')
+            .margin({ top: 32 })
+        }
+        .justifyContent(FlexAlign.Center)
+        .layoutWeight(1)
+      } else {
+        Scroll(){
+          Column(){
+            ForEach(this.groupList,(item:rssGroupList)=>{
+              SubscriptionContent({
+                subscriptionTitle: item.title,
+                contentList: item.list,
+                refresh:this.refresh
+              })
+            })
+          }
+        }
+        .align(Alignment.Top)
+        .padding({bottom:20})
+        .layoutWeight(1)
+        .scrollBar(BarState.Off)
+        .scrollable(ScrollDirection.Vertical)
       }
-      .align(Alignment.Top)
-      .padding({bottom:20})
-      .layoutWeight(1)
-      .scrollBar(BarState.Off)
-      .scrollable(ScrollDirection.Vertical)
 
       Flex()
         .bindSheet($$this.isShowImport,this.dialogImportFunction(),{

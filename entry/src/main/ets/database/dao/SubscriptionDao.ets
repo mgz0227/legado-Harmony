@@ -58,6 +58,7 @@ class SubscriptionDao {
 
       sql += `
   ORDER BY
+    lastUpdateTime DESC,
     customOrder ASC
 `;
       const rssSourcesDbList = await DbUtil.querySqlForList<rssSourceDb>(sql, column);
@@ -142,6 +143,48 @@ class SubscriptionDao {
 
   }
 
+  //批量删除订阅源
+  async deleteRssSourcesList(rssSources: rssSources[]) {
+    try {
+      for (let index = 0; index < rssSources.length; index++) {
+        await this.deleteRssSources(rssSources[index])
+      }
+      return true
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
+  }
+
+  //删除书源
+  async deleteRssSources(rssSource: rssSources) {
+    try {
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      await DbUtil.delete(predicates)
+      return true
+    }  catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
+  }
+
+  //置顶
+  async isTopRssSources(rssSources: rssSources){
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('sourceUrl', rssSources.sourceUrl)
+      const rssSourceDb = ToRssSourcesDb(rssSources)
+      rssSourceDb.lastUpdateTime = Date.now()
+      rssSourceDb.customOrder = 0
+      await DbUtil.update(predicates, rssSourceDb, column)
+      return true
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
+  }
 
   async getRssSources(key: string): Promise<rssSources | null> {
     try {

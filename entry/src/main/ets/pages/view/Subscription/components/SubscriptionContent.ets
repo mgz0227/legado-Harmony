@@ -16,12 +16,16 @@ import newSourcesNetWork from '../RssSources/newSourcesNetWork'
 import newSources from '../RssSources/newSources'
 import { router } from '@kit.ArkUI'
 import SubscriptionDao from '../../../../database/dao/SubscriptionDao'
+import CircleIcon from '../../../../componets/common/CircleIcon'
+import DialogCancelButton from '../../../../componets/common/DialogCancelButton'
+import confirmDialogExample from '../../../../componets/common/confirmDialog'
+import RssSourceGroup from './RssSourceGroup'
 
 @Component
 export default struct SubscriptionContent{
   @Prop subscriptionTitle: string
   @Prop contentList: rssSources[] = []
-
+  @State isButtonFunction: boolean = false
   @State contentIndex:number = 0
   // controller: web_webview.WebviewController = new web_webview.WebviewController()
   refresh: () => void = () => {
@@ -121,14 +125,7 @@ export default struct SubscriptionContent{
                   LongPressGesture({ repeat: true,duration:1000 })
                     .onAction((event: GestureEvent) => {
                       this.contentIndex = index
-                      switch (item.sourceType){
-                        case 0:
-                          this.isShowNewSourcesNetwork = true
-                          break
-                        case 1:
-                          this.isShowNewSources = true
-                          break
-                      }
+                      this.isButtonFunction = true
                     }))
               }
             }
@@ -156,16 +153,8 @@ export default struct SubscriptionContent{
               .gesture(
                 LongPressGesture({ repeat: true,duration:500 })
                   .onAction((event: GestureEvent) => {
-
                     this.contentIndex = index
-                    switch (item.sourceType){
-                      case 0:
-                        this.isShowNewSourcesNetwork = true
-                        break
-                      case 1:
-                        this.isShowNewSources = true
-                        break
-                    }
+                    this.isButtonFunction = true
                   }))
             }
           })
@@ -177,7 +166,7 @@ export default struct SubscriptionContent{
       .borderRadius(12)
       .backgroundColor(Color.White)
       .padding(20)
-
+      //常规网站编辑弹窗
       Flex()
         .bindSheet($$this.isShowNewSourcesNetwork,this.newSourcesNetworkBuilder(),{
           height: '95%',
@@ -185,9 +174,10 @@ export default struct SubscriptionContent{
           showClose:false,
           onDisappear:()=>{
             this.isShowNewSourcesNetwork = false
+            this.isButtonFunction = false
           }
         })
-
+      //订阅源编辑弹窗
       Flex()
         .bindSheet($$this.isShowNewSources,this.newSourcesBuilder(),{
           height: '95%',
@@ -197,10 +187,33 @@ export default struct SubscriptionContent{
             this.isShowNewSources = false
           }
         })
+        //长按弹窗
+        Flex()
+          .bindSheet($$this.isButtonFunction,this.dialogTitleFuction(),{
+            height: 200,
+            dragBar: true,
+            showClose:false,
+            onDisappear:()=>{
+              this.contentIndex = -1
+            }
+          })
+      //分组
+      Flex()
+        .bindSheet($$this.isShowGroup,this.showCheckGroup(),{
+          height: 300,
+          dragBar: true,
+          showClose:false,
+          onDisappear:()=>{
+            this.contentIndex = -1
+            this.isShowGroup = false
+          }
+        })
+
     }
   }
   @State isShowNewSourcesNetwork:boolean = false
   @State isShowNewSources:boolean = false
+  @State isShowGroup:boolean = false
   @Builder
   newSourcesNetworkBuilder(){
     Flex(){
@@ -228,13 +241,138 @@ export default struct SubscriptionContent{
       })
     }
   }
+  //移动分组
+  @State moveGroup:string = ''
+  @Builder
+  showCheckGroup(){
+    Flex(){
+      RssSourceGroup({
+        moveGroup:this.moveGroup,
+        confirm:()=>{
+          if (this.contentIndex === undefined){
+            showMessage('数据丢失请重新选择')
+            return
+          }
+          if (this.moveGroup) {
+            this.contentList[this.contentIndex].sourceGroup = this.moveGroup
+            SubscriptionDao.update(this.contentList[this.contentIndex]).then((val)=>{
+              if (val) {
+                setTimeout(()=>{
+                  this.isButtonFunction = false
+                  this.isShowGroup = false
+                  this.moveGroup = ''
+                  showMessage('移动成功')
+                  this.refresh()
+                },500)
+              } else {
+                showMessage('移动失败')
+              }
+            })
+
+          } else {
+            showMessage('请选择要移动的分组')
+          }
+        },
+        cancel:()=>{
+          this.isShowGroup = false
+        }
+      })
+    }
+  }
 
   Item_Right_Dialog_Data: IconTitleVo[] = [
-    new IconTitleVo($r('app.media.icon_operate_top'), '编辑'),
-    new IconTitleVo($r('app.media.icon_operate_export'), '置顶'),
+    new IconTitleVo($r('app.media.ic_public_edit'), '编辑'),
+    new IconTitleVo($r('app.media.icon_operate_top'), '置顶'),
     new IconTitleVo($r('app.media.icon_operate_move'), '移动至'),
     new IconTitleVo($r('app.media.delete_svg'), '删除'),
   ]
+
+  //长按弹窗
+  @Builder
+  dialogTitleFuction() {
+    Column(){
+      GridRow({
+        columns:4
+      }){
+       ForEach(this.Item_Right_Dialog_Data,(item:IconTitleVo,index:number)=>{
+         GridCol(){
+           CircleIcon({
+             item:item
+           })
+         }
+         .onClick(()=>{
+           switch (index) {
+             case 0 :
+               switch (this.contentList[this.contentIndex].sourceType){
+                 case 0:
+                   this.isShowNewSourcesNetwork = true
+                   break
+                 case 1:
+                   this.isShowNewSources = true
+                   break
+               }
+               break
+             case 1:
+               this.isTopRssSources()
+               break
+             case 2:
+               this.isShowGroup = true
+               break
+             case 3:
+                this.rssSourcesDelDialog?.open()
+               break
+           }
+         })
+       })
+      }
+      .padding(PaddingConstants.PADDING_20)
+      DialogCancelButton({
+        btnClick:()=>{
+          this.isButtonFunction = false
+          this.contentIndex = -1
+        }
+      })
+    }
+    .width('100%')
+  }
+  @State delCache:boolean = false
+  //删除确认弹窗
+  rssSourcesDelDialog: CustomDialogController | null = new CustomDialogController({
+    builder: confirmDialogExample({
+      confirm: ()=> { this.deleteRssSources() },
+      delCache: this.delCache
+    }),
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
+
+
+
+
+
+  deleteRssSources(){
+    SubscriptionDao.deleteRssSources(this.contentList[this.contentIndex])
+      .then((val:boolean)=>{
+        val?showMessage('删除成功'):showMessage('删除失败')
+        this.rssSourcesDelDialog?.close()
+        this.isButtonFunction = false
+        this.refresh()
+      })
+  }
+
+  isTopRssSources(){
+    SubscriptionDao.isTopRssSources(this.contentList[this.contentIndex])
+      .then((val:boolean)=>{
+        val?showMessage('置顶成功'):showMessage('置顶失败')
+        this.rssSourcesDelDialog?.close()
+        this.isButtonFunction = false
+        this.refresh()
+      })
+  }
+
 
   @Builder
   rightDialogBuilder(list: IconTitleVo[], dialogRightChange: (_index: number) => void) {
