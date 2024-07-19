@@ -328,7 +328,7 @@ struct BookDetailPage {
 
       // 小说标题
       Row({ space: CommonConstants.SPACE_20 }) {
-        Image($r('app.media.cover_list'))
+        Image(this.bookData.bookImage ?? $r('app.media.cover_list'))
           .width(CommonConstants.NOVEL_IMG_WIDTH)
           .height(CommonConstants.NOVEL_IMG_HEIGHT)
           .borderRadius(5)
@@ -338,7 +338,7 @@ struct BookDetailPage {
             .fontSize(20)
           Blank()
           Row() {
-            Text('卖报小郎君')
+            Text(this.bookData.author ?? '卖报小郎君')
               .fontSize(CommonConstants.FONT_NOVEL_DETAIL_AUTHOR_SIZE)
               .fontColor('#FFF')
               .opacity(0.45)
@@ -395,7 +395,7 @@ struct BookDetailPage {
 
       // 书籍简介
       Flex() {
-        Text('《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... ' +
+        Text(this.bookData.describe ?? '《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... ' +
           '\n他起初的目的只是自保，顺便在这个没有人权的社会里当个富家翁悠闲度日。 ...... 多年后，许七安回首前尘，身后是早已逝去的敌人，以及累累白骨。 ' +
           '\n滚滚长江东逝水，浪花淘尽英雄，是非成败转头空。 ' +
           '\n青山依旧在，几度夕阳红。')
