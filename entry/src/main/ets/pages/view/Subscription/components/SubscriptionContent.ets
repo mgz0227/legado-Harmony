@@ -15,6 +15,7 @@ import { showMessage } from '../../../../componets/common/promptShow'
 import newSourcesNetWork from '../RssSources/newSourcesNetWork'
 import newSources from '../RssSources/newSources'
 import { router } from '@kit.ArkUI'
+import SubscriptionDao from '../../../../database/dao/SubscriptionDao'
 
 @Component
 export default struct SubscriptionContent{
@@ -107,12 +108,14 @@ export default struct SubscriptionContent{
                   this.contentCoverBuilder(item)
                 }
                 .onClick(()=>{
+                  SubscriptionDao.updateRecentIcon(item)
                   router.pushUrl({
                     url: 'pages/view/Subscription/rssWebView',
                     params: {
                       url: item.sourceUrl
                     }
                   })
+                  this.refresh()
                 })
                 .gesture(
                   LongPressGesture({ repeat: true,duration:1000 })
@@ -142,12 +145,14 @@ export default struct SubscriptionContent{
                 this.contentListBuilder(item)
               }
               .onClick(()=>{
+                SubscriptionDao.updateRecentIcon(item)
                 router.pushUrl({
                   url: 'pages/view/Subscription/rssWebView',
                   params: {
                     url: item.sourceUrl
                   }
                 })
+                this.refresh()
               })
               .gesture(
                 LongPressGesture({ repeat: true,duration:500 })
@@ -261,10 +266,21 @@ export default struct SubscriptionContent{
       //   .width(ImageConstants.IMG_WIDTH_24)
       //   .height(ImageConstants.IMG_HEIGHT_24)
       //   .borderRadius(4)
-      Image($r('app.media.icon'))
-        .width(ImageConstants.IMG_WIDTH_40)
-        .height(ImageConstants.IMG_HEIGHT_40)
-        .borderRadius(4)
+      Stack(){
+        Image($r('app.media.icon'))
+          .width(ImageConstants.IMG_WIDTH_40)
+          .height(ImageConstants.IMG_HEIGHT_40)
+          .borderRadius(4)
+
+        if (this.isShowRecentIcon(item.lastUpdateTime)  && item.showRecentIcon)
+        Row().width(8).height(8)
+          .borderRadius(8)
+          .backgroundColor('#EF4444')
+          .position({
+            right: -2,
+            top:-2
+          })
+      }.alignContent(Alignment.TopEnd)
       Text(item.sourceName)
         .font({
           size:14,
@@ -281,6 +297,10 @@ export default struct SubscriptionContent{
     .padding(PaddingConstants.PADDING_12)
 
   }
+  //刚导入的24小时内以红点进行标记，24小时后消失，或者手动点击该订阅查看后也会消失
+  isShowRecentIcon(lastTime:number){
+    return (new Date().getTime() - lastTime)/(1000 * 60 * 60) <= 24
+  }
 
   @Builder
   contentListBuilder(item:rssSources){
@@ -291,10 +311,21 @@ export default struct SubscriptionContent{
       //   .width(ImageConstants.IMG_WIDTH_40)
       //   .height(ImageConstants.IMG_HEIGHT_40)
       //   .borderRadius(8)
-      Image($r('app.media.icon'))
-        .width(ImageConstants.IMG_WIDTH_40)
-        .height(ImageConstants.IMG_HEIGHT_40)
-        .borderRadius(4)
+      Stack(){
+        Image($r('app.media.icon'))
+          .width(ImageConstants.IMG_WIDTH_40)
+          .height(ImageConstants.IMG_HEIGHT_40)
+          .borderRadius(4)
+
+        if (this.isShowRecentIcon(item.lastUpdateTime) && item.showRecentIcon)
+          Row().width(8).height(8)
+            .borderRadius(8)
+            .backgroundColor('#EF4444')
+            .position({
+              right: -2,
+              top:-2
+            })
+      }.alignContent(Alignment.TopEnd)
 
       Text(`${item.sourceName}`).fontSize(10)
         .fontColor($r('app.string.color_black_88'))
