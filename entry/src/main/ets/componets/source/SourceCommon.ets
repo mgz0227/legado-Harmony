@@ -8,7 +8,6 @@ import ImageConstants from '../../common/constants/ImageConstants'
 import PaddingConstants from '../../common/constants/PaddingConstants'
 import { IconTitleVo } from '../../componetsmodel/IconTitleVo'
 import dialogTitleFuction from '../common/dialogTitleFuction'
-import noSourceFind from '../common/noSourceFind'
 import { showMessage } from '../common/promptShow'
 import { dataItem } from '../dataList/dataItem'
 import { sourceTabs } from './sourceTabs'
@@ -29,6 +28,7 @@ export default struct SourceCommon {
   @State showMoreDialog: boolean = false
   @State searchValue: string = ''
   @State isBatch: boolean = false
+  @Link refreshCount: number
 
   changeSourceIndex() {
     this.sourceController.changeIndex(this.readIndex)
@@ -49,7 +49,6 @@ export default struct SourceCommon {
                 .width('90%')
                 .onChange((value: string) => {
                   this.searchValue = value
-                  // this.getList()
                 })
 
               Image($r('app.media.more_vertical'))
@@ -105,27 +104,22 @@ export default struct SourceCommon {
             barPosition: BarPosition.Start,
             controller: this.sourceController
           }) {
-            TabContent() {
-              SourceView({
-                searchValue: this.searchValue,
-                isBatch: this.isBatch,
-                type: this.currentIndex,
-                index: 0
-              })
-            }
-            .height('100%')
-            .align(Alignment.Top)
-
-            TabContent() {
-              SourceView({
-                searchValue: this.searchValue,
-                isBatch: this.isBatch,
-                type: this.currentIndex,
-                index: 1
-              })
-            }
-            .height('100%')
-            .align(Alignment.Top)
+            ForEach([0, 1], (item: number) => {
+              TabContent() {
+                SourceView({
+                  searchValue: this.searchValue,
+                  isBatch: this.isBatch,
+                  type: this.currentIndex,
+                  index: item,
+                  refreshCount: this.refreshCount,
+                  closeDialog: () => {
+                    this.showDialog = false
+                  }
+                })
+              }
+              .height('100%')
+              .align(Alignment.Top)
+            })
           }
           .barWidth(0)
           .barHeight(0)
@@ -141,10 +135,10 @@ export default struct SourceCommon {
   }
 
   More_Right_Dialog_Data: IconTitleVo[] = [
-    new IconTitleVo($r('app.media.ic_folder'), '按时间排序'),
+    new IconTitleVo($r('app.media.appointment_time'), '按时间排序'),
     new IconTitleVo($r('app.media.icon_no_source_find'), '按评分排序'),
     new IconTitleVo($r('app.media.add_book_shelf'), '书源管理'),
-    new IconTitleVo($r('app.media.icon_rule_batch'), '批量'),
+    new IconTitleVo($r('app.media.icon_rule_batch'), '批量管理'),
   ]
 
   @Builder

@@ -66,7 +66,7 @@ export default struct SourceView {
           background: '#FF6600',
           fontColor: '#FFFFFF',
           action: async () => {
-            await BookSourceDao.update(this.dialogItem as BookSourcePart)
+            await BookSourceDao.updateFlow(this.dialogItem as BookSourcePart)
             this.getList()
             this.dialogItem = {}
             this.dialogController.close()
@@ -305,7 +305,7 @@ export default struct SourceView {
                     this.sourceList[i] = item
                   }
                 })
-                await BookSourceDao.batchUpdate(this.sourceList)
+                await BookSourceDao.batchUpdateFlow(this.sourceList)
                 this.getList()
               })
 
@@ -434,7 +434,7 @@ export default struct SourceView {
     .onClick(async () => {
       this.isBatch = false
       this.activeNameMap = {}
-      BookSourceDao.batchUpdate(this.sourceList)
+      BookSourceDao.batchUpdateFlow(this.sourceList)
       this.getList()
     })
   }
@@ -674,7 +674,7 @@ export default struct SourceView {
           .selectedColor(0xff6600)
           .onChange(async (val: boolean) => {
             item.enabled = val
-            await BookSourceDao.update(item)
+            await BookSourceDao.updateFlow(item)
           })
       }
       .width('100%')

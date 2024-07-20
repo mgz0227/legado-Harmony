@@ -46,13 +46,16 @@ struct AddSourcePage {
     lastUpdateTime: 0,
     respondTime: 180000,
     customOrder: 0,
-    weight: 0
+    weight: 0,
+    isTop: false,
+    showRecentIcon: false
   }
 
   async aboutToAppear() {
     const params = router.getParams() as RouteParams;
     console.log('TagInfo', JSON.stringify(params))
     const localItem = await BookSourceDao.getBookSource(params.id)
+    console.info('TagInfo :', JSON.stringify(localItem))
     if (localItem) {
       this.formModel = localItem
     }
@@ -168,6 +171,7 @@ struct AddSourcePage {
               this.scroller.scrollEdge(Edge.Top)
               showMessage('红星标记的内容不能为空')
             }
+            console.info('TagInfo 修改的数据：', JSON.stringify(this.formModel))
             await BookSourceDao.insert(this.formModel)
             showMessage('保存成功')
             setTimeout(() => {

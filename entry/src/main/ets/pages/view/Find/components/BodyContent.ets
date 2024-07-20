@@ -4,7 +4,6 @@
  * @className: BodyContent
  */
 import CommonConstants from '../../../../common/constants/CommonConstants'
-import { showMessage } from '../../../../componets/common/promptShow'
 import sourceType from '../../../../componets/common/sourceType'
 import SourceCommon from '../../../../componets/source/SourceCommon'
 import BookSourceDao from '../../../../database/dao/BookSourceDao'
@@ -21,8 +20,13 @@ export default struct BodyContent {
   @Prop currentIndex: number
   @StorageLink(CommonConstants.HAS_EXPLORE_URL) @Watch('getList') hasExploreUrl?: boolean = undefined
   tabsBodyController: TabsController = new TabsController();
+  @State @Watch('getList')refreshCount: number = 0
 
   aboutToAppear() {
+    this.getList()
+  }
+
+  onPageShow() {
     this.getList()
   }
 
@@ -135,7 +139,8 @@ export default struct BodyContent {
               ContentRefresh({
                 currentIndex: this.currentIndex,
                 bookSource: item,
-                hasExploreUrl: this.hasExploreUrl
+                hasExploreUrl: this.hasExploreUrl,
+                refreshCount: this.refreshCount
               })
             }
             .height('100%')
@@ -160,7 +165,8 @@ export default struct BodyContent {
     Column() {
       SourceCommon({
         showDialog: this.isShowDialog,
-        currentIndex: this.currentIndex
+        currentIndex: this.currentIndex,
+        refreshCount: this.refreshCount
       })
     }.height('100%')
   }

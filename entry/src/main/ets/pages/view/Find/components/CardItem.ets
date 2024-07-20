@@ -8,12 +8,12 @@ export  struct CardItem {
   build() {
     Row() {
       Image(this.item.coverUrl ?? $r('app.media.no_record'))
+        .alt($r('app.media.find_empty'))
         .width(63)
         .height(84)
         .objectFit(ImageFit.Contain)
         .borderRadius(4)
         .margin({ right: 12 })
-
 
       Column() {
         Text(this.item.name)
