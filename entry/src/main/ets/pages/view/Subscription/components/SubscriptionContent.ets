@@ -21,6 +21,7 @@ import DialogCancelButton from '../../../../componets/common/DialogCancelButton'
 import confirmDialogExample from '../../../../componets/common/confirmDialog'
 import RssSourceGroup from './RssSourceGroup'
 import PreviewEffectImage from './PreviewEffectImage'
+import rssSourcesUtils from '../../../../common/utils/rssSourcesUtils'
 
 @Component
 export default struct SubscriptionContent{
@@ -120,6 +121,7 @@ export default struct SubscriptionContent{
                       url: item.sourceUrl
                     }
                   })
+                  rssSourcesUtils.pushRssSourcesHistory(item)
                   this.refresh()
                 })
                 .gesture(
@@ -149,6 +151,7 @@ export default struct SubscriptionContent{
                     url: item.sourceUrl
                   }
                 })
+                rssSourcesUtils.pushRssSourcesHistory(item)
                 this.refresh()
               })
               .gesture(

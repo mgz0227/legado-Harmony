@@ -14,7 +14,8 @@ import ImageConstants from '../../../../common/constants/ImageConstants';
 import { rssSources } from '../../../../database/entities/rssSources';
 import SubscriptionDao from '../../../../database/dao/SubscriptionDao';
 import { showMessage } from '../../../../componets/common/promptShow';
-
+import PreviewEffectImage from './PreviewEffectImage';
+import rssSourcesUtils from '../../../../common/utils/rssSourcesUtils';
 @Entry
 @Component
 struct SubscriptionSearch {
@@ -22,32 +23,15 @@ struct SubscriptionSearch {
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @State
   searchList: rssSources[] = []
-  //
-  //   IconTitleVo[] = [
-  //   new IconTitleVo($r('app.media.icon_subscription_lazy'), '懒人听书'),
-  //   new IconTitleVo($r('app.media.icon_subscription_inn'), '漫客栈'),
-  //   new IconTitleVo($r('app.media.icon_subscription_start'), '起点中文'),
-  //   new IconTitleVo($r('app.media.icon_subscription_tencent'), '腾讯动漫'),
-  //   new IconTitleVo($r('app.media.icon_subscription_college'), '潇湘书院'),
-  // ]
 
   onPageShow(): void {
     this.changeSearchValue()
   }
 
   onPageHide(): void {
-    this.searchValue = ''
-    this.searchList = []
+    // this.searchValue = ''
+    // this.searchList = []
   }
-  // aboutToAppear(): void {
-  //   this.changeSearchValue()
-  // }
-
-  // aboutToDisappear(): void {
-  //   this.searchValue = ''
-  //   this.searchList = []
-  // }
-
 
   changeSearchValue(){
     showMessage('模糊匹配中')
@@ -137,17 +121,37 @@ struct SubscriptionSearch {
           Column({
             space: CommonConstants.SPACE_6
           }){
-            Image(item.sourceIcon.concat('app.media')?$r(item.sourceIcon):item.sourceIcon)
-              .width(ImageConstants.IMG_WIDTH_40)
-              .height(ImageConstants.IMG_HEIGHT_40)
-              .borderRadius(50)
+
+            // Image(item.sourceIcon.concat('app.media')?$r(item.sourceIcon):item.sourceIcon)
+            //   .width(ImageConstants.IMG_WIDTH_40)
+            //   .height(ImageConstants.IMG_HEIGHT_40)
+
+            PreviewEffectImage({
+              customizeTitle:item.customizeTitle,
+              sourceIcon:item.sourceIcon,
+              sourceIconIsUrl:item.sourceIconIsUrl,
+              isShowTitle:false,
+              PreviewWidth:ImageConstants.IMG_WIDTH_40,
+              PreviewHeight:ImageConstants.IMG_HEIGHT_40
+            }).borderRadius(50)
+
 
             Text(`${item.sourceName}`).fontSize(10)
               .fontColor($r('app.string.color_black_88'))
               .lineHeight(18)
               .fontFamily(CommonConstants.FAMILY_PingFANG)
               .fontWeight(FontConstants.FONT_WEIGHT_400)
-          }.margin({bottom:20})
+          }
+          .onClick(()=>{
+            router.pushUrl({
+              url: 'pages/view/Subscription/rssWebView',
+              params: {
+                url: item.sourceUrl
+              }
+            })
+            rssSourcesUtils.pushRssSourcesHistory(item)
+          })
+          .margin({bottom:20})
         }
       })
 

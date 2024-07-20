@@ -18,6 +18,9 @@ import { rssGroupList, rssSources } from '../../../database/entities/rssSources'
 import SubscriptionImport from '../../../componets/import/SubscriptionImport'
 import subscriptionDao from '../../../database/dao/SubscriptionDao'
 import dialogNewSources from './RssSources/dialogNewSources'
+import RssSourcesHistory from './components/RssSourcesHistory'
+import rssSourcesHistoryDao from '../../../database/dao/RssSourcesHistoryDao'
+import { rssSourcesHistory } from '../../../database/entities/rssSourcesHistory'
 
 @Component
 export default struct SubscriptionIndex {
@@ -32,12 +35,18 @@ export default struct SubscriptionIndex {
     new IconTitleVo($r('app.media.icon_rule_add'), '新建订阅'),
     new IconTitleVo($r('app.media.icon_rule_batch'), '批量管理'),
   ]
+  @State RecentlyUsed: rssSourcesHistory[] = []
 
   @State loading: boolean = false
   //刷新
   refresh = ()=>{
     this.resetState()
     this.getList()
+    setTimeout(()=>{
+      rssSourcesHistoryDao.search().then((rssSourcesHistoryList:rssSourcesHistory[])=>{
+        this.RecentlyUsed = rssSourcesHistoryList
+      })
+    },100)
   }
 
   @State subscriptionList:rssSources[]=[]
@@ -120,45 +129,9 @@ export default struct SubscriptionIndex {
       .height('8%')
       //搜索End
       //最近使用Start
-      if (this.RecentlyUsed.length !== 0){
-        Column(){
-          Flex({
-            justifyContent:FlexAlign.SpaceBetween,
-            alignItems: ItemAlign.Center
-          }) {
-            Text('最近使用')
-              .font({
-                size:12,
-                weight:FontConstants.FONT_WEIGHT_500,
-                family: CommonConstants.FAMILY_PingFANG
-              })
-              .fontColor($r('app.string.color_black_88'))
-              .lineHeight(20)
-              .padding({
-                top: PaddingConstants.PADDING_12,
-                bottom: PaddingConstants.PADDING_12
-              })
-
-            Text('清空')
-              .font({
-                size:12,
-                weight:FontConstants.FONT_WEIGHT_400,
-                family: CommonConstants.FAMILY_PingFANG
-              })
-              .fontColor($r('app.string.color_black_45'))
-              .lineHeight(20)
-              .padding({
-                top: PaddingConstants.PADDING_12,
-                bottom: PaddingConstants.PADDING_12
-              })
-              .onClick(()=>{
-                this.RecentlyUsed = []
-                showMessage('已清空最近使用')
-              })
-          }
-          this.RecentlyUsedBuilder()
-        }
-      }
+      RssSourcesHistory({
+        RecentlyUsed:this.RecentlyUsed
+      })
       if (this.loading) {
         Column() {
           LoadingProgress()
@@ -233,54 +206,6 @@ export default struct SubscriptionIndex {
     .height('100%')
   }
 
-  //最近使用列
-  @State
-  RecentlyUsed: IconTitleVo[] = [
-    new IconTitleVo($r('app.media.icon_subscription_lazy'), '懒人听书'),
-    new IconTitleVo($r('app.media.icon_subscription_inn'), '漫客栈'),
-    new IconTitleVo($r('app.media.icon_subscription_start'), '起点中文'),
-    new IconTitleVo($r('app.media.icon_subscription_tencent'), '腾讯动漫'),
-    new IconTitleVo($r('app.media.icon_subscription_college'), '潇湘书院'),
-  ]
-
-  @Builder
-  RecentlyUsedBuilder(){
-    GridRow({
-      columns: 5
-    }){
-      ForEach(this.RecentlyUsed,(item:IconTitleVo)=>{
-        GridCol(){
-          Column({
-            space: CommonConstants.SPACE_6
-          }){
-            Image(item.icon)
-              .width(ImageConstants.IMG_WIDTH_40)
-              .height(ImageConstants.IMG_HEIGHT_40)
-              .borderRadius(50)
-
-            Text(`${item.title}`).fontSize(10)
-              .fontColor($r('app.string.color_black_88'))
-              .lineHeight(18)
-              .fontFamily(CommonConstants.FAMILY_PingFANG)
-              .fontWeight(FontConstants.FONT_WEIGHT_400)
-          }
-        }
-      })
-
-    }
-  }
-
-
-  //漫画列
-  @State
-  cartoonList: IconTitleVo[] = [
-    new IconTitleVo($r('app.media.icon_subscription_quick_see'), '快看漫画'),
-    new IconTitleVo($r('app.media.icon_subscription_dongman'), '咚漫漫画'),
-    new IconTitleVo($r('app.media.icon_subscription_inn'), '漫客栈'),
-    new IconTitleVo($r('app.media.icon_subscription_bosom_friend'), '知音漫客'),
-    new IconTitleVo($r('app.media.icon_subscription_podo'), 'PODO'),
-  ]
-
   @Builder dialogImportFunction() {
     Flex() {
       SubscriptionImport({
@@ -304,22 +229,6 @@ export default struct SubscriptionIndex {
 
     }
   }
-
-
-  //小说列
-  @State
-  novelList: IconTitleVo[] = [
-    new IconTitleVo($r('app.media.icon_subscription_qq'), 'QQ阅读'),
-    new IconTitleVo($r('app.media.icon_subscription_red'), '红袖读书'),
-    new IconTitleVo($r('app.media.icon_subscription_zongheng'), '纵横小说'),
-    new IconTitleVo($r('app.media.icon_subscription_17k'), '17K小说'),
-    new IconTitleVo($r('app.media.icon_subscription_college'), '潇湘书院'),
-    new IconTitleVo($r('app.media.icon_subscription_xigua'), '番茄小说'),
-    new IconTitleVo($r('app.media.icon_subscription_shuqi'), '书旗小说'),
-    new IconTitleVo($r('app.media.icon_subscription_motie'), '磨铁阅读'),
-    new IconTitleVo($r('app.media.icon_subscription_feilu'), '飞卢小说'),
-    new IconTitleVo($r('app.media.icon_subscription_yanyan'), '盐言故事'),
-  ]
 
   @Builder
   MenuBuilder() {

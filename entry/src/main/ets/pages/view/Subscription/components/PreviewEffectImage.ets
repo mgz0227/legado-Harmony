@@ -15,6 +15,7 @@ export default struct PreviewEffectImage{
   @Prop PreviewWidth:number = 60
   @Prop PreviewHeight:number = 60
   @Prop isShowTitle:boolean = true
+  @Prop ImageRadius:number = 4
   build() {
     Column(){
       if (this.isShowTitle){
@@ -46,6 +47,7 @@ export default struct PreviewEffectImage{
             .animation(({
               duration:1000
             }))
+            .borderRadius(this.ImageRadius)
         } else {
           Image($r('app.media.icon'))
             .width(this.PreviewWidth)
@@ -53,6 +55,7 @@ export default struct PreviewEffectImage{
             .animation(({
               duration:1000
             }))
+            .borderRadius(4)
         }
       }
     }
