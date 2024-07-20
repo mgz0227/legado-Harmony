@@ -9,7 +9,6 @@ import CommonConstants from '../../../../common/constants/CommonConstants';
 import FontConstants from '../../../../common/constants/FontConstants';
 import { router } from '@kit.ArkUI';
 import PaddingConstants from '../../../../common/constants/PaddingConstants';
-import { IconTitleVo } from '../../../../componetsmodel/IconTitleVo';
 import ImageConstants from '../../../../common/constants/ImageConstants';
 import { rssSources } from '../../../../database/entities/rssSources';
 import SubscriptionDao from '../../../../database/dao/SubscriptionDao';
