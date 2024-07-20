@@ -12,6 +12,7 @@ import { showMessage } from '../../../../componets/common/promptShow'
 import FormItem from '../../../../componets/Form/FormItem'
 import SubscriptionDao from '../../../../database/dao/SubscriptionDao'
 import { rssSources, SUBSCRIPTION_GROUP_TYPE } from '../../../../database/entities/rssSources'
+import programDataPreferences from '../../../../preferences/programDataPreferences'
 import PreviewEffectImage from '../components/PreviewEffectImage'
 import RssSourceCheckImage from '../components/RssSourceCheckImage'
 
@@ -91,6 +92,19 @@ export default struct newSourcesNetWork{
     showRecentIcon: true,
     customizeTitle: ''
   }
+  aboutToAppear(): void {
+    this.getRssSourceList()
+  }
+  @State sourceGroupList:SelectOption[] = []
+  getRssSourceList() {
+    let list = programDataPreferences.getRssSourcesListData()
+    //将list存放到sourceGroupList
+    list.forEach((item) => {
+      this.sourceGroupList.push({
+        value: item
+      })
+    })
+  }
   @Builder
   baseForm() {
     Scroll(this.scroller) {
@@ -130,13 +144,7 @@ export default struct newSourcesNetWork{
           .justifyContent(FlexAlign.SpaceBetween)
 
           Row() {
-            Select([
-              { value: '小说' },
-              { value: '漫画' },
-              { value: '影视' },
-              { value: '咨询' },
-              { value: '收藏夹' }
-            ])
+            Select(this.sourceGroupList)
               .value(this.formModel.sourceGroup.length === 0?SUBSCRIPTION_GROUP_TYPE[0]:this.formModel.sourceGroup)
               .borderRadius(4)
               .fontColor(this.formModel.sourceGroup !== undefined ? '#E0000000' : '#73000000')

@@ -5,9 +5,10 @@
  * 订阅源
  */
 import DbUtil from '../../common/utils/DbUtil';
+import rssSourcesUtils from '../../common/utils/rssSourcesUtils';
 import AppDatabaseUtil from '../AppDatabaseUtil';
 import { rssSourceDb, rssSources, ToRssSources, ToRssSourcesDb } from '../entities/rssSources';
-import { ColumnInfo, ColumnType } from '../types/ColumnInfo';
+import { ColumnInfo } from '../types/ColumnInfo';
 import { rssSourcesTypeParams } from '../types/rssSourcesType';
 
 class SubscriptionDao {
@@ -121,6 +122,7 @@ class SubscriptionDao {
       rssSourceDb.lastUpdateTime = Date.now()
       rssSourceDb.showRecentIcon = true
       await DbUtil.update(predicates, rssSourceDb, column)
+      await rssSourcesUtils.pushRssSourcesHistory(rssSource)
       return true
     } catch (err) {
       console.log('TagInfo, Error, ', JSON.stringify(err))

@@ -1243,6 +1243,7 @@ export default {
             "fieldPath": "showRecentIcon",
             "columnName": "showRecentIcon",
             "affinity": "INTEGER",
+            "boolean": true,
             "notNull": true,
             "defaultValue": "1"
           },
@@ -1951,7 +1952,80 @@ export default {
         },
         "indices": [],
         "foreignKeys": []
-      }
+      },
+      {
+        "tableName": "rss_sources_history",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sourceType` INTEGER NOT NULL ,`sourceGroup` TEXT,`sourceUrl` TEXT NOT NULL, `sourceName` TEXT NOT NULL, `sourceIcon` TEXT NOT NULL,`lastUpdateTime` INTEGER NOT NULL DEFAULT 0,`sourceIconIsUrl` INTEGER ,`showRecentIcon` INTEGER NOT NULL DEFAULT 1,`customizeTitle` TEXT, PRIMARY KEY(`sourceUrl`))",
+        "fields": [
+          {
+            "fieldPath": "sourceType",
+            "columnName": "sourceType",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "sourceUrl",
+            "columnName": "sourceUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceGroup",
+            "columnName": "sourceGroup",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceName",
+            "columnName": "sourceName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceIcon",
+            "columnName": "sourceIcon",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceIconIsUrl",
+            "columnName": "sourceIconIsUrl",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": false,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "showRecentIcon",
+            "columnName": "showRecentIcon",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "lastUpdateTime",
+            "columnName": "lastUpdateTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "customizeTitle",
+            "columnName": "customizeTitle",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "sourceUrl"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
     ],
     "views": [],
     "setupQueries": [
