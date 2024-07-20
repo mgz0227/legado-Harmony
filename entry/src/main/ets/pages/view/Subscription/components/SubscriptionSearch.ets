@@ -34,7 +34,6 @@ struct SubscriptionSearch {
   }
 
   changeSearchValue(){
-    showMessage('模糊匹配中')
     if(this.searchValue.length > 0){
       this.searchSources()
     } else {
@@ -124,11 +123,11 @@ struct SubscriptionSearch {
             PreviewEffectImage({
               customizeTitle:item.customizeTitle,
               sourceIcon:item.sourceIcon,
-
               sourceIconIsUrl:item.sourceIconIsUrl,
               isShowTitle:false,
               PreviewWidth:ImageConstants.IMG_WIDTH_40,
-              PreviewHeight:ImageConstants.IMG_HEIGHT_40
+              PreviewHeight:ImageConstants.IMG_HEIGHT_40,
+              sourceName:item.sourceName
             }).borderRadius(50)
 
             Text(`${item.sourceName}`).fontSize(10)

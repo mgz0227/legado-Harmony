@@ -6,6 +6,7 @@
  */
 import CommonConstants from '../../../../common/constants/CommonConstants'
 import FontConstants from '../../../../common/constants/FontConstants'
+import { showMessage } from '../../../../componets/common/promptShow'
 
 @Component
 export default struct PreviewEffectImage{
@@ -16,6 +17,8 @@ export default struct PreviewEffectImage{
   @Prop PreviewHeight:number = 60
   @Prop isShowTitle:boolean = true
   @Prop ImageRadius:number = 4
+  @Prop sourceName:string = ''
+  @State isError:boolean = false
   build() {
     Column(){
       if (this.isShowTitle){
@@ -30,25 +33,54 @@ export default struct PreviewEffectImage{
             .fontColor($r('app.string.color_black_45'))
         }
       }
-      Stack(){
-        if (this.customizeTitle && !this.sourceIconIsUrl){
-          Text(this.customizeTitle.slice(0,1)).font({
-            size:FontConstants.FONT_SIZE_16,
-            weight:FontConstants.FONT_WEIGHT_700,
-            family:CommonConstants.FAMILY_PingFANG
-          })
-            .zIndex(9)
-            .fontColor(Color.White)
+      if (this.isError){
+        this.ImageStack(true)
+      } else {
+        Stack(){
+          this.ImageStack(this.customizeTitle.length > 0 && !this.sourceIconIsUrl)
+          Column(){
+            LoadingProgress().color("#FF6600").height(30)
+            Text('图片加载中...').fontSize(5).fontColor($r('app.color.theme_color'))
+          }.zIndex(-1)
         }
-        Image(this.sourceIcon.indexOf('app.media.')>-1?$r(this.sourceIcon):this.sourceIcon)
-          .alt($r('app.media.icon'))
+      }
+    }
+  }
+
+
+  initialImage:string[] = ['one','two','three','four','five','six','seven','eight','nine','ten']
+  @Builder ImageStack(isShow:boolean){
+    Stack(){
+      if (isShow || this.isError){
+        Text(this.isError?this.sourceName.slice(0,1):this.customizeTitle.slice(0,1)).font({
+          size:FontConstants.FONT_SIZE_16,
+          weight:FontConstants.FONT_WEIGHT_700,
+          family:CommonConstants.FAMILY_PingFANG
+        })
+          .zIndex(9)
+          .fontColor(Color.White)
+      }
+      if (this.isError){
+        Image($r(`app.media.icon_check_image_${this.initialImage[this.sourceName.slice(0,9).length]}`))
           .width(this.PreviewWidth)
           .height(this.PreviewHeight)
           .animation(({
             duration:1000
           }))
           .borderRadius(this.ImageRadius)
+      } else {
+        Image(this.sourceIcon.indexOf('app.media.')>-1?$r(this.sourceIcon):this.sourceIcon)
+          .width(this.PreviewWidth)
+          .height(this.PreviewHeight)
+          .animation(({
+            duration:1000
+          }))
+          .borderRadius(this.ImageRadius)
+          .onError(()=>{
+            this.isError = true
+          })
       }
+
     }
   }
 }

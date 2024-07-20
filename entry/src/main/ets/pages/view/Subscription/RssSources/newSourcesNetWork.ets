@@ -50,9 +50,6 @@ export default struct newSourcesNetWork{
               return
             }
           }
-          if(this.formModel.sourceIcon === '' && !this.formModel.sourceIconIsUrl){
-            this.formModel.sourceIcon = 'app.media.icon'
-          }
           let isInsert = await SubscriptionDao.insert(this.formModel)
           if (isInsert) {
             showMessage('保存成功')

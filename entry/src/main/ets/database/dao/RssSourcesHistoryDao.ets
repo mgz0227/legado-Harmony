@@ -27,13 +27,18 @@ class RssSourcesHistoryDao {
     }
   }
 
-  async search() {
+  async search(sourceUrl?:string) {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       let sql = `SELECT * FROM ${this.TABLE_NAME}`;
       // 动态添加 WHERE 子句
       let whereClause: string[] = [];
+      if (sourceUrl) {
+        whereClause.push(`(
+        sourceUrl LIKE '%${sourceUrl}%'
+      )`);
 
+      }
       // 如果有 where 子句，添加 WHERE 关键字
       if (whereClause.length > 0) {
         sql += ` WHERE ${whereClause.join(' AND ')}`;
@@ -73,9 +78,6 @@ class RssSourcesHistoryDao {
       if (count > 0) {
         this.update(rssHistory)
         return true
-      }
-      if(rssHistory.sourceIcon === '' && !rssHistory.sourceIconIsUrl){
-        rssHistory.sourceIcon = 'app.media.icon'
       }
       rssHistory.lastUpdateTime = Date.now()
       await DbUtil.insert(this.TABLE_NAME, rssHistory, column)

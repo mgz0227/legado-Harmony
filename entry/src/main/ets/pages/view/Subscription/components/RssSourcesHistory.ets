@@ -80,7 +80,8 @@ export default struct RssSourcesHistory{
               PreviewWidth:ImageConstants.IMG_WIDTH_40,
               PreviewHeight:ImageConstants.IMG_HEIGHT_40,
               sourceIconIsUrl:item.sourceIconIsUrl,
-              isShowTitle:false
+              isShowTitle:false,
+              sourceName:item.sourceName
             })
 
             Text(`${item.sourceName}`).fontSize(10)
