@@ -63,14 +63,16 @@ export default struct BodyContent {
               ForEach(this.sourceList, (item: BookSource, index: number) => {
                 sourceType({
                   title: item.bookSourceName,
-                  active: this.currentSourceIndex === index
+                  active: this.currentSourceIndex === index,
                 })
                   .onClick(() => {
                     this.tabsBodyController.changeIndex(index)
                     this.currentSourceIndex = index
                   })
               })
-            }.margin({ top: 5, bottom: 5 })
+            }
+            .padding({ right: 12 })
+            .margin({ top: 5, bottom: 5 })
           }
           .scrollBar(BarState.Off)
           .scrollable(ScrollDirection.Horizontal)
@@ -91,7 +93,7 @@ export default struct BodyContent {
           }
         })
         .bindSheet(this.isShowDialog, this.sourceCommon(), {
-          detents: [SheetSize.MEDIUM, SheetSize.LARGE, 200],
+          detents: [SheetSize.FIT_CONTENT, SheetSize.LARGE, 200],
           dragBar: true,
           showClose: false,
           onDisappear: () => {
@@ -103,14 +105,14 @@ export default struct BodyContent {
 
 
       if (this.loading) {
-          Column() {
-            LoadingProgress()
-              .color(0xff6600)
-              .width('50%')
-            Text('加载中...')
-          }
-          .justifyContent(FlexAlign.Center)
-          .layoutWeight(1)
+        Column() {
+          LoadingProgress()
+            .color(0xff6600)
+            .width('50%')
+          Text('加载中...')
+        }
+        .justifyContent(FlexAlign.Center)
+        .layoutWeight(1)
       } else if (!this.sourceList.length) {
         Column() {
           Image($r('app.media.find_empty'))
@@ -156,7 +158,10 @@ export default struct BodyContent {
   @Builder
   sourceCommon() {
     Column() {
-      SourceCommon()
+      SourceCommon({
+        showDialog: this.isShowDialog,
+        currentIndex: this.currentIndex
+      })
     }.height('100%')
   }
 }
