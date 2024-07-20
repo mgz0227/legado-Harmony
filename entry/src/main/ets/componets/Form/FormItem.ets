@@ -14,13 +14,16 @@ export  default  struct FormItem {
   isLength: boolean = false
   maxLength: number = 10
   onChange: Function = (_value: string) => {}
+  showTitle: boolean = true
 
   build() {
     Column() {
       Row() {
         Row() {
-          Text(this.label)
-            .fontSize(16)
+          if (this.showTitle){
+            Text(this.label)
+              .fontSize(16)
+          }
 
           if (this.required) {
             Text('*')

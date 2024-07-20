@@ -60,6 +60,8 @@ export class rssSources{
   showRecentIcon:boolean = true
   //自动补全
   autoComplete:boolean = true
+  //自定义文字
+  customizeTitle:string = ''
   //列表
   rssListRule?:rssListRule
   //webView
@@ -158,6 +160,7 @@ export const ToRssSources = (rssSourceDb: rssSourceDb) => {
     variable: rssSourceDb.variable,
     autoComplete: rssSourceDb.autoComplete,
     showRecentIcon:rssSourceDb.showRecentIcon,
+    customizeTitle:rssSourceDb.customizeTitle,
     rssListRule,
     rssWebViewRule
   }
@@ -194,6 +197,7 @@ export const ToRssSourcesDb = (rssSource: rssSources) => {
     variable: rssSource.variable,
     autoComplete: rssSource.autoComplete,
     showRecentIcon: rssSource.showRecentIcon,
+    customizeTitle: rssSource.customizeTitle,
     rssListRule,
     rssWebViewRule
   }
