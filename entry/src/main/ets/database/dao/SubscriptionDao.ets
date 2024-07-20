@@ -10,6 +10,7 @@ import AppDatabaseUtil from '../AppDatabaseUtil';
 import { rssSourceDb, rssSources, ToRssSources, ToRssSourcesDb } from '../entities/rssSources';
 import { ColumnInfo } from '../types/ColumnInfo';
 import { rssSourcesTypeParams } from '../types/rssSourcesType';
+import rssSourcesHistoryDao from './RssSourcesHistoryDao';
 
 class SubscriptionDao {
   TABLE_NAME: string = 'rssSources'
@@ -165,6 +166,7 @@ class SubscriptionDao {
     try {
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
       predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      rssSourcesHistoryDao.deleteRssSourcesHistory(rssSource.sourceUrl)
       await DbUtil.delete(predicates)
       return true
     }  catch (err) {

@@ -5,7 +5,6 @@
  * 新版订阅页面
  */
 import CommonConstants from '../../../common/constants/CommonConstants'
-import FontConstants from '../../../common/constants/FontConstants'
 import ImageConstants from '../../../common/constants/ImageConstants'
 import PaddingConstants from '../../../common/constants/PaddingConstants'
 import { IconTitleVo } from '../../../componetsmodel/IconTitleVo'
@@ -142,18 +141,12 @@ export default struct SubscriptionIndex {
         .justifyContent(FlexAlign.Center)
         .layoutWeight(1)
       } else if (!this.groupList.length) {
-        Column() {
-          Image($r('app.media.find_empty'))
-            .width(124)
-            .height(120)
-
-          Text(`暂无订阅源，点击右上角加号添加吧~`)
-            .fontSize(14)
-            .fontColor('#73000000')
-            .margin({ top: 32 })
-        }
-        .justifyContent(FlexAlign.Center)
-        .layoutWeight(1)
+        SubscriptionContent({
+          subscriptionTitle: '收藏',
+          showAddDialog:()=>{
+            this.isShowNewSources = true
+          }
+        })
       } else {
         Scroll(){
           Column(){

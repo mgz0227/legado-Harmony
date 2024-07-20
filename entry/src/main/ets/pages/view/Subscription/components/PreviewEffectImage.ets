@@ -40,23 +40,14 @@ export default struct PreviewEffectImage{
             .zIndex(9)
             .fontColor(Color.White)
         }
-        if (this.sourceIcon){
-          Image(this.sourceIcon.indexOf('app.media.')>-1?$r(this.sourceIcon):this.sourceIcon)
-            .width(this.PreviewWidth)
-            .height(this.PreviewHeight)
-            .animation(({
-              duration:1000
-            }))
-            .borderRadius(this.ImageRadius)
-        } else {
-          Image($r('app.media.icon'))
-            .width(this.PreviewWidth)
-            .height(this.PreviewHeight)
-            .animation(({
-              duration:1000
-            }))
-            .borderRadius(4)
-        }
+        Image(this.sourceIcon.indexOf('app.media.')>-1?$r(this.sourceIcon):this.sourceIcon)
+          .alt($r('app.media.icon'))
+          .width(this.PreviewWidth)
+          .height(this.PreviewHeight)
+          .animation(({
+            duration:1000
+          }))
+          .borderRadius(this.ImageRadius)
       }
     }
   }

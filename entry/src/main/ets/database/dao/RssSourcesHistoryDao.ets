@@ -112,7 +112,7 @@ class RssSourcesHistoryDao {
   async deleteRssSourcesHistoryList(rssHistory: rssSourcesHistory[]) {
     try {
       for (let index = 0; index < rssHistory.length; index++) {
-        await this.deleteRssSourcesHistory(rssHistory[index])
+        await this.deleteRssSourcesHistory(rssHistory[index].sourceUrl)
       }
       return true
     } catch (err) {
@@ -122,10 +122,10 @@ class RssSourcesHistoryDao {
   }
 
   //删除订阅源历史记录
-  async deleteRssSourcesHistory(rssHistory: rssSourcesHistory) {
+  async deleteRssSourcesHistory(rssHistoryUrl: string) {
     try {
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates.equalTo('sourceUrl', rssHistory.sourceUrl)
+      predicates.equalTo('sourceUrl', rssHistoryUrl)
       await DbUtil.delete(predicates)
       return true
     }  catch (err) {
