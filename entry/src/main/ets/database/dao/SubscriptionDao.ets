@@ -95,9 +95,6 @@ class SubscriptionDao {
         this.update(rssSource)
         return true
       }
-      if(rssSource.sourceIcon === '' && !rssSource.sourceIconIsUrl){
-        rssSource.sourceIcon = 'app.media.icon'
-      }
       const rssSourceDb = ToRssSourcesDb(rssSource)
       rssSourceDb.lastUpdateTime = Date.now()
       await DbUtil.insert(this.TABLE_NAME, rssSourceDb, column)
@@ -123,7 +120,11 @@ class SubscriptionDao {
       rssSourceDb.lastUpdateTime = Date.now()
       rssSourceDb.showRecentIcon = true
       await DbUtil.update(predicates, rssSourceDb, column)
-      await rssSourcesUtils.pushRssSourcesHistory(rssSource)
+      rssSourcesHistoryDao.search(rssSource.sourceUrl).then(async (value) => {
+        if (value.length > 0) {
+          await rssSourcesUtils.pushRssSourcesHistory(rssSource)
+        }
+      })
       return true
     } catch (err) {
       console.log('TagInfo, Error, ', JSON.stringify(err))

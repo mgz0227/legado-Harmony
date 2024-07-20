@@ -435,7 +435,8 @@ export default struct SubscriptionContent{
           customizeTitle:item.customizeTitle,
           PreviewWidth:ImageConstants.IMG_WIDTH_40,
           PreviewHeight:ImageConstants.IMG_HEIGHT_40,
-          isShowTitle:false
+          isShowTitle:false,
+          sourceName:item.sourceName
         })
           .borderRadius(8)
 
@@ -481,7 +482,8 @@ export default struct SubscriptionContent{
           customizeTitle:item.customizeTitle,
           PreviewWidth:ImageConstants.IMG_WIDTH_40,
           PreviewHeight:ImageConstants.IMG_HEIGHT_40,
-          isShowTitle:false
+          isShowTitle:false,
+          sourceName:item.sourceName
         })
           .borderRadius(8)
 

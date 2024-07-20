@@ -8,7 +8,7 @@ export class rssSourcesUtils{
    sourceType: item.sourceType,
    sourceName: item.sourceName,
    sourceUrl: item.sourceUrl,
-   sourceIcon: item.sourceIcon,
+   sourceIcon: item.sourceIcon||'',
    sourceIconIsUrl: item.sourceIconIsUrl,
    sourceGroup: item.sourceGroup,
    lastUpdateTime: Date.now(),
