@@ -5,7 +5,6 @@
  * 订阅源
  */
 import DbUtil from '../../common/utils/DbUtil';
-import { showMessage } from '../../componets/common/promptShow';
 import AppDatabaseUtil from '../AppDatabaseUtil';
 import { rssSourceDb, rssSources, ToRssSources, ToRssSourcesDb } from '../entities/rssSources';
 import { ColumnInfo, ColumnType } from '../types/ColumnInfo';
@@ -93,6 +92,9 @@ class SubscriptionDao {
       if (count !== 0) {
         this.update(rssSource)
         return true
+      }
+      if(rssSource.sourceIcon === '' && !rssSource.sourceIconIsUrl){
+        rssSource.sourceIcon = 'app.media.icon'
       }
       const rssSourceDb = ToRssSourcesDb(rssSource)
       rssSourceDb.lastUpdateTime = Date.now()

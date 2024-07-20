@@ -20,6 +20,7 @@ import CircleIcon from '../../../../componets/common/CircleIcon'
 import DialogCancelButton from '../../../../componets/common/DialogCancelButton'
 import confirmDialogExample from '../../../../componets/common/confirmDialog'
 import RssSourceGroup from './RssSourceGroup'
+import PreviewEffectImage from './PreviewEffectImage'
 
 @Component
 export default struct SubscriptionContent{
@@ -390,21 +391,21 @@ export default struct SubscriptionContent{
     }
 
   }
-
+  colorCheck:string[] = ['#FFE5D4','#FFE3ED','#FCDFDF','#E2F4E4','#FFE5D4','#FFE3ED']
   @Builder
   contentCoverBuilder(item:rssSources){
     Row({
       space:12
     }){
-      // Image(icon?icon:$r('app.media.icon'))
-      //   .width(ImageConstants.IMG_WIDTH_24)
-      //   .height(ImageConstants.IMG_HEIGHT_24)
-      //   .borderRadius(4)
       Stack(){
-        Image($r('app.media.icon'))
-          .width(ImageConstants.IMG_WIDTH_40)
-          .height(ImageConstants.IMG_HEIGHT_40)
-          .borderRadius(4)
+        PreviewEffectImage({
+          sourceIcon:item.sourceIcon,
+          customizeTitle:item.customizeTitle,
+          PreviewWidth:ImageConstants.IMG_WIDTH_40,
+          PreviewHeight:ImageConstants.IMG_HEIGHT_40,
+          isShowTitle:false
+        })
+          .borderRadius(8)
 
         if (this.isShowRecentIcon(item.lastUpdateTime)  && item.showRecentIcon)
         Row().width(8).height(8)
@@ -427,7 +428,8 @@ export default struct SubscriptionContent{
     }
     .margin({right:20,bottom:20})
     .borderRadius(12)
-    .backgroundColor('#FFE5D4')
+    //从colorCheck取随机背景颜色
+    .backgroundColor(this.colorCheck[Math.floor(Math.random() * this.colorCheck.length)])
     .padding(PaddingConstants.PADDING_12)
 
   }
@@ -441,15 +443,15 @@ export default struct SubscriptionContent{
     Column({
       space: CommonConstants.SPACE_6
     }){
-      // Image(icon)
-      //   .width(ImageConstants.IMG_WIDTH_40)
-      //   .height(ImageConstants.IMG_HEIGHT_40)
-      //   .borderRadius(8)
       Stack(){
-        Image($r('app.media.icon'))
-          .width(ImageConstants.IMG_WIDTH_40)
-          .height(ImageConstants.IMG_HEIGHT_40)
-          .borderRadius(4)
+        PreviewEffectImage({
+          sourceIcon:item.sourceIcon,
+          customizeTitle:item.customizeTitle,
+          PreviewWidth:ImageConstants.IMG_WIDTH_40,
+          PreviewHeight:ImageConstants.IMG_HEIGHT_40,
+          isShowTitle:false
+        })
+          .borderRadius(8)
 
         if (this.isShowRecentIcon(item.lastUpdateTime) && item.showRecentIcon)
           Row().width(8).height(8)
@@ -459,7 +461,8 @@ export default struct SubscriptionContent{
               right: -2,
               top:-2
             })
-      }.alignContent(Alignment.TopEnd)
+      }
+      .alignContent(Alignment.TopEnd)
 
       Text(`${item.sourceName}`).fontSize(10)
         .fontColor($r('app.string.color_black_88'))

@@ -225,6 +225,7 @@ export default struct SubscriptionImport {
             //将insertRssSources里面的分组改为sourceGroup
             insertRssSources.forEach((item: rssSources) => {
               item.sourceGroup = this.sourceGroup
+              item.sourceIconIsUrl = true
             })
             await SubscriptionDao.batchInsert(insertRssSources)
             this.show = false;
