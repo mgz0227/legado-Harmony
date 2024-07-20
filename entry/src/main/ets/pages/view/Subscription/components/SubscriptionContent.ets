@@ -33,6 +33,9 @@ export default struct SubscriptionContent{
   refresh: () => void = () => {
 
   }
+  showAddDialog:() => void=() => {
+
+  }
   build() {
     Column(){
       Column({
@@ -100,6 +103,26 @@ export default struct SubscriptionContent{
             .onClick(() => {
 
             })
+        }
+        if (this.contentList.length === 0 && this.subscriptionTitle === '收藏'){
+          Flex({
+            justifyContent:FlexAlign.Start
+          }){
+            Column(){
+              Image($r('app.media.icon_rule_add'))
+                .fillColor($r('app.string.color_black_45'))
+                .width(24)
+                .height(24)
+                .margin(10)
+            }
+            .align(Alignment.Start)
+            .justifyContent(FlexAlign.Center)
+            .borderRadius(10)
+            .backgroundColor($r('app.string.color_black_6'))
+          }
+          .onClick(()=>{
+              this.showAddDialog()
+          })
         }
 
         GridRow({
@@ -385,14 +408,17 @@ export default struct SubscriptionContent{
       direction:FlexDirection.Column
     }){
       ForEach(list, (item: IconTitleVo, index) => {
-        dialogTitleFuction({
-          title: item.title,
-          icon: item.icon,
-          isBorder: list.length !== index + 1
-        })
-          .onClick(() => {
-            dialogRightChange(index)
+        if (!(this.subscriptionTitle === '收藏' && item.title === '删除')){
+          dialogTitleFuction({
+            title: item.title,
+            icon: item.icon,
+            isBorder: list.length !== index + 1
           })
+            .onClick(() => {
+              dialogRightChange(index)
+            })
+        }
+
       })
     }
 
