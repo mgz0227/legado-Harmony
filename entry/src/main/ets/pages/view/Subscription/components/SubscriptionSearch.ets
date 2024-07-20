@@ -14,6 +14,7 @@ import ImageConstants from '../../../../common/constants/ImageConstants';
 import { rssSources } from '../../../../database/entities/rssSources';
 import SubscriptionDao from '../../../../database/dao/SubscriptionDao';
 import { showMessage } from '../../../../componets/common/promptShow';
+import PreviewEffectImage from './PreviewEffectImage';
 
 @Entry
 @Component
@@ -137,10 +138,17 @@ struct SubscriptionSearch {
           Column({
             space: CommonConstants.SPACE_6
           }){
-            Image(item.sourceIcon.concat('app.media')?$r(item.sourceIcon):item.sourceIcon)
-              .width(ImageConstants.IMG_WIDTH_40)
-              .height(ImageConstants.IMG_HEIGHT_40)
-              .borderRadius(50)
+            // Image(item.sourceIcon.concat('app.media')?$r(item.sourceIcon):item.sourceIcon)
+            //   .width(ImageConstants.IMG_WIDTH_40)
+            //   .height(ImageConstants.IMG_HEIGHT_40)
+
+            PreviewEffectImage({
+              customizeTitle:item.customizeTitle,
+              sourceIcon:item.sourceIcon,
+              isShowTitle:false,
+              PreviewWidth:ImageConstants.IMG_WIDTH_40,
+              PreviewHeight:ImageConstants.IMG_HEIGHT_40
+            }).borderRadius(50)
 
             Text(`${item.sourceName}`).fontSize(10)
               .fontColor($r('app.string.color_black_88'))

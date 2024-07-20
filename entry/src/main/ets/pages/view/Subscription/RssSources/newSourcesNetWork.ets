@@ -210,10 +210,11 @@ export default struct newSourcesNetWork{
             }
             .margin({ top: 12 })
           }
-          if (!this.formModel.sourceIconIsUrl && this.formModel.customizeTitle.length > 0){
+          if (!this.formModel.sourceIconIsUrl && this.formModel.customizeTitle){
             PreviewEffectImage({
               customizeTitle:this.formModel.customizeTitle,
-              sourceIcon:this.formModel.sourceIcon
+              sourceIcon:this.formModel.sourceIcon,
+              sourceIconIsUrl:this.formModel.sourceIconIsUrl
             })
           }
         }

@@ -21,6 +21,7 @@ import DialogCancelButton from '../../../../componets/common/DialogCancelButton'
 import confirmDialogExample from '../../../../componets/common/confirmDialog'
 import RssSourceGroup from './RssSourceGroup'
 import PreviewEffectImage from './PreviewEffectImage'
+import { it } from '@ohos/hypium'
 
 @Component
 export default struct SubscriptionContent{
@@ -403,6 +404,7 @@ export default struct SubscriptionContent{
           customizeTitle:item.customizeTitle,
           PreviewWidth:ImageConstants.IMG_WIDTH_40,
           PreviewHeight:ImageConstants.IMG_HEIGHT_40,
+          sourceIconIsUrl:item.sourceIconIsUrl,
           isShowTitle:false
         })
           .borderRadius(8)
@@ -449,6 +451,7 @@ export default struct SubscriptionContent{
           customizeTitle:item.customizeTitle,
           PreviewWidth:ImageConstants.IMG_WIDTH_40,
           PreviewHeight:ImageConstants.IMG_HEIGHT_40,
+          sourceIconIsUrl:item.sourceIconIsUrl,
           isShowTitle:false
         })
           .borderRadius(8)
