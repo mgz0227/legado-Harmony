@@ -121,7 +121,6 @@ export default struct SubscriptionContent{
                       url: item.sourceUrl
                     }
                   })
-                  rssSourcesUtils.pushRssSourcesHistory(item)
                   this.refresh()
                 })
                 .gesture(
@@ -151,7 +150,6 @@ export default struct SubscriptionContent{
                     url: item.sourceUrl
                   }
                 })
-                rssSourcesUtils.pushRssSourcesHistory(item)
                 this.refresh()
               })
               .gesture(

@@ -41,7 +41,7 @@ export default struct PreviewEffectImage{
             .fontColor(Color.White)
         }
         if (this.sourceIcon){
-          Image(this.sourceIcon.concat('app.media.')?$r(this.sourceIcon):this.sourceIcon)
+          Image(this.sourceIcon.indexOf('app.media.')>-1?$r(this.sourceIcon):this.sourceIcon)
             .width(this.PreviewWidth)
             .height(this.PreviewHeight)
             .animation(({

@@ -51,5 +51,8 @@ export default struct noFind {
           })
       }
     }
+    .height('100%')
+    .alignItems(HorizontalAlign.Center)
+    .justifyContent(FlexAlign.Center)
   }
 }

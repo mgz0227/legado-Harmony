@@ -5,20 +5,12 @@ import { BookSource } from '../../../../database/entities/BookSource'
 import BookFindContent from './BookFindContent'
 import { JSON } from '@kit.ArkTS'
 import { ExploreRule } from '../../../../database/entities/rule'
-
-interface ExploreItemStyle {
-  layout_flexGrow: number;
-  layout_flexBasisPercent: number;
-}
-
-export interface ExploreItem {
-  title: string,
-  url: string,
-  style: ExploreItemStyle
-}
+import { ExploreItem } from '../../../../database/types/BookSourceType'
+import AllCategory, { GroupExploreList } from './AllCategory'
 
 @Component
 export default struct ContentRefresh {
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   currentIndex: number = 0
   @Prop bookSource: BookSource = {
     bookSourceUrl: '',
@@ -37,9 +29,11 @@ export default struct ContentRefresh {
   @Link hasExploreUrl: boolean
   @State pageSize: number = 4
   @State pageNum: number = 1
+  @State groupExploreList: GroupExploreList[] = []
   @State exploreList: ExploreItem[] = []
   @State showExploreList: ExploreItem[] = []
   @State exploreRule?: ExploreRule = {}
+  @State showSheet: boolean = false
 
   aboutToAppear() {
     try {
@@ -47,16 +41,56 @@ export default struct ContentRefresh {
       console.info('TagInfo: 书源地址：', this.bookSource.bookSourceUrl)
       console.info('TagInfo: 发现地址：', JSON.stringify(JSON.parse(this.bookSource.exploreUrl ?? '[]')))
       const exploreList = JSON.parse(this.bookSource.exploreUrl ?? '[]') as ExploreItem[]
-      this.exploreList = exploreList.filter(item =>!!item.url)
+      this.exploreList = exploreList
       this.pageNum = 1
       this.getShowExploreList()
+      this.getGroupExploreList()
     } catch (err) {
       console.info('TagInfo', JSON.stringify(err))
     }
   }
 
+  getGroupExploreList() {
+    const groupMap: Record<string, GroupExploreList> = {};
+    let currentTitle = ''
+    this.exploreList.forEach((item: ExploreItem) => {
+      if (!item.title.trim()) {
+        return
+      }
+      if (item.style?.layout_flexBasisPercent === 1 || !currentTitle) {
+        let keyTitle = item.title
+        if (item.style?.layout_flexBasisPercent !== 1) {
+          keyTitle = 'null'
+        }
+        groupMap[keyTitle] = {
+          title: keyTitle,
+          url: keyTitle === 'null' ? '' : item.url,
+          columnsTemplate: '1fr',
+          list: []
+        };
+        currentTitle = keyTitle
+      }
+
+      let columnsTemplate = '1fr'
+      const flexBasis = item.style?.layout_flexBasisPercent ?? 0
+      if (flexBasis > 0.33 && flexBasis <= 0.5) {
+        columnsTemplate += ' 1fr'
+      } else if (flexBasis >= 0.25 && flexBasis <= 0.33) {
+        columnsTemplate += ' 1fr 1fr'
+      } else if (flexBasis < 0.25) {
+        columnsTemplate += ' 1fr 1fr 1fr'
+      }
+      if (groupMap[currentTitle].columnsTemplate !== columnsTemplate) {
+        groupMap[currentTitle].columnsTemplate = columnsTemplate
+      }
+      groupMap[currentTitle].list.push(item);
+    })
+    this.groupExploreList = Object.values(groupMap);
+    console.info('TagInfo:', JSON.stringify(this.groupExploreList))
+  }
+
   getShowExploreList() {
-    this.showExploreList = this.exploreList.slice(0, this.pageNum * this.pageSize)
+    this.showExploreList = this.exploreList.filter(item =>!!item.url).slice(0, this.pageNum * this.pageSize)
   }
 
   build() {
@@ -79,7 +113,10 @@ export default struct ContentRefresh {
                 bookSourceUrl: this.bookSource.bookSourceUrl,
                 exploreItem: item,
                 exploreRule: this.exploreRule,
-                counter: this.counter
+                counter: this.counter,
+                handleClick: () => {
+                  this.showSheet = true
+                }
               })
             })
           }
@@ -108,6 +145,14 @@ export default struct ContentRefresh {
           this.isRefreshing = false
         }, 1000)
       })
+      .bindSheet(this.showSheet, this.bottomSheet(), {
+        detents: [SheetSize.FIT_CONTENT, SheetSize.LARGE, 200],
+        dragBar: true,
+        showClose: false,
+        onDisappear: () => {
+          this.showSheet = false
+        }
+      })
     }
   }
 
@@ -116,5 +161,17 @@ export default struct ContentRefresh {
     RefreshComponent({
       RefreshingTitle: this.RefreshingTitle,
     })
+  }
+
+  @Builder
+  bottomSheet() {
+    Column() {
+      AllCategory({
+        showSheet: this.showSheet,
+        bookSourceUrl: this.bookSource.bookSourceUrl,
+        exploreRule: this.exploreRule,
+        list: this.groupExploreList
+      })
+    }
   }
 }

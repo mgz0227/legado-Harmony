@@ -9,12 +9,12 @@ import CommonConstants from '../../../../common/constants/CommonConstants';
 import FontConstants from '../../../../common/constants/FontConstants';
 import { router } from '@kit.ArkUI';
 import PaddingConstants from '../../../../common/constants/PaddingConstants';
+import { IconTitleVo } from '../../../../componetsmodel/IconTitleVo';
 import ImageConstants from '../../../../common/constants/ImageConstants';
 import { rssSources } from '../../../../database/entities/rssSources';
 import SubscriptionDao from '../../../../database/dao/SubscriptionDao';
 import { showMessage } from '../../../../componets/common/promptShow';
-import PreviewEffectImage from './PreviewEffectImage';
-import rssSourcesUtils from '../../../../common/utils/rssSourcesUtils';
+
 @Entry
 @Component
 struct SubscriptionSearch {
@@ -28,9 +28,18 @@ struct SubscriptionSearch {
   }
 
   onPageHide(): void {
-    // this.searchValue = ''
-    // this.searchList = []
+    this.searchValue = ''
+    this.searchList = []
   }
+  // aboutToAppear(): void {
+  //   this.changeSearchValue()
+  // }
+
+  // aboutToDisappear(): void {
+  //   this.searchValue = ''
+  //   this.searchList = []
+  // }
+
 
   changeSearchValue(){
     showMessage('模糊匹配中')
@@ -120,20 +129,10 @@ struct SubscriptionSearch {
           Column({
             space: CommonConstants.SPACE_6
           }){
-
-            // Image(item.sourceIcon.concat('app.media')?$r(item.sourceIcon):item.sourceIcon)
-            //   .width(ImageConstants.IMG_WIDTH_40)
-            //   .height(ImageConstants.IMG_HEIGHT_40)
-
-            PreviewEffectImage({
-              customizeTitle:item.customizeTitle,
-              sourceIcon:item.sourceIcon,
-              sourceIconIsUrl:item.sourceIconIsUrl,
-              isShowTitle:false,
-              PreviewWidth:ImageConstants.IMG_WIDTH_40,
-              PreviewHeight:ImageConstants.IMG_HEIGHT_40
-            }).borderRadius(50)
-
+            Image(item.sourceIcon.concat('app.media')?$r(item.sourceIcon):item.sourceIcon)
+              .width(ImageConstants.IMG_WIDTH_40)
+              .height(ImageConstants.IMG_HEIGHT_40)
+              .borderRadius(50)
 
             Text(`${item.sourceName}`).fontSize(10)
               .fontColor($r('app.string.color_black_88'))
