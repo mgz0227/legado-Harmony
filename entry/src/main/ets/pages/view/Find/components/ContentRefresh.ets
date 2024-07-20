@@ -11,6 +11,7 @@ import AllCategory, { GroupExploreList } from './AllCategory'
 @Component
 export default struct ContentRefresh {
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @Link @Watch('onRefresh')refreshCount: number
   currentIndex: number = 0
   @Prop bookSource: BookSource = {
     bookSourceUrl: '',
@@ -21,7 +22,9 @@ export default struct ContentRefresh {
     enabledExplore: false,
     lastUpdateTime: 0,
     respondTime: 0,
-    weight: 0
+    weight: 0,
+    isTop: false,
+    showRecentIcon: false
   }
   @State isRefreshing: boolean = false
   @State RefreshingTitle: string = '松开刷新'
@@ -36,6 +39,14 @@ export default struct ContentRefresh {
   @State showSheet: boolean = false
 
   aboutToAppear() {
+    this.getList()
+  }
+
+  onRefresh() {
+    setTimeout(this.getList, 500)
+  }
+
+  getList () {
     try {
       this.exploreRule = this.bookSource.ruleExplore
       console.info('TagInfo: 书源地址：', this.bookSource.bookSourceUrl)

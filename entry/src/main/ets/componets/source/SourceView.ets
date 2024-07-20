@@ -9,6 +9,8 @@ import { showMessage } from '../common/promptShow'
 import Score from '../common/Score'
 import SideBar from '../common/SideBar'
 import Tag from '../common/Tag'
+import { router } from '@kit.ArkUI'
+import noFind from '../common/noFind'
 
 @Component
 export default struct SourceView {
@@ -17,7 +19,7 @@ export default struct SourceView {
   titleArray: Array<string> = ['小说', '漫画', '有声书']
   index: number = 0
   type: number = 0
-  @Link searchValue: string
+  @Link @Watch('getList') searchValue: string
   @State activeNameMap: Record<string, boolean> = {}
   @State fullActive: boolean = false
   @State groupList: GroupPartList[] = []
@@ -27,6 +29,10 @@ export default struct SourceView {
   @Link isBatch: boolean
   @State showRightDialogMap: Record<string, boolean> = {}
   @State currentIndex: number = 0
+  @State topToggle: boolean = false
+  @Link @Watch('getList') refreshCount: number
+  closeDialog: () => void = () => {
+  }
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
 
@@ -185,22 +191,47 @@ export default struct SourceView {
         Row() {
           Row() {
             Column() {
-              Text('置顶')
-                .fontSize(16)
-            }
-            .layoutWeight(1)
-            .onClick(() => {
-              showMessage('置顶')
-            })
-
-            Row().width(12)
-            Column() {
-              Text('隐藏')
+              Text(this.topToggle ? '取消置顶' : '置顶')
                 .fontSize(16)
             }
             .layoutWeight(1)
             .onClick(async () => {
-              showMessage('隐藏')
+              if (!Object.values(this.activeNameMap).filter(o => o).length) {
+                showMessage('请至少选择一个')
+                return
+              }
+              this.sourceList.forEach((item, i) => {
+                if (this.activeNameMap[item.bookSourceUrl]) {
+                  item.isTop = !this.topToggle
+                  this.sourceList[i] = item
+                }
+              })
+              await BookSourceDao.batchUpdateFlow(this.sourceList)
+              this.activeNameMap = {}
+              this.refreshCount += 1
+              this.topToggle = !this.topToggle
+            })
+
+            Row().width(12)
+            Column() {
+              Text(this.index === 0 ? '隐藏' : '显示')
+                .fontSize(16)
+            }
+            .layoutWeight(1)
+            .onClick(async () => {
+              if (!Object.values(this.activeNameMap).filter(o => o).length) {
+                showMessage('请至少选择一个')
+                return
+              }
+              this.sourceList.forEach((item, i) => {
+                if (this.activeNameMap[item.bookSourceUrl]) {
+                  item.enabled = this.index !== 0
+                  this.sourceList[i] = item
+                }
+              })
+              await BookSourceDao.batchUpdateFlow(this.sourceList)
+              this.activeNameMap = {}
+              this.refreshCount += 1
             })
           }
           .padding({
@@ -219,6 +250,30 @@ export default struct SourceView {
           duration: 500
         })
         .padding({ bottom: this.bottomRectHeight })
+
+        Column() {
+          if (this.loading) {
+            LoadingProgress()
+              .color(0xff6600)
+              .width('50%')
+            Text('加载中...')
+          } else if (this.errorText) {
+            noFind()
+          } else if (!this.sourceList.length) {
+            noFind({
+              hintIndex: 0
+            })
+          }
+        }
+        .justifyContent(FlexAlign.Center)
+        .zIndex(this.loading || (this.errorText && !this.sourceList.length) ? 9 : -1)
+        .opacity(this.loading || (this.errorText && !this.sourceList.length) ? 1 : 0)
+        .width('100%')
+        .height('100%')
+        .backgroundColor('#f5f5f5')
+        .animation({
+          duration: 300
+        })
       }
       .alignContent(Alignment.Top)
     }
@@ -295,14 +350,37 @@ export default struct SourceView {
             .width(24).fillColor('#73000000')
             .bindMenu(
               this.showRightDialogMap[item.bookSourceUrl],
-              this.rightDialogBuilder(this.Item_Right_Dialog_Data, async (index: number) => {
+              this.rightDialogBuilder(this.Item_Right_Dialog_Data.map((itemData, index) => {
+                if (index === 1) {
+                  itemData.title = item.isTop ? '取消置顶' : '置顶'
+                }
+                if (index === 3) {
+                  itemData.title = item.enabled ? '隐藏' : '显示'
+                }
+                return itemData
+              }), async (index: number) => {
                 switch (index) {
                   case 0:
+                    this.closeDialog()
+                    router.pushUrl({
+                      url: 'pages/view/Find/BookSource/AddSourcePage', params: {
+                        id: item.bookSourceUrl
+                      }
+                    })
+                    break;
                   case 1:
+                    item.isTop = !item.isTop
+                    this.showRightDialogMap[item.bookSourceUrl] = false
+                    await BookSourceDao.updateFlow(item)
+                    this.refreshCount += 1
                   case 2:
-                  case 3:
-                  case 4:
                     showMessage(this.Item_Right_Dialog_Data[index].title)
+                    break;
+                  case 3:
+                    item.enabled = !item.enabled
+                    this.showRightDialogMap[item.bookSourceUrl] = false
+                    await BookSourceDao.updateFlow(item)
+                    this.refreshCount += 1
                     break;
                 }
               }),
@@ -364,10 +442,9 @@ export default struct SourceView {
 
   Item_Right_Dialog_Data: IconTitleVo[] = [
     new IconTitleVo($r('app.media.edit'), '编辑'),
-    new IconTitleVo($r('app.media.icon_no_source_find'), '置顶'),
+    new IconTitleVo($r('app.media.top'), '置顶'),
     new IconTitleVo($r('app.media.search'), '搜索'),
-    new IconTitleVo($r('app.media.ic_logout'), '登录'),
-    new IconTitleVo($r('app.media.icon_rule_help'), '取消收藏'),
+    new IconTitleVo($r('app.media.ic_logout'), '显示'),
   ]
 
   @Builder

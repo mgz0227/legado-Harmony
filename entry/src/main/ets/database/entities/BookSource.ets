@@ -2,88 +2,6 @@ import { GSON } from '../../common/utils/utils'
 import { BookSourcePart } from './BookSourcePart'
 import { BookInfoRule, ContentRule, ExploreRule, ReviewRule, SearchRule, TocRule } from './rule'
 
-// class BaseBookSource {
-//   // 地址，包括 http/https
-//   bookSourceUrl: string = ""
-//   // 名称
-//   bookSourceName: string = ""
-//   // 分组
-//   bookSourceGroup?: string
-//   // 类型，0 文本，1 音频, 2 图片, 3 文件（指的是类似知轩藏书只提供下载的网站）
-//   bookSourceType: number = 0
-//   bookSourceGrade?: number = 2
-//   bookSourceScore?: string
-//   // 详情页url正则
-//   bookUrlPattern?: string
-//   // 手动排序编号
-//   customOrder: number = 0
-//   // 是否启用
-//   enabled: boolean = true
-//   // 启用发现
-//   enabledExplore: boolean = true
-//   // js库
-//   jsLib?: String
-//   // 启用okhttp CookieJAr 自动保存每次请求的cookie
-//   enabledCookieJar?: boolean = true
-//   // 并发率
-//   concurrentRate?: string
-//   // 请求头
-//   header?: string
-//   // 登录地址
-//   loginUrl?: string
-//   // 登录UI
-//   loginUi?: string
-//   // 登录检测js
-//   loginCheckJs?: string
-//   // 封面解密js
-//   coverDecodeJs?: string
-//   // 注释
-//   bookSourceComment?: string
-//   // 自定义变量说明
-//   variableComment?: string
-//   // 最后更新时间，用于排序
-//   lastUpdateTime: number = 0
-//   // 响应时间，用于排序
-//   respondTime: number = 180000
-//   // 智能排序的权重
-//   weight: number = 0
-//   // 发现url
-//   exploreUrl?: string
-//   // 发现筛选规则
-//   exploreScreen?: string
-//   // 搜索url
-//   searchUrl?: string
-//
-//   constructor(bookSource: Partial<BaseBookSource>) {
-//     this.bookSourceUrl = bookSource.bookSourceUrl || "";
-//     this.bookSourceName = bookSource.bookSourceName || "";
-//     this.bookSourceGroup = bookSource.bookSourceGroup;
-//     this.bookSourceType = bookSource.bookSourceType ?? 0;
-//     this.bookSourceGrade = bookSource.bookSourceGrade;
-//     this.bookSourceScore = bookSource.bookSourceScore;
-//     this.bookUrlPattern = bookSource.bookUrlPattern;
-//     this.customOrder = bookSource.customOrder ?? 0;
-//     this.enabled = bookSource.enabled ?? true;
-//     this.enabledExplore = bookSource.enabledExplore ?? true;
-//     this.jsLib = bookSource.jsLib;
-//     this.enabledCookieJar = bookSource.enabledCookieJar ?? true;
-//     this.concurrentRate = bookSource.concurrentRate;
-//     this.header = bookSource.header;
-//     this.loginUrl = bookSource.loginUrl;
-//     this.loginUi = bookSource.loginUi;
-//     this.loginCheckJs = bookSource.loginCheckJs;
-//     this.coverDecodeJs = bookSource.coverDecodeJs;
-//     this.bookSourceComment = bookSource.bookSourceComment;
-//     this.variableComment = bookSource.variableComment;
-//     this.lastUpdateTime = bookSource.lastUpdateTime ?? 0;
-//     this.respondTime = bookSource.respondTime ?? 180000;
-//     this.weight = bookSource.weight ?? 0;
-//     this.exploreUrl = bookSource.exploreUrl;
-//     this.exploreScreen = bookSource.exploreScreen;
-//     this.searchUrl = bookSource.searchUrl;
-//   }
-// }
-
 @Observed
 export class BookSource {
   // 地址，包括 http/https
@@ -148,35 +66,10 @@ export class BookSource {
   ruleContent?: ContentRule
   // 段评规则
   ruleReview?: ReviewRule
-
-  // constructor(bookSource: Partial<BookSource>) {
-  //   this.bookSourceUrl = bookSource.bookSourceUrl || "";
-  //   this.bookSourceName = bookSource.bookSourceName || "";
-  //   this.bookSourceGroup = bookSource.bookSourceGroup;
-  //   this.bookSourceType = bookSource.bookSourceType ?? 0;
-  //   this.bookSourceGrade = bookSource.bookSourceGrade;
-  //   this.bookSourceScore = bookSource.bookSourceScore;
-  //   this.bookUrlPattern = bookSource.bookUrlPattern;
-  //   this.customOrder = bookSource.customOrder ?? 0;
-  //   this.enabled = bookSource.enabled ?? true;
-  //   this.enabledExplore = bookSource.enabledExplore ?? true;
-  //   this.jsLib = bookSource.jsLib;
-  //   this.enabledCookieJar = bookSource.enabledCookieJar ?? true;
-  //   this.concurrentRate = bookSource.concurrentRate;
-  //   this.header = bookSource.header;
-  //   this.loginUrl = bookSource.loginUrl;
-  //   this.loginUi = bookSource.loginUi;
-  //   this.loginCheckJs = bookSource.loginCheckJs;
-  //   this.coverDecodeJs = bookSource.coverDecodeJs;
-  //   this.bookSourceComment = bookSource.bookSourceComment;
-  //   this.variableComment = bookSource.variableComment;
-  //   this.lastUpdateTime = bookSource.lastUpdateTime ?? 0;
-  //   this.respondTime = bookSource.respondTime ?? 180000;
-  //   this.weight = bookSource.weight ?? 0;
-  //   this.exploreUrl = bookSource.exploreUrl;
-  //   this.exploreScreen = bookSource.exploreScreen;
-  //   this.searchUrl = bookSource.searchUrl;
-  // }
+  // 是否置顶
+  isTop: boolean = false
+  //是否新增或则更新点击过
+  showRecentIcon: boolean = true
 }
 
 export interface GroupList {
@@ -251,6 +144,8 @@ export const ToBookSource = (bookSourceDb: BookSourceDb) => {
     exploreUrl: bookSourceDb.exploreUrl,
     exploreScreen: bookSourceDb.exploreScreen,
     searchUrl: bookSourceDb.searchUrl,
+    isTop: bookSourceDb.isTop,
+    showRecentIcon: bookSourceDb.showRecentIcon,
     ruleExplore,
     ruleSearch,
     ruleBookInfo,
@@ -295,6 +190,8 @@ export const ToBookSourceDb = (bookSource: BookSource) => {
     exploreUrl: bookSource.exploreUrl,
     exploreScreen: bookSource.exploreScreen,
     searchUrl: bookSource.searchUrl,
+    isTop: bookSource.isTop,
+    showRecentIcon: bookSource.showRecentIcon,
     ruleExplore,
     ruleSearch,
     ruleBookInfo,
@@ -303,4 +200,25 @@ export const ToBookSourceDb = (bookSource: BookSource) => {
     ruleReview
   }
   return bookSourceDb
+}
+
+export const ToBookSourcePart = (bookSource: BookSource) => {
+  const bookSourcePart: BookSourcePart = {
+    bookSourceUrl: bookSource.bookSourceUrl,
+    bookSourceName: bookSource.bookSourceName,
+    bookSourceGroup: bookSource.bookSourceGroup,
+    bookSourceGrade: bookSource.bookSourceGrade,
+    bookSourceScore: bookSource.bookSourceScore,
+    customOrder: bookSource.customOrder,
+    enabled: bookSource.enabled,
+    enabledExplore: bookSource.enabledExplore,
+    lastUpdateTime: bookSource.lastUpdateTime,
+    respondTime: bookSource.respondTime,
+    weight: bookSource.weight,
+    isTop: bookSource.isTop,
+    showRecentIcon: bookSource.showRecentIcon,
+    hasLoginUrl: false,
+    hasExploreUrl: false
+  }
+  return bookSourcePart
 }
