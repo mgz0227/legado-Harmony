@@ -67,10 +67,16 @@ struct CateGoryListPage {
     try {
       const res: AxiosResponse = await axios.post('http://legado.wisdoms.xin/analysisRules', exploreQuery)
       console.info('TagInfo, 解析内容：', JSON.stringify(res.data))
+      const bookList = (res.data as ExploreRule[]).map(item => {
+        if (item.coverUrl && !isNetworkUrl(item.coverUrl)) {
+          item.coverUrl = this.bookSourceUrl + item.coverUrl
+        }
+        return item
+      })
       if (this.pageNum === 1) {
-        this.bookList = res.data
+        this.bookList = bookList
       } else {
-        this.bookList = this.bookList.concat(res.data)
+        this.bookList = this.bookList.concat(bookList)
       }
       this.loading = false
     } catch (err) {
@@ -90,18 +96,18 @@ struct CateGoryListPage {
           Scroll() {
             Column() {
               if (this.startLoading) {
-                Column() {
+                Row() {
                   LoadingProgress()
                     .color(0xff6600)
-                    .width('50%')
-                  Text('加载中...')
+                    .width(35)
+                  Text('内容加载中...')
                 }
+                .height('100%')
+                .alignItems(VerticalAlign.Center)
                 .justifyContent(FlexAlign.Center)
               } else if (this.bookList.length === 0) {
                 noFind({
                   hintIndex: 0
-                }).padding({
-                  top: 75
                 })
               } else {
                 ForEach(this.bookList, (item: ExploreRule, index) => {

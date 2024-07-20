@@ -149,7 +149,8 @@ export default struct BodyContent {
           this.currentSourceIndex = index
         })
       }
-    }.layoutWeight(1)
+    }
+    .layoutWeight(1)
   }
 
   @Builder

@@ -23,6 +23,8 @@ export default struct BookFindContent {
   @State errorExplore: boolean = false
   @State bookList: ExploreRule[] = []
   @Prop exploreRule: ExploreRule = {}
+  handleClick: () => void = () => {
+  }
 
   aboutToAppear() {
     this.getList()
@@ -49,7 +51,12 @@ export default struct BookFindContent {
     }
     axios.post('http://legado.wisdoms.xin/analysisRules', exploreQuery).then((res: AxiosResponse) => {
       console.info('TagInfo, 解析内容：', JSON.stringify(res.data))
-      this.bookList = res.data
+      this.bookList = (res.data as ExploreRule[]).map(item => {
+        if (item.coverUrl && !isNetworkUrl(item.coverUrl)) {
+          item.coverUrl = this.bookSourceUrl + item.coverUrl
+        }
+        return item
+      })
       this.loading = false
       this.errorExplore = false
     }).catch((err: AxiosError) => {
@@ -65,14 +72,15 @@ export default struct BookFindContent {
     }) {
       Column() {
         mayAlsoLike({
-          mayAlsoLike: this.exploreItem.title
+          mayAlsoLike: this.exploreItem.title,
+          handleClick: this.handleClick
         })
         if (this.loading) {
           Column() {
             LoadingProgress()
               .color(0xff6600)
               .width('50%')
-            Text('加载中...')
+            Text('内容加载中...')
           }
           .justifyContent(FlexAlign.Center)
           .layoutWeight(1)
@@ -81,14 +89,10 @@ export default struct BookFindContent {
             onclick: () => {
               this.getList()
             }
-          }).padding({
-            top: 75
           })
-        } else if (this.bookList.length===0) {
+        } else if (this.bookList.length === 0) {
           noFind({
             hintIndex: 0
-          }).padding({
-            top: 75
           })
         } else {
           Column() {
@@ -107,14 +111,14 @@ export default struct BookFindContent {
               .backgroundColor('#0F000000')
               .borderRadius(4)
               .onClick(() => {
-                  router.pushUrl({
-                    url: 'pages/view/Find/CategoryList/Index',
-                    params: {
-                      bookSourceUrl: this.bookSourceUrl,
-                      exploreItem: this.exploreItem,
-                      exploreRule: this.exploreRule
-                    }
-                  })
+                router.pushUrl({
+                  url: 'pages/view/Find/CategoryList/Index',
+                  params: {
+                    bookSourceUrl: this.bookSourceUrl,
+                    exploreItem: this.exploreItem,
+                    exploreRule: this.exploreRule
+                  }
+                })
               })
             }
           }
