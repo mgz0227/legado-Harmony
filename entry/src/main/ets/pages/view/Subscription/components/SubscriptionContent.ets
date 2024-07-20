@@ -88,10 +88,14 @@ export default struct SubscriptionContent{
                     showMessage('置顶')
                     break
                   case 2:
-                    showMessage('移动至')
+                    this.isShowGroup = true
                     break
                   case 3:
-                    showMessage('删除')
+                    SubscriptionDao.deleteRssSourcesList(this.contentList)
+                    setTimeout(()=>{
+                      this.refresh()
+                    },200)
+                    showMessage('删除成功')
                     break
                 }
               }),
@@ -290,7 +294,7 @@ export default struct SubscriptionContent{
                   this.moveGroup = ''
                   showMessage('移动成功')
                   this.refresh()
-                },500)
+                },200)
               } else {
                 showMessage('移动失败')
               }

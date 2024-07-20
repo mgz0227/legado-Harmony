@@ -6,7 +6,6 @@
  */
 import CommonConstants from '../../../../common/constants/CommonConstants'
 import FontConstants from '../../../../common/constants/FontConstants'
-import { showMessage } from '../../../../componets/common/promptShow'
 
 @Component
 export default struct PreviewEffectImage{

@@ -1,6 +1,14 @@
 import { webview } from '@kit.ArkWeb';
 import { router } from '@kit.ArkUI';
 import { showMessage } from '../../../componets/common/promptShow';
+import { loginComponentManager } from '@kit.AccountKit';
+import ImportCommon from '../../../componets/import/ImportCommon';
+import { BookSource } from '../../../database/entities/BookSource';
+import { getPasteDataSync, isNetworkUrl, sleep } from '../../../common/utils/utils';
+import axios, { AxiosResponse } from '@ohos/axios';
+import SubscriptionImport from '../../../componets/import/SubscriptionImport';
+import { rssListRule } from '../../../database/entities/rule/rssListRule';
+import { rssSources } from '../../../database/entities/rssSources';
 
 interface RouteParams {
   url: string,
@@ -13,6 +21,8 @@ struct RssWebView {
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   webviewController: webview.WebviewController = new webview.WebviewController();
+  regex:string = `/booksource/importonline\\?src=(http[s]?://[^/]+/[^\"']+)`;
+  regexRss:string = `/rsssource/importonline\\?src=(http[s]?://[^/]+/[^\"']+)`;
   aboutToAppear(): void {
     const params = router.getParams() as RouteParams;
     this.sourcesUrl = params.url
@@ -33,12 +43,97 @@ struct RssWebView {
       .width("100%")
       Column(){
         Web({ src: this.sourcesUrl, controller: this.webviewController })
-          .onPageBegin(()=>{
-            showMessage(this.webviewController.getUserAgent())
+          .onLoadIntercept((event) => {
+            let url = event.data.getRequestUrl()
+            const match = url.match(this.regex);
+            if (match  && match[1]) {
+              this.pasteAnalyzeBookSource(match[1])
+              this.webviewController.loadUrl(this.sourcesUrl)
+            }
+            const matchRss = url.match(this.regexRss);
+            if (matchRss  && matchRss[1]) {
+              this.pasteAnalyzeRssSource(matchRss[1])
+              this.webviewController.loadUrl(this.sourcesUrl)
+            }
+           return false
           })
       }
+      Flex()
+        .bindSheet($$this.isShowImportBookSource, this.dialogImportBookFunction(), {
+          detents: [SheetSize.FIT_CONTENT, SheetSize.LARGE, 200],
+          dragBar: true,
+          showClose: false,
+          onDisappear: () => {
+            this.isShowImportBookSource = false
+          }
+        })
 
+      Flex()
+        .bindSheet($$this.isShowImportRssSources, this.dialogImportRssFunction(), {
+          detents: [SheetSize.FIT_CONTENT, SheetSize.LARGE, 200],
+          dragBar: true,
+          showClose: false,
+          onDisappear: () => {
+            this.isShowImportRssSources = false
+          }
+        })
     }
-    .padding({top:this.topRectHeight, bottom:this.bottomRectHeight + 20})
+    .padding({ top: this.topRectHeight, bottom: this.bottomRectHeight + 20 })
+  }
+  @State isShowImportBookSource: boolean = false
+  @State sourceList: BookSource[] = []
+  @Builder
+  dialogImportBookFunction() {
+    Flex() {
+      ImportCommon({ sourceList: this.sourceList, show: this.isShowImportBookSource })
+    }
+  }
+  @State subscriptionList:rssSources[] = []
+  @State isShowImportRssSources:boolean = false
+  @Builder dialogImportRssFunction() {
+    Flex() {
+      SubscriptionImport({ subscriptionList:this.subscriptionList,show: this.isShowImportRssSources})
+    }
+  }
+  // 发现
+  async pasteAnalyzeBookSource(url:string) {
+    try {
+      if (!url) {
+        showMessage('未获取到相关Url，请求默认数据')
+        url = 'https://node.wisdoms.xin/static/file/20240704/sy.json'
+        await sleep()
+      }
+      if (!isNetworkUrl(url ?? '')) {
+        showMessage('链接不正确')
+        return
+      }
+      const res: AxiosResponse = await axios
+        .get(url ?? 'https://node.wisdoms.xin/static/file/20240704/sy.json');
+      this.sourceList = res.data;
+      this.isShowImportBookSource = true;
+    } catch (err) {
+      console.error('错误 ' + err);
+    }
+  }
+  // 订阅
+  async pasteAnalyzeRssSource(url:string) {
+    try {
+      if (!url) {
+        showMessage('未获取到相关Url，请求默认数据')
+        url = 'http://yuedu.miaogongzi.net/shuyuan/miaogongziDY.json'
+        await sleep()
+      }
+      if (!isNetworkUrl(url ?? '')) {
+        showMessage('链接不正确')
+        return
+      }
+      const res: AxiosResponse = await axios
+        .get(url ?? 'http://yuedu.miaogongzi.net/shuyuan/miaogongziDY.json');
+      console.log('res', JSON.stringify(res))
+      this.subscriptionList = res.data;
+      this.isShowImportRssSources = true;
+    } catch (err) {
+      console.error('错误 ' + err);
+    }
   }
 }
