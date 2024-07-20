@@ -8,6 +8,7 @@ import CommonConstants from '../../../common/constants/CommonConstants'
 @Component
 export default struct mayAlsoLike {
   @Prop mayAlsoLike: string = '猜你喜欢'
+  handleClick: () => void = () => {}
 
   build() {
     Row() {
@@ -36,6 +37,9 @@ export default struct mayAlsoLike {
       .height(28)
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
+      .onClick(() => {
+        this.handleClick()
+      })
     }
     .width('100%')
     .height(28)
