@@ -8,23 +8,10 @@ import axios, { AxiosResponse, AxiosError } from '@ohos/axios'
 import { isNetworkUrl } from '../../../../common/utils/utils'
 import noFind from '../../../../componets/common/noFind'
 import { ExploreRule } from '../../../../database/entities/rule'
+import { ExploreItem, ExploreQuery } from '../../../../database/types/BookSourceType'
 import mayAlsoLike from '../mayAlsoLike'
 import { CardItem } from './CardItem'
-import { ExploreItem } from './ContentRefresh'
-
-interface ExploreQuery {
-  url: string,
-  pageSize: number,
-  bookList?: string
-  name?: string
-  author?: string
-  intro?: string
-  kind?: string
-  lastChapter?: string
-  bookUrl?: string
-  coverUrl?: string
-  wordCount?: string
-}
+import { router } from '@kit.ArkUI'
 
 @Component
 export default struct BookFindContent {
@@ -119,6 +106,16 @@ export default struct BookFindContent {
               .margin({ top: 20 })
               .backgroundColor('#0F000000')
               .borderRadius(4)
+              .onClick(() => {
+                  router.pushUrl({
+                    url: 'pages/view/Find/CategoryList/Index',
+                    params: {
+                      bookSourceUrl: this.bookSourceUrl,
+                      exploreItem: this.exploreItem,
+                      exploreRule: this.exploreRule
+                    }
+                  })
+              })
             }
           }
           .height('100%')

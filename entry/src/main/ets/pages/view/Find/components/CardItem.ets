@@ -1,4 +1,5 @@
 import { ExploreRule } from '../../../../database/entities/rule';
+import { router } from '@kit.ArkUI';
 
 @Component
 export  struct CardItem {
@@ -77,5 +78,16 @@ export  struct CardItem {
     }
     .width('100%')
     .padding({ top: 20 })
+    .onClick(() => {
+      router.pushUrl({
+        url: 'pages/view/BookDetailPage',
+        params: {
+          title: this.item.name,
+          bookImage: this.item.coverUrl,
+          author: this.item.author,
+          describe: this.item.intro
+        }
+      })
+    })
   }
 }

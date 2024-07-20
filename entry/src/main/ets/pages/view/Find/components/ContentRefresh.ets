@@ -5,17 +5,8 @@ import { BookSource } from '../../../../database/entities/BookSource'
 import BookFindContent from './BookFindContent'
 import { JSON } from '@kit.ArkTS'
 import { ExploreRule } from '../../../../database/entities/rule'
+import { ExploreItem } from '../../../../database/types/BookSourceType'
 
-interface ExploreItemStyle {
-  layout_flexGrow: number;
-  layout_flexBasisPercent: number;
-}
-
-export interface ExploreItem {
-  title: string,
-  url: string,
-  style: ExploreItemStyle
-}
 
 @Component
 export default struct ContentRefresh {

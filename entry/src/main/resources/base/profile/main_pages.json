@@ -24,6 +24,7 @@
     "pages/view/Find/BookSource/Index",
     "pages/view/Find/BookSource/AddSourcePage",
     "pages/view/Subscription/components/SubscriptionSearch",
-    "pages/view/Subscription/rssWebView"
+    "pages/view/Subscription/rssWebView",
+    "pages/view/Find/CategoryList/Index"
   ]
 }
