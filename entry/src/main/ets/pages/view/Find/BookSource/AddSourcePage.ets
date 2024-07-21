@@ -8,7 +8,7 @@ import FormItem from '../../../../componets/Form/FormItem';
 import SourceDebug from './components/SourceDebug';
 import { JSON } from '@kit.ArkTS';
 import BookSourceDao from '../../../../database/dao/BookSourceDao';
-import { BookSource, BOOK_SOURCE_TYPE, GRADE_TYPE } from '../../../../database/entities/BookSource';
+import { BookSource, BOOK_SOURCE_TYPE, GRADE_TYPE, SOURCE_GROUP_MAP } from '../../../../database/entities/BookSource';
 
 interface RouteParams {
   id: string,
@@ -265,22 +265,15 @@ struct AddSourcePage {
               .fontColor(this.formModel.bookSourceType !== undefined ? '#E0000000' : '#73000000')
               .onSelect((index: number, text?: string | undefined) => {
                 this.formModel.bookSourceType = [0, 2, 1][index]
+                this.formModel.bookSourceGroup = SOURCE_GROUP_MAP[this.formModel.bookSourceType ?? 0][0]
               })
               .backgroundColor('#f5f5f5')
               .layoutWeight(1)
             Row().width(16)
-            Select([
-              { value: '男频' },
-              { value: '女频' },
-              { value: '综合' },
-              { value: '出版' },
-              { value: '下载' },
-              { value: '正版' },
-              { value: '轻文' },
-              { value: '网络' },
-              { value: '其他' }
-            ])
-              .value(this.formModel.bookSourceGroup ?? '男频')
+            Select(
+              SOURCE_GROUP_MAP[this.formModel.bookSourceType ?? 0].map(item => ({ value: item } as SelectOption))
+            )
+              .value(this.formModel.bookSourceGroup ?? SOURCE_GROUP_MAP[this.formModel.bookSourceType ?? 0][0])
               .borderRadius(4)
               .fontColor(this.formModel.bookSourceGroup ? '#E0000000' : '#73000000')
               .onSelect((index: number, text: string) => {
