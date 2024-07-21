@@ -91,8 +91,8 @@ export const GRADE_TYPE: Record<number, string> = {
 
 export const BOOK_SOURCE_TYPE: Record<number, string> = {
   0 : '小说',
-  1 : '漫画',
-  2 : '有声'
+  2 : '漫画',
+  1 : '有声'
 }
 
 export interface BookSourceDb extends Omit<BookSource, 'ruleExplore' | 'ruleSearch' | 'ruleBookInfo' | 'ruleToc' | 'ruleContent' | 'ruleReview'> {
