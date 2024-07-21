@@ -95,6 +95,12 @@ export const BOOK_SOURCE_TYPE: Record<number, string> = {
   1 : '有声'
 }
 
+export const SOURCE_GROUP_MAP: Record<number, string[]> = {
+  0: ['男频', '女频', '综合', '出版', '下载', '正版', '轻文', '网络', '其他'],
+  1: ['听书', '音乐', '正版', '其他'],
+  2: ['国漫', '日漫', '韩漫', '美漫', '综合', '网络', '正版', '其他']
+}
+
 export interface BookSourceDb extends Omit<BookSource, 'ruleExplore' | 'ruleSearch' | 'ruleBookInfo' | 'ruleToc' | 'ruleContent' | 'ruleReview'> {
   // 发现规则
   ruleExplore?: string
