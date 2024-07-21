@@ -94,7 +94,7 @@ export const BOOK_SOURCE_TYPE: Record<number, string> = {
   2 : '漫画',
   1 : '有声'
 }
-
+export const SOURCE_SCORE_ARR = ['5.0分', '4.0分',  '3.0分', '2.0分', '1.0分']
 export const SOURCE_GROUP_MAP: Record<number, string[]> = {
   0: ['男频', '女频', '综合', '出版', '下载', '正版', '轻文', '网络', '其他'],
   1: ['听书', '音乐', '正版', '其他'],
