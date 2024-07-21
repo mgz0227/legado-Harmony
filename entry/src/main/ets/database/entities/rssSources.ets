@@ -112,7 +112,7 @@ export const SUBSCRIPTION_GROUP_TYPE: Record<number, string> ={
   0: '小说',
   1: '漫画',
   2: '影视',
-  3: '咨询',
+  3: '资讯',
   4: '收藏夹'
 }
 

@@ -1,13 +1,11 @@
 import { webview } from '@kit.ArkWeb';
 import { router } from '@kit.ArkUI';
 import { showMessage } from '../../../componets/common/promptShow';
-import { loginComponentManager } from '@kit.AccountKit';
 import ImportCommon from '../../../componets/import/ImportCommon';
 import { BookSource } from '../../../database/entities/BookSource';
-import { getPasteDataSync, isNetworkUrl, sleep } from '../../../common/utils/utils';
+import { isNetworkUrl, sleep } from '../../../common/utils/utils';
 import axios, { AxiosResponse } from '@ohos/axios';
 import SubscriptionImport from '../../../componets/import/SubscriptionImport';
-import { rssListRule } from '../../../database/entities/rule/rssListRule';
 import { rssSources } from '../../../database/entities/rssSources';
 
 interface RouteParams {
@@ -23,6 +21,7 @@ struct RssWebView {
   webviewController: webview.WebviewController = new webview.WebviewController();
   regex:string = `/booksource/importonline\\?src=(http[s]?://[^/]+/[^\"']+)`;
   regexRss:string = `/rsssource/importonline\\?src=(http[s]?://[^/]+/[^\"']+)`;
+  legadoRegex:string = `/import/auto\\?src=(http[s]?://[^/]+/[^\"']+)`
   aboutToAppear(): void {
     const params = router.getParams() as RouteParams;
     this.sourcesUrl = params.url
@@ -44,15 +43,23 @@ struct RssWebView {
       Column(){
         Web({ src: this.sourcesUrl, controller: this.webviewController })
           .onLoadIntercept((event) => {
-            let url = event.data.getRequestUrl()
+            let url = decodeURIComponent(event.data.getRequestUrl());
             const match = url.match(this.regex);
             if (match  && match[1]) {
-              this.pasteAnalyzeBookSource(match[1])
+              let urlBook = decodeURIComponent(match[1]);
+              this.pasteAnalyzeBookSource(urlBook)
               this.webviewController.loadUrl(this.sourcesUrl)
             }
             const matchRss = url.match(this.regexRss);
             if (matchRss  && matchRss[1]) {
-              this.pasteAnalyzeRssSource(matchRss[1])
+              let urlRss = decodeURIComponent(matchRss[1]);
+              this.pasteAnalyzeRssSource(urlRss)
+              this.webviewController.loadUrl(this.sourcesUrl)
+            }
+            const legadoMatch = url.match(this.legadoRegex);
+            if (legadoMatch  && legadoMatch[1]) {
+              let urlLegado= decodeURIComponent(legadoMatch[1]);
+              showMessage(urlLegado) //todo 替换规则导入
               this.webviewController.loadUrl(this.sourcesUrl)
             }
            return false
@@ -107,11 +114,16 @@ struct RssWebView {
         showMessage('链接不正确')
         return
       }
-      const res: AxiosResponse = await axios
-        .get(url ?? 'https://node.wisdoms.xin/static/file/20240704/sy.json');
-      this.sourceList = res.data;
-      this.isShowImportBookSource = true;
+      const res: AxiosResponse = await axios.get(url ?? 'https://node.wisdoms.xin/static/file/20240704/sy.json');
+      if (res) {
+        console.log('res', JSON.stringify(res))
+        this.sourceList = res.data;
+        this.isShowImportBookSource = true;
+      } else {
+        showMessage('订阅源解析失败')
+      }
     } catch (err) {
+      showMessage('订阅源解析失败')
       console.error('错误 ' + err);
     }
   }
@@ -127,12 +139,17 @@ struct RssWebView {
         showMessage('链接不正确')
         return
       }
-      const res: AxiosResponse = await axios
-        .get(url ?? 'http://yuedu.miaogongzi.net/shuyuan/miaogongziDY.json');
-      console.log('res', JSON.stringify(res))
-      this.subscriptionList = res.data;
-      this.isShowImportRssSources = true;
+      const res: AxiosResponse = await axios.get(url ?? 'http://yuedu.miaogongzi.net/shuyuan/miaogongziDY.json');
+      if (res) {
+        console.log('res', JSON.stringify(res))
+        this.subscriptionList = res.data;
+        this.isShowImportRssSources = true;
+      } else {
+        showMessage('订阅源解析失败')
+      }
+
     } catch (err) {
+      showMessage('订阅源解析失败')
       console.error('错误 ' + err);
     }
   }

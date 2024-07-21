@@ -8,7 +8,7 @@ import CommonConstants from '../common/constants/CommonConstants'
 import bookDataPreferences from '../common/utils/DataPreferencesUtils'
 
 export class programDataPreferences {
-  readonly rssSourcesGroup: string[] = ['小说', '漫画', '影视', '咨询', '收藏夹']
+  readonly rssSourcesGroup: string[] = ['小说', '漫画', '影视', '资讯', '收藏夹']
   initProgramDataPreferences = () => {
     //内容数据持久化
     //订阅源分组数据
