@@ -24,6 +24,7 @@ export default struct ImportCommon {
   @State updateNameMap: Record<string, boolean> = {}
   @State fullActive: boolean = false
   @State waringActive: boolean = false
+  @StorageLink('refreshCount') refreshCount: number = 0
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
 
@@ -190,6 +191,7 @@ export default struct ImportCommon {
             this.show = false;
             this.resetState()
             showMessage('添加成功')
+            this.refreshCount += 1
           })
       }
       .width('100%')

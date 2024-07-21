@@ -20,7 +20,7 @@ export default struct BodyContent {
   @Prop currentIndex: number
   @StorageLink(CommonConstants.HAS_EXPLORE_URL) @Watch('getList') hasExploreUrl?: boolean = undefined
   tabsBodyController: TabsController = new TabsController();
-  @State @Watch('getList')refreshCount: number = 0
+  @StorageLink('refreshCount') @Watch('getList')refreshCount: number = 0
 
   aboutToAppear() {
     this.getList()
