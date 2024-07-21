@@ -228,7 +228,20 @@ export default struct SourceView {
             clickAction: (index: number) => {
               this.scrollChangeAction(index, true)
             },
-            isBadge: !this.isBatch
+            isBadge: !this.isBatch,
+            isDrag: this.isBatch,
+            onDragChange: async (_list) => {
+               const bookSourcePartList = this.groupList.reduce((acc: BookSourcePart[], item) => acc.concat(item.list), [])
+              const sortBookSourcePartList = bookSourcePartList.map((item, index) => {
+                if (index !== 0) {
+                  item.customOrder = bookSourcePartList[index - 1].customOrder + 1
+                }
+                return item
+              })
+              console.info('TagInfo bookSourcePartList:', JSON.stringify(bookSourcePartList))
+              await BookSourceDao.batchUpdateFlow(sortBookSourcePartList)
+              this.refreshCount += 1
+            }
           })
             .width(88)
 
@@ -433,7 +446,6 @@ export default struct SourceView {
     .onClick(async () => {
       this.isBatch = false
       this.activeNameMap = {}
-      BookSourceDao.batchUpdateFlow(this.sourceList)
       this.getList()
     })
   }
