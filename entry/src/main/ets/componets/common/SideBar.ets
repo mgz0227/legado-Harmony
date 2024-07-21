@@ -9,7 +9,7 @@ import { GroupList, GroupPartList } from '../../database/entities/BookSource'
 @Component
 export default struct SideBar {
   @Link currentIndex: number
-  @Link sideBarList: GroupList[] | GroupPartList[] | string[]
+  @Prop sideBarList: GroupList[] | GroupPartList[] | string[]
   @Prop isBadge: boolean = false
   @Prop isDrag: boolean = false
   clickAction: Function = (_index: number) => {
