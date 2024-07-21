@@ -39,6 +39,7 @@ export default struct SourceView {
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
   @State dialogItem: Partial<BookSourcePart> = {}
+  @StorageLink('refreshCount') refreshCount: number = 0
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: CustomContentDialog({
       primaryTitle: '书源评分',
@@ -92,9 +93,7 @@ export default struct SourceView {
   }
 
   getList() {
-    // axios.get('https://node.wisdoms.xin/static/file/20240704/sy.json').then((res: AxiosResponse) => {
-    //   const bookSource: BookSource[] = res.data ?? []
-    //     FileHandler.readJsonFile<BookSource[]>(this.pathBookSource)
+    this.refreshCount += 1
     BookSourceDao.flowSearch({
       type: this.index,
       searchKey: this.searchValue
