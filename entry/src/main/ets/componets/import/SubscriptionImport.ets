@@ -59,6 +59,11 @@ export default struct SubscriptionImport {
         }
         // 向当前group的list中添加BookSource对象
         groupMap[title].list.push(item);
+      } else {
+        if (!groupMap['其他']) {
+          groupMap['其他'] = { title: '其他', list: [] };
+        }
+        groupMap['其他'].list.push(item);
       }
       for (let i = 0; i < this.localSourceList.length; i++) {
         const localItem = this.localSourceList[i];
