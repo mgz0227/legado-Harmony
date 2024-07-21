@@ -297,7 +297,7 @@ export default {
       },
       {
         "tableName": "book_sources",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bookSourceUrl` TEXT NOT NULL, `bookSourceName` TEXT NOT NULL, `bookSourceGroup` TEXT, `bookSourceType` INTEGER NOT NULL, `bookUrlPattern` TEXT, `bookSourceGrade` INTEGER NOT NULL DEFAULT 2, `isTop` INTEGER NOT NULL DEFAULT 0, `showRecentIcon` INTEGER NOT NULL DEFAULT 1, `bookSourceScore` TEXT NOT NULL DEFAULT `5.0分`, `customOrder` INTEGER NOT NULL DEFAULT 0, `enabled` INTEGER NOT NULL DEFAULT 1, `enabledExplore` INTEGER NOT NULL DEFAULT 1, `jsLib` TEXT, `enabledCookieJar` INTEGER DEFAULT 0, `concurrentRate` TEXT, `header` TEXT, `loginUrl` TEXT, `loginUi` TEXT, `loginCheckJs` TEXT, `coverDecodeJs` TEXT, `bookSourceComment` TEXT, `variableComment` TEXT, `lastUpdateTime` INTEGER NOT NULL, `respondTime` INTEGER NOT NULL, `weight` INTEGER NOT NULL, `exploreUrl` TEXT, `exploreScreen` TEXT, `ruleExplore` TEXT, `searchUrl` TEXT, `ruleSearch` TEXT, `ruleBookInfo` TEXT, `ruleToc` TEXT, `ruleContent` TEXT, `ruleReview` TEXT, PRIMARY KEY(`bookSourceUrl`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bookSourceUrl` TEXT NOT NULL, `bookSourceName` TEXT NOT NULL, `bookSourceGroup` TEXT, `bookSourceType` INTEGER NOT NULL, `bookUrlPattern` TEXT, `bookSourceGrade` INTEGER NOT NULL DEFAULT 2, `isTop` INTEGER NOT NULL DEFAULT 0, `showExplore` INTEGER NOT NULL DEFAULT 0, `showRecentIcon` INTEGER NOT NULL DEFAULT 1, `bookSourceScore` TEXT NOT NULL DEFAULT `5.0分`, `customOrder` INTEGER NOT NULL DEFAULT 0, `enabled` INTEGER NOT NULL DEFAULT 1, `enabledExplore` INTEGER NOT NULL DEFAULT 1, `jsLib` TEXT, `enabledCookieJar` INTEGER DEFAULT 0, `concurrentRate` TEXT, `header` TEXT, `loginUrl` TEXT, `loginUi` TEXT, `loginCheckJs` TEXT, `coverDecodeJs` TEXT, `bookSourceComment` TEXT, `variableComment` TEXT, `lastUpdateTime` INTEGER NOT NULL, `respondTime` INTEGER NOT NULL, `weight` INTEGER NOT NULL, `exploreUrl` TEXT, `exploreScreen` TEXT, `ruleExplore` TEXT, `searchUrl` TEXT, `ruleSearch` TEXT, `ruleBookInfo` TEXT, `ruleToc` TEXT, `ruleContent` TEXT, `ruleReview` TEXT, PRIMARY KEY(`bookSourceUrl`))",
         "fields": [
           {
             "fieldPath": "bookSourceUrl",
@@ -509,6 +509,14 @@ export default {
           {
             "fieldPath": "showRecentIcon",
             "columnName": "showRecentIcon",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "showExplore",
+            "columnName": "showExplore",
             "affinity": "INTEGER",
             "boolean": true,
             "notNull": true,

@@ -8,7 +8,8 @@ import FormItem from '../../../../componets/Form/FormItem';
 import SourceDebug from './components/SourceDebug';
 import { JSON } from '@kit.ArkTS';
 import BookSourceDao from '../../../../database/dao/BookSourceDao';
-import { BookSource, BOOK_SOURCE_TYPE, GRADE_TYPE, SOURCE_GROUP_MAP } from '../../../../database/entities/BookSource';
+import { BookSource, BOOK_SOURCE_TYPE, GRADE_TYPE, SOURCE_GROUP_MAP,
+  SOURCE_SCORE_ARR } from '../../../../database/entities/BookSource';
 
 interface RouteParams {
   id: string,
@@ -48,7 +49,8 @@ struct AddSourcePage {
     customOrder: 0,
     weight: 0,
     isTop: false,
-    showRecentIcon: false
+    showRecentIcon: false,
+    showExplore: true
   }
 
   async aboutToAppear() {
@@ -260,6 +262,7 @@ struct AddSourcePage {
               { value: '漫画' },
               { value: '有声' }
             ])
+              .selected([0, 2, 1][this.formModel.bookSourceType])
               .value(BOOK_SOURCE_TYPE[this.formModel.bookSourceType || 0])
               .borderRadius(4)
               .fontColor(this.formModel.bookSourceType !== undefined ? '#E0000000' : '#73000000')
@@ -273,6 +276,7 @@ struct AddSourcePage {
             Select(
               SOURCE_GROUP_MAP[this.formModel.bookSourceType ?? 0].map(item => ({ value: item } as SelectOption))
             )
+              .selected(SOURCE_GROUP_MAP[this.formModel.bookSourceType ?? 0].findIndex(item => item === this.formModel.bookSourceGroup))
               .value(this.formModel.bookSourceGroup ?? SOURCE_GROUP_MAP[this.formModel.bookSourceType ?? 0][0])
               .borderRadius(4)
               .fontColor(this.formModel.bookSourceGroup ? '#E0000000' : '#73000000')
@@ -304,6 +308,7 @@ struct AddSourcePage {
               { value: '优质' },
               { value: '精品' }
             ])
+              .selected(this.formModel.bookSourceGrade)
               .value(GRADE_TYPE[this.formModel.bookSourceGrade ?? 0])
               .borderRadius(4)
               .fontColor(this.formModel.bookSourceGrade !== undefined ? '#E0000000' : '#73000000')
@@ -313,13 +318,8 @@ struct AddSourcePage {
               .backgroundColor('#f5f5f5')
               .layoutWeight(1)
             Row().width(16)
-            Select([
-              { value: '5.0分' },
-              { value: '4.0分' },
-              { value: '3.0分' },
-              { value: '2.0分' },
-              { value: '1.0分' },
-            ])
+            Select(SOURCE_SCORE_ARR.map(item => ({ value: item } as SelectOption)))
+              .selected(SOURCE_SCORE_ARR.findIndex(item => (item === this.formModel.bookSourceScore ?? '5.0分')))
               .value(this.formModel.bookSourceScore ?? '5.0分')
               .borderRadius(4)
               .fontColor(this.formModel.bookSourceScore ? '#E0000000' : '#73000000')

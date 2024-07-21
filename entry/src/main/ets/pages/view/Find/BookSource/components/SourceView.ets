@@ -230,8 +230,10 @@ export default struct SourceView {
             },
             isBadge: !this.isBatch,
             isDrag: this.isBatch,
-            onDragChange: async (_list) => {
-               const bookSourcePartList = this.groupList.reduce((acc: BookSourcePart[], item) => acc.concat(item.list), [])
+            onDragChange: async (list) => {
+              this.groupList = list as GroupPartList[]
+              const bookSourcePartList =
+                this.groupList.reduce((acc: BookSourcePart[], item) => acc.concat(item.list), [])
               const sortBookSourcePartList = bookSourcePartList.map((item, index) => {
                 if (index !== 0) {
                   item.customOrder = bookSourcePartList[index - 1].customOrder + 1

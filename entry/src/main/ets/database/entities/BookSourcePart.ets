@@ -28,4 +28,5 @@ export class BookSourcePart {
   isTop: boolean = false
   //是否新增或则更新点击过
   showRecentIcon: boolean = true
+  showExplore: boolean = true
 }
