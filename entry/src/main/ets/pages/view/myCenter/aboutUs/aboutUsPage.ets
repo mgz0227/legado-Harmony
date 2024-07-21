@@ -151,6 +151,7 @@ struct AboutUsPage {
           }
         }
         .columnsTemplate('1fr 1fr 1fr 1fr')
+        .columnsGap(16)
         .height(80)
         // QQ群的半模态框 不知道绑定在哪里，鸿蒙官方怎么想的，非要绑定一个元素？
         .bindSheet($$this.isShowQQ, this.QQDialog(), {
@@ -195,7 +196,7 @@ struct AboutUsPage {
       top: 12,
       bottom: 12
     })
-    .width("80%")
+    .width("100%")
     .height(70)
     .borderRadius(12)
     .backgroundColor(Color.White)
