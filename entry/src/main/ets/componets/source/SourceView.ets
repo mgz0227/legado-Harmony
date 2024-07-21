@@ -46,7 +46,7 @@ export default struct SourceView {
     BookSourceDao.flowSearch({
       type: [0, 2, 1][this.type],
       searchKey: this.searchValue,
-      enabled: this.index === 0
+      showExplore: this.index === 0
     }).then(data => {
       const bookSource = data ?? []
       console.info('TagInfo', JSON.stringify(bookSource.slice(0, 3)))
@@ -240,7 +240,7 @@ export default struct SourceView {
               }
               this.sourceList.forEach((item, i) => {
                 if (this.activeNameMap[item.bookSourceUrl]) {
-                  item.enabled = this.index !== 0
+                  item.showExplore = this.index !== 0
                   this.sourceList[i] = item
                 }
               })
@@ -370,7 +370,7 @@ export default struct SourceView {
                   itemData.title = item.isTop ? '取消置顶' : '置顶'
                 }
                 if (index === 3) {
-                  itemData.title = item.enabled ? '隐藏' : '显示'
+                  itemData.title = item.showExplore ? '隐藏' : '显示'
                 }
                 return itemData
               }), async (index: number) => {
@@ -392,7 +392,7 @@ export default struct SourceView {
                     showMessage(this.Item_Right_Dialog_Data[index].title)
                     break;
                   case 3:
-                    item.enabled = !item.enabled
+                    item.showExplore = !item.showExplore
                     this.showRightDialogMap[item.bookSourceUrl] = false
                     await BookSourceDao.updateFlow(item)
                     this.refreshCount += 1

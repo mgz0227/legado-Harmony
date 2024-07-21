@@ -24,7 +24,8 @@ export default struct ContentRefresh {
     respondTime: 0,
     weight: 0,
     isTop: false,
-    showRecentIcon: false
+    showRecentIcon: false,
+    showExplore: true
   }
   @State isRefreshing: boolean = false
   @State RefreshingTitle: string = '松开刷新'

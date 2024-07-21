@@ -15,6 +15,8 @@ export interface BookSourceSearchParams {
   hasLoginUrl?: boolean,
   // 是否存在发现
   hasExploreUrl?: boolean
+  // 是否显示的发现
+  showExplore?: boolean
 }
 
 export interface ExploreQuery {

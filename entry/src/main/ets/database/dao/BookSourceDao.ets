@@ -27,7 +27,7 @@ class BookSourceDao {
   getFlowColumn() {
     const column: ColumnInfo[] = AppDatabaseUtil.getAssignColumn(this.TABLE_NAME,
       ['bookSourceUrl', 'bookSourceName', 'bookSourceGroup', 'bookSourceGrade', 'bookSourceScore', 'customOrder',
-        'enabled', 'enabledExplore', 'lastUpdateTime', 'respondTime', 'weight', 'isTop', 'showRecentIcon']);
+        'enabled', 'enabledExplore', 'lastUpdateTime', 'respondTime', 'weight', 'isTop', 'showRecentIcon', 'showExplore']);
     column.push(...[
       {
         name: 'hasLoginUrl',
@@ -46,7 +46,7 @@ class BookSourceDao {
   async flowAll(): Promise<BookSourcePart[]> {
     try {
       const sql = `select bookSourceUrl, bookSourceName, bookSourceGroup, bookSourceGrade, bookSourceScore, customOrder, enabled, enabledExplore,
-      trim(loginUrl) <> '' hasLoginUrl, lastUpdateTime, respondTime, weight, trim(exploreUrl) <> '' hasExploreUrl, isTop, showRecentIcon
+      trim(loginUrl) <> '' hasLoginUrl, lastUpdateTime, respondTime, weight, trim(exploreUrl) <> '' hasExploreUrl, isTop, showRecentIcon, showExplore
       from book_sources order by customOrder asc`
       const column: ColumnInfo[] = this.getFlowColumn()
       return await DbUtil.querySqlForList<BookSourcePart>(sql, column)
@@ -62,6 +62,7 @@ class BookSourceDao {
     const enabled = searchParams?.enabled;
     const bookSourceGrade = searchParams?.bookSourceGrade;
     const hasLoginUrl = searchParams?.hasLoginUrl;
+    const showExplore = searchParams?.showExplore;
     try {
       let sql = `
   SELECT
@@ -79,7 +80,8 @@ class BookSourceDao {
     weight,
     trim(exploreUrl) <> '' AS hasExploreUrl,
     isTop,
-    showRecentIcon
+    showRecentIcon,
+    showExplore
   FROM
     book_sources
 `;
@@ -91,6 +93,9 @@ class BookSourceDao {
       }
       if (enabled !== undefined) {
         whereClause.push(`enabled = ${enabled ? 1 : 0}`);
+      }
+      if (showExplore !== undefined) {
+        whereClause.push(`showExplore = ${showExplore ? 1 : 0}`);
       }
       if (bookSourceGrade !== undefined) {
         whereClause.push(`bookSourceGrade = ${bookSourceGrade}`);

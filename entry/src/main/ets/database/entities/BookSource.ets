@@ -70,6 +70,7 @@ export class BookSource {
   isTop: boolean = false
   //是否新增或则更新点击过
   showRecentIcon: boolean = true
+  showExplore: boolean = true
 }
 
 export interface GroupList {
@@ -152,6 +153,7 @@ export const ToBookSource = (bookSourceDb: BookSourceDb) => {
     searchUrl: bookSourceDb.searchUrl,
     isTop: bookSourceDb.isTop,
     showRecentIcon: bookSourceDb.showRecentIcon,
+    showExplore: bookSourceDb.showExplore,
     ruleExplore,
     ruleSearch,
     ruleBookInfo,
@@ -198,6 +200,7 @@ export const ToBookSourceDb = (bookSource: BookSource) => {
     searchUrl: bookSource.searchUrl,
     isTop: bookSource.isTop,
     showRecentIcon: bookSource.showRecentIcon,
+    showExplore: bookSource.showExplore,
     ruleExplore,
     ruleSearch,
     ruleBookInfo,
@@ -223,6 +226,7 @@ export const ToBookSourcePart = (bookSource: BookSource) => {
     weight: bookSource.weight,
     isTop: bookSource.isTop,
     showRecentIcon: bookSource.showRecentIcon,
+    showExplore: bookSource.showExplore,
     hasLoginUrl: false,
     hasExploreUrl: false
   }

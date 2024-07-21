@@ -49,7 +49,8 @@ struct AddSourcePage {
     customOrder: 0,
     weight: 0,
     isTop: false,
-    showRecentIcon: false
+    showRecentIcon: false,
+    showExplore: true
   }
 
   async aboutToAppear() {
