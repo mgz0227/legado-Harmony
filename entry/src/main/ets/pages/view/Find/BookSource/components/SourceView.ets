@@ -95,7 +95,7 @@ export default struct SourceView {
   getList() {
     this.refreshCount += 1
     BookSourceDao.flowSearch({
-      type: this.index,
+      type: [0, 2, 1][this.index],
       searchKey: this.searchValue
     }).then(data => {
       const bookSource = data ?? []

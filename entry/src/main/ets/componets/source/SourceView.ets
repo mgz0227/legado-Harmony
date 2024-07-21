@@ -44,7 +44,7 @@ export default struct SourceView {
 
   getList() {
     BookSourceDao.flowSearch({
-      type: this.type,
+      type: [0, 2, 1][this.type],
       searchKey: this.searchValue,
       enabled: this.index === 0
     }).then(data => {

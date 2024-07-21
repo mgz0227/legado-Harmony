@@ -264,7 +264,7 @@ struct AddSourcePage {
               .borderRadius(4)
               .fontColor(this.formModel.bookSourceType !== undefined ? '#E0000000' : '#73000000')
               .onSelect((index: number, text?: string | undefined) => {
-                this.formModel.bookSourceType = index
+                this.formModel.bookSourceType = [0, 2, 1][index]
               })
               .backgroundColor('#f5f5f5')
               .layoutWeight(1)

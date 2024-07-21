@@ -20,7 +20,7 @@ export default struct BodyContent {
   @Prop currentIndex: number
   @StorageLink(CommonConstants.HAS_EXPLORE_URL) @Watch('getList') hasExploreUrl?: boolean = undefined
   tabsBodyController: TabsController = new TabsController();
-  @StorageLink('refreshCount') @Watch('getList')refreshCount: number = 0
+  @StorageLink('refreshCount') @Watch('getList') refreshCount: number = 0
 
   aboutToAppear() {
     this.getList()
@@ -33,7 +33,7 @@ export default struct BodyContent {
   getList() {
     this.loading = true
     BookSourceDao.search({
-      type: this.currentIndex,
+      type: [0, 2, 1][this.currentIndex],
       enabled: true,
       hasExploreUrl: this.hasExploreUrl
     }).then(bookSources => {
@@ -88,9 +88,8 @@ export default struct BodyContent {
 
         Row() {
           Image($r('app.media.more_search')).width(24).height(24)
-        }.width(
-          '10%'
-        )
+        }
+        .width(34)
         .onClick(() => {
           if (this.sourceList.length) {
             this.isShowDialog = true
@@ -105,7 +104,7 @@ export default struct BodyContent {
           }
         })
       }
-      .margin({ left: 15 })
+      .margin({ left: 20, right: 10 })
 
 
       if (this.loading) {
