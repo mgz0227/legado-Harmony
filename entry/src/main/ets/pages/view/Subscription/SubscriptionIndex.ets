@@ -20,6 +20,7 @@ import dialogNewSources from './RssSources/dialogNewSources'
 import RssSourcesHistory from './components/RssSourcesHistory'
 import rssSourcesHistoryDao from '../../../database/dao/RssSourcesHistoryDao'
 import { rssSourcesHistory } from '../../../database/entities/rssSourcesHistory'
+import { FileHandler } from 'ets/common/utils/FileHandler'
 
 @Component
 export default struct SubscriptionIndex {
@@ -258,13 +259,15 @@ export default struct SubscriptionIndex {
 
 
 
-  MenuOnclick(value:number|string){
+  async MenuOnclick(value:number|string){
     switch (value){
       case 0:
         this.pasteAnalyze();
         break;
       case 1:
-
+        //todo:本地导入
+        let result = await FileHandler.documentPickerFile(1, ['.json'])
+        showMessage('订阅源本地导入成功')
         break
       case 2:
         this.isShowNewSources =true
