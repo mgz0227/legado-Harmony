@@ -14,11 +14,12 @@ interface RouteParams {
 
 @Entry
 @Component
+@Preview
 struct RssWebView {
   @State sourcesUrl:string = ''
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
-  webviewController: webview.WebviewController = new webview.WebviewController();
+  controller: webview.WebviewController = new webview.WebviewController();
   regex:string = `/booksource/importonline\\?src=(http[s]?://[^/]+/[^\"']+)`;
   regexRss:string = `/rsssource/importonline\\?src=(http[s]?://[^/]+/[^\"']+)`;
   legadoRegex:string = `/import/auto\\?src=(http[s]?://[^/]+/[^\"']+)`
@@ -41,28 +42,20 @@ struct RssWebView {
       .margin({left:5})
       .width("100%")
       Column(){
-        Web({ src: this.sourcesUrl, controller: this.webviewController })
-          .onLoadIntercept((event) => {
-            let url = decodeURIComponent(event.data.getRequestUrl());
-            const match = url.match(this.regex);
-            if (match  && match[1]) {
-              let urlBook = decodeURIComponent(match[1]);
-              this.pasteAnalyzeBookSource(urlBook)
-              this.webviewController.loadUrl(this.sourcesUrl)
-            }
-            const matchRss = url.match(this.regexRss);
-            if (matchRss  && matchRss[1]) {
-              let urlRss = decodeURIComponent(matchRss[1]);
-              this.pasteAnalyzeRssSource(urlRss)
-              this.webviewController.loadUrl(this.sourcesUrl)
-            }
-            const legadoMatch = url.match(this.legadoRegex);
-            if (legadoMatch  && legadoMatch[1]) {
-              let urlLegado= decodeURIComponent(legadoMatch[1]);
-              showMessage(urlLegado) //todo 替换规则导入
-              this.webviewController.loadUrl(this.sourcesUrl)
-            }
-           return false
+        Web({ src: this.sourcesUrl||'www.baidu.com', controller: this.controller })
+          .onPageBegin((event) => {
+            //设置setCustomUserAgent为手机
+            this.controller.setCustomUserAgent('Mozilla/5.0 (Linux; Android 13; M2007J3SC Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.101 Mobile Safari/537.36')
+          })
+          .layoutWeight(1)
+          .onPageEnd((event) => {
+            this.getOnclickUrl(event.url)
+          })
+          .onScroll((event) => {
+            showMessage("x = " + event.xOffset)
+            showMessage("y = " + event.yOffset)
+            console.info("x = " + event.xOffset);
+            console.info("y = " + event.yOffset);
           })
       }
       Flex()
@@ -101,6 +94,36 @@ struct RssWebView {
     Flex() {
       SubscriptionImport({ subscriptionList:this.subscriptionList,show: this.isShowImportRssSources})
     }
+  }
+  getOnclickUrl(postUrl:string) {
+    let url = decodeURIComponent(postUrl);
+    //如果url存在匹配返回false
+    // if (url.match(this.regex) || url.match(this.regexRss) || url.match(this.legadoRegex)) {
+    //   return false
+    // }
+    const match = url.match(this.regex);
+    if (match  && match[1]) {
+      let urlBook = decodeURIComponent(match[1]);
+      this.pasteAnalyzeBookSource(urlBook)
+      this.controller.backward()
+      this.controller.scrollTo(0, 0)
+      return false
+    }
+    const matchRss = url.match(this.regexRss);
+    if (matchRss  && matchRss[1]) {
+      let urlRss = decodeURIComponent(matchRss[1]);
+      this.pasteAnalyzeRssSource(urlRss)
+      this.controller.backward()
+      return false
+    }
+    const legadoMatch = url.match(this.legadoRegex);
+    if (legadoMatch  && legadoMatch[1]) {
+      let urlLegado= decodeURIComponent(legadoMatch[1]);
+      showMessage(urlLegado) //todo 替换规则导入
+      this.controller.backward()
+      return false
+    }
+    return true
   }
   // 发现
   async pasteAnalyzeBookSource(url:string) {

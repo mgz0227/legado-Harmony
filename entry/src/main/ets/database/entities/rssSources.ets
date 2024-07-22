@@ -21,7 +21,7 @@ export class rssSources{
   // 图标是否使用链接
   sourceIconIsUrl:boolean = false
   // 分组
-  sourceGroup:string = SUBSCRIPTION_GROUP_TYPE[0]
+  sourceGroup:string = SUBSCRIPTION_GROUP_TYPE[4]
   //源注解
   sourceComment?:string
   //是否启用

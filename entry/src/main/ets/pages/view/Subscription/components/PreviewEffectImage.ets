@@ -66,6 +66,7 @@ export default struct PreviewEffectImage{
           .animation(({
             duration:1000
           }))
+          .draggable(false)
           .borderRadius(this.ImageRadius)
       } else {
         Image(this.sourceIcon.indexOf('app.media.')>-1?$r(this.sourceIcon):this.sourceIcon)
@@ -74,6 +75,7 @@ export default struct PreviewEffectImage{
           .animation(({
             duration:1000
           }))
+          .draggable(false)
           .borderRadius(this.ImageRadius)
           .onError(()=>{
             this.isError = true

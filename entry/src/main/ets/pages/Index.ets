@@ -38,6 +38,7 @@ struct Main {
         justifyContent:FlexAlign.Center
       }){
         Image(this.currentTabIndex === index?icon_select:unselected).height(25)
+          .draggable(false)
         Text(name).fontSize(11).margin(5).fontColor(this.currentTabIndex === index ?'rgb(255,119, 50)' : '#000000')
       }
     }.gesture(

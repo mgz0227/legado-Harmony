@@ -1291,6 +1291,14 @@ export default {
             "affinity": "TEXT",
             "notNull": false
           },
+          {
+            "fieldPath": "autoComplete",
+            "columnName": "autoComplete",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "0"
+          },
         ],
         "primaryKey": {
           "autoGenerate": false,
@@ -1979,7 +1987,7 @@ export default {
       },
       {
         "tableName": "rss_sources_history",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sourceType` INTEGER NOT NULL ,`sourceGroup` TEXT,`sourceUrl` TEXT NOT NULL, `sourceName` TEXT NOT NULL, `sourceIcon` TEXT NOT NULL,`lastUpdateTime` INTEGER NOT NULL DEFAULT 0,`sourceIconIsUrl` INTEGER ,`showRecentIcon` INTEGER NOT NULL DEFAULT 1,`customizeTitle` TEXT, PRIMARY KEY(`sourceUrl`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sourceType` INTEGER NOT NULL ,`sourceGroup` TEXT,`sourceUrl` TEXT NOT NULL, `sourceName` TEXT NOT NULL, `sourceIcon` TEXT NOT NULL,`lastUpdateTime` INTEGER NOT NULL DEFAULT 0,`sourceIconIsUrl` INTEGER ,`showRecentIcon` INTEGER NOT NULL DEFAULT 1 ,`autoComplete` INTEGER NOT NULL DEFAULT 0,`customizeTitle` TEXT, PRIMARY KEY(`sourceUrl`))",
         "fields": [
           {
             "fieldPath": "sourceType",

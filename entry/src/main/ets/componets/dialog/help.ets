@@ -11,8 +11,11 @@ export default struct Help {
   btnText: string = ''
   btnClick: Function = () => {
   }
+  @Builder contentBuilders() {}
+  // 自定义左侧区域
+  @BuilderParam contentBuilder: () => void = this.contentBuilders
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
-
+  isShowContent:boolean = true
   build() {
     Flex({
       direction: FlexDirection.Column,
@@ -31,13 +34,24 @@ export default struct Help {
           .padding({
             bottom: PaddingConstants.PADDING_12
           })
+        if (this.contentBuilders !== this.contentBuilder) {
+          Column(){
+            this.contentBuilder()
+          }
+          .padding({
+            top: PaddingConstants.PADDING_12,
+            bottom: PaddingConstants.PADDING_12
+          })
+        }
+        if (this.isShowContent){
+          Flex() {
+            Text(!this.context ? HelpInfo.HELP_INFO_MESSAGE : this.context)
+          }.padding({
+            top: PaddingConstants.PADDING_12,
+            bottom: PaddingConstants.PADDING_12
+          })
+        }
 
-        Flex() {
-          Text(!this.context ? HelpInfo.HELP_INFO_MESSAGE : this.context)
-        }.padding({
-          top: PaddingConstants.PADDING_12,
-          bottom: PaddingConstants.PADDING_12
-        })
       }
 
       Button(!this.btnText ? $r('app.string.i_know') : this.btnText)
