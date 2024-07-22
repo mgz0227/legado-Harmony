@@ -83,7 +83,7 @@ export default struct newSourcesNetWork{
     lastUpdateTime: new Date().getTime(),
     customOrder: 0,
     autoComplete: false,
-    sourceGroup: SUBSCRIPTION_GROUP_TYPE[0],
+    sourceGroup: SUBSCRIPTION_GROUP_TYPE[4],
     enabled: true,
     singleUrl: true,
     showRecentIcon: true,
@@ -142,7 +142,10 @@ export default struct newSourcesNetWork{
 
           Row() {
             Select(this.sourceGroupList)
-              .value(this.formModel.sourceGroup.length === 0?SUBSCRIPTION_GROUP_TYPE[0]:this.formModel.sourceGroup)
+              .selected(this.sourceGroupList.findIndex((item) => {
+                return item.value === this.formModel.sourceGroup
+              }))
+              .value(this.formModel.sourceGroup?this.formModel.sourceGroup:SUBSCRIPTION_GROUP_TYPE[4])
               .borderRadius(4)
               .fontColor(this.formModel.sourceGroup !== undefined ? '#E0000000' : '#73000000')
               .onSelect((index: number, text?: string | undefined) => {

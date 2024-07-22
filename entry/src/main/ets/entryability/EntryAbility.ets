@@ -6,6 +6,7 @@ import { AbilityConstant, Want } from '@kit.AbilityKit';
 import display from '@ohos.display';
 import DbUtil from '../common/utils/DbUtil';
 import DataBase from '../database'
+import { webview } from '@kit.ArkWeb';
 
 export default class EntryAbility extends UIAbility {
 
@@ -33,6 +34,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
+    webview.WebviewController.initializeWebEngine()//初始化web控件
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
   }
 
