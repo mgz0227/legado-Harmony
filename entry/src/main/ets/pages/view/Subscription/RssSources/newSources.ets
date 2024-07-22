@@ -83,7 +83,7 @@ export default struct newSources{
               .height(ImageConstants.IMG_HEIGHT_24)
               .bindPopup(
                 this.isShowMenu,{
-                  builder: this.rightMoreDialogBuilder(),//todo dubug弹窗菜单不一样
+                  builder: this.rightMoreDialogBuilder(),
                   placement: Placement.Bottom,
                   radius:10,
                   enableArrow: false,
@@ -692,48 +692,77 @@ export default struct newSources{
   }
 
   Item_Right_MORE_Dialog_Data: string[] = ['清除Cookie','自动补全','拷贝源','粘贴源','设置原变量','字符串分享','帮助']
-  dialogMoreRightChange(index:number){
-    switch (index) {
-      case 0:
-        showMessage('清除Cookie')
-        break
-      case 2:
-        showMessage('拷贝源')
-        break
-      case 3:
-        showMessage('粘贴源')
-        break
-      case 4:
-        showMessage('设置原变量')
-        break
-      case 5:
-        showMessage('字符串分享')
-        break
-      case 6:
-        this.isShowHelp = true
-        showMessage('帮助')
-        break
+  Item_Right_Debug_MORE_Dialog_Data: string[] = ['列表源码','正文源码']
+
+  dialogMoreRightChange(index: number) {
+    if (this.readIndex === 0) {
+      switch (index) {
+        case 0:
+          showMessage('清除Cookie')
+          break
+        case 2:
+          showMessage('拷贝源')
+          break
+        case 3:
+          showMessage('粘贴源')
+          break
+        case 4:
+          showMessage('设置原变量')
+          break
+        case 5:
+          showMessage('字符串分享')
+          break
+        case 6:
+          this.isShowHelp = true
+          showMessage('帮助')
+          break
+      }
+    } else {
+      switch (index) {
+        case 0:
+          showMessage('列表源码')
+          break
+        case 1:
+          showMessage('正文源码')
+          break
+      }
     }
   }
+
   @Builder
   rightMoreDialogBuilder() {
-    Column(){
-      ForEach(this.Item_Right_MORE_Dialog_Data, (item: string, index) => {
-        if (index === 1) {
-          this.toggleBuilder(item)
-        } else {
+    Column() {
+      if (this.readIndex === 0) {
+        // 订阅源
+        ForEach(this.Item_Right_MORE_Dialog_Data, (item: string, index) => {
+          if (index === 1) {
+            this.toggleBuilder(item)
+          } else {
+            dialogTitleFuction({
+              title: item,
+              isBorder: this.Item_Right_MORE_Dialog_Data.length !== index + 1
+            })
+              .onClick(() => {
+                this.dialogMoreRightChange(index)
+              })
+          }
+        })
+      } else {
+        // 调试源
+        ForEach(this.Item_Right_Debug_MORE_Dialog_Data, (item: string, index) => {
           dialogTitleFuction({
             title: item,
-            isBorder: this.Item_Right_MORE_Dialog_Data.length !== index + 1
+            isBorder: this.Item_Right_Debug_MORE_Dialog_Data.length !== index + 1
           })
             .onClick(() => {
               this.dialogMoreRightChange(index)
             })
-        }
-      })
+        })
+      }
     }
     .alignItems(HorizontalAlign.Start)
   }
+
   @Builder
   toggleBuilder(title:string) {
     Column() {

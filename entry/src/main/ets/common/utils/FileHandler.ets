@@ -66,6 +66,23 @@ export class FileHandler {
     return chapters
   }
 
+  static async documentPickerFile(maxSelectNumber:number,fileSuffixFilters:Array<string>) {
+    // 尝试写一个通用的picker
+    try {
+      const documentSelectOptions = new picker.DocumentSelectOptions();
+      // 选择文档的最大数目（可选）
+      documentSelectOptions.maxSelectNumber = maxSelectNumber;
+      // 选择文件的后缀类型，若选择项存在多个后缀名，则每一个后缀名之间用英文逗号进行分隔（可选），后缀类型名不能超过100
+      documentSelectOptions.fileSuffixFilters = fileSuffixFilters;
+      let documentViewPicker = new picker.DocumentViewPicker(context);
+      const documentSelectResult: Array<string> = await documentViewPicker.select(documentSelectOptions)
+      return documentSelectResult
+    } catch (err) {
+      console.error(`读取失败：${err}`);
+      return Promise.reject(err)
+    }
+  }
+
   static async pickerFile(context: Context) {
     try {
       const documentSelectOptions = new picker.DocumentSelectOptions();

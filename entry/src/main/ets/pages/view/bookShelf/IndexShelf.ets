@@ -11,10 +11,9 @@ import BookFolder from './BookFolder'
 import groupTypeComponent from '../../../componets/group/GroupType'
 import ShelfBookList from './Shelf/ShelfBookList'
 
-import picker from '@ohos.file.picker'
 import { FileHandler } from 'ets/common/utils/FileHandler'
 import RefreshComponent from '../../../componets/common/RefreshComponent'
-import CommonConstants from '../../../common/constants/CommonConstants'
+import { showMessage } from 'ets/componets/common/promptShow';
 
 @Component
 export default struct IndexShelf {
@@ -368,7 +367,7 @@ export default struct IndexShelf {
               }
 
             }
-            .padding({ left: 10, right: 10 ,bottom:10})
+            .padding({ left: 10, right: 10, bottom: 10 })
           }
           // .margin({ bottom: 110 + (this.topRectHeight === 0 ? 10 : this.topRectHeight) })
           .align(Alignment.TopStart)
@@ -481,25 +480,20 @@ export default struct IndexShelf {
     .onClick(async () => {
       switch (index) {
         case 0:
-        // 本地导入
-        //   router.pushUrl({
-        //     url: 'pages/view/bookShelf/LocalImportPage'
-        //   });
-          let documentSelectOptions = new picker.DocumentSelectOptions();
-          let documentPicker = new picker.DocumentViewPicker();
-          let filePath: string = ""
-          await documentPicker.select(documentSelectOptions).then((documentSelectResult: Array<string>) => {
-            filePath = documentSelectResult[0];
-          })
-          FileHandler.CopyFile(filePath)
+          // 本地导入
+          //   router.pushUrl({
+          //     url: 'pages/view/bookShelf/LocalImportPage'
+          //   });
+          let result = await FileHandler.documentPickerFile(1, ['.txt'])
+          FileHandler.CopyFile(result[0])
           this.isShowImport = false
           break
         case 1:
-        // 云盘导入
+          // 云盘导入
           this.isShowCloudImport = true
           break
         case 2:
-        // 网址导入
+          // 网址导入
           this.dialogController.open();
           break
       }
@@ -702,17 +696,17 @@ export default struct IndexShelf {
     // 右上角更多
     switch (themeNum) {
       case 0:
-      // 书籍导入弹窗
+        // 书籍导入弹窗
         this.isShowImport = true
         break
       case 1:
-      // 下载管理页
+        // 下载管理页
         router.pushUrl({
           url: 'pages/view/bookShelf/DownloadManagementPage'
         });
         break
       case 2:
-      // 导入书单弹窗
+        // 导入书单弹窗
         this.isShowImportBookList = true
         break
       case 3:
