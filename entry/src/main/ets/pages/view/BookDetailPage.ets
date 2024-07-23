@@ -3,10 +3,10 @@ import ReadRecordItem from '../../componets/bookDetail/ReadRecordItem'
 import TagIndex from '../../componets/bookDetail/TagIndex'
 import { router, SwipeRefresher } from '@kit.ArkUI'
 import NoteIndex from '../../componets/bookDetail/note/NoteIndex'
-import { BookList } from 'ets/componets/dataList/bookList'
 import { chaptersItem } from '../../componets/dataList/ReaderChaptersItem'
 import { FileHandler } from '../../common/utils/FileHandler'
 import ChaptersDataSource from '../../common/LazyIDataSource/ChaptersDataSource'
+import { Books } from '../../database/entities/Books'
 
 /**
  * 标题图片样式
@@ -73,7 +73,7 @@ struct BookDetailPage {
   @State currentIndex: number = 0;
   // 是否加入书架
   @State isAddBookShelf: boolean = false;
-  @State bookData: BookList = router.getParams() as BookList
+  @State bookData: Books = router.getParams() as Books
   // 加入书架dialog
   dialogController: CustomDialogController = new CustomDialogController({
     builder: AddBookShelfDialog(),
@@ -82,19 +82,18 @@ struct BookDetailPage {
   })
   @State txtFiles: chaptersItem[] = [];
   @State txtFile: ChaptersDataSource = new ChaptersDataSource()
-
   onPageShow() {
     this.isShow = true
   }
 
   async aboutToAppear() {
     console.log('router BookDetailPage:' + JSON.stringify(router.getParams()))
-    if (router.getParams() as BookList) {
-      this.bookData = router.getParams() as BookList
+    if (router.getParams() as Books) {
+      this.bookData = router.getParams() as Books
+      let temp = await FileHandler.readFile(this.bookData?.bookUrl||'') //txt小说
+      this.txtFile.pushAllData(temp)
+      this.txtFiles = this.txtFile.getListData()
     }
-    let temp = await FileHandler.readFile(this.bookData.fileLink) //txt小说
-    this.txtFile.pushAllData(temp)
-    this.txtFiles = this.txtFile.getListData()
   }
 
   // 加入书架函数
@@ -330,12 +329,12 @@ struct BookDetailPage {
 
       // 小说标题
       Row({ space: CommonConstants.SPACE_20 }) {
-        Image(this.bookData.bookImage ?? $r('app.media.cover_list'))
+        Image(this.bookData.coverUrl?? $r('app.media.cover_list'))
           .width(CommonConstants.NOVEL_IMG_WIDTH)
           .height(CommonConstants.NOVEL_IMG_HEIGHT)
           .borderRadius(5)
         Column({ space: 8 }) {
-          Text(this.bookData.title.replace(new RegExp('\\..*', 'g'), ''))
+          Text(this.bookData.bookName.replace(new RegExp('\\..*', 'g'), ''))
             .fontColor(Color.White)
             .fontSize(20)
           Blank()
@@ -397,11 +396,10 @@ struct BookDetailPage {
 
       // 书籍简介
       Flex() {
-        Text(this.bookData.describe ??
-          '《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... ' +
-            '\n他起初的目的只是自保，顺便在这个没有人权的社会里当个富家翁悠闲度日。 ...... 多年后，许七安回首前尘，身后是早已逝去的敌人，以及累累白骨。 ' +
-            '\n滚滚长江东逝水，浪花淘尽英雄，是非成败转头空。 ' +
-            '\n青山依旧在，几度夕阳红。')
+        Text(this.bookData.intro ?? '《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... ' +
+          '\n他起初的目的只是自保，顺便在这个没有人权的社会里当个富家翁悠闲度日。 ...... 多年后，许七安回首前尘，身后是早已逝去的敌人，以及累累白骨。 ' +
+          '\n滚滚长江东逝水，浪花淘尽英雄，是非成败转头空。 ' +
+          '\n青山依旧在，几度夕阳红。')
           .fontColor('#FFFFFF')
           .fontSize(14)
           .fontWeight(400)

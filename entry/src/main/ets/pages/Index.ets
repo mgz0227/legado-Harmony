@@ -60,14 +60,6 @@ struct Main {
     new NavItem(3, $r('app.media.MINE_theme'),$r('app.media.MINE_line'), '我的')
   ]
 
-  // @State scrollType:MainScrollBar[] = [
-  //   new MainScrollBar(false,new Scroller()),
-  //   new MainScrollBar(false,new Scroller()),
-  //   new MainScrollBar(false,new Scroller()),
-  //   new MainScrollBar(false,new Scroller()),
-  //   new MainScrollBar(false,new Scroller())
-  // ]
-
   build() {
     Column() {
       Tabs({
