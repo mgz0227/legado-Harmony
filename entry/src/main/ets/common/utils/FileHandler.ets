@@ -1,12 +1,13 @@
 import { BusinessError } from '@ohos.base';
-import fs, { Options, WriteOptions } from '@ohos.file.fs';
+import fs, { Options } from '@ohos.file.fs';
 import { common, Context } from '@kit.AbilityKit';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
 import { BookList } from '../../componets/dataList/bookList';
 import { addShelfBook } from '../../storage/bookListData';
 import { showMessage } from '../../componets/common/promptShow';
-import { fileIo, picker } from '@kit.CoreFileKit';
+import { picker } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
+import { buffer } from '@kit.ArkTS'
 
 let context = getContext(this) as common.UIAbilityContext;
 let filePath = context.filesDir;
@@ -30,6 +31,14 @@ export class FileHandler {
       showMessage('导入失败')
       console.error("copy file failed with error message: " + err.message + ", error code: " + err.code);
     });
+  }
+
+  static async ReadJSONFile(srcUrl: string) {
+    let file = fs.openSync(srcUrl, fs.OpenMode.READ_WRITE);
+    let arrayBuffer = new ArrayBuffer(40960);
+    let readLen: number = await fs.read(file.fd, arrayBuffer)
+    let JSONString = buffer.from(arrayBuffer, 0, readLen).toString();
+    return JSONString
   }
 
   static async readFile(readFileUrl: string) {
@@ -66,7 +75,7 @@ export class FileHandler {
     return chapters
   }
 
-  static async documentPickerFile(maxSelectNumber:number,fileSuffixFilters:Array<string>) {
+  static async documentPickerFile(maxSelectNumber: number, fileSuffixFilters: Array<string>) {
     // 尝试写一个通用的picker
     try {
       const documentSelectOptions = new picker.DocumentSelectOptions();
