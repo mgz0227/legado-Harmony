@@ -90,11 +90,9 @@ struct BookDetailPage {
     console.log('router BookDetailPage:' + JSON.stringify(router.getParams()))
     if (router.getParams() as Books) {
       this.bookData = router.getParams() as Books
-      setTimeout(async () => {
-        let temp = await FileHandler.readFile(this.bookData?.bookUrl||'') //txt小说
-        this.txtFile.pushAllData(temp)
-        this.txtFiles = this.txtFile.getListData()
-      },0)
+      let temp = await FileHandler.readFile(this.bookData?.bookUrl||'') //txt小说
+      this.txtFile.pushAllData(temp)
+      this.txtFiles = this.txtFile.getListData()
     }
   }
 
@@ -121,7 +119,7 @@ struct BookDetailPage {
       Tabs({ barPosition: BarPosition.Start }) {
         TabContent() {
           Column() {
-            if (this.txtFiles.length=== 0 || undefined) {
+            if (this.txtFiles.length === 0 || undefined) {
               SwipeRefresher({
                 content: '目录加载中...',
                 isLoading: true
@@ -221,7 +219,7 @@ struct BookDetailPage {
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor(this.txtFile.totalCount() ? '#FF6600' : 'gray')
+          .backgroundColor(this.txtFile.totalCount() > 0 ? '#FF6600' : 'gray')
           .fontColor('#FFFFFF')
           .enabled(this.txtFile.totalCount() > 0)
           .onClick(() => {
@@ -331,12 +329,12 @@ struct BookDetailPage {
 
       // 小说标题
       Row({ space: CommonConstants.SPACE_20 }) {
-        Image(this.bookData.bookImage ?? $r('app.media.cover_list'))
+        Image(this.bookData.coverUrl?? $r('app.media.cover_list'))
           .width(CommonConstants.NOVEL_IMG_WIDTH)
           .height(CommonConstants.NOVEL_IMG_HEIGHT)
           .borderRadius(5)
         Column({ space: 8 }) {
-          Text(this.bookData.title.replace(new RegExp('\\..*', 'g'), ''))
+          Text(this.bookData.bookName.replace(new RegExp('\\..*', 'g'), ''))
             .fontColor(Color.White)
             .fontSize(20)
           Blank()

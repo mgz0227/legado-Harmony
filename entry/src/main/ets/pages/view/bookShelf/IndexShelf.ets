@@ -146,19 +146,23 @@ export default struct IndexShelf {
 
       Tabs({
         barPosition: BarPosition.Start,
-        controller: this.tabsController
+        controller: this.tabsController,
+        index: this.currentIndex
       }) {
-        TabContent() {
-          this.book()
-        }
-
-        TabContent() {
-          this.book()
-        }
-
-        TabContent() {
-          this.book()
-        }
+        ForEach(this.titleArray, () => {
+          TabContent() {
+           Column(){
+             BookBodyContent({
+               currentIndex: this.currentIndex,
+               EXHIBIT: this.EXHIBIT,
+               GROUP: this.GROUP,
+               searchValue: this.searchValue,
+               isClear: this.isClear,
+               bookType: this.bookType
+             })
+           }
+          }
+        })
       }
       .layoutWeight(1)
       .barWidth(0)
