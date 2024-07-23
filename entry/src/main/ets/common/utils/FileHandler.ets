@@ -2,11 +2,11 @@ import { BusinessError } from '@ohos.base';
 import fs, { Options, WriteOptions } from '@ohos.file.fs';
 import { common, Context } from '@kit.AbilityKit';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
-import { BookList } from '../../componets/dataList/bookList';
-import { addShelfBook } from '../../storage/bookListData';
 import { showMessage } from '../../componets/common/promptShow';
-import { fileIo, picker } from '@kit.CoreFileKit';
+import { picker } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
+import { Books } from '../../database/entities/Books';
+import booksUtil from './booksUtils';
 
 let context = getContext(this) as common.UIAbilityContext;
 let filePath = context.filesDir;
@@ -16,12 +16,28 @@ let options: Options = {
 };
 
 export class FileHandler {
-  static CopyFile(srcUrl: string) {
+  static CopyFile(srcUrl: string, currentIndex:number) {
     let file = fs.openSync(srcUrl, fs.OpenMode.READ_WRITE);
     let dstPath = filePath + '/' + file.name; // file.name:《幽影之冰》.txt
-    addShelfBook(0,
-      new BookList('', file.name, '会说话的肘子·未读过1', '更新至·第340章 镇压', $r('app.media.cover_list'), '测试作者',
-        '未分组', dstPath))
+    let book:Books = {
+      bookName: file.name,
+      bookUrl: dstPath,
+      author: '暂无',
+      bookGroup: 2,
+      latestChapterTime: 0,
+      totalChapterNum: 0,
+      durChapterIndex: 0,
+      durChapterPos: 0,
+      durChapterTime: 0,
+      canUpdate: false,
+      sort: 0,
+      originOrder: 0,
+      syncTime: 0,
+      bookType: currentIndex,
+      isTop: false,
+      isJoin: false
+    }
+    booksUtil.addBooks(book)
     showMessage('添加到书架成功')
     fs.copyFile(file.fd, dstPath, 0).then(() => {
       showMessage('导入沙箱成功')

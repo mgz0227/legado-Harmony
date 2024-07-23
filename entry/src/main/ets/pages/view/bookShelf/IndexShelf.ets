@@ -1,107 +1,28 @@
-import cartoonPage from './cartoonPage'
-import novelPage from './novelPage'
 import BookMark from '../../../componets/head/BookMark'
-
-import soundPage from './soundPage'
-import IndexSearchType from '../../../componets/head/IndexSearchType'
-import router from '@ohos.router'; // 引入路由管理器
-import confirmDialogExample from '../../../componets/common/confirmDialog'
-import Dialog from 'ets/componets/common/Dialog'
-import BookFolder from './BookFolder'
-import groupTypeComponent from '../../../componets/group/GroupType'
-import ShelfBookList from './Shelf/ShelfBookList'
-
-import picker from '@ohos.file.picker'
-import { FileHandler } from 'ets/common/utils/FileHandler'
-import RefreshComponent from '../../../componets/common/RefreshComponent'
-import CommonConstants from '../../../common/constants/CommonConstants'
+import { router } from '@kit.ArkUI'
+import BookBodyContent from './components/BookBodyContent'
+import { picker } from '@kit.CoreFileKit'
+import { FileHandler } from '../../../common/utils/FileHandler'
+import Dialog from '../../../componets/common/Dialog'
+import { sleep } from '../../../common/utils/utils'
 
 @Component
 export default struct IndexShelf {
-  @State delCache: boolean = false
-  IndexShelf: CustomDialogController | null = new CustomDialogController({
-    builder: confirmDialogExample({
-      cancel: () => {
-        this.onCancel()
-      },
-      confirm: () => {
-        this.onAccept()
-      },
-      title: '清空',
-      delCache: this.delCache
-    }),
-    cancel: this.exitApp,
-    autoCancel: true,
-    alignment: DialogAlignment.Center,
-    // offset: { dx: 0, dy: '-40%' },
-    gridCount: 4,
-    customStyle: false,
-    cornerRadius: 25
-  })
   @State currentIndex: number = 0
   THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单', '批量管理']
-  EXHIBIT_NAMES: string[] = ['列表', '宫格']
-  GROUP_NAMES: string[] = ['标签', '文件夹']
+  titleArray: Array<string> = ['小说', '漫画', '有声书']
+
+  @State bookType:string = '全部'
   @State EXHIBIT: string = '列表'
   @State GROUP: string = '标签'
   @State searchValue: string = '最近阅读'
-  @State bookType: string = '全部'
-  @State title: string = '最近阅读'
   @State isClear: boolean = false
-  @State isRefreshing: boolean = false
-  @State counter: number = 0
-  @State RefreshingTitle: string = '松开刷新'
-  @State groupCoverShow: boolean = false
+
   @State isShowImport: boolean = false
   @State isShowCloudImport: boolean = false
   @State isShowImportBookList: boolean = false
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
-  // 网址导入dialog
-  dialogController: CustomDialogController = new CustomDialogController({
-    builder: Dialog({
-      title: '网址导入',
-      child: () => {
-        this.DialogInput("请输入书籍目录或详情页", 10)
-      }
-    }),
-    cornerRadius: 8,
-    offset: { dx: 0, dy: 0 }
-  })
-  tabsController: TabsController = new TabsController();
-  private scrollController: Scroller = new Scroller();
-
-  onAccept() {
-    console.info('确定')
-    this.isClear = true
-  }
-
-  onCancel() {
-    console.info('取消')
-  }
-
-  exitApp() {
-    console.info('点外围取消')
-  }
-
-  @Builder
-  DialogInput(placeholder: string, maxlength: number) {
-    Row() {
-      TextInput({ placeholder: placeholder })
-        .maxLength(maxlength)
-        .showCounter(true)
-        .cancelButton({
-          icon: {
-            src: $r('app.media.close')
-          }
-        })
-    }
-    .margin({
-      top: 16,
-      bottom: 16
-    })
-  }
-
   build() {
     Column() {
       Flex({
@@ -225,215 +146,43 @@ export default struct IndexShelf {
 
       Tabs({
         barPosition: BarPosition.Start,
-        controller: this.tabsController
+        controller: this.tabsController,
+        index: this.currentIndex
       }) {
-        TabContent() {
-          this.book()
-        }
-
-        TabContent() {
-          this.book()
-        }
-
-        TabContent() {
-          this.book()
-        }
+        ForEach(this.titleArray, () => {
+          TabContent() {
+           Column(){
+             BookBodyContent({
+               currentIndex: this.currentIndex,
+               EXHIBIT: this.EXHIBIT,
+               GROUP: this.GROUP,
+               searchValue: this.searchValue,
+               isClear: this.isClear,
+               bookType: this.bookType
+             })
+           }
+          }
+        })
       }
       .layoutWeight(1)
       .barWidth(0)
       .barHeight(0)
       .onChange((index) => {
         this.tabsController.changeIndex(index)
-        console.log('index:' + index)
         this.currentIndex = index
       })
       .backgroundColor(Color.White)
       .scrollable(this.APP_INDEX_SCROLLABLE)
     }
-    .height('100%')
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
-      colors: [["rgb(254, 203, 169)", 0], ["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
+      colors: [
+        ["rgb(254, 203, 169)", 0], ["RGB(245, 245, 245)", 0.15]
+        , ["RGB254, 203, 169)", 0.25]] // 数组末尾元素占比小于1时满足重复着色效果
     })
-    // .padding({ top: this.topRectHeight})
     .borderRadius({ bottomRight: 5, bottomLeft: 5 })
   }
 
-  @Builder
-  book() {
-    Column() {
-      Flex(
-        {
-          alignItems: ItemAlign.Center,
-          justifyContent: FlexAlign.SpaceBetween
-        }
-      ) {
-        Scroll() {
-          Flex({
-            alignItems: ItemAlign.Center,
-            justifyContent: FlexAlign.SpaceBetween
-          }) {
-            Row({ space: 15 }) {
-              IndexSearchType({ title: this.title, searchValue: this.searchValue })
-              IndexSearchType({ title: '浏览历史', searchValue: this.searchValue })
-                .onClick(() => {
-                  this.GROUP = '标签'
-                  this.searchValue = '浏览历史'
-                })
-              if (this.searchValue !== '浏览历史') {
-                this.GroupBuilder()
-                this.ExhibitBuilder()
-                Text('管理')
-                  .onClick(() => {
-                    router.pushUrl({
-                      url: 'pages/view/bookShelf/Manage/BookManagePage',
-                      params: {
-                        currentIndex: this.currentIndex,
-                        EXHIBIT: this.EXHIBIT,
-                        GROUPName: this.GROUP,
-                        bookTypes: this.bookType
-                      }
-                    })
-                  })
-                  .fontColor('rgba(0,0,0,0.5)')
-                  .fontSize(15)
-                  .fontWeight(400)
-              }
-            }
-          }
-        }
-        .scrollBar(BarState.Off)
-        .scrollable(ScrollDirection.Horizontal)
-
-        if (this.searchValue === '浏览历史') {
-          Row() {
-            Text('清空')
-              .onClick(() => {
-                if (this.IndexShelf != null) {
-                  this.IndexShelf.open()
-                }
-              })
-          }
-        }
-      }
-      .padding(15)
-
-      Stack() {
-        if (this.searchValue !== '浏览历史') {
-          groupTypeComponent({
-            bookType: this.bookType,
-            currentIndex: this.currentIndex,
-            groupCoverShow: this.groupCoverShow,
-            GROUP: this.GROUP
-          }).zIndex(999)
-        }
-        Refresh({ refreshing: $$this.isRefreshing, builder: this.refreshComponent }) {
-          Scroll() {
-            Stack({ alignContent: Alignment.Center }) {
-              if (this.bookType === '书单' && this.searchValue !== '浏览历史') {
-                ShelfBookList({
-                  EXHIBIT: this.EXHIBIT,
-                  isClear: this.isClear
-                })
-              } else {
-                if (this.GROUP === '标签') {
-                  if (this.currentIndex === 0) {
-                    novelPage({
-                      searchValue: this.searchValue,
-                      currentIndex: 0,
-                      isClear: this.isClear,
-                      EXHIBIT: this.EXHIBIT
-                    })
-                      .zIndex(0)
-                  } else if (this.currentIndex === 1) {
-                    cartoonPage({
-                      searchValue: this.searchValue,
-                      currentIndex: 1,
-                      isClear: this.isClear,
-                      EXHIBIT: this.EXHIBIT
-                    }).zIndex(1)
-                  } else if (this.currentIndex === 2) {
-                    soundPage({
-                      searchValue: this.searchValue,
-                      currentIndex: 2,
-                      isClear: this.isClear,
-                      EXHIBIT: this.EXHIBIT
-                    }).zIndex(2)
-                  }
-                } else {
-                  BookFolder({
-                    EXHIBIT: this.EXHIBIT
-                  })
-                }
-              }
-
-            }
-            .padding({ left: 10, right: 10 ,bottom:10})
-          }
-          // .margin({ bottom: 110 + (this.topRectHeight === 0 ? 10 : this.topRectHeight) })
-          .align(Alignment.TopStart)
-          .scrollBar(BarState.Off)
-        }
-        .margin({ top: this.searchValue === '浏览历史' ? 0 : 30 })
-        .onStateChange((refreshStatus: RefreshStatus) => {
-          if (refreshStatus === 1 || refreshStatus === 2) {
-            this.RefreshingTitle = '松开刷新'
-          } else {
-            this.RefreshingTitle = '刷新中...'
-          }
-        })
-        .onRefreshing(() => {
-          setTimeout(() => {
-            this.counter++
-            this.isRefreshing = false
-          }, 1000)
-
-        })
-      }
-      .layoutWeight(1)
-      .alignContent(Alignment.Top)
-    }
-  }
-
-  @Builder
-  ExhibitBuilder() {
-    Row({ space: 10 }) {
-      ForEach(this.EXHIBIT_NAMES, (item: string) => {
-        if (item !== this.EXHIBIT) {
-          IndexSearchType({ title: item, searchValue: this.searchValue })
-            .onClick(() => {
-              this.EXHIBIT = item
-            })
-          Divider()
-            .vertical(true)
-            .height(15)
-            .color('#989797')
-            .opacity(0.5)
-            .strokeWidth(1)
-        }
-      })
-    }
-  }
-
-  @Builder
-  GroupBuilder() {
-    Row({ space: 10 }) {
-      ForEach(this.GROUP_NAMES, (item: string) => {
-        if (item !== this.GROUP) {
-          IndexSearchType({ title: item, searchValue: this.searchValue })
-            .onClick(() => {
-              this.GROUP = item
-            })
-          Divider()
-            .vertical(true)
-            .height(15)
-            .color('#989797')
-            .opacity(0.5)
-            .strokeWidth(1)
-        }
-      })
-    }
-  }
 
   @Builder
   TabBuilderImage(index: number, name: string) {
@@ -441,14 +190,7 @@ export default struct IndexShelf {
       Image($r('app.media.SUB_theme'))
     }.width('100%')
   }
-
-  @Builder
-  refreshComponent() {
-    RefreshComponent({
-      RefreshingTitle: this.RefreshingTitle,
-    })
-  }
-
+  @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   @Builder
   // 书籍导入UI盒子
   ImportClickBox(index: number, image: string, text: string) {
@@ -491,8 +233,10 @@ export default struct IndexShelf {
           await documentPicker.select(documentSelectOptions).then((documentSelectResult: Array<string>) => {
             filePath = documentSelectResult[0];
           })
-          FileHandler.CopyFile(filePath)
+          FileHandler.CopyFile(filePath,this.currentIndex)
           this.isShowImport = false
+          sleep(500)
+          this.isBookRefreshing++
           break
         case 1:
         // 云盘导入
@@ -550,6 +294,38 @@ export default struct IndexShelf {
         top: 16
       })
     }
+  }
+
+  // 网址导入dialog
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: Dialog({
+      title: '网址导入',
+      child: () => {
+        this.DialogInput("请输入书籍目录或详情页", 10)
+      }
+    }),
+    cornerRadius: 8,
+    offset: { dx: 0, dy: 0 }
+  })
+  tabsController: TabsController = new TabsController();
+  private scrollController: Scroller = new Scroller();
+
+  @Builder
+  DialogInput(placeholder: string, maxlength: number) {
+    Row() {
+      TextInput({ placeholder: placeholder })
+        .maxLength(maxlength)
+        .showCounter(true)
+        .cancelButton({
+          icon: {
+            src: $r('app.media.close')
+          }
+        })
+    }
+    .margin({
+      top: 16,
+      bottom: 16
+    })
   }
 
   @Builder
@@ -656,8 +432,8 @@ export default struct IndexShelf {
     })
   }
 
-  @Builder
   // 导入书单弹窗
+  @Builder
   ImportBookListDialog() {
     Column() {
       Flex({

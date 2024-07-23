@@ -9,6 +9,7 @@ import { getBookData } from '../preferences/bookDataPreferences'
 let KEY = ''
 
 export const initBookListData = ()=>{
+  AppStorage.setOrCreate(CommonConstants.BOOK_IS_BOOK_REFRESHING, 0)
   // AppStorage.setOrCreate(CommonConstants.PREFERENCES_BOOK_TYPE_NUMBER,0)
   AppStorage.setOrCreate(CommonConstants.KEY_NOVEL_BOOK_DATA,getBookData(0))
   AppStorage.setOrCreate(CommonConstants.KEY_SOUND_BOOK_DATA,getBookData(1))
