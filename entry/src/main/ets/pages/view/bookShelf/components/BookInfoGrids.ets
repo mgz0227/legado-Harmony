@@ -116,7 +116,6 @@ export default struct BookInfoGrids{
   bookInfoDialog: CustomDialogController | null = new CustomDialogController({
     builder: BookInfoDialogs({
       bookData:this.book,
-      onDelete:this.onDelete,
       cancel: () => {
         this.exitDialog()
       }

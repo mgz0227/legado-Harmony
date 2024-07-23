@@ -137,10 +137,10 @@ class BooksDao {
   }
 
   //删除订阅源历史记录
-  async deleteBook(bookId: number) {
+  async deleteBook(id: number) {
     try {
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates.equalTo('bookId', bookId)
+      predicates.equalTo('id', id)
       await DbUtil.delete(predicates)
       return true
     }  catch (err) {
