@@ -40,6 +40,7 @@ export default struct SubscriptionIndex {
   @State subscriptionList: rssSources[] = []
   @State rssSourcesList: rssSources[] = []
   @State groupList: rssGroupList[] = []
+  @State batchEdit: boolean = false
   //刷新
   refresh = () => {
     this.resetState()
@@ -104,36 +105,49 @@ export default struct SubscriptionIndex {
         }
       ) {
         Row({
-          space: CommonConstants.SPACE_20
+          space: CommonConstants.SPACE_16
         }) {
-          Image($r('app.media.icon_subscription_index'))
-            .width(CommonConstants.COMMON_WIDTH_45_36)
-            .height(CommonConstants.COMMON_HEIGHT_21_6)
-          Search({ placeholder: '搜索订阅', icon: "/common/images/search.svg" })
-            .layoutWeight(1)
-            .height(CommonConstants.COMMON_HEIGHT_40)
-            .backgroundColor(Color.White)
-            .onClick(() => {
-              router.pushUrl({
-                url: 'pages/view/Subscription/components/SubscriptionSearch'
+          if (this.batchEdit === false) {
+            Image($r('app.media.icon_subscription_index'))
+              .width(CommonConstants.COMMON_WIDTH_45_36)
+              .height(CommonConstants.COMMON_HEIGHT_21_6)
+            Search({ placeholder: '搜索订阅', icon: "/common/images/search.svg" })
+              .layoutWeight(1)
+              .height(CommonConstants.COMMON_HEIGHT_40)
+              .backgroundColor(Color.White)
+              .onClick(() => {
+                router.pushUrl({
+                  url: 'pages/view/Subscription/components/SubscriptionSearch'
+                })
               })
-            })
-            .focusOnTouch(false) //不可获取焦点
-        }
-        .padding({ right: PaddingConstants.PADDING_16 })
+              .focusOnTouch(false) //不可获取焦点
 
-        Image($r('app.media.addSubscription'))
-          .width(ImageConstants.IMG_WIDTH_24)
-          .height(ImageConstants.IMG_HEIGHT_24)
-          .bindMenu(this.MenuBuilder)
+            Image($r('app.media.addSubscription'))
+              .width(ImageConstants.IMG_WIDTH_24)
+              .height(ImageConstants.IMG_HEIGHT_24)
+              .bindMenu(this.MenuBuilder)
+          } else {
+            Text('全选')
+            Blank(1)
+            Text(`已选2项`)
+            Blank(1)
+            Text('完成').onClick(() => {
+              this.batchEdit = false
+            })
+          }
+        }
+        .width('100%')
       }
       .height('8%')
 
       //搜索End
       //最近使用Start
-      RssSourcesHistory({
-        RecentlyUsed: this.RecentlyUsed
-      })
+      if (this.batchEdit === false) {
+        RssSourcesHistory({
+          RecentlyUsed: this.RecentlyUsed
+        })
+      }
+
       if (this.loading) {
         Column() {
           LoadingProgress()
@@ -275,6 +289,7 @@ export default struct SubscriptionIndex {
         this.isShowNewSources = true
         break;
       case 3:
+        this.batchEdit = true
         break
       case 4:
         break
