@@ -218,6 +218,7 @@ export default class CommonConstants {
   static readonly SPACE_6: number = 6;
   static readonly SPACE_10: number = 10;
   static readonly SPACE_12: number = 12;
+  static readonly SPACE_16: number = 16;
   static readonly SPACE_20: number = 20;
 
   /**
