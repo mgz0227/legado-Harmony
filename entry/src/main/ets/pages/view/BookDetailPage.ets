@@ -84,6 +84,9 @@ struct BookDetailPage {
   @State txtFile: ChaptersDataSource = new ChaptersDataSource()
   onPageShow() {
     this.isShow = true
+  }
+
+  async aboutToAppear() {
     console.log('router BookDetailPage:' + JSON.stringify(router.getParams()))
     if (router.getParams() as Books) {
       this.bookData = router.getParams() as Books
@@ -328,12 +331,12 @@ struct BookDetailPage {
 
       // 小说标题
       Row({ space: CommonConstants.SPACE_20 }) {
-        Image(this.bookData.coverUrl?? $r('app.media.cover_list'))
+        Image(this.bookData.bookImage ?? $r('app.media.cover_list'))
           .width(CommonConstants.NOVEL_IMG_WIDTH)
           .height(CommonConstants.NOVEL_IMG_HEIGHT)
           .borderRadius(5)
         Column({ space: 8 }) {
-          Text(this.bookData.bookName.replace(new RegExp('\\..*', 'g'), ''))
+          Text(this.bookData.title.replace(new RegExp('\\..*', 'g'), ''))
             .fontColor(Color.White)
             .fontSize(20)
           Blank()

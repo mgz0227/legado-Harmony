@@ -20,12 +20,13 @@ import dialogNewSources from './RssSources/dialogNewSources'
 import RssSourcesHistory from './components/RssSourcesHistory'
 import rssSourcesHistoryDao from '../../../database/dao/RssSourcesHistoryDao'
 import { rssSourcesHistory } from '../../../database/entities/rssSourcesHistory'
+import { FileHandler } from 'ets/common/utils/FileHandler'
 
 @Component
 export default struct SubscriptionIndex {
   @State isShowImport: boolean = false
-  @State isShowNewSources:boolean = false
-  @Prop @Watch('currentTabIndexChange')currentTabIndex: number
+  @State isShowNewSources: boolean = false
+  @Prop @Watch('currentTabIndexChange') currentTabIndex: number
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @State
   moreList: IconTitleVo[] = [
@@ -35,25 +36,23 @@ export default struct SubscriptionIndex {
     new IconTitleVo($r('app.media.icon_rule_batch'), '批量管理'),
   ]
   @State RecentlyUsed: rssSourcesHistory[] = []
-
   @State loading: boolean = false
+  @State subscriptionList: rssSources[] = []
+  @State rssSourcesList: rssSources[] = []
+  @State groupList: rssGroupList[] = []
+  @State batchEdit: boolean = false
   //刷新
-  refresh = ()=>{
+  refresh = () => {
     this.resetState()
     this.getList()
-    setTimeout(()=>{
-      rssSourcesHistoryDao.search().then((rssSourcesHistoryList:rssSourcesHistory[])=>{
+    setTimeout(() => {
+      rssSourcesHistoryDao.search().then((rssSourcesHistoryList: rssSourcesHistory[]) => {
         this.RecentlyUsed = rssSourcesHistoryList
       })
-    },100)
+    }, 100)
   }
 
-  @State subscriptionList:rssSources[]=[]
-
-
-  @State rssSourcesList:rssSources[] = []
-  @State groupList: rssGroupList[] =[]
-  currentTabIndexChange(){
+  currentTabIndexChange() {
     this.refresh()
   }
 
@@ -95,42 +94,60 @@ export default struct SubscriptionIndex {
     this.groupList = Object.values(groupMap)
   }
 
-
-
   build() {
-    Column(){
+    Column() {
       //搜索Start
       Flex(
         {
-          direction:FlexDirection.Row,
+          direction: FlexDirection.Row,
           alignItems: ItemAlign.Center,
           justifyContent: FlexAlign.SpaceBetween
         }
       ) {
         Row({
-          space:CommonConstants.SPACE_20
+          space: CommonConstants.SPACE_16
         }) {
-          Image($r('app.media.icon_subscription_index')).width(CommonConstants.COMMON_WIDTH_45_36).height(CommonConstants.COMMON_HEIGHT_21_6)
-          Search({ placeholder: '搜索订阅', icon: "/common/images/search.svg" })
-            .layoutWeight(1)
-            .height(CommonConstants.COMMON_HEIGHT_40)
-            .backgroundColor(Color.White)
-            .onClick(()=>{
-              router.pushUrl({
-                url: 'pages/view/Subscription/components/SubscriptionSearch'
+          if (this.batchEdit === false) {
+            Image($r('app.media.icon_subscription_index'))
+              .width(CommonConstants.COMMON_WIDTH_45_36)
+              .height(CommonConstants.COMMON_HEIGHT_21_6)
+            Search({ placeholder: '搜索订阅', icon: "/common/images/search.svg" })
+              .layoutWeight(1)
+              .height(CommonConstants.COMMON_HEIGHT_40)
+              .backgroundColor(Color.White)
+              .onClick(() => {
+                router.pushUrl({
+                  url: 'pages/view/Subscription/components/SubscriptionSearch'
+                })
               })
+              .focusOnTouch(false) //不可获取焦点
+
+            Image($r('app.media.addSubscription'))
+              .width(ImageConstants.IMG_WIDTH_24)
+              .height(ImageConstants.IMG_HEIGHT_24)
+              .bindMenu(this.MenuBuilder)
+          } else {
+            Text('全选')
+            Blank(1)
+            Text(`已选2项`)
+            Blank(1)
+            Text('完成').onClick(() => {
+              this.batchEdit = false
             })
-            .focusOnTouch(false) //不可获取焦点
+          }
         }
-        .padding({right: PaddingConstants.PADDING_16})
-        Image($r('app.media.addSubscription')).width(ImageConstants.IMG_WIDTH_24).height(ImageConstants.IMG_HEIGHT_24).bindMenu(this.MenuBuilder)
+        .width('100%')
       }
       .height('8%')
+
       //搜索End
       //最近使用Start
-      RssSourcesHistory({
-        RecentlyUsed:this.RecentlyUsed
-      })
+      if (this.batchEdit === false) {
+        RssSourcesHistory({
+          RecentlyUsed: this.RecentlyUsed
+        })
+      }
+
       if (this.loading) {
         Column() {
           LoadingProgress()
@@ -143,45 +160,45 @@ export default struct SubscriptionIndex {
       } else if (!this.groupList.length) {
         SubscriptionContent({
           subscriptionTitle: '收藏',
-          showAddDialog:()=>{
+          showAddDialog: () => {
             this.isShowNewSources = true
           }
         })
       } else {
-        Scroll(){
-          Column(){
-            ForEach(this.groupList,(item:rssGroupList)=>{
+        Scroll() {
+          Column() {
+            ForEach(this.groupList, (item: rssGroupList) => {
               SubscriptionContent({
                 subscriptionTitle: item.title,
                 contentList: item.list,
-                refresh:this.refresh
+                refresh: this.refresh
               })
             })
           }
         }
         .align(Alignment.Top)
-        .padding({bottom:20})
+        .padding({ bottom: 20 })
         .layoutWeight(1)
         .scrollBar(BarState.Off)
         .scrollable(ScrollDirection.Vertical)
       }
 
       Flex()
-        .bindSheet($$this.isShowImport,this.dialogImportFunction(),{
+        .bindSheet($$this.isShowImport, this.dialogImportFunction(), {
           detents: [SheetSize.FIT_CONTENT, SheetSize.LARGE, 200],
           dragBar: true,
-          showClose:false,
-          onDisappear:()=>{
+          showClose: false,
+          onDisappear: () => {
             this.isShowImport = false
           }
         })
 
       Flex()
-        .bindSheet($$this.isShowNewSources,this.dialogNewSourcesFunction(),{
+        .bindSheet($$this.isShowNewSources, this.dialogNewSourcesFunction(), {
           height: 200,
           dragBar: true,
-          showClose:false,
-          onDisappear:()=>{
+          showClose: false,
+          onDisappear: () => {
             this.isShowNewSources = false
           }
         })
@@ -199,24 +216,26 @@ export default struct SubscriptionIndex {
     .height('100%')
   }
 
-  @Builder dialogImportFunction() {
+  @Builder
+  dialogImportFunction() {
     Flex() {
       SubscriptionImport({
-      subscriptionList:this.subscriptionList
-      ,show: this.isShowImport
-      }).onDisAppear(()=>{
+        subscriptionList: this.subscriptionList
+      , show: this.isShowImport
+      }).onDisAppear(() => {
         this.refresh()
       })
     }
   }
 
-  @Builder dialogNewSourcesFunction() {
-    Column(){
+  @Builder
+  dialogNewSourcesFunction() {
+    Column() {
       dialogNewSources({
-        btnClick:()=>{
+        btnClick: () => {
           this.isShowNewSources = false
         }
-      }).onDisAppear(()=>{
+      }).onDisAppear(() => {
         this.refresh()
       })
 
@@ -244,7 +263,7 @@ export default struct SubscriptionIndex {
             this.MenuOnclick(index)
           })
 
-          if(index !== 5){
+          if (index !== 5) {
             Divider()
           }
         }
@@ -256,29 +275,28 @@ export default struct SubscriptionIndex {
     .width(100)
   }
 
-
-
-  MenuOnclick(value:number|string){
-    switch (value){
+  async MenuOnclick(value: number | string) {
+    switch (value) {
       case 0:
-        this.pasteAnalyze();
+        // 粘贴导入
+        this.pasteAnalyze(0);
         break;
       case 1:
-
+        // 本地导入
+        this.pasteAnalyze(1);
         break
       case 2:
-        this.isShowNewSources =true
+        this.isShowNewSources = true
         break;
       case 3:
+        this.batchEdit = true
         break
       case 4:
-
         break
-
     }
   }
 
-  async pasteAnalyze() {
+  async pasteAnalyze(value: number) {
     try {
       const url = getPasteDataSync()
       if (!url) {
@@ -291,10 +309,18 @@ export default struct SubscriptionIndex {
       //   showMessage('复制的链接不正确')
       //   return
       // }
-      const res: AxiosResponse = await axios
-        .get(url ?? 'http://yuedu.miaogongzi.net/shuyuan/miaogongziDY.json');
-      console.log('res', JSON.stringify(res))
-      this.subscriptionList = res.data;
+      if (value === 1) {
+        let FileResult = await FileHandler.documentPickerFile(1, ['.json'])
+        FileHandler.ReadJSONFile(FileResult[0]).then(result => {
+          // console.log('result:' + result)
+          this.subscriptionList = JSON.parse(result) as rssSources[]
+        })
+      } else if (value === 0) {
+        const res: AxiosResponse = await axios
+          .get(url ?? 'http://yuedu.miaogongzi.net/shuyuan/miaogongziDY.json');
+        console.log('res', JSON.stringify(res))
+        this.subscriptionList = res.data;
+      }
       this.isShowImport = true;
     } catch (err) {
       console.error('错误 ' + err);

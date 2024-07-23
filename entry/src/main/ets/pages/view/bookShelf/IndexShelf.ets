@@ -146,39 +146,35 @@ export default struct IndexShelf {
 
       Tabs({
         barPosition: BarPosition.Start,
-        controller: this.tabsController,
-        index: this.currentIndex
+        controller: this.tabsController
       }) {
-        ForEach(this.titleArray, () => {
-          TabContent() {
-           Column(){
-             BookBodyContent({
-               currentIndex: this.currentIndex,
-               EXHIBIT: this.EXHIBIT,
-               GROUP: this.GROUP,
-               searchValue: this.searchValue,
-               isClear: this.isClear,
-               bookType: this.bookType
-             })
-           }
-          }
-        })
+        TabContent() {
+          this.book()
+        }
+
+        TabContent() {
+          this.book()
+        }
+
+        TabContent() {
+          this.book()
+        }
       }
       .layoutWeight(1)
       .barWidth(0)
       .barHeight(0)
       .onChange((index) => {
         this.tabsController.changeIndex(index)
+        console.log('index:' + index)
         this.currentIndex = index
       })
       .backgroundColor(Color.White)
       .scrollable(this.APP_INDEX_SCROLLABLE)
     }
+    .height('100%')
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
-      colors: [
-        ["rgb(254, 203, 169)", 0], ["RGB(245, 245, 245)", 0.15]
-        , ["RGB254, 203, 169)", 0.25]] // 数组末尾元素占比小于1时满足重复着色效果
+      colors: [["rgb(254, 203, 169)", 0], ["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
     })
     .borderRadius({ bottomRight: 5, bottomLeft: 5 })
   }
@@ -239,11 +235,11 @@ export default struct IndexShelf {
           this.isBookRefreshing++
           break
         case 1:
-        // 云盘导入
+          // 云盘导入
           this.isShowCloudImport = true
           break
         case 2:
-        // 网址导入
+          // 网址导入
           this.dialogController.open();
           break
       }
@@ -432,8 +428,8 @@ export default struct IndexShelf {
     })
   }
 
-  // 导入书单弹窗
   @Builder
+  // 导入书单弹窗
   ImportBookListDialog() {
     Column() {
       Flex({
