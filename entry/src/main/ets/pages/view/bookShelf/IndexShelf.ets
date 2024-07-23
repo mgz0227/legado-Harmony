@@ -235,8 +235,9 @@ export default struct IndexShelf {
           })
           FileHandler.CopyFile(filePath,this.currentIndex)
           this.isShowImport = false
-          sleep(500)
-          this.isBookRefreshing++
+          setTimeout(()=>{
+            this.isBookRefreshing++
+          },500)
           break
         case 1:
           // 云盘导入

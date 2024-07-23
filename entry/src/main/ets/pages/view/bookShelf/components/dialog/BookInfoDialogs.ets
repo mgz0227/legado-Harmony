@@ -4,6 +4,8 @@ import { router } from '@kit.ArkUI'
 import InsideCircleIcon from '../../../../../componets/common/InsideCircleIcon'
 import { showMessage } from '../../../../../componets/common/promptShow'
 import confirmDialogExample from '../../../../../componets/common/confirmDialog'
+import { sleep } from '../../../../../common/utils/utils'
+import booksUtil from '../../../../../common/utils/booksUtils'
 
 @CustomDialog
 /**
@@ -22,10 +24,6 @@ export default struct BookInfoDialogs{
   ]
 
   cancel: () => void = () => {
-  }
-
-  onDelete: () => void = () => {
-
   }
 
   build() {
@@ -54,14 +52,9 @@ export default struct BookInfoDialogs{
         } .onClick(()=>{
           router.pushUrl({
             url: 'pages/view/BookDetailPage',
-            params: {
-              bookId: '1',
-              bookName: '大奉打更人',
-              bookAuthor: '卖报小郎君',
-              bookImage: $r('app.media.cover_list'),
-              bookDescribe: '《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... '
-            }
+            params: this.bookData
           })
+          this.controller?.close()
         })
       }.padding(20)
       Divider().strokeWidth(0.5).padding({bottom:16})
@@ -104,7 +97,7 @@ export default struct BookInfoDialogs{
       case 3 :
         showMessage('加入书单'); break;
       case 4 :
-        showMessage('删除'); this.bookDelDialog?.open(); break;
+        this.bookDelDialog?.open(); break;
     }
   }
 
@@ -132,11 +125,21 @@ export default struct BookInfoDialogs{
   })
 
   deleteGroup() {
-    this.onDelete()
+    this.deleteBook()
     this.cancel()
   }
 
   exitApp() {
     this.bookDelDialog?.close()
   }
+  @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
+
+  async deleteBook(){
+    booksUtil.delBooksById(this.bookData.id || 0)
+    setTimeout(()=>{
+      this.isBookRefreshing++
+    },500)
+    showMessage('删除成功')
+  }
+
 }

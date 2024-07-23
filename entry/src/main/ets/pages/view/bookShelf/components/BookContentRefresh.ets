@@ -40,6 +40,7 @@ export default struct BookContentRefresh {
               BookContent({
                 currentIndex:this.currentIndex,
                 bookType:this.bookType,
+                EXHIBIT: this.EXHIBIT
               })
             } else {
               BookFolder({

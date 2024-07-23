@@ -16,10 +16,6 @@ export default struct BookInfos{
   @Prop book:Books
 
   @State delCache:boolean = false
-
-  onDelete: () => void = () => {
-
-  }
   build() {
 
     Flex(
@@ -124,7 +120,6 @@ export default struct BookInfos{
   bookInfoDialog: CustomDialogController | null = new CustomDialogController({
     builder: BookInfoDialogs({
       bookData:this.book,
-      onDelete:this.onDelete,
       cancel: () => {
         this.exitDialog()
       }
@@ -149,7 +144,6 @@ export default struct BookInfos{
       delCache:this.delCache,
       isShowCache:true
     }),
-    cancel: this.exitApp,
     autoCancel: true,
     alignment: DialogAlignment.Center,
     // offset: { dx: 0, dy: '-40%' },
@@ -163,10 +157,8 @@ export default struct BookInfos{
   }
 
   onAccept() {
-    this.onDelete()
+
   }
 
-  exitApp() {
-    console.info('点外围取消')
-  }
+
 }
