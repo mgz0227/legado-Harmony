@@ -265,12 +265,12 @@ export default struct SubscriptionIndex {
         this.pasteAnalyze();
         break;
       case 1:
-        //todo:本地导入
+        // todo:本地导入
         let result = await FileHandler.documentPickerFile(1, ['.json'])
         showMessage('订阅源本地导入成功')
         break
       case 2:
-        this.isShowNewSources =true
+        this.isShowNewSources = true
         break;
       case 3:
         break
