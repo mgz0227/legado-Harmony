@@ -4,7 +4,6 @@ import BookBodyContent from './components/BookBodyContent'
 import { picker } from '@kit.CoreFileKit'
 import { FileHandler } from '../../../common/utils/FileHandler'
 import Dialog from '../../../componets/common/Dialog'
-import { sleep } from '../../../common/utils/utils'
 
 @Component
 export default struct IndexShelf {
@@ -13,6 +12,7 @@ export default struct IndexShelf {
   titleArray: Array<string> = ['小说', '漫画', '有声书']
 
   @State bookType:string = '全部'
+  @State bookTypeNumber:number = 1
   @State EXHIBIT: string = '列表'
   @State GROUP: string = '标签'
   @State searchValue: string = '最近阅读'
@@ -158,7 +158,8 @@ export default struct IndexShelf {
                GROUP: this.GROUP,
                searchValue: this.searchValue,
                isClear: this.isClear,
-               bookType: this.bookType
+               bookType: this.bookType,
+               bookTypeNumber:this.bookTypeNumber
              })
            }
           }
