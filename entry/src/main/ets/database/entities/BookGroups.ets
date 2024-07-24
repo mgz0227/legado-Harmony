@@ -7,15 +7,19 @@
 @Observed
 export class BookGroups {
   //分组Id
-  groupId:number = 0;
+  groupId?:number;
   //分组名称
   groupName:string = "";
+  //封面是否仅用当前分组
+  coverOnly:boolean = false;
+  //封面样式类型 0默认1自定义2全图
+  coverType:number = 0;
   //分组封面
   coverUrl?:string;
   //分组描述
-  groupDescribe:string = "";
+  groupDescribe?:string;
   //排序
-  order:number = 0;
+  sort:number = 1;
   //是否自动刷新
   enableRefresh:boolean = true;
   //是否显示
@@ -26,4 +30,10 @@ export class BookGroups {
   createTime:number = 0;
   //更新时间
   updateTime:number = 0;
+  //书籍排序
+  bookSort:number = -1;
+  //更新提醒
+  canUpdate:boolean = false
+  //是否可删除
+  canDelete:boolean = true
 }

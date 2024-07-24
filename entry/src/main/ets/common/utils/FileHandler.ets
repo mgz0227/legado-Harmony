@@ -26,7 +26,7 @@ export class FileHandler {
       bookName: file.name,
       bookUrl: dstPath,
       author: '暂无',
-      bookGroup: 2,
+      bookGroup: 4,
       latestChapterTime: 0,
       totalChapterNum: 0,
       durChapterIndex: 0,

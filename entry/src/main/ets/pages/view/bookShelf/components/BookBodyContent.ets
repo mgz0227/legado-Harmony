@@ -19,6 +19,7 @@ export default struct BookBodyContent {
   @Link GROUP: string
   @Link searchValue: string
   @Link bookType: string
+  @Link bookTypeNumber:number
   @State title: string = '最近阅读'
   @State groupCoverShow: boolean = false
   @Prop isClear: boolean = false
@@ -56,7 +57,8 @@ export default struct BookBodyContent {
                         currentIndex: this.currentIndex,
                         EXHIBIT: this.EXHIBIT,
                         GROUPName: this.GROUP,
-                        bookTypes: this.bookType
+                        bookTypes: this.bookType,
+                        bookTypeNumber: this.bookTypeNumber
                       }
                     })
                   })
@@ -86,7 +88,7 @@ export default struct BookBodyContent {
       Stack() {
         if (this.searchValue !== '浏览历史') {
           groupTypeComponent({
-            bookType: this.bookType,
+            bookTypeNumber:this.bookTypeNumber,
             currentIndex: this.currentIndex,
             groupCoverShow: this.groupCoverShow,
             GROUP: this.GROUP
@@ -103,7 +105,8 @@ export default struct BookBodyContent {
               searchValue: this.searchValue,
               isClear: this.isClear,
               currentIndex: this.currentIndex,
-              bookType: this.bookType
+              bookType: this.bookType,
+              bookTypeNumber:this.bookTypeNumber
             })
           }
           .align(Alignment.Top)

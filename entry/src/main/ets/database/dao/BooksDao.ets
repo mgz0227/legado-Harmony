@@ -57,7 +57,7 @@ class BooksDao {
       }
       sql += `
   ORDER BY
-    id DESC
+     isTop DESC, createTime DESC
 `;
       const bookDbList = await DbUtil.querySqlForList<Books>(sql, column);
       console.log("TagInfo", '书籍：' + bookDbList.length)

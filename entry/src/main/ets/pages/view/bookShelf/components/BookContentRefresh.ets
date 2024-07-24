@@ -20,6 +20,7 @@ export default struct BookContentRefresh {
   @Link GROUP: string
   @Link searchValue: string
   @Prop isClear: boolean = false
+  @Link bookTypeNumber:number
 
   changeRefreshing(){
     if (this.isRefreshing) {
@@ -39,7 +40,7 @@ export default struct BookContentRefresh {
             if (this.GROUP === '标签') {
               BookContent({
                 currentIndex:this.currentIndex,
-                bookType:this.bookType,
+                bookTypeNumber:this.bookTypeNumber,
                 EXHIBIT: this.EXHIBIT
               })
             } else {
