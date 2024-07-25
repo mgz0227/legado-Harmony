@@ -7,8 +7,6 @@ import Find from './view/Find/Find'
 import MyCenter from './view/myCenter/MyCenter'
 import Subscription from './view/Subscription'
 import {testGetColorFunction} from '@ohos/colorLibrary'
-import { BookGroups } from '../database/entities/BookGroups'
-import BookGroupsDao from '../database/dao/BookGroupsDao'
 
 @Entry
 @Component

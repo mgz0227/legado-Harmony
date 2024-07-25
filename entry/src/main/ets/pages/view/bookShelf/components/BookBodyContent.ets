@@ -22,7 +22,6 @@ export default struct BookBodyContent {
   @Link bookTypeNumber:number
   @State title: string = '最近阅读'
   @State groupCoverShow: boolean = false
-  @Prop isClear: boolean = false
   @State bookBodyIndex: number = 0
   tabsBookBodyController: TabsController = new TabsController();
   build() {
@@ -103,7 +102,6 @@ export default struct BookBodyContent {
               EXHIBIT: this.EXHIBIT,
               GROUP: this.GROUP,
               searchValue: this.searchValue,
-              isClear: this.isClear,
               currentIndex: this.currentIndex,
               bookType: this.bookType,
               bookTypeNumber:this.bookTypeNumber
@@ -146,7 +144,6 @@ export default struct BookBodyContent {
 
   onAccept() {
     console.info('确定')
-    this.isClear = true
   }
 
   onCancel() {

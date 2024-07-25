@@ -12,17 +12,25 @@ import newBookShelf from './bookManage/newBookShelf';
 import newAddShelf from './bookManage/newAddShelf';
 import hideDialogExample from '../../../../componets/common/hideDialog';
 import ShelfBookList from '../Shelf/ShelfBookList';
+import booksDao from '../../../../database/dao/BooksDao';
+import { Books } from '../../../../database/entities/Books';
+import { buttonList } from '../../../../componets/dataList/buttonList';
+import InsideCircleIcon from '../../../../componets/common/InsideCircleIcon';
+import booksUtil from '../../../../common/utils/booksUtils';
+import BookSelectGroupDialog from '../components/dialog/BookSelectGroupDialog';
 
 class routerParams {
   currentIndex:number
   EXHIBIT:string
   GROUPName:string
   bookTypes:string
-  constructor(currentIndex:number,EXHIBIT:string,GROUPName:string,bookTypes:string) {
-    this.currentIndex = currentIndex
-    this.EXHIBIT = EXHIBIT
-    this.GROUPName = GROUPName
-    this.bookTypes = bookTypes
+  bookTypeNumber:number
+  constructor(param:routerParams) {
+    this.currentIndex = param.currentIndex
+    this.EXHIBIT = param.EXHIBIT
+    this.GROUPName = param.GROUPName
+    this.bookTypes = param.bookTypes
+    this.bookTypeNumber = param.bookTypeNumber
   }
 }
 /**
@@ -31,17 +39,17 @@ class routerParams {
 @Entry
 @Component
 struct BookManagePage {
-  // @State currentIndex: number = 0
-  // @State EXHIBIT: string = '列表'
-  // @State GROUPName:string = '文件夹' //标签
   @State GROUPName:string = (router.getParams() as routerParams).GROUPName
   @State currentIndex: number = (router.getParams() as routerParams).currentIndex
   @State EXHIBIT: string = (router.getParams() as routerParams).EXHIBIT
   @State bookTypes: string = (router.getParams() as routerParams).bookTypes
+  @State bookTypeNumber:number = (router.getParams() as routerParams).bookTypeNumber
+  @StorageLink('topRectHeight') topRectHeight: number = 0
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State isClear:boolean = false
   @State allCheck:boolean = false
   @State @Watch('changeCheckNumber')checkNumber:number = 0
-  @State showBookList:BookList[] = []
+
   @State changeTop:boolean = false
   @State isShow:boolean = false
 
@@ -57,108 +65,57 @@ struct BookManagePage {
 
   @State clickBookType:string = ''
 
-  @State @Watch('changeCheckBookList')checkBookList:BookList[] = []
-
   @State topTitle:string = '置顶'
-
-  changeCheckBookList(){
-    if (this.checkBookList.length !== 0) {
-      this.checkBookList.every(book => book.isTop)?this.topTitle = '取消置顶':this.topTitle = '置顶'
-    } else if (this.folderCheckList.length !== 0) {
-      this.folderCheckList.every(folder => folder.isTop)?this.topTitle = '取消置顶':this.topTitle = '置顶'
-    } else {
+  @State bookList:Books[] = []
+  @State checkList:string[] = []
+  @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
+  selectIsAllTop(){
+    let allTopNumber = 0
+    let allNotTopNumber = 0
+    this.checkList.forEach((index)=>{
+      //从bookList更具id查询是否都isTop
+      this.bookList.filter((item)=>{
+        if (item.isTop && Number(index) === item.id){
+          allTopNumber++
+        }
+        if (!item.isTop && Number(index) === item.id){
+          allNotTopNumber++
+        }
+      })
+    })
+    if (allTopNumber === this.checkList.length && allTopNumber > 0) {
+      this.topTitle = '取消置顶'
+    }
+    if (allNotTopNumber === this.checkList.length && allNotTopNumber > 0) {
       this.topTitle = '置顶'
     }
   }
+  getBookList(){
+    booksDao.search({
+      type:this.currentIndex,
+      bookGroup:this.bookTypeNumber
+    }).then((val)=>{
+      this.bookList = val
+    })
+  }
 
   changeCheckNumber(){
-    if (this.checkNumber !== 0 && this.checkNumber === this.showBookList.length) {
+    if (this.checkNumber !== 0 && this.checkNumber === this.bookList.length) {
         this.allCheck = true
     }
   }
 
-  addBookType: CustomDialogController | null = new CustomDialogController({
-    builder: addBookTypeDialog({
-      cancel: ()=> { this.onCancel() },
-      confirm: ()=> { this.onAccept() },
-      bookType: this.bookType
-    }),
-    cancel: this.exitDialog,
-    autoCancel: true,
-    alignment: DialogAlignment.Center,
-    // offset: { dx: 0, dy: '-40%' },
-    gridCount: 4,
-    customStyle: false,
-    cornerRadius: 25
-  })
-  //退出弹框
-  exitDialog(){
-    this.bookType = ''
-  }
-  //取消
-  onCancel(){
-    this.bookType = ''
-  }
-  //确定
-  onAccept(){
-    console.log(this.bookType)
-    //对比bookType看是否BooTypeList数组中存在
-    if (this.BooTypeList.includes(this.bookType)) {
-      showMessage(`已存${this.bookType}分组`)
-      this.bookType= ''
-      return
-    } else{
-      this.BooTypeList.push(this.bookType)
-      this.bookType= ''
-      showMessage(`已添加${this.bookType}分组`)
-    }
-  }
-
-  @StorageProp(CommonConstants.KEY_NOVEL_BOOK_DATA)
-  bookList:BookList[] = []
-  @StorageProp(CommonConstants.KEY_CARTOON_BOOK_DATA)
-  cartoonList:BookList[] = []
-  @StorageProp(CommonConstants.KEY_SOUND_BOOK_DATA)
-  soundList:BookList[] = []
-
-
   @StorageLink('GROUP_LIST_DATA') groupData:folderList[] = []
 
-  onCurrentIndexChange(){
-    if (this.currentIndex === 0 && this.GROUPName !== '文件夹') {
-      this.showBookList = this.bookList
-    } else if(this.currentIndex === 1 && this.GROUPName !== '文件夹'){
-      this.showBookList = this.cartoonList
-    } else if(this.currentIndex === 2 && this.GROUPName !== '文件夹'){
-      this.showBookList = this.soundList
-    } else {
-      this.showBookList = []
-    }
-    this.showBookList = shortDateList(this.showBookList)
-  }
-  //showBookList根据isTop字段排序true最上面
-  // showBookSort() {
-  //   this.showBookList.sort((a, b) => {
-  //     if (a.isTop && !b.isTop) {
-  //       return -1
-  //     } else if (!a.isTop && b.isTop) {
-  //       return 1
-  //     } else {
-  //       // return 0
-  //       return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
-  //     }
-  //   })
-  // }
 
   onPageShow(): void {
-    // initBookListData()
-    this.onCurrentIndexChange()
+    this.getBookList()
   }
-  // @State folderCheckNumber:number = 0
-  @State @Watch('folderCheckNumber')folderCheckList:folderList[] = []
+
+  @State folderCheckList:folderList[] = []
   folderCheckNumber(){
     this.checkNumber = this.folderCheckList.length
-    this.changeCheckBookList()
+
   }
   @State showNumber:number = 0
   @State addCheckShelf:BookList[] = [
@@ -181,21 +138,19 @@ struct BookManagePage {
         })
       }
     }
+    .backgroundColor(Color.White)
+    .padding({
+      top:this.topRectHeight,
+      bottom:this.bottomRectHeight
+    })
+    .backgroundColor("rgb(245, 245, 245)")
+    .linearGradient({
+      direction: GradientDirection.Bottom, // 渐变方向
+      colors: [["rgb(254, 203, 169)", 0.0], ["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
+    })
   }
   @Builder bookManage(){
     Column() {
-      Blank(20)
-      Row({ space: 15 }) {
-        Image($r('app.media.return_left'))
-          .width(25)
-          .height(25)
-          .onClick(()=>{
-            router.back()
-          })
-      }
-      .margin({left:5})
-      .width("100%")
-
       this.headTitle()
       Flex({
         justifyContent:FlexAlign.Center
@@ -203,17 +158,12 @@ struct BookManagePage {
         Scroll(){
           if (this.bookTypes === '书单'){
             ShelfBookList({
-              isClear:this.isClear,
               EXHIBIT:this.EXHIBIT,
-              changeTop:this.changeTop,
-              allCheck:this.allCheck,
               isShowCheck:true
             })
           } else {
             if (this.GROUPName === '文件夹' || this.bookTypes === '分组'){
               BookFolderManages({
-                isClear:this.isClear,
-                allCheck:this.allCheck,
                 folderList:this.groupData,
                 folderCheckList:this.folderCheckList,
                 changeTop:this.changeTop,
@@ -221,19 +171,15 @@ struct BookManagePage {
               })
             } else {
               bookListManage({
-                isClear:this.isClear,
                 EXHIBIT:this.EXHIBIT,
-                allCheck:this.allCheck,
-                showBookList:this.showBookList,
-                checkNumber:this.checkNumber,
-                changeTop:this.changeTop,
-                checkBookList:this.checkBookList,
+                bookList:this.bookList,
+                checkList:this.checkList,
                 shelfType:this.currentIndex
               })
             }
           }
         }
-        .height('80%')
+        .height('88%')
         .align(Alignment.TopStart)
         .scrollBar(BarState.Off)
       }
@@ -244,34 +190,70 @@ struct BookManagePage {
         this.footerTitle()
       }
     }
-    .padding(10)
-    .backgroundColor("rgb(245, 245, 245)")
-    .linearGradient({
-      direction: GradientDirection.Bottom, // 渐变方向
-      colors: [["rgb(254, 203, 169)", 0.0], ["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
-    })
   }
-
+  @State fullActive:boolean = false
   @Builder headTitle(){
     Flex(
       {
-        alignItems:ItemAlign.Center
+        alignItems:ItemAlign.Center,
+        justifyContent:FlexAlign.SpaceBetween
       }
     ){
-      Column(){
-        Text(!this.allCheck?'全选':'取消选择').fontSize(16).onClick(()=>{
-          this.allCheck = !this.allCheck
-        })
-      }
-      .alignItems(HorizontalAlign.Start)
-      .width('33%')
-      Column(){
-        Text(`已选${this.checkNumber}项目`).fontSize(20).fontWeight(600)
+      Row({
+        space:5
+      }){
+        if (this.fullActive){
+          CheckboxGroup({ group: 'checkboxGroup'})
+            .checkboxShape(CheckBoxShape.CIRCLE)
+            .selectedColor(0xff6600)
+            .onChange((value:CheckboxGroupResult) => {
+              this.checkList = []
+              if (value.name) {
+                value.name.forEach((item) => {
+                  this.checkList.push(item)
+                })
+              }
+              this.selectIsAllTop()
+              if (this.checkList.length === 0) {
+                this.topTitle = '置顶'
+              }
+            })
+        } else {
+          CheckboxGroup({ group: 'checkboxGroup'})
+            .checkboxShape(CheckBoxShape.CIRCLE)
+            .selectedColor(0xff6600)
+            .onChange((value:CheckboxGroupResult) => {
+              this.checkList = []
+              if (value.name) {
+                value.name.forEach((item) => {
+                  this.checkList.push(item)
+                })
+              }
+              this.selectIsAllTop()
+              if (this.checkList.length === 0) {
+                this.topTitle = '置顶'
+              }
+            })
+        }
+        Text() {
+          Span('全选')
+        }
       }.width('33%')
+
+
+      Text(`已选${this.checkList.length}项目`).fontSize(20).fontWeight(600)
+        .width('33%')
+
       Column(){
-        Text('完成').fontSize(16)
-      }.onClick(()=>{
+        Text('完成')
+          .fontSize(16)
+      }
+      .onClick(()=>{
         this.allCheck = false
+        router.back()
+        setTimeout(()=>{
+          this.isBookRefreshing++
+        },100)
       })
       .alignItems(HorizontalAlign.End)
       .width('33%')
@@ -290,128 +272,95 @@ struct BookManagePage {
     .height('10%')
     .padding(20)
   }
-
-
+  @State buttonListInfo:buttonList[] = [
+    new buttonList(1,'置顶',$r('app.media.top')),
+    new buttonList(2,'移动至',$r('app.media.folder')),
+    new buttonList(3,'加入书单',$r('app.media.shelf')),
+    new buttonList(4,'删除',$r('app.media.ic_public_delete'))
+  ]
   @Builder footerTitle(){
-    Flex(
-      {
-        justifyContent:FlexAlign.SpaceBetween,
-        alignItems:ItemAlign.Center
-      }
-    ){
-      Column({
-        space:5
-      }){
-        Image($r('app.media.pip_to_top')).width(14)
-        Text(this.topTitle).fontSize(14).fontWeight(500)
-      }
-      .onClick(()=>{
-        if (this.checkNumber === 0) {
-          showMessage(`请选择要${this.topTitle}的内容`)
-          return
-        }
-        if(this.topTitle === '置顶'){
-          console.log('置顶')
-          if (this.GROUPName === '文件夹') {
-            this.isTopChange()
+    GridRow({
+      columns:4
+    }){
+      ForEach(this.buttonListInfo,(item:buttonList)=>{
+        GridCol(){
+          if (item.id === 1) {
+            Column({
+              space:5
+            }){
+              Image(item.icon).width(25)
+              Text(this.topTitle).fontSize(14).fontWeight(500)
+            }
+            .onClick(()=>{
+              this.bookInfoButton(item.id)
+            })
           } else {
-            this.changeTop = true
+            Column({
+              space:5
+            }){
+              Image(item.icon).width(25)
+              Text(item.title).fontSize(14).fontWeight(500)
+            }
+            .onClick(()=>{
+              this.bookInfoButton(item.id)
+            })
           }
-        } else {
-          this.cancelShowTop()
         }
-      })
-      Column({
-        space:5
-      }){
-        Image($r('app.media.move')).width(21)
-        Text('移动至').fontSize(14).fontWeight(500)
-      }.onClick(()=>{
-        this.isShow = true
-      })
-      .bindSheet($$this.isShow,this.catalogMove(), {
-        height:330,
-        showClose: false,
-        dragBar: false,
-        blurStyle:BlurStyle.COMPONENT_ULTRA_THIN,
-        maskColor: 'rgba(0,0,0,0.6)',
-        onDisappear:()=>{
-          this.clickBookType = ''
-          console.log('隐藏')
-        }
-      })
-      Column({
-        space:5
-      }){
-        Image($r('app.media.add_shelf_book')).width(17)
-        Text('加入书单').fontSize(14).fontWeight(500)
-      }
-      .onClick(()=>{
-        this.isAddShelfShow = true
-      })
-      .bindSheet($$this.isAddShelfShow,this.catalogAddShelf(), {
-        height:330,
-        showClose: false,
-        dragBar: false,
-        blurStyle:BlurStyle.COMPONENT_ULTRA_THIN,
-        maskColor: 'rgba(0,0,0,0.6)',
-        onDisappear:()=>{
-          this.clickBookType = ''
-          console.log('隐藏')
-        }
-      })
-      if (this.GROUPName === '文件夹'){
-        Column({
-          space:5
-        }){
-          Image($r('app.media.hide')).width(19)
-          Text('隐藏分组').fontSize(14).fontWeight(500)
-        }
-        .onClick(()=>{
-          if (this.folderCheckList.length === 0) {
-            showMessage('请选择要隐藏的选项')
-            return
-          }
-          this.clickHideDialog?.open()
-        })
-      }
-
-      Column({
-        space:5
-      }){
-        Image($r('app.media.delete_svg')).width(20)
-        Text('删除').fontSize(14).fontWeight(500)
-      }.onClick(()=>{
-        this.isClear = true
       })
     }
     .height('10%')
-    .padding(20)
-  }
-  showFolderType(){
-    console.log(JSON.stringify(this.folderCheckList))
-    for (let i = 0; i < this.folderCheckList.length; i++) {
-      for (let j = 0; j < this.groupData.length; j++) {
-        if (this.folderCheckList[i].id === this.groupData[j].id) {
-          this.groupData[j].isShow = true
-          console.log(JSON.stringify(this.groupData[j]))
-          break
-        }
-      }
-    }
-    this.allCheck = false
-    this.folderCheckList = []
-    this.showFolderSort()
-    showMessage('隐藏成功')
   }
 
-  //是否确认移动分组
-  clickBookTypeDialog: CustomDialogController | null = new CustomDialogController({
-    builder: hideDialogExample({
-      cancel: ()=> { this.clickBookCancel() },
-      confirm: ()=> { this.clickBookAccept() }
+  bookInfoButton(index:number){
+    switch (index){
+      case 1 :
+       this.isBookTop(); break;
+      case 2 :
+        if (this.checkList.length <= 0) {
+          showMessage('请选择要操作的内容');
+          return
+        }
+        this.bookMoveGroup?.open(); break;
+      case 3 :
+        showMessage('加入书单'); break;
+      case 4 :
+        if (this.checkList.length <= 0) {
+          showMessage('请选择要操作的内容');
+          return
+        }
+        this.bookDelDialog?.open(); break;
+    }
+  }
+
+  isBookTop(){
+    if ( this.checkList.length === 0){
+      showMessage('请选择要操作的内容')
+      return
+    }
+    if (this.GROUPName !== '分组' && this.GROUPName !== '书单') {
+      this.checkList.forEach((item:string)=>{
+        //将item转换为number
+        let bookId = Number(item)
+        if (bookId) {
+          booksUtil.isTopBook(bookId, this.topTitle==='置顶'?true:false)
+        }
+      })
+      this.checkList = []
+     setTimeout(()=>{
+       this.getBookList()
+       showMessage('已置顶')
+       this.topTitle = '置顶'
+       this.fullActive = !this.fullActive
+     },500)
+    }
+  }
+  @State delCache:boolean = false
+  //弹窗
+  bookDelDialog: CustomDialogController | null = new CustomDialogController({
+    builder: confirmDialogExample({
+      confirm: ()=> { this.deleteGroup() },
+      delCache:this.delCache
     }),
-    cancel: this.clickExitDialog,
     autoCancel: true,
     alignment: DialogAlignment.Center,
     gridCount: 4,
@@ -419,88 +368,31 @@ struct BookManagePage {
     cornerRadius: 25,
   })
 
-  clickBookCancel() {
-    this.clickBookType = ''
+  deleteGroup() {
+    this.isBookDelete()
+    this.bookDelDialog?.close()
   }
 
-  clickBookAccept() {
-    this.mobileBookType()
-  }
-
-  clickExitDialog() {
-    this.clickBookType = ''
-  }
-
-  cancelShowTop(){
-    //循环遍历checkBookList当bookId和showBookList中的bookId相同时，将showBookList isTop改为false
-    if (this.GROUPName === '文件夹') {
-      for (let i = 0; i < this.folderCheckList.length; i++) {
-        for (let j = 0; j < this.groupData.length; j++) {
-          if (this.folderCheckList[i].id === this.groupData[j].id) {
-            this.groupData[j].isTop = false
-            break
-          }
-        }
-      }
-      this.showFolderSort()
-      this.folderCheckList = []
-    } else {
-      for (let i = 0; i < this.checkBookList.length; i++) {
-        for (let j = 0; j < this.showBookList.length; j++) {
-          if (this.checkBookList[i].bookId === this.showBookList[j].bookId) {
-            this.showBookList[j].isTop = false
-            break
-          }
-        }
-      }
-      this.checkBookList = []
-      updateBookListData(this.currentIndex,this.showBookList)
+  isBookDelete(){
+    if (this.checkList.length === 0){
+      showMessage('请选择要删除的内容')
+      return
     }
-    this.changeTop = true
-    showMessage('取消置顶成功')
-  }
-
-
-
-  @Builder catalogMove() {
-    Column() {
-      Column(){
-        Text('移动分组').fontSize(16).fontWeight(700).lineHeight(24)
-
-      }.padding({right:20,left:20,top:12,bottom:12})
-
-      Divider().strokeWidth(0.5)
-      Scroll(){
-        Flex({
-          direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center,
-          justifyContent:FlexAlign.Start
-        }){
-          this.title('')
-          ForEach(this.BooTypeList,(item:string)=>{
-            this.title(item)
-          })
+    if (this.GROUPName !== '分组' && this.GROUPName !== '书单') {
+      this.checkList.forEach((item:string)=>{
+        //将item转换为number
+        let bookId = Number(item)
+        if (bookId) {
+          booksUtil.delBooksById(bookId)
         }
-        .padding(20)
-      }
-      .height('65%')
-      .scrollBar(BarState.Off)
-      Divider().strokeWidth(0.5)
-      Column() {
-        Text('取消').fontSize(16).fontWeight(400)
-          .lineHeight(24)
-      }
-      .onClick(()=>{
-        this.isShow = false
       })
-      .alignItems(HorizontalAlign.Center)
-      .padding({
-        left: 32,
-        right:32,
-        top: 16
-      })
+      this.checkList = []
+      setTimeout(()=>{
+        this.getBookList()
+        showMessage('已删除')
+        this.fullActive = !this.fullActive
+      },500)
     }
-    .width(CommonConstants.FULL_WIDTH)
-    .height(CommonConstants.FULL_HEIGHT)
   }
 
   @Builder catalogAddShelf() {
@@ -606,39 +498,6 @@ struct BookManagePage {
     })
   }
 
-  @Builder title(title:string) {
-    Column() {
-      if (title === ''){
-        Image($r('app.media.add')).width(24)
-      } else {
-        Text(title).fontSize(14).textOverflow({
-          overflow:TextOverflow.Ellipsis
-        }).ellipsisMode(EllipsisMode.END).maxLines(1)
-      }
-    }
-    .onClick(()=>{
-      if(title === ''){
-        this.addBookType?.open()
-        return
-      }
-      if (this.checkNumber === 0) {
-        showMessage('请选择要移动的内容')
-        return
-      }
-      this.clickBookType = title
-      this.clickBookTypeDialog?.open()
-    })
-    .margin({ left: 16, bottom: 16 })
-    .width(85).height(36)
-    .backgroundColor('rgba(0, 0, 0,0.06)')
-    .padding({
-      left:16,
-      right:16,
-      top:8,
-      bottom:8
-    })
-  }
-
   //是否隐藏分组
   clickHideDialog: CustomDialogController | null = new CustomDialogController({
     builder: hideDialogExample({
@@ -659,69 +518,34 @@ struct BookManagePage {
   }
 
   clickHideAccept() {
-    this.showFolderType()
-
   }
 
   hideDialog() {
-
   }
 
-  mobileBookType(){
-    //循环遍历checkBookList当bookId和showBookList中的bookId相同时，将showBookList bookType改为clickBookType
-    for (let i = 0; i < this.checkBookList.length; i++) {
-      for (let j = 0; j < this.showBookList.length; j++) {
-        if (this.checkBookList[i].bookId === this.showBookList[j].bookId) {
-          this.showBookList[j].bookType = this.clickBookType
-          break
-        }
-      }
-    }
-    updateBookListData(this.currentIndex,this.showBookList)
-    this.clickBookType = ''
-    this.checkBookList = []
-    this.isShow = false
-    this.changeTop = true
-    showMessage('移动成功')
-  }
+  //移动分组
+  //弹窗
+  bookMoveGroup: CustomDialogController | null = new CustomDialogController({
+    builder: BookSelectGroupDialog({
+      moveGroup: ()=> {
+        this.bookMoveGroup?.close()
+        setTimeout(()=>{
+          this.isBookRefreshing++
+        },500)
+        showMessage('移动成功')
+      },
+      currentIndex:this.currentIndex,
+      //将this.checkList转换为number
+      bookIds:this.checkList.map((item:string)=>{
+        return Number(item)
+      })
+    }),
+    height: 400,
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
 
-  isTopChange(){
-    console.log('置顶操作中')
-    if (this.folderCheckList.length === this.groupData.length) {
-      this.folderCheckList.reverse()
-      this.groupData = this.folderCheckList
-      for (let index = 0; index < this.folderCheckList.length; index++) {
-        this.groupData[index].isTop = true
-      }
-    } else {
-      for (let index = 0; index < this.folderCheckList.length; index++) {
-        for (let j = 0; j < this.groupData.length; j++) {
-          if (this.folderCheckList[index].id === this.groupData[j].id) {
-            this.groupData[j].topUpdateTime = new Date()
-            this.groupData[j].isTop = true
-            break
-          }
-        }
-      }
-    }
-    showMessage('置顶成功')
-    this.changeTop = false
-    this.allCheck = false
-    //更新缓存
-    this.folderCheckList = []
-    this.showFolderSort()
-  }
-
-  showFolderSort() {
-    this.groupData.sort((a, b) => {
-      if (a.isTop && !b.isTop) {
-        return -1
-      } else if (!a.isTop && b.isTop) {
-        return 1
-      } else {
-        // return 0
-        return b.topUpdateTime.getTime() - a.topUpdateTime.getTime()
-      }
-    })
-  }
 }

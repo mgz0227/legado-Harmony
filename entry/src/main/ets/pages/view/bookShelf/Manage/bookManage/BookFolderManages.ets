@@ -6,8 +6,6 @@ import BookFolderInfoManage from './BookFolderInfoManage'
 
 @Component
 export default struct BookFolderManages {
-  @Link @Watch('onIsClearChange') isClear:boolean
-  @Link allCheck:boolean
   @Link folderCheckList:folderList[]
   @Prop changeTop:boolean
   @Link folderList:folderList[]
@@ -40,25 +38,7 @@ export default struct BookFolderManages {
   }
 
   deleteFolder() {
-    for (let index = 0; index < this.folderCheckList.length; index++) {
-      this.folderList = this.folderList.filter(folder => folder.id !== this.folderCheckList[index].id);
-    }
-    this.isClear = false
-    this.folderCheckList = []
     showMessage('删除成功')
-  }
-
-  //监听isClear变化
-  onIsClearChange() {
-    console.log(JSON.stringify(this.isClear))
-    if (this.folderCheckList === null || this.folderCheckList.length === 0) {
-      showMessage('请选择要删除的内容')
-      this.isClear = false
-      return
-    }
-    if (this.isClear) {
-      this.bookInfoDel?.open()
-    }
   }
 
  build() {
@@ -74,10 +54,7 @@ export default struct BookFolderManages {
          ForEach(this.folderList, (item: folderList) => {
            if (!item.isShow) {
              BookFolderInfoManage({
-               folderList:item,
-               changeTop:this.changeTop,
-               allCheck:this.allCheck,
-               folderCheckList:this.folderCheckList
+               folderList:item
              })
            }
          })
@@ -85,10 +62,7 @@ export default struct BookFolderManages {
          ForEach(this.folderList, (item: folderList) => {
            if (!item.isShow) {
              BookFolderGridManage({
-               folderList:item,
-               changeTop:this.changeTop,
-               allCheck:this.allCheck,
-               folderCheckList:this.folderCheckList
+               folderList:item
              }).width('33%')
            }
          })

@@ -4,7 +4,6 @@ import { router } from '@kit.ArkUI'
 import InsideCircleIcon from '../../../../../componets/common/InsideCircleIcon'
 import { showMessage } from '../../../../../componets/common/promptShow'
 import confirmDialogExample from '../../../../../componets/common/confirmDialog'
-import { sleep } from '../../../../../common/utils/utils'
 import booksUtil from '../../../../../common/utils/booksUtils'
 import BookSelectGroupDialog from './BookSelectGroupDialog'
 
@@ -36,7 +35,8 @@ export default struct BookInfoDialogs{
         Row({
           space:20
         }){
-          Image(this.bookData.toUrl)
+          Image(this.bookData.coverUrl)
+            .alt($r('app.media.icon_book_default_cover_one'))
             .width(45).height(65)
           Column({
             space:4
@@ -155,7 +155,7 @@ export default struct BookInfoDialogs{
         },500)
       },
       currentIndex:this.bookData.bookType,
-      booId:this.bookData.id
+      bookIds:this.bookData.id
     }),
     height: 400,
     cancel: this.exitApp,

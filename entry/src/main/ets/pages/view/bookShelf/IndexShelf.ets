@@ -15,7 +15,6 @@ export default struct IndexShelf {
   @State EXHIBIT: string = '列表'
   @State GROUP: string = '标签'
   @State searchValue: string = '最近阅读'
-  @State isClear: boolean = false
 
   @State isShowImport: boolean = false
   @State isShowCloudImport: boolean = false
@@ -170,7 +169,6 @@ export default struct IndexShelf {
                EXHIBIT: this.EXHIBIT,
                GROUP: this.GROUP,
                searchValue: this.searchValue,
-               isClear: this.isClear,
                bookType: this.bookType,
                bookTypeNumber:this.bookTypeNumber
              })

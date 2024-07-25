@@ -15,22 +15,11 @@ export default struct ShelfBookList {
   @StorageProp('SHELF_LIST_DATA')
   shelfBookList: shelfList[] = []
   @State checkBookShelf: shelfList[] = []
-  @Prop changeTop:boolean
-  @Prop allCheck:boolean
   @Prop isShowCheck:boolean = false
   @State isShow:boolean = false
   @State shelfBook:shelfList = this.shelfBookList[0]
-  @Link @Watch('onIsClearChange') isClear:boolean
   //监听isClear变化
   onIsClearChange() {
-    if (this.checkBookShelf === null || this.checkBookShelf.length === 0) {
-      showMessage('请选择要删除的内容')
-      this.isClear = false
-      return
-    }
-    if (this.isClear) {
-      this.shelfInfoDel?.open()
-    }
   }
   build() {
     Column(){
@@ -39,10 +28,8 @@ export default struct ShelfBookList {
 
           if (this.EXHIBIT === '宫格') {
             BookShelfGrid({
-              allCheck: this.allCheck,
               bookShelf:item,
               checkBookShelf:this.checkBookShelf,
-              changeTop:this.changeTop,
               isShowCheck:this.isShowCheck
             }).width('33%')
               .gesture(
@@ -67,10 +54,8 @@ export default struct ShelfBookList {
 
           } else {
             BookShelfInfo({
-              allCheck: this.allCheck,
               bookShelf:item,
               checkBookShelf:this.checkBookShelf,
-              changeTop:this.changeTop,
               isShowCheck:this.isShowCheck
             })
               .gesture(
@@ -155,7 +140,6 @@ export default struct ShelfBookList {
   }
 
   delShelf() {
-    this.isClear = false
     showMessage('删除成功')
   }
 

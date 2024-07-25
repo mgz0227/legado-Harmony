@@ -7,7 +7,6 @@ import { BookList } from '../../../componets/dataList/bookList'
 import { folderList } from '../../../componets/dataList/folderList'
 import IndexSearchType from '../../../componets/head/IndexSearchType'
 import { updateBookListData } from '../../../storage/bookListData'
-import bookListManage from '../bookShelf/Manage/bookManage/bookListManage'
 import newAddShelf from '../bookShelf/Manage/bookManage/newAddShelf'
 import newBookShelf from '../bookShelf/Manage/bookManage/newBookShelf'
 
@@ -148,17 +147,17 @@ export default struct FolderManageDialog {
         this.headTitle()
       }
       Scroll(){
-        bookListManage({
-          isClear:this.isClear,
-          EXHIBIT:this.EXHIBIT,
-          allCheck:this.allCheck,
-          showBookList:this.bookList,
-          checkNumber:this.checkNumber,
-          changeTop:this.changeTop,
-          checkBookList:this.checkBookList,
-          shelfType:0,
-          isManage:this.isManage
-        })
+        // bookListManage({
+        //   isClear:this.isClear,
+        //   EXHIBIT:this.EXHIBIT,
+        //   allCheck:this.allCheck,
+        //   showBookList:this.bookList,
+        //   checkNumber:this.checkNumber,
+        //   changeTop:this.changeTop,
+        //   checkBookList:this.checkBookList,
+        //   shelfType:0,
+        //   isManage:this.isManage
+        // })
       }
       .height(!this.isManage?'95%':'85%')
       .align(Alignment.TopStart)
