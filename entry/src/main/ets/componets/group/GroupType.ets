@@ -12,7 +12,7 @@ export default struct groupTypeComponent {
   @State groupList:BookGroups[] = []
   @Link bookTypeNumber:number
   // initGroup:string[] = ['分组','全部','未分组','本地','书单']
-
+  @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') @Watch('changeRefresh')BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
   aboutToAppear(): void {
     this.getGroupList()
   }

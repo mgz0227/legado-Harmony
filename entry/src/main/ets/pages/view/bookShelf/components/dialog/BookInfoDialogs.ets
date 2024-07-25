@@ -6,6 +6,7 @@ import { showMessage } from '../../../../../componets/common/promptShow'
 import confirmDialogExample from '../../../../../componets/common/confirmDialog'
 import { sleep } from '../../../../../common/utils/utils'
 import booksUtil from '../../../../../common/utils/booksUtils'
+import BookSelectGroupDialog from './BookSelectGroupDialog'
 
 @CustomDialog
 /**
@@ -14,10 +15,10 @@ import booksUtil from '../../../../../common/utils/booksUtils'
 export default struct BookInfoDialogs{
   controller?: CustomDialogController
   //推送提醒
-  @Link bookData:Books
+  @Prop bookData:Books
   @State pushReminder:boolean = false
   @State buttonListInfo:buttonList[] = [
-    new buttonList(1,'置顶',$r('app.media.top')),
+    new buttonList(1,this.bookData.isTop?'取消置顶':'置顶',$r('app.media.top')),
     new buttonList(2,'移动至',$r('app.media.folder')),
     new buttonList(3,'加入书单',$r('app.media.shelf')),
     new buttonList(4,'删除',$r('app.media.ic_public_delete'))
@@ -90,23 +91,14 @@ export default struct BookInfoDialogs{
   bookInfoButton(id:number){
     switch (id){
       case 1 :
-        showMessage(!this.bookData.isTop?'置顶':'取消置顶');
-        this.isFolderTop(); break;
+        this.isTopBook(); break;
       case 2 :
-        showMessage('移动至'); break;
+        this.bookMoveGroup?.open(); break;
       case 3 :
         showMessage('加入书单'); break;
       case 4 :
         this.bookDelDialog?.open(); break;
     }
-  }
-
-  isFolderTop(){
-    this.bookData.isTop = !this.bookData.isTop
-    this.buttonListInfo[0].title = this.bookData.isTop?'取消置顶':'置顶'
-    //刷新数组buttonListInfo
-    this.buttonListInfo = this.buttonListInfo.slice(0)
-    this.bookData.updateTime = Date.now()
   }
 
   @State delCache:boolean = false
@@ -141,5 +133,37 @@ export default struct BookInfoDialogs{
     },500)
     showMessage('删除成功')
   }
+
+  async isTopBook(){
+    booksUtil.isTopBook(this.bookData.id || 0).then((val)=>{
+      val?showMessage(this.bookData.isTop?'置顶成功':'取消置顶成功'):showMessage('数据更新失败')
+    })
+    setTimeout(()=>{
+      this.controller?.close()
+      this.isBookRefreshing++
+    },500)
+  }
+
+  //移动分组
+  //弹窗
+  bookMoveGroup: CustomDialogController | null = new CustomDialogController({
+    builder: BookSelectGroupDialog({
+      moveGroup: ()=> {
+        this.bookMoveGroup?.close()
+        setTimeout(()=>{
+          this.isBookRefreshing++
+        },500)
+      },
+      currentIndex:this.bookData.bookType,
+      booId:this.bookData.id
+    }),
+    height: 400,
+    cancel: this.exitApp,
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
 
 }
