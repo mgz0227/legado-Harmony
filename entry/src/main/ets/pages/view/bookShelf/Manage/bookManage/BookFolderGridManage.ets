@@ -7,26 +7,7 @@ import { folderList } from '../../../../../componets/dataList/folderList'
 @Component
 export default struct BookFolderGridManage {
 
-  @Prop @Watch('isCheckChange')allCheck:boolean
-  @Link folderCheckList:folderList[]
-  @Prop @Watch('isTopChange')changeTop:boolean
   @Prop folderList:folderList
-
-  isTopChange(){
-    this.allCheck = false
-  }
-
-  isCheckChange(){
-    if (this.allCheck) {
-      //判断bookId是否有存在
-      if (this.folderCheckList.some(item => item.id === this.folderList.id)) {
-        return
-      }
-      this.folderCheckList.push(this.folderList)
-    } else {
-      this.folderCheckList = this.folderCheckList.filter(item => item.id !== this.folderList.id);
-    }
-  }
 
   build() {
     Column() {
@@ -52,15 +33,12 @@ export default struct BookFolderGridManage {
           .align(Alignment.Bottom)
 
           Checkbox({
-            name: this.folderList.title
+            name: this.folderList.title,
+            group:'checkboxGroup'
           })
             .zIndex(2)
             .selectedColor($r('app.color.theme_color'))
             .unselectedColor('rgba(0, 0, 0, 0.35)')
-            .select(this.allCheck)
-            .onClick(() => {
-              this.allCheck = !this.allCheck
-            })
         }
         .backgroundColor('rgba(0, 0, 0, 0.45)')
         .width(88)

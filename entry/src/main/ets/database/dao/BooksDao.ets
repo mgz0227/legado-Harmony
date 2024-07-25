@@ -121,7 +121,7 @@ class BooksDao {
     }
   }
   //置顶
-  async isUpdateBookTop(id: number) {
+  async isUpdateBookTop(id: number, isTop?: boolean) {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
@@ -129,7 +129,7 @@ class BooksDao {
       const count = await DbUtil.queryForList<Books>(predicates, column)
       if (column.length > 0) {
         count.forEach((item) => {
-          item.isTop = !item.isTop
+          item.isTop = isTop||!item.isTop
           item.updateTime = Date.now()
           this.update(item)
         })

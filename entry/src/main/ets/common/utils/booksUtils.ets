@@ -7,11 +7,24 @@ import BooksDao from '../../database/dao/BooksDao'
 import { Books } from '../../database/entities/Books'
 
 class booksUtils{
-  async isTopBook(id: number): Promise<boolean> {
-    return BooksDao.isUpdateBookTop(id)
+  async isTopBook(id: number, isTop?: boolean): Promise<boolean> {
+    return BooksDao.isUpdateBookTop(id, isTop)
   }
   async addBooks(books: Books){
     BooksDao.insert(books)
+  }
+
+  async updateBooks(id:number|number[], group:number){
+    //循环更新
+    let booId:number[] = []
+    if (typeof id === 'number'){
+      booId.push(id)
+    } else {
+      booId = id
+    }
+    booId.forEach((item:number)=>{
+      BooksDao.updateBookGroup(item,group)
+    })
   }
 
   async delBooksById(id:number){

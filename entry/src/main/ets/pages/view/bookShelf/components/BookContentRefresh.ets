@@ -19,7 +19,6 @@ export default struct BookContentRefresh {
   @Link EXHIBIT: string
   @Link GROUP: string
   @Link searchValue: string
-  @Prop isClear: boolean = false
   @Link bookTypeNumber:number
 
   changeRefreshing(){
@@ -33,15 +32,15 @@ export default struct BookContentRefresh {
         Column() {
           if (this.bookType === '书单' && this.searchValue !== '浏览历史') {
             ShelfBookList({
-              EXHIBIT: this.EXHIBIT,
-              isClear: this.isClear
+              EXHIBIT: this.EXHIBIT
             })
           } else {
             if (this.GROUP === '标签') {
               BookContent({
                 currentIndex:this.currentIndex,
                 bookTypeNumber:this.bookTypeNumber,
-                EXHIBIT: this.EXHIBIT
+                EXHIBIT: this.EXHIBIT,
+                searchValue: this.searchValue
               })
             } else {
               BookFolder({

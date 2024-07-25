@@ -4,14 +4,11 @@
 import CommonConstants from '../../../../../common/constants/CommonConstants'
 import { BookList } from '../../../../../componets/dataList/bookList'
 import BookType from '../../../../../componets/head/BookType'
-import BookInfo from '../../BookInfo'
-import BookInfoManage from './BookInfoManage'
 
 @Component
 export default struct newAddShelf{
   @Link showNumber:number
   @Link isAddShelfShow:boolean
-  @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageProp(CommonConstants.KEY_NOVEL_BOOK_DATA)
   bookList:BookList[] = []
   @State searchList:BookList[] = []
@@ -45,9 +42,6 @@ export default struct newAddShelf{
     }
     ){
      Column(){
-       if (this.topIsShow){
-         Blank(this.topRectHeight)
-       }
        Column({
          space:5
        }) {
@@ -74,15 +68,15 @@ export default struct newAddShelf{
      }
       Scroll(){
         Column(){
-          ForEach(this.TextValue.length>0?this.searchList:this.bookList, (item: BookList,index:number) => {
-            BookInfoManage({
-              bookData:item,
-              allCheck:this.allCheck,
-              changeTop:this.changeTop,
-              checkBookList:this.checkBookList,
-              isManage:true
-            })
-          })
+          // ForEach(this.TextValue.length>0?this.searchList:this.bookList, (item: BookList,index:number) => {
+          //   BookInfoManage({
+          //     bookData:item,
+          //     allCheck:this.allCheck,
+          //     changeTop:this.changeTop,
+          //     checkBookList:this.checkBookList,
+          //     isManage:true
+          //   })
+          // })
         }
       }
       .height('75%')
@@ -115,7 +109,7 @@ export default struct newAddShelf{
         .onClick(()=>{
           this.addBookShelf()
         })
-      }.padding({top:16,bottom:this.bottomRectHeight+16,left:32,right:32}).backgroundColor(Color.White)
+      }.padding({top:16,bottom:16,left:32,right:32}).backgroundColor(Color.White)
   }
   addBookShelf(){
     //checkBookList的数据存放到addCheckShelf中判断如果addCheckShelf中有存在同意id就不添加
@@ -130,7 +124,6 @@ export default struct newAddShelf{
     console.log('添加成功' + JSON.stringify(this.addCheckShelf))
 
   }
-  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
 
   @State bookType:string = '全部'
   @Builder bookTypeTitle() {

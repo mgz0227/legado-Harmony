@@ -27,17 +27,16 @@ export default struct BookInfos{
       Row({
         space:20
       }){
-        Flex({
-          alignItems: ItemAlign.End,
-        }){
+        Stack(){
           if (this.book.isTop){
             Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
-              .backgroundColor('rgba(0, 0, 0, 0.45)')
+              .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
           }
-        }
-        .align(Alignment.Bottom).width(60).height(80)
-        .backgroundImage(this.book.coverUrl?$r('app.media.cover_list'):$r('app.media.cover_list'))
-        .backgroundImageSize({width:60,height:80})
+          Image(this.book.coverUrl)
+            .alt($r('app.media.icon_book_default_cover_one'))
+            .width(60)
+            .height(80)
+        }.alignContent(Alignment.BottomStart)
         Column({
           space:24
         })
@@ -129,7 +128,6 @@ export default struct BookInfos{
     width:'100%',
     alignment: DialogAlignment.Bottom,
     customStyle:true
-
   })
   //退出弹框
   exitDialog(){
@@ -146,7 +144,6 @@ export default struct BookInfos{
     }),
     autoCancel: true,
     alignment: DialogAlignment.Center,
-    // offset: { dx: 0, dy: '-40%' },
     gridCount: 4,
     customStyle: false,
     cornerRadius: 25,

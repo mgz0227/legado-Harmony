@@ -6,6 +6,7 @@
  */
 import CommonConstants from '../../../../../common/constants/CommonConstants'
 import PaddingConstants from '../../../../../common/constants/PaddingConstants'
+import booksUtils from '../../../../../common/utils/booksUtils'
 import addBookTypeDialog from '../../../../../componets/common/addBookTypeDialog'
 import { showMessage } from '../../../../../componets/common/promptShow'
 import TitleContentDialog from '../../../../../componets/common/TitleContentDialog'
@@ -18,7 +19,7 @@ import { BookGroups } from '../../../../../database/entities/BookGroups'
 export default struct BookSelectGroupDialog{
   controller?: CustomDialogController
   currentIndex:number = 0
-  booId:number = 0
+  bookIds:number|number[] = 0
   moveGroup:Function = ()=>{
 
   }
@@ -182,7 +183,7 @@ export default struct BookSelectGroupDialog{
   })
 
   clickBookAccept() {
-    BooksDao.updateBookGroup(this.booId,this.moveGroupId)
+    booksUtils.updateBooks(this.bookIds,this.moveGroupId)
     this.moveGroup()
   }
 

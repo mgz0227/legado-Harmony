@@ -7,31 +7,7 @@ import { folderList } from '../../../../../componets/dataList/folderList'
 @Component
 export default struct BookFolderInfoManage {
 
-
   @Prop folderList:folderList
-  @Prop isShowCheck:boolean = true
-  @Link folderCheckList:folderList[]
-  @Prop @Watch('isTopChange')changeTop:boolean
-  @Prop @Watch('isCheckChange')allCheck:boolean
-
-  isTopChange(){
-    this.allCheck = false
-  }
-
-  isCheckChange(){
-    if (this.allCheck) {
-      //判断bookId是否有存在
-      if (this.folderCheckList.some(item => item.id === this.folderList.id)) {
-        return
-      }
-      this.folderCheckList.push(this.folderList)
-    } else {
-      this.folderCheckList = this.folderCheckList.filter(item => item.id !== this.folderList.id);
-    }
-  }
-
-
-
   build() {
     Flex(
       {
@@ -78,13 +54,10 @@ export default struct BookFolderInfoManage {
       }
       Row() {
         Checkbox({
-          name: this.folderList.title
+          name: this.folderList.title,
+          group:'checkboxGroup'
         })
           .selectedColor($r('app.color.theme_color'))
-          .select(this.allCheck)
-          .onClick(()=>{
-            this.allCheck = !this.allCheck
-          })
       }
       .padding({ left: 15, right: 15, bottom: 5, top: 5 })
 

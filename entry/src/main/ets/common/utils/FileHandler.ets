@@ -38,7 +38,7 @@ export class FileHandler {
       syncTime: 0,
       bookType: currentIndex,
       isTop: false,
-      isJoin: false
+      isJoin: true
     }
     booksUtil.addBooks(book)
     showMessage('添加到书架成功')
