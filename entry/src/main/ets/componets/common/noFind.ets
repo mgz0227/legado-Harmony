@@ -33,20 +33,26 @@ export default struct noFind {
         })
         .textAlign(TextAlign.Center)
         .margin({ bottom: PaddingConstants.PADDING_24 })
-      Button($r('app.string.retry'))
-        .padding({
-          left: 32,
-          right: 32,
-          bottom: 8,
-          top: 8
-        })
-        .fontSize(FontConstants.FONT_SIZE_14)
-        .fontWeight(FontConstants.FONT_WEIGHT_500)
-        .fontFamily(CommonConstants.FAMILY_PingFANG)
-        .backgroundColor($r('app.color.theme_color'))
-        .onClick(() => {
-          this.onclick()
-        })
+
+      if (this.hintIndex !== 0) {
+        Button($r('app.string.retry'))
+          .padding({
+            left: 32,
+            right: 32,
+            bottom: 8,
+            top: 8
+          })
+          .fontSize(FontConstants.FONT_SIZE_14)
+          .fontWeight(FontConstants.FONT_WEIGHT_500)
+          .fontFamily(CommonConstants.FAMILY_PingFANG)
+          .backgroundColor($r('app.color.theme_color'))
+          .onClick(() => {
+            this.onclick()
+          })
+      }
     }
+    .height('100%')
+    .alignItems(HorizontalAlign.Center)
+    .justifyContent(FlexAlign.Center)
   }
 }

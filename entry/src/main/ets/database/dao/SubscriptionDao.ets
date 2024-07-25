@@ -5,12 +5,12 @@
  * 订阅源
  */
 import DbUtil from '../../common/utils/DbUtil';
-import { showMessage } from '../../componets/common/promptShow';
+import rssSourcesUtils from '../../common/utils/rssSourcesUtils';
 import AppDatabaseUtil from '../AppDatabaseUtil';
 import { rssSourceDb, rssSources, ToRssSources, ToRssSourcesDb } from '../entities/rssSources';
-import { rssSourcesPart } from '../entities/rssSourcesPart';
-import { ColumnInfo, ColumnType } from '../types/ColumnInfo';
+import { ColumnInfo } from '../types/ColumnInfo';
 import { rssSourcesTypeParams } from '../types/rssSourcesType';
+import rssSourcesHistoryDao from './RssSourcesHistoryDao';
 
 class SubscriptionDao {
   TABLE_NAME: string = 'rssSources'
@@ -59,6 +59,7 @@ class SubscriptionDao {
 
       sql += `
   ORDER BY
+    lastUpdateTime DESC,
     customOrder ASC
 `;
       const rssSourcesDbList = await DbUtil.querySqlForList<rssSourceDb>(sql, column);
@@ -94,9 +95,9 @@ class SubscriptionDao {
         this.update(rssSource)
         return true
       }
-      const bookSourceDb = ToRssSourcesDb(rssSource)
-      bookSourceDb.lastUpdateTime = Date.now()
-      await DbUtil.insert(this.TABLE_NAME, bookSourceDb, column)
+      const rssSourceDb = ToRssSourcesDb(rssSource)
+      rssSourceDb.lastUpdateTime = Date.now()
+      await DbUtil.insert(this.TABLE_NAME, rssSourceDb, column)
       console.log('TagInfo', '创建成功')
       return true
     } catch (err) {
@@ -105,7 +106,7 @@ class SubscriptionDao {
     }
   }
 
-  async update(rssSource: rssSources | rssSourcesPart) {
+  async update(rssSource: rssSources) {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
@@ -115,21 +116,81 @@ class SubscriptionDao {
         this.insert(rssSource)
         return true
       }
-      if (rssSource instanceof rssSources) {
-        const rssSourceDb = ToRssSourcesDb(rssSource)
-        rssSourceDb.lastUpdateTime = Date.now()
-        await DbUtil.update(predicates, rssSourceDb, column)
-        return true
-      }
-      rssSource.lastUpdateTime = Date.now()
-      const columnPart: ColumnInfo[] = this.getFlowColumn().slice(0, -2)
-      await DbUtil.update(predicates, rssSource, columnPart)
+      const rssSourceDb = ToRssSourcesDb(rssSource)
+      rssSourceDb.lastUpdateTime = Date.now()
+      rssSourceDb.showRecentIcon = true
+      await DbUtil.update(predicates, rssSourceDb, column)
+      rssSourcesHistoryDao.search(rssSource.sourceUrl).then(async (value) => {
+        if (value.length > 0) {
+          await rssSourcesUtils.pushRssSourcesHistory(rssSource)
+        }
+      })
       return true
     } catch (err) {
       console.log('TagInfo, Error, ', JSON.stringify(err))
       return false
     }
 
+  }
+
+  async updateRecentIcon(rssSource: rssSources) {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      const rssSourceDb = ToRssSourcesDb(rssSource)
+      rssSourceDb.showRecentIcon = false
+      await DbUtil.update(predicates, rssSourceDb, column)
+      return true
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
+
+  }
+
+  //批量删除订阅源
+  async deleteRssSourcesList(rssSources: rssSources[]) {
+    try {
+      for (let index = 0; index < rssSources.length; index++) {
+        await this.deleteRssSources(rssSources[index])
+      }
+      return true
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
+  }
+
+  //删除书源
+  async deleteRssSources(rssSource: rssSources) {
+    try {
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      rssSourcesHistoryDao.deleteRssSourcesHistory(rssSource.sourceUrl)
+      await DbUtil.delete(predicates)
+      return true
+    }  catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
+  }
+
+  //置顶
+  async isTopRssSources(rssSources: rssSources){
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('sourceUrl', rssSources.sourceUrl)
+      const rssSourceDb = ToRssSourcesDb(rssSources)
+      rssSourceDb.lastUpdateTime = Date.now()
+      rssSourceDb.customOrder = 0
+      await DbUtil.update(predicates, rssSourceDb, column)
+      return true
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
   }
 
   async getRssSources(key: string): Promise<rssSources | null> {
@@ -152,7 +213,7 @@ class SubscriptionDao {
   getFlowColumn() {
     const column: ColumnInfo[] = AppDatabaseUtil.getAssignColumn(this.TABLE_NAME,
       ['sourceName', 'sourceUrl', 'sourceGroup', 'sourceGroup', 'enabled', 'variableComment',
-        'sortUrl', 'singleUrl', 'lastUpdateTime','customOrder','variable','sourceType']);
+        'sortUrl', 'singleUrl', 'lastUpdateTime','customOrder','variable','sourceType','showRecentIcon',]);
     return column;
   }
 }

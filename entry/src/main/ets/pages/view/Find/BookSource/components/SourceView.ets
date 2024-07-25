@@ -39,6 +39,7 @@ export default struct SourceView {
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
   @State dialogItem: Partial<BookSourcePart> = {}
+  @StorageLink('refreshCount') refreshCount: number = 0
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: CustomContentDialog({
       primaryTitle: '书源评分',
@@ -66,7 +67,7 @@ export default struct SourceView {
           background: '#FF6600',
           fontColor: '#FFFFFF',
           action: async () => {
-            await BookSourceDao.update(this.dialogItem as BookSourcePart)
+            await BookSourceDao.updateFlow(this.dialogItem as BookSourcePart)
             this.getList()
             this.dialogItem = {}
             this.dialogController.close()
@@ -92,11 +93,9 @@ export default struct SourceView {
   }
 
   getList() {
-    // axios.get('https://node.wisdoms.xin/static/file/20240704/sy.json').then((res: AxiosResponse) => {
-    //   const bookSource: BookSource[] = res.data ?? []
-    //     FileHandler.readJsonFile<BookSource[]>(this.pathBookSource)
+    this.refreshCount += 1
     BookSourceDao.flowSearch({
-      type: this.index,
+      type: [0, 2, 1][this.index],
       searchKey: this.searchValue
     }).then(data => {
       const bookSource = data ?? []
@@ -229,7 +228,22 @@ export default struct SourceView {
             clickAction: (index: number) => {
               this.scrollChangeAction(index, true)
             },
-            isBadge: !this.isBatch
+            isBadge: !this.isBatch,
+            isDrag: this.isBatch,
+            onDragChange: async (list) => {
+              this.groupList = list as GroupPartList[]
+              const bookSourcePartList =
+                this.groupList.reduce((acc: BookSourcePart[], item) => acc.concat(item.list), [])
+              const sortBookSourcePartList = bookSourcePartList.map((item, index) => {
+                if (index !== 0) {
+                  item.customOrder = bookSourcePartList[index - 1].customOrder + 1
+                }
+                return item
+              })
+              console.info('TagInfo bookSourcePartList:', JSON.stringify(bookSourcePartList))
+              await BookSourceDao.batchUpdateFlow(sortBookSourcePartList)
+              this.refreshCount += 1
+            }
           })
             .width(88)
 
@@ -305,7 +319,7 @@ export default struct SourceView {
                     this.sourceList[i] = item
                   }
                 })
-                await BookSourceDao.batchUpdate(this.sourceList)
+                await BookSourceDao.batchUpdateFlow(this.sourceList)
                 this.getList()
               })
 
@@ -434,7 +448,6 @@ export default struct SourceView {
     .onClick(async () => {
       this.isBatch = false
       this.activeNameMap = {}
-      BookSourceDao.batchUpdate(this.sourceList)
       this.getList()
     })
   }
@@ -674,7 +687,7 @@ export default struct SourceView {
           .selectedColor(0xff6600)
           .onChange(async (val: boolean) => {
             item.enabled = val
-            await BookSourceDao.update(item)
+            await BookSourceDao.updateFlow(item)
           })
       }
       .width('100%')

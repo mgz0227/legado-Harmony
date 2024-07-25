@@ -1,5 +1,5 @@
 import { ColumnInfo, ColumnType } from '../types/ColumnInfo';
-import { BookSource, BookSourceDb, ToBookSource, ToBookSourceDb } from '../entities/BookSource';
+import { BookSource, BookSourceDb, ToBookSource, ToBookSourceDb, ToBookSourcePart } from '../entities/BookSource';
 import AppDatabaseUtil from '../AppDatabaseUtil'
 import { JSON } from '@kit.ArkTS';
 import DbUtil from '../../common/utils/DbUtil';
@@ -27,7 +27,7 @@ class BookSourceDao {
   getFlowColumn() {
     const column: ColumnInfo[] = AppDatabaseUtil.getAssignColumn(this.TABLE_NAME,
       ['bookSourceUrl', 'bookSourceName', 'bookSourceGroup', 'bookSourceGrade', 'bookSourceScore', 'customOrder',
-        'enabled', 'enabledExplore', 'lastUpdateTime', 'respondTime', 'weight']);
+        'enabled', 'enabledExplore', 'lastUpdateTime', 'respondTime', 'weight', 'isTop', 'showRecentIcon', 'showExplore']);
     column.push(...[
       {
         name: 'hasLoginUrl',
@@ -46,7 +46,7 @@ class BookSourceDao {
   async flowAll(): Promise<BookSourcePart[]> {
     try {
       const sql = `select bookSourceUrl, bookSourceName, bookSourceGroup, bookSourceGrade, bookSourceScore, customOrder, enabled, enabledExplore,
-      trim(loginUrl) <> '' hasLoginUrl, lastUpdateTime, respondTime, weight, trim(exploreUrl) <> '' hasExploreUrl
+      trim(loginUrl) <> '' hasLoginUrl, lastUpdateTime, respondTime, weight, trim(exploreUrl) <> '' hasExploreUrl, isTop, showRecentIcon, showExplore
       from book_sources order by customOrder asc`
       const column: ColumnInfo[] = this.getFlowColumn()
       return await DbUtil.querySqlForList<BookSourcePart>(sql, column)
@@ -62,6 +62,7 @@ class BookSourceDao {
     const enabled = searchParams?.enabled;
     const bookSourceGrade = searchParams?.bookSourceGrade;
     const hasLoginUrl = searchParams?.hasLoginUrl;
+    const showExplore = searchParams?.showExplore;
     try {
       let sql = `
   SELECT
@@ -77,7 +78,10 @@ class BookSourceDao {
     lastUpdateTime,
     respondTime,
     weight,
-    trim(exploreUrl) <> '' AS hasExploreUrl
+    trim(exploreUrl) <> '' AS hasExploreUrl,
+    isTop,
+    showRecentIcon,
+    showExplore
   FROM
     book_sources
 `;
@@ -89,6 +93,9 @@ class BookSourceDao {
       }
       if (enabled !== undefined) {
         whereClause.push(`enabled = ${enabled ? 1 : 0}`);
+      }
+      if (showExplore !== undefined) {
+        whereClause.push(`showExplore = ${showExplore ? 1 : 0}`);
       }
       if (bookSourceGrade !== undefined) {
         whereClause.push(`bookSourceGrade = ${bookSourceGrade}`);
@@ -112,7 +119,7 @@ class BookSourceDao {
 
       sql += `
   ORDER BY
-    customOrder ASC
+    isTop DESC, customOrder ASC
 `;
       const column: ColumnInfo[] = this.getFlowColumn()
       return await DbUtil.querySqlForList<BookSourcePart>(sql, column)
@@ -157,7 +164,7 @@ class BookSourceDao {
 
       sql += `
   ORDER BY
-    customOrder ASC
+    isTop DESC, customOrder ASC
 `;
       const bookSourceDbList = await DbUtil.querySqlForList<BookSourceDb>(sql, column);
       const bookSourceList = bookSourceDbList.map((item): BookSource => ToBookSource(item));
@@ -177,6 +184,9 @@ class BookSourceDao {
       const bookSourceDbList = await DbUtil.queryForList<BookSourceDb>(predicates, column);
       const bookSourceList = bookSourceDbList.map((item): BookSource => ToBookSource(item));
       if (bookSourceList.length > 0) {
+        if (bookSourceList[0].showRecentIcon) {
+          this.updateRecentIcon(ToBookSourcePart(bookSourceList[0]))
+        }
         return bookSourceList[0]
       }
       return null
@@ -220,22 +230,10 @@ class BookSourceDao {
     }
   }
 
-  async update(bookSource: BookSource | BookSourcePart) {
+  async updateFlow(bookSource: BookSourcePart) {
     try {
-      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
       predicates.equalTo('bookSourceUrl', bookSource.bookSourceUrl)
-      const count = await DbUtil.queryForCount(predicates, column)
-      if (count === 0 && bookSource instanceof BookSource) {
-        this.insert(bookSource)
-        return true
-      }
-      if (bookSource instanceof BookSource) {
-        const bookSourceDb = ToBookSourceDb(bookSource)
-        bookSourceDb.lastUpdateTime = Date.now()
-        await DbUtil.update(predicates, bookSourceDb, column)
-        return true
-      }
       bookSource.lastUpdateTime = Date.now()
       const columnPart: ColumnInfo[] = this.getFlowColumn().slice(0, -2)
       await DbUtil.update(predicates, bookSource, columnPart)
@@ -246,12 +244,43 @@ class BookSourceDao {
     }
   }
 
-  async batchUpdate(bookSources: BookSource[] | BookSourcePart[]) {
+  async update(bookSource: BookSource) {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('bookSourceUrl', bookSource.bookSourceUrl)
+      const count = await DbUtil.queryForCount(predicates, column)
+      if (count === 0) {
+        this.insert(bookSource)
+        return true
+      }
+      const bookSourceDb = ToBookSourceDb(bookSource)
+      bookSourceDb.lastUpdateTime = Date.now()
+      await DbUtil.update(predicates, bookSourceDb, column)
+      return true
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
+  }
+
+  async batchUpdateFlow(bookSources: BookSourcePart[]) {
     try {
       for (let index = 0; index < bookSources.length; index++) {
         const bookSource = bookSources[index];
-        await this.update(bookSource)
+        await this.updateFlow(bookSource)
       }
+      return true
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
+  }
+
+  async updateRecentIcon(bookSources: BookSourcePart) {
+    try {
+      bookSources.showRecentIcon = false
+      this.updateFlow(bookSources)
       return true
     } catch (err) {
       console.log('TagInfo, Error, ', JSON.stringify(err))

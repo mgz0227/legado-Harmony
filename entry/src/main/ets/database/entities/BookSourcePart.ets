@@ -1,4 +1,3 @@
-
 @Observed
 export class BookSourcePart {
   // 地址，包括 http/https
@@ -25,4 +24,9 @@ export class BookSourcePart {
   weight: number = 0
   // 是否有发现url
   hasExploreUrl: boolean = false
+  // 是否置顶
+  isTop: boolean = false
+  //是否新增或则更新点击过
+  showRecentIcon: boolean = true
+  showExplore: boolean = true
 }

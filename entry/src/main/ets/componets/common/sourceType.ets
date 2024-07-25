@@ -32,5 +32,6 @@ export default struct sourceType {
           curve: CommonConstants.UniCurve
         })
     }
+    .padding({ top: 7 })
   }
 }

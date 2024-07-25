@@ -7,6 +7,8 @@ import Find from './view/Find/Find'
 import MyCenter from './view/myCenter/MyCenter'
 import Subscription from './view/Subscription'
 import {testGetColorFunction} from '@ohos/colorLibrary'
+import { BookGroups } from '../database/entities/BookGroups'
+import BookGroupsDao from '../database/dao/BookGroupsDao'
 
 @Entry
 @Component
@@ -38,6 +40,7 @@ struct Main {
         justifyContent:FlexAlign.Center
       }){
         Image(this.currentTabIndex === index?icon_select:unselected).height(25)
+          .draggable(false)
         Text(name).fontSize(11).margin(5).fontColor(this.currentTabIndex === index ?'rgb(255,119, 50)' : '#000000')
       }
     }.gesture(
@@ -58,14 +61,6 @@ struct Main {
     new NavItem(2,$r('app.media.SUB_theme'),$r('app.media.SUB_line'), '订阅源'),
     new NavItem(3, $r('app.media.MINE_theme'),$r('app.media.MINE_line'), '我的')
   ]
-
-  // @State scrollType:MainScrollBar[] = [
-  //   new MainScrollBar(false,new Scroller()),
-  //   new MainScrollBar(false,new Scroller()),
-  //   new MainScrollBar(false,new Scroller()),
-  //   new MainScrollBar(false,new Scroller()),
-  //   new MainScrollBar(false,new Scroller())
-  // ]
 
   build() {
     Column() {

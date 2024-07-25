@@ -1,6 +1,10 @@
-import { dataItem } from 'ets/componets/dataList/dataItem'
-import VersionUpdateCustomDialog from 'ets/componets/aboutUs/VersionUpdate'
+import { dataItem } from 'ets/componets/dataList/dataItem';
+import VersionUpdateCustomDialog from 'ets/componets/aboutUs/VersionUpdate';
 import { router } from '@kit.ArkUI';
+import { common, Want } from '@kit.AbilityKit';
+import { BusinessError } from '@ohos.base';
+import hilog from '@ohos.hilog';
+import { productViewManager } from '@kit.StoreKit';
 
 @Entry
 @Component
@@ -20,7 +24,6 @@ struct AboutUsPage {
     new dataItem("免责声明", 3),
     new dataItem("崩溃日志", 4),
   ]
-
   // 升级弹窗
   dialogController: CustomDialogController = new CustomDialogController({
     builder: VersionUpdateCustomDialog({}),
@@ -28,12 +31,34 @@ struct AboutUsPage {
     gridCount: 3,
     alignment: DialogAlignment.Center,
   })
+  @State qqList: Array<string> = [
+    'QQ群1:2031546254',
+    'QQ群2:2031546254',
+    'QQ群3:2031546254',
+    'QQ群4:2031546254',
+    'QQ群5:2031546254',
+  ]
 
   firstUrl_list(value: number | string) {
     switch (value) {
       case 0:
       // 升级弹窗
-        this.dialogController.open()
+      //   this.dialogController.open()
+      // 跳转到应用市场
+        try {
+          const request: Want = {
+            parameters: {
+              bundleName: 'io.legado.app'
+            }
+          };
+          productViewManager.loadProduct(getContext(this) as common.UIAbilityContext, request, {
+            onError: (error: BusinessError) => {
+              hilog.info(0, 'TAG', `loadProduct onError. code is ${error.code}, message is ${error.message}`);
+            }
+          });
+        } catch (err) {
+          hilog.error(0, 'TAG', `loadProduct failed. code is ${err.code}, message is ${err.message}`);
+        }
         break
       case 1:
       // 更新日志
@@ -108,12 +133,26 @@ struct AboutUsPage {
 
         this.middleClick(this.first_list, "app.media.right", this.version, "first")
 
-        Row({ space: 16 }) {
-          this.middleBox(0,"app.media.official_website", "官网")
-          this.middleBox(1,"app.media.wechat_public_account", "公众号")
-          this.middleBox(2,"app.media.channel", "QQ频道")
-          this.middleBox(3,"app.media.QQ", "QQ群")
+        Grid() {
+          GridItem() {
+            this.middleBox(0, "app.media.official_website", "官网")
+          }
+
+          GridItem() {
+            this.middleBox(1, "app.media.wechat_public_account", "公众号")
+          }
+
+          GridItem() {
+            this.middleBox(2, "app.media.channel", "QQ频道")
+          }
+
+          GridItem() {
+            this.middleBox(3, "app.media.QQ", "QQ群")
+          }
         }
+        .columnsTemplate('1fr 1fr 1fr 1fr')
+        .columnsGap(16)
+        .height(80)
         // QQ群的半模态框 不知道绑定在哪里，鸿蒙官方怎么想的，非要绑定一个元素？
         .bindSheet($$this.isShowQQ, this.QQDialog(), {
           height: 300,
@@ -128,10 +167,10 @@ struct AboutUsPage {
         this.middleClick(this.end_list, "app.media.right", null, "end")
       }
       .padding({
-        left:20,
-        right:20,
-        top:this.topRectHeight,
-        bottom:this.bottomRectHeight
+        left: 20,
+        right: 20,
+        top: this.topRectHeight,
+        bottom: this.bottomRectHeight
       })
       .height("100%")
       .backgroundColor("rgb(245, 245, 245)")
@@ -139,7 +178,7 @@ struct AboutUsPage {
   }
 
   @Builder
-  middleBox(index:number,image: string, text: string) {
+  middleBox(index: number, image: string, text: string) {
     Column({ space: 2 }) {
       Image($r(`${image}`)).size({ width: 24, height: 24 })
       Text(text)
@@ -154,15 +193,15 @@ struct AboutUsPage {
         .opacity(0.45)
     }
     .padding({
-      top:12,
-      bottom:12
+      top: 12,
+      bottom: 12
     })
-    .width("20%")
+    .width("100%")
     .height(70)
     .borderRadius(12)
     .backgroundColor(Color.White)
     .onClick(() => {
-      switch (index){
+      switch (index) {
         case 0:
           break
         case 1:
@@ -170,7 +209,7 @@ struct AboutUsPage {
         case 2:
           break
         case 3:
-          this.isShowQQ =true
+          this.isShowQQ = true
           break
       }
     })
@@ -231,14 +270,6 @@ struct AboutUsPage {
     .backgroundColor(Color.White)
     .borderRadius(10)
   }
-
-  @State qqList: Array<string> = [
-    'QQ群1:2031546254',
-    'QQ群2:2031546254',
-    'QQ群3:2031546254',
-    'QQ群4:2031546254',
-    'QQ群5:2031546254',
-  ]
 
   @Builder
   QQDialog() {

@@ -22,7 +22,6 @@ export default struct FindGroupSource {
           ForEach(this.sourceList,(item:string)=>{
             sourceType({
               title:item,
-              sourceType:this.sourceType
             })
               .onClick(()=>{
                 this.sourceType = item

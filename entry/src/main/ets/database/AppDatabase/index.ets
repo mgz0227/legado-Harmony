@@ -8,53 +8,55 @@ export default {
     "entities": [
       {
         "tableName": "books",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bookUrl` TEXT NOT NULL DEFAULT '', `tocUrl` TEXT NOT NULL DEFAULT '', `origin` TEXT NOT NULL DEFAULT 'loc_book', `originName` TEXT NOT NULL DEFAULT '', `name` TEXT NOT NULL DEFAULT '', `author` TEXT NOT NULL DEFAULT '', `kind` TEXT, `customTag` TEXT, `coverUrl` TEXT, `customCoverUrl` TEXT, `intro` TEXT, `customIntro` TEXT, `charset` TEXT, `type` INTEGER NOT NULL DEFAULT 0, `group` INTEGER NOT NULL DEFAULT 0, `latestChapterTitle` TEXT, `latestChapterTime` INTEGER NOT NULL DEFAULT 0, `lastCheckTime` INTEGER NOT NULL DEFAULT 0, `lastCheckCount` INTEGER NOT NULL DEFAULT 0, `totalChapterNum` INTEGER NOT NULL DEFAULT 0, `durChapterTitle` TEXT, `durChapterIndex` INTEGER NOT NULL DEFAULT 0, `durChapterPos` INTEGER NOT NULL DEFAULT 0, `durChapterTime` INTEGER NOT NULL DEFAULT 0, `wordCount` TEXT, `canUpdate` INTEGER NOT NULL DEFAULT 1, `order` INTEGER NOT NULL DEFAULT 0, `originOrder` INTEGER NOT NULL DEFAULT 0, `variable` TEXT, `readConfig` TEXT, `syncTime` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`bookUrl`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` ( `id` INTEGER NOT NULL, `bookUrl` TEXT, `toUrl` TEXT, `origin` TEXT, `originName` TEXT, `bookName` TEXT NOT NULL, `author` TEXT, `cover` TEXT, `customTag` TEXT, `coverUrl` TEXT, `customCoverUrl` TEXT, `intro` TEXT, `customIntro` TEXT, `charset` TEXT, `bookGroup` INTEGER NOT NULL DEFAULT 0, `latestChapterTitle` TEXT, `latestChapterTime` INTEGER NOT NULL DEFAULT 0, `lastCheckTime` INTEGER NOT NULL DEFAULT 0, `lastCheckCount` INTEGER NOT NULL DEFAULT 0, `totalChapterNum` INTEGER NOT NULL DEFAULT 0, `durChapterTitle` TEXT, `durChapterIndex` INTEGER NOT NULL DEFAULT 0, `durChapterPos` INTEGER NOT NULL DEFAULT 0, `durChapterTime` INTEGER NOT NULL DEFAULT 0, `wordCount` TEXT, `canUpdate` INTEGER NOT NULL DEFAULT 1, `sort` INTEGER NOT NULL DEFAULT 0, `originOrder` INTEGER NOT NULL DEFAULT 0, `syncTime` INTEGER NOT NULL DEFAULT 0, `bookType` INTEGER NOT NULL DEFAULT 0, `isTop` INTEGER NOT NULL DEFAULT 0, `createTime` INTEGER NOT NULL DEFAULT 0,`updateTime` INTEGER NOT NULL DEFAULT 0,`isJoin` INTEGER NOT NULL DEFAULT 1,PRIMARY KEY ( `id` ))",
         "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
           {
             "fieldPath": "bookUrl",
             "columnName": "bookUrl",
             "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "notNull": false
           },
           {
-            "fieldPath": "tocUrl",
-            "columnName": "tocUrl",
+            "fieldPath": "toUrl",
+            "columnName": "toUrl",
             "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "notNull": false
           },
           {
             "fieldPath": "origin",
             "columnName": "origin",
             "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "'loc_book'"
+            "notNull": false
           },
           {
             "fieldPath": "originName",
             "columnName": "originName",
             "affinity": "TEXT",
-            "notNull": true,
-            "defaultValue": "''"
+            "notNull": false
           },
           {
-            "fieldPath": "name",
-            "columnName": "name",
+            "fieldPath": "bookName",
+            "columnName": "bookName",
             "affinity": "TEXT",
             "notNull": true,
-            "defaultValue": "''"
+            "defaultValue":""
           },
           {
             "fieldPath": "author",
             "columnName": "author",
             "affinity": "TEXT",
             "notNull": true,
-            "defaultValue": "''"
+            "defaultValue": ""
           },
           {
-            "fieldPath": "kind",
-            "columnName": "kind",
+            "fieldPath": "cover",
+            "columnName": "cover",
             "affinity": "TEXT",
             "notNull": false
           },
@@ -95,15 +97,8 @@ export default {
             "notNull": false
           },
           {
-            "fieldPath": "type",
-            "columnName": "type",
-            "affinity": "INTEGER",
-            "notNull": true,
-            "defaultValue": "0"
-          },
-          {
-            "fieldPath": "group",
-            "columnName": "group",
+            "fieldPath": "bookGroup",
+            "columnName": "bookGroup",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
@@ -179,12 +174,13 @@ export default {
             "fieldPath": "canUpdate",
             "columnName": "canUpdate",
             "affinity": "INTEGER",
+            "boolean": true,
             "notNull": true,
             "defaultValue": "1"
           },
           {
-            "fieldPath": "order",
-            "columnName": "order",
+            "fieldPath": "sort",
+            "columnName": "sort",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
@@ -197,48 +193,71 @@ export default {
             "defaultValue": "0"
           },
           {
-            "fieldPath": "variable",
-            "columnName": "variable",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "readConfig",
-            "columnName": "readConfig",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
             "fieldPath": "syncTime",
             "columnName": "syncTime",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
+          },
+          {
+            "fieldPath": "bookType",
+            "columnName": "bookType",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isTop",
+            "columnName": "isTop",
+            "affinity": "isTop",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "createTime",
+            "columnName": "createTime",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "updateTime",
+            "columnName": "updateTime",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isJoin",
+            "columnName": "isJoin",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "1"
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "bookUrl"
+            "id"
           ]
         },
         "indices": [
           {
-            "name": "index_books_name_author",
+            "name": "index_books_bookName_author",
             "unique": true,
             "columnNames": [
-              "name",
+              "bookName",
               "author"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_books_name_author` ON `${TABLE_NAME}` (`name`, `author`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_books_bookName_author` ON `${TABLE_NAME}` (`bookName`, `author`)"
           }
         ],
         "foreignKeys": []
       },
       {
         "tableName": "book_groups",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`groupId` INTEGER NOT NULL, `groupName` TEXT NOT NULL, `cover` TEXT, `order` INTEGER NOT NULL, `enableRefresh` INTEGER NOT NULL DEFAULT 1, `show` INTEGER NOT NULL DEFAULT 1, `bookSort` INTEGER NOT NULL DEFAULT -1, PRIMARY KEY(`groupId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`groupId` INTEGER NOT NULL, `groupName` TEXT NOT NULL, `coverUrl` TEXT, `groupDescribe` TEXT, `sort` INTEGER NOT NULL, `enableRefresh` INTEGER NOT NULL DEFAULT 1, `show` INTEGER NOT NULL DEFAULT 1, `groupType` INTEGER NOT NULL DEFAULT 0, `createTime` INTEGER NOT NULL DEFAULT 0, `updateTime` INTEGER NOT NULL DEFAULT 0, `bookSort` INTEGER NOT NULL DEFAULT -1, `canUpdate` INTEGER NOT NULL DEFAULT 0, `coverOnly` INTEGER NOT NULL DEFAULT 0, `coverType` INTEGER NOT NULL DEFAULT 0, `canDelete` INTEGER NOT NULL DEFAULT 1, PRIMARY KEY(`groupId`))",
         "fields": [
           {
             "fieldPath": "groupId",
@@ -253,14 +272,20 @@ export default {
             "notNull": true
           },
           {
-            "fieldPath": "cover",
-            "columnName": "cover",
+            "fieldPath": "coverUrl",
+            "columnName": "coverUrl",
             "affinity": "TEXT",
             "notNull": false
           },
           {
-            "fieldPath": "order",
-            "columnName": "order",
+            "fieldPath":"groupDescribe",
+            "columnName": "groupDescribe",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "sort",
+            "columnName": "sort",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -279,11 +304,64 @@ export default {
             "defaultValue": "1"
           },
           {
+            "fieldPath": "groupType",
+            "columnName": "groupType",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "createTime",
+            "columnName": "createTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "updateTime",
+            "columnName": "updateTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
             "fieldPath": "bookSort",
             "columnName": "bookSort",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "-1"
+          },
+          {
+            "fieldPath": "coverOnly",
+            "columnName": "coverOnly",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "coverType",
+            "columnName": "coverType",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+          ,
+          {
+            "fieldPath": "canUpdate",
+            "columnName": "canUpdate",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "canDelete",
+            "columnName": "canDelete",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "1"
           }
         ],
         "primaryKey": {
@@ -297,7 +375,7 @@ export default {
       },
       {
         "tableName": "book_sources",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bookSourceUrl` TEXT NOT NULL, `bookSourceName` TEXT NOT NULL, `bookSourceGroup` TEXT, `bookSourceType` INTEGER NOT NULL, `bookUrlPattern` TEXT, `bookSourceGrade` INTEGER NOT NULL DEFAULT 2, `bookSourceScore` TEXT NOT NULL DEFAULT `5.0分`, `customOrder` INTEGER NOT NULL DEFAULT 0, `enabled` INTEGER NOT NULL DEFAULT 1, `enabledExplore` INTEGER NOT NULL DEFAULT 1, `jsLib` TEXT, `enabledCookieJar` INTEGER DEFAULT 0, `concurrentRate` TEXT, `header` TEXT, `loginUrl` TEXT, `loginUi` TEXT, `loginCheckJs` TEXT, `coverDecodeJs` TEXT, `bookSourceComment` TEXT, `variableComment` TEXT, `lastUpdateTime` INTEGER NOT NULL, `respondTime` INTEGER NOT NULL, `weight` INTEGER NOT NULL, `exploreUrl` TEXT, `exploreScreen` TEXT, `ruleExplore` TEXT, `searchUrl` TEXT, `ruleSearch` TEXT, `ruleBookInfo` TEXT, `ruleToc` TEXT, `ruleContent` TEXT, `ruleReview` TEXT, PRIMARY KEY(`bookSourceUrl`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bookSourceUrl` TEXT NOT NULL, `bookSourceName` TEXT NOT NULL, `bookSourceGroup` TEXT, `bookSourceType` INTEGER NOT NULL, `bookUrlPattern` TEXT, `bookSourceGrade` INTEGER NOT NULL DEFAULT 2, `isTop` INTEGER NOT NULL DEFAULT 0, `showExplore` INTEGER NOT NULL DEFAULT 0, `showRecentIcon` INTEGER NOT NULL DEFAULT 1, `bookSourceScore` TEXT NOT NULL DEFAULT `5.0分`, `customOrder` INTEGER NOT NULL DEFAULT 0, `enabled` INTEGER NOT NULL DEFAULT 1, `enabledExplore` INTEGER NOT NULL DEFAULT 1, `jsLib` TEXT, `enabledCookieJar` INTEGER DEFAULT 0, `concurrentRate` TEXT, `header` TEXT, `loginUrl` TEXT, `loginUi` TEXT, `loginCheckJs` TEXT, `coverDecodeJs` TEXT, `bookSourceComment` TEXT, `variableComment` TEXT, `lastUpdateTime` INTEGER NOT NULL, `respondTime` INTEGER NOT NULL, `weight` INTEGER NOT NULL, `exploreUrl` TEXT, `exploreScreen` TEXT, `ruleExplore` TEXT, `searchUrl` TEXT, `ruleSearch` TEXT, `ruleBookInfo` TEXT, `ruleToc` TEXT, `ruleContent` TEXT, `ruleReview` TEXT, PRIMARY KEY(`bookSourceUrl`))",
         "fields": [
           {
             "fieldPath": "bookSourceUrl",
@@ -497,6 +575,30 @@ export default {
             "columnName": "ruleReview",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "isTop",
+            "columnName": "isTop",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "showRecentIcon",
+            "columnName": "showRecentIcon",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "showExplore",
+            "columnName": "showExplore",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "1"
           }
         ],
         "primaryKey": {
@@ -1001,7 +1103,7 @@ export default {
       },
       {
         "tableName": "rssSources",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sourceType` INTEGER NOT NULL ,`sourceUrl` TEXT NOT NULL, `sourceName` TEXT NOT NULL, `sourceIcon` TEXT NOT NULL, `sourceGroup` TEXT, `sourceComment` TEXT, `enabled` INTEGER NOT NULL, `variableComment` TEXT, `jsLib` TEXT, `enabledCookieJar` INTEGER DEFAULT 0, `concurrentRate` TEXT, `header` TEXT, `loginUrl` TEXT, `loginUi` TEXT, `loginCheckJs` TEXT, `coverDecodeJs` TEXT, `sortUrl` TEXT, `singleUrl` INTEGER NOT NULL, `articleStyle` INTEGER NOT NULL DEFAULT 0, `ruleArticles` TEXT, `ruleNextPage` TEXT, `ruleTitle` TEXT, `rulePubDate` TEXT, `ruleDescription` TEXT, `ruleImage` TEXT, `ruleLink` TEXT, `ruleContent` TEXT, `contentWhitelist` TEXT, `contentBlacklist` TEXT, `shouldOverrideUrlLoading` TEXT, `style` TEXT, `enableJs` INTEGER NOT NULL DEFAULT 1, `loadWithBaseUrl` INTEGER NOT NULL DEFAULT 1, `injectJs` TEXT, `lastUpdateTime` INTEGER NOT NULL DEFAULT 0, `customOrder` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`sourceUrl`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sourceType` INTEGER NOT NULL ,`sourceUrl` TEXT NOT NULL, `sourceName` TEXT NOT NULL, `sourceIcon` TEXT NOT NULL, `sourceGroup` TEXT, `sourceComment` TEXT, `enabled` INTEGER NOT NULL, `variableComment` TEXT, `jsLib` TEXT, `enabledCookieJar` INTEGER DEFAULT 0, `concurrentRate` TEXT, `header` TEXT, `loginUrl` TEXT, `loginUi` TEXT, `loginCheckJs` TEXT, `coverDecodeJs` TEXT, `sortUrl` TEXT, `singleUrl` INTEGER NOT NULL, `articleStyle` INTEGER NOT NULL DEFAULT 0, `ruleArticles` TEXT, `ruleNextPage` TEXT, `ruleTitle` TEXT, `rulePubDate` TEXT, `ruleDescription` TEXT, `ruleImage` TEXT, `ruleLink` TEXT, `ruleContent` TEXT, `contentWhitelist` TEXT, `contentBlacklist` TEXT, `shouldOverrideUrlLoading` TEXT, `style` TEXT, `enableJs` INTEGER NOT NULL DEFAULT 1, `loadWithBaseUrl` INTEGER NOT NULL DEFAULT 1, `injectJs` TEXT, `lastUpdateTime` INTEGER NOT NULL DEFAULT 0,`variable` TEXT, `rssListRule` TEXT,`rssWebViewRule` TEXT,`sourceIconIsUrl` INTEGER ,`showRecentIcon` INTEGER NOT NULL DEFAULT 1, `customOrder` INTEGER NOT NULL DEFAULT 0, `customizeTitle` TEXT, PRIMARY KEY(`sourceUrl`))",
         "fields": [
           {
             "fieldPath": "sourceType",
@@ -1062,6 +1164,7 @@ export default {
             "fieldPath": "enabledCookieJar",
             "columnName": "enabledCookieJar",
             "affinity": "INTEGER",
+            "boolean": true,
             "notNull": false,
             "defaultValue": "0"
           },
@@ -1213,6 +1316,40 @@ export default {
             "notNull": false
           },
           {
+            "fieldPath": "sourceIconIsUrl",
+            "columnName": "sourceIconIsUrl",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": false,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "variable",
+            "columnName": "variable",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "rssListRule",
+            "columnName": "rssListRule",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "rssWebViewRule",
+            "columnName": "rssWebViewRule",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "showRecentIcon",
+            "columnName": "showRecentIcon",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
             "fieldPath": "lastUpdateTime",
             "columnName": "lastUpdateTime",
             "affinity": "INTEGER",
@@ -1225,7 +1362,21 @@ export default {
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
-          }
+          },
+          {
+            "fieldPath": "customizeTitle",
+            "columnName": "customizeTitle",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "autoComplete",
+            "columnName": "autoComplete",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "0"
+          },
         ],
         "primaryKey": {
           "autoGenerate": false,
@@ -1911,7 +2062,80 @@ export default {
         },
         "indices": [],
         "foreignKeys": []
-      }
+      },
+      {
+        "tableName": "rss_sources_history",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`sourceType` INTEGER NOT NULL ,`sourceGroup` TEXT,`sourceUrl` TEXT NOT NULL, `sourceName` TEXT NOT NULL, `sourceIcon` TEXT NOT NULL,`lastUpdateTime` INTEGER NOT NULL DEFAULT 0,`sourceIconIsUrl` INTEGER ,`showRecentIcon` INTEGER NOT NULL DEFAULT 1 ,`autoComplete` INTEGER NOT NULL DEFAULT 0,`customizeTitle` TEXT, PRIMARY KEY(`sourceUrl`))",
+        "fields": [
+          {
+            "fieldPath": "sourceType",
+            "columnName": "sourceType",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "sourceUrl",
+            "columnName": "sourceUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceGroup",
+            "columnName": "sourceGroup",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceName",
+            "columnName": "sourceName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceIcon",
+            "columnName": "sourceIcon",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sourceIconIsUrl",
+            "columnName": "sourceIconIsUrl",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": false,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "showRecentIcon",
+            "columnName": "showRecentIcon",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          },
+          {
+            "fieldPath": "lastUpdateTime",
+            "columnName": "lastUpdateTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "customizeTitle",
+            "columnName": "customizeTitle",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "sourceUrl"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
     ],
     "views": [],
     "setupQueries": [

@@ -1,3 +1,5 @@
+import BookGroupsDao from '../../database/dao/BookGroupsDao'
+import { BookGroups } from '../../database/entities/BookGroups'
 import FolderInfoDialog from '../../pages/view/dialog/FolderInfoDialog'
 import FolderManageDialog from '../../pages/view/dialog/FolderManageDialog'
 import { updateAppData } from '../../storage/appData'
@@ -10,13 +12,25 @@ import { folderList } from '../dataList/folderList'
 export default struct groupTypePanel{
   @Link groupCoverShow:boolean
   @State isShowIcon:boolean = false
-  @State groupType:string[] = ['分组','全部','未分组','本地','书单']
-  @State groupTypes:string[] = []
-  @State hideGroupType:string[] = ['游戏','玄幻','都市', '历史', '军事', '科幻', '灵异', '二次元', '耽美', '同人']
-
-  @StorageProp('GROUP_LIST_DATA') groupData:folderList[] = []
+  @Prop showGroupList:BookGroups[] = []
+  @State hideList:BookGroups[] = []
+  @Prop currentIndex:number = 0
 
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = true
+
+  aboutToAppear(): void {
+    this.getGroupList()
+  }
+
+  getGroupList(){
+    BookGroupsDao.searchHide({
+      type:this.currentIndex,
+      show: false
+    }).then((val)=>{
+      this.hideList = val
+    })
+  }
+
   build() {
     Column({
       space:15
@@ -40,14 +54,19 @@ export default struct groupTypePanel{
           })
         }
       }
+
       Flex({
         direction: FlexDirection.Row, wrap: FlexWrap.Wrap,
         justifyContent:FlexAlign.Start
       }){
-        ForEach(this.groupTypes.length > 0?this.groupTypes:this.groupType,(item:string,index:number)=>{
-          if (index === 0) {
+        ForEach(this.showGroupList,(item:BookGroups,index:number)=>{
+          if (item.show) {
             Row(){
-              this.GroupTypeColor(item)
+              if (index === 0){
+                this.GroupTypeColor(item.groupName)
+              } else {
+                this.GroupType(item.groupName)
+              }
               if (this.isShowIcon) {
                 Image($r('app.media.sort')).width(12).height(12).offset({x:-20,y:-20})
               }
@@ -59,29 +78,6 @@ export default struct groupTypePanel{
               }
             })
             .draggable(this.isShowIcon)
-            .onDragStart(()=>{
-              console.log('onDragStart')
-            })
-            .onDrop((event: DragEvent, extraParams: string) => {
-              console.log('onDrop')
-              this.changeIndex(this.dragIndex, index,0)
-              this.groupTypes = []
-            })
-
-          } else {
-            Row(){
-              this.GroupType(item)
-              if (this.isShowIcon) {
-                Image($r('app.media.sort')).width(12).height(12).offset({x:-20,y:-20})
-              }
-            }.width('25%')
-            .draggable(this.isShowIcon)
-            .onTouch((event: TouchEvent) => {
-              if (event.type === TouchType.Down) {
-                this.dragIndex = index // 获取当前拖拽子组件的索引
-                console.info('onTouch' + this.dragIndex)
-              }
-            })
             .onDragStart(()=>{
               console.log('onDragStart')
             })
@@ -91,7 +87,6 @@ export default struct groupTypePanel{
             })
           }
         })
-
       }
 
       Flex({
@@ -115,13 +110,13 @@ export default struct groupTypePanel{
             })
         }.alignItems(VerticalAlign.Bottom).justifyContent(FlexAlign.End)
       }
-      if (this.hideGroupType.length > 0){
+      if (this.hideList.length > 0){
         Flex({
           direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center
         }){
-          ForEach(this.groupData, (item: folderList,index:number) => {
+          ForEach(this.hideList, (item: BookGroups,index:number) => {
               Row(){
-                this.GroupType(item.title)
+                this.GroupType(item.groupName)
                 if (this.isShowIcon) {
                   Image($r('app.media.add_new_fill')).width(12).height(12).offset({x:-20,y:-20})
                 }
@@ -141,16 +136,16 @@ export default struct groupTypePanel{
                 this.changeIndex(this.dragIndex, index,1)
               })
               .onClick(()=>{
-                this.group = item
+                // this.group = item
                 this.isShowBookFolderInfoDialog = true
-                this.folderType = item.title
+                // this.folderType = item.title
               })
               .gesture(
                 LongPressGesture({ repeat: true,duration:500 })
                   .onAction((event: GestureEvent) => {
                     if (event.repeat) {
                       if (!this.isShow) {
-                        this.group = item
+                        // this.group = item
                         this.isShow = true
                         this.changeNumber = 1
                         this.groupInfoDialog?.open()
@@ -218,16 +213,7 @@ export default struct groupTypePanel{
       return
     }
     console.log('changeIndex' + index1 + ',' + index2)
-    switch (type){
-      case 0:
-        let temp1 = this.groupType[index1];
-        this.groupType[index1] = this.groupType[index2];
-        this.groupType[index2] = temp1;break;
-      case 1:
-        let temp = this.hideGroupType[index1];
-        this.hideGroupType[index1] = this.hideGroupType[index2];
-        this.hideGroupType[index2] = temp;break;
-    }
+    //TODO 更新排序顺序到数据库中sort
   }
   @Builder GroupTypeColor(title:string){
     Column(){
@@ -254,11 +240,7 @@ export default struct groupTypePanel{
        }).ellipsisMode(EllipsisMode.END)
          .maxLines(1).fontColor(Color.Black)
          .textAlign(TextAlign.Center)
-       // Image($r('app.media.sort')).width(12).height(12).offset({x:18,y:-12})
      }
-     // .backgroundImage($r('app.media.sort'))
-     // .backgroundImagePosition({x:-12,y:12})
-     // .backgroundImageSize({width:'100%',height:12})
      .margin({ right: 16, bottom: 16 })
      .justifyContent(FlexAlign.Center)
      .alignItems(VerticalAlign.Center)

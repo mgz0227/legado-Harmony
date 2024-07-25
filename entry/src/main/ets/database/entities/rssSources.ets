@@ -21,7 +21,7 @@ export class rssSources{
   // 图标是否使用链接
   sourceIconIsUrl:boolean = false
   // 分组
-  sourceGroup:string = SUBSCRIPTION_GROUP_TYPE[0]
+  sourceGroup:string = SUBSCRIPTION_GROUP_TYPE[4]
   //源注解
   sourceComment?:string
   //是否启用
@@ -56,8 +56,12 @@ export class rssSources{
   customOrder:number = 0
   //设置源变量
   variable?:string
+  //是否新增或则更新点击过
+  showRecentIcon:boolean = true
   //自动补全
   autoComplete:boolean = true
+  //自定义文字
+  customizeTitle:string = ''
   //列表
   rssListRule?:rssListRule
   //webView
@@ -108,7 +112,7 @@ export const SUBSCRIPTION_GROUP_TYPE: Record<number, string> ={
   0: '小说',
   1: '漫画',
   2: '影视',
-  3: '咨询',
+  3: '资讯',
   4: '收藏夹'
 }
 
@@ -155,6 +159,8 @@ export const ToRssSources = (rssSourceDb: rssSourceDb) => {
     customOrder: rssSourceDb.customOrder,
     variable: rssSourceDb.variable,
     autoComplete: rssSourceDb.autoComplete,
+    showRecentIcon:rssSourceDb.showRecentIcon,
+    customizeTitle:rssSourceDb.customizeTitle,
     rssListRule,
     rssWebViewRule
   }
@@ -162,34 +168,36 @@ export const ToRssSources = (rssSourceDb: rssSourceDb) => {
 }
 
 
-export const ToRssSourcesDb = (rssSourceDb: rssSources) => {
-  const rssListRule = GSON.toString(rssSourceDb.rssListRule);
-  const rssWebViewRule = GSON.toString(rssSourceDb.rssWebViewRule);
+export const ToRssSourcesDb = (rssSource: rssSources) => {
+  const rssListRule = GSON.toString(rssSource.rssListRule);
+  const rssWebViewRule = GSON.toString(rssSource.rssWebViewRule);
   const rssSourcesDb: rssSourceDb = {
-    sourceType: rssSourceDb.sourceType,
-    sourceName: rssSourceDb.sourceName,
-    sourceUrl: rssSourceDb.sourceUrl,
-    sourceIcon: rssSourceDb.sourceIcon,
-    sourceIconIsUrl: rssSourceDb.sourceIconIsUrl,
-    sourceGroup: rssSourceDb.sourceGroup,
-    sourceComment: rssSourceDb.sourceComment,
-    enabled: rssSourceDb.enabled,
-    variableComment: rssSourceDb.variableComment,
-    jsLib: rssSourceDb.jsLib,
-    enabledCookieJar: rssSourceDb.enabledCookieJar,
-    concurrentRate: rssSourceDb.concurrentRate,
-    header: rssSourceDb.header,
-    loginUrl: rssSourceDb.loginUrl,
-    loginUi: rssSourceDb.loginUi,
-    loginCheckJs: rssSourceDb.loginCheckJs,
-    coverDecodeJs: rssSourceDb.coverDecodeJs,
-    sortUrl: rssSourceDb.sortUrl,
-    singleUrl: rssSourceDb.singleUrl,
-    articleStyle: rssSourceDb.articleStyle,
-    lastUpdateTime: rssSourceDb.lastUpdateTime,
-    customOrder: rssSourceDb.customOrder,
-    variable: rssSourceDb.variable,
-    autoComplete: rssSourceDb.autoComplete,
+    sourceType: rssSource.sourceType,
+    sourceName: rssSource.sourceName,
+    sourceUrl: rssSource.sourceUrl,
+    sourceIcon: rssSource.sourceIcon,
+    sourceIconIsUrl: rssSource.sourceIconIsUrl,
+    sourceGroup: rssSource.sourceGroup,
+    sourceComment: rssSource.sourceComment,
+    enabled: rssSource.enabled,
+    variableComment: rssSource.variableComment,
+    jsLib: rssSource.jsLib,
+    enabledCookieJar: rssSource.enabledCookieJar,
+    concurrentRate: rssSource.concurrentRate,
+    header: rssSource.header,
+    loginUrl: rssSource.loginUrl,
+    loginUi: rssSource.loginUi,
+    loginCheckJs: rssSource.loginCheckJs,
+    coverDecodeJs: rssSource.coverDecodeJs,
+    sortUrl: rssSource.sortUrl,
+    singleUrl: rssSource.singleUrl,
+    articleStyle: rssSource.articleStyle,
+    lastUpdateTime: rssSource.lastUpdateTime,
+    customOrder: rssSource.customOrder,
+    variable: rssSource.variable,
+    autoComplete: rssSource.autoComplete,
+    showRecentIcon: rssSource.showRecentIcon,
+    customizeTitle: rssSource.customizeTitle,
     rssListRule,
     rssWebViewRule
   }

@@ -4,7 +4,6 @@
  * @className: BodyContent
  */
 import CommonConstants from '../../../../common/constants/CommonConstants'
-import { showMessage } from '../../../../componets/common/promptShow'
 import sourceType from '../../../../componets/common/sourceType'
 import SourceCommon from '../../../../componets/source/SourceCommon'
 import BookSourceDao from '../../../../database/dao/BookSourceDao'
@@ -21,15 +20,20 @@ export default struct BodyContent {
   @Prop currentIndex: number
   @StorageLink(CommonConstants.HAS_EXPLORE_URL) @Watch('getList') hasExploreUrl?: boolean = undefined
   tabsBodyController: TabsController = new TabsController();
+  @StorageLink('refreshCount') @Watch('getList') refreshCount: number = 0
 
   aboutToAppear() {
+    this.getList()
+  }
+
+  onPageShow() {
     this.getList()
   }
 
   getList() {
     this.loading = true
     BookSourceDao.search({
-      type: this.currentIndex,
+      type: [0, 2, 1][this.currentIndex],
       enabled: true,
       hasExploreUrl: this.hasExploreUrl
     }).then(bookSources => {
@@ -63,14 +67,16 @@ export default struct BodyContent {
               ForEach(this.sourceList, (item: BookSource, index: number) => {
                 sourceType({
                   title: item.bookSourceName,
-                  active: this.currentSourceIndex === index
+                  active: this.currentSourceIndex === index,
                 })
                   .onClick(() => {
                     this.tabsBodyController.changeIndex(index)
                     this.currentSourceIndex = index
                   })
               })
-            }.margin({ top: 5, bottom: 5 })
+            }
+            .padding({ right: 12 })
+            .margin({ top: 5, bottom: 5 })
           }
           .scrollBar(BarState.Off)
           .scrollable(ScrollDirection.Horizontal)
@@ -82,16 +88,15 @@ export default struct BodyContent {
 
         Row() {
           Image($r('app.media.more_search')).width(24).height(24)
-        }.width(
-          '10%'
-        )
+        }
+        .width(34)
         .onClick(() => {
           if (this.sourceList.length) {
             this.isShowDialog = true
           }
         })
         .bindSheet(this.isShowDialog, this.sourceCommon(), {
-          detents: [SheetSize.MEDIUM, SheetSize.LARGE, 200],
+          detents: [SheetSize.FIT_CONTENT, SheetSize.LARGE, 200],
           dragBar: true,
           showClose: false,
           onDisappear: () => {
@@ -99,18 +104,18 @@ export default struct BodyContent {
           }
         })
       }
-      .margin({ left: 15 })
+      .margin({ left: 20, right: 10 })
 
 
       if (this.loading) {
-          Column() {
-            LoadingProgress()
-              .color(0xff6600)
-              .width('50%')
-            Text('加载中...')
-          }
-          .justifyContent(FlexAlign.Center)
-          .layoutWeight(1)
+        Column() {
+          LoadingProgress()
+            .color(0xff6600)
+            .width('50%')
+          Text('加载中...')
+        }
+        .justifyContent(FlexAlign.Center)
+        .layoutWeight(1)
       } else if (!this.sourceList.length) {
         Column() {
           Image($r('app.media.find_empty'))
@@ -133,7 +138,8 @@ export default struct BodyContent {
               ContentRefresh({
                 currentIndex: this.currentIndex,
                 bookSource: item,
-                hasExploreUrl: this.hasExploreUrl
+                hasExploreUrl: this.hasExploreUrl,
+                refreshCount: this.refreshCount
               })
             }
             .height('100%')
@@ -149,13 +155,18 @@ export default struct BodyContent {
           this.currentSourceIndex = index
         })
       }
-    }.layoutWeight(1)
+    }
+    .layoutWeight(1)
   }
 
   @Builder
   sourceCommon() {
     Column() {
-      SourceCommon()
+      SourceCommon({
+        showDialog: this.isShowDialog,
+        currentIndex: this.currentIndex,
+        refreshCount: this.refreshCount
+      })
     }.height('100%')
   }
 }

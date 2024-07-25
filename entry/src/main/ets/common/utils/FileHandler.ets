@@ -1,12 +1,15 @@
 import { BusinessError } from '@ohos.base';
-import fs, { Options, WriteOptions } from '@ohos.file.fs';
+import fs, { Options } from '@ohos.file.fs';
 import { common, Context } from '@kit.AbilityKit';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
 import { BookList } from '../../componets/dataList/bookList';
 import { addShelfBook } from '../../storage/bookListData';
 import { showMessage } from '../../componets/common/promptShow';
-import { fileIo, picker } from '@kit.CoreFileKit';
+import { picker } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
+import { buffer } from '@kit.ArkTS'
+import { Books } from '../../database/entities/Books';
+import booksUtil from './booksUtils';
 
 let context = getContext(this) as common.UIAbilityContext;
 let filePath = context.filesDir;
@@ -16,12 +19,28 @@ let options: Options = {
 };
 
 export class FileHandler {
-  static CopyFile(srcUrl: string) {
+  static CopyFile(srcUrl: string, currentIndex:number) {
     let file = fs.openSync(srcUrl, fs.OpenMode.READ_WRITE);
     let dstPath = filePath + '/' + file.name; // file.name:《幽影之冰》.txt
-    addShelfBook(0,
-      new BookList('', file.name, '会说话的肘子·未读过1', '更新至·第340章 镇压', $r('app.media.cover_list'), '测试作者',
-        '未分组', dstPath))
+    let book:Books = {
+      bookName: file.name,
+      bookUrl: dstPath,
+      author: '暂无',
+      bookGroup: 4,
+      latestChapterTime: 0,
+      totalChapterNum: 0,
+      durChapterIndex: 0,
+      durChapterPos: 0,
+      durChapterTime: 0,
+      canUpdate: false,
+      sort: 0,
+      originOrder: 0,
+      syncTime: 0,
+      bookType: currentIndex,
+      isTop: false,
+      isJoin: false
+    }
+    booksUtil.addBooks(book)
     showMessage('添加到书架成功')
     fs.copyFile(file.fd, dstPath, 0).then(() => {
       showMessage('导入沙箱成功')
@@ -30,6 +49,14 @@ export class FileHandler {
       showMessage('导入失败')
       console.error("copy file failed with error message: " + err.message + ", error code: " + err.code);
     });
+  }
+
+  static async ReadJSONFile(srcUrl: string) {
+    let file = fs.openSync(srcUrl, fs.OpenMode.READ_WRITE);
+    let arrayBuffer = new ArrayBuffer(40960);
+    let readLen: number = await fs.read(file.fd, arrayBuffer)
+    let JSONString = buffer.from(arrayBuffer, 0, readLen).toString();
+    return JSONString
   }
 
   static async readFile(readFileUrl: string) {
@@ -64,6 +91,23 @@ export class FileHandler {
       }
     }
     return chapters
+  }
+
+  static async documentPickerFile(maxSelectNumber: number, fileSuffixFilters: Array<string>) {
+    // 尝试写一个通用的picker
+    try {
+      const documentSelectOptions = new picker.DocumentSelectOptions();
+      // 选择文档的最大数目（可选）
+      documentSelectOptions.maxSelectNumber = maxSelectNumber;
+      // 选择文件的后缀类型，若选择项存在多个后缀名，则每一个后缀名之间用英文逗号进行分隔（可选），后缀类型名不能超过100
+      documentSelectOptions.fileSuffixFilters = fileSuffixFilters;
+      let documentViewPicker = new picker.DocumentViewPicker(context);
+      const documentSelectResult: Array<string> = await documentViewPicker.select(documentSelectOptions)
+      return documentSelectResult
+    } catch (err) {
+      console.error(`读取失败：${err}`);
+      return Promise.reject(err)
+    }
   }
 
   static async pickerFile(context: Context) {

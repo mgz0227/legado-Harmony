@@ -6,11 +6,15 @@
  */
 import FontConstants from '../../../../common/constants/FontConstants'
 import PaddingConstants from '../../../../common/constants/PaddingConstants'
+import { isNetworkUrl } from '../../../../common/utils/utils'
 import buttonCommon from '../../../../componets/common/buttonCommon'
 import { showMessage } from '../../../../componets/common/promptShow'
 import FormItem from '../../../../componets/Form/FormItem'
 import SubscriptionDao from '../../../../database/dao/SubscriptionDao'
 import { rssSources, SUBSCRIPTION_GROUP_TYPE } from '../../../../database/entities/rssSources'
+import programDataPreferences from '../../../../preferences/programDataPreferences'
+import PreviewEffectImage from '../components/PreviewEffectImage'
+import RssSourceCheckImage from '../components/RssSourceCheckImage'
 
 @Component
 export default struct newSourcesNetWork{
@@ -40,8 +44,11 @@ export default struct newSourcesNetWork{
             showMessage('红星标记的内容不能为空')
             return
           }
-          if(this.formModel.sourceIcon === ''){
-            this.formModel.sourceIcon = 'app.media.icon'
+          if (this.formModel.sourceIconIsUrl){
+            if (!isNetworkUrl(this.formModel.sourceIcon ?? '')) {
+              showMessage('复制的链接不正确')
+              return
+            }
           }
           let isInsert = await SubscriptionDao.insert(this.formModel)
           if (isInsert) {
@@ -54,6 +61,15 @@ export default struct newSourcesNetWork{
           },1000)
         },
       })
+      Flex()
+        .bindSheet(this.isShowPresetIcon,this.showPresetIcon(),{
+          height: 400,
+          dragBar: true,
+          showClose:false,
+          onDisappear:()=>{
+            this.isShowPresetIcon = false
+          }
+        })
     }
   }
   private scroller: Scroller = new Scroller()
@@ -67,9 +83,24 @@ export default struct newSourcesNetWork{
     lastUpdateTime: new Date().getTime(),
     customOrder: 0,
     autoComplete: false,
-    sourceGroup: SUBSCRIPTION_GROUP_TYPE[0],
+    sourceGroup: SUBSCRIPTION_GROUP_TYPE[4],
     enabled: true,
-    singleUrl: true
+    singleUrl: true,
+    showRecentIcon: true,
+    customizeTitle: ''
+  }
+  aboutToAppear(): void {
+    this.getRssSourceList()
+  }
+  @State sourceGroupList:SelectOption[] = []
+  getRssSourceList() {
+    let list = programDataPreferences.getRssSourcesListData()
+    //将list存放到sourceGroupList
+    list.forEach((item) => {
+      this.sourceGroupList.push({
+        value: item
+      })
+    })
   }
   @Builder
   baseForm() {
@@ -110,14 +141,11 @@ export default struct newSourcesNetWork{
           .justifyContent(FlexAlign.SpaceBetween)
 
           Row() {
-            Select([
-              { value: '小说' },
-              { value: '漫画' },
-              { value: '影视' },
-              { value: '咨询' },
-              { value: '收藏夹' }
-            ])
-              .value(this.formModel.sourceGroup.length === 0?SUBSCRIPTION_GROUP_TYPE[0]:this.formModel.sourceGroup)
+            Select(this.sourceGroupList)
+              .selected(this.sourceGroupList.findIndex((item) => {
+                return item.value === this.formModel.sourceGroup
+              }))
+              .value(this.formModel.sourceGroup?this.formModel.sourceGroup:SUBSCRIPTION_GROUP_TYPE[4])
               .borderRadius(4)
               .fontColor(this.formModel.sourceGroup !== undefined ? '#E0000000' : '#73000000')
               .onSelect((index: number, text?: string | undefined) => {
@@ -147,33 +175,55 @@ export default struct newSourcesNetWork{
             Row(){
               this.sourceIconIsUrl(
                 this.formModel.sourceIconIsUrl ?? false,
-                (val) => {
+                (val:boolean) => {
                   this.formModel.sourceIconIsUrl = val
                 })
             }
           }
-          Flex({
-            justifyContent:FlexAlign.SpaceBetween
-          }) {
-            Row() {
-              Text('选择本地图片')
-                .textAlign(TextAlign.Center)
-                .fontSize(16)
-                .padding({ top: 8,bottom:8,right:12,left:12 })
-            }
-            .justifyContent(FlexAlign.Center)
-            .width('48%')
-            .backgroundColor($r('app.string.color_black_6'))
+          if (this.formModel.sourceIconIsUrl){
+            FormItem({
+              value: this.formModel.sourceIcon,
+              label: '图标链接',
+              showTitle:false,
+              onChange: (value: string) => {
+                this.formModel.sourceIcon = value
+              }
+            })
+          } else {
+            Flex({
+              justifyContent:FlexAlign.SpaceBetween
+            }) {
+              Row() {
+                Text('选择本地图片')
+                  .textAlign(TextAlign.Center)
+                  .fontSize(16)
+                  .padding({ top: 8,bottom:8,right:12,left:12 })
+              }
+              .justifyContent(FlexAlign.Center)
+              .width('48%')
+              .backgroundColor($r('app.string.color_black_6'))
 
-            Row() {
-              Text('预设图标')
-                .textAlign(TextAlign.Center)
-                .fontSize(16)
-                .padding({ top: 8,bottom:8,right:12,left:12 })
+              Row() {
+                Text('预设图标')
+                  .textAlign(TextAlign.Center)
+                  .fontSize(16)
+                  .padding({ top: 8,bottom:8,right:12,left:12 })
+              }
+              .justifyContent(FlexAlign.Center)
+              .width('48%')
+              .backgroundColor($r('app.string.color_black_6'))
+              .onClick(() => {
+                this.isShowPresetIcon = true
+              })
             }
-            .justifyContent(FlexAlign.Center)
-            .width('48%')
-            .backgroundColor($r('app.string.color_black_6'))
+            .margin({ top: 12 })
+          }
+          if (!this.formModel.sourceIconIsUrl && this.formModel.customizeTitle){
+            PreviewEffectImage({
+              customizeTitle:this.formModel.customizeTitle,
+              sourceIcon:this.formModel.sourceIcon,
+              sourceIconIsUrl:this.formModel.sourceIconIsUrl
+            })
           }
         }
         .margin({ top: 12,left:20,right:20 })
@@ -198,6 +248,25 @@ export default struct newSourcesNetWork{
         .onChange((val: boolean) => {
           onChange(val)
         })
+    }
+  }
+
+  @State isShowPresetIcon:boolean = false
+  @Builder
+  showPresetIcon(){
+    Grid(){
+      GridItem(){
+        RssSourceCheckImage({
+          onCancel:()=>{
+            this.isShowPresetIcon = false
+          },
+          onSubmit:(value:string, imageString:string)=>{
+            this.formModel.customizeTitle = value
+            this.formModel.sourceIcon = imageString
+            this.isShowPresetIcon = false
+          }
+        })
+      }
     }
   }
 }

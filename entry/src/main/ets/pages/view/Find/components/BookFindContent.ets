@@ -7,18 +7,24 @@
 import axios, { AxiosResponse, AxiosError } from '@ohos/axios'
 import { isNetworkUrl } from '../../../../common/utils/utils'
 import noFind from '../../../../componets/common/noFind'
+import { ExploreRule } from '../../../../database/entities/rule'
+import { ExploreItem, ExploreQuery } from '../../../../database/types/BookSourceType'
 import mayAlsoLike from '../mayAlsoLike'
-import { ExploreItem } from './ContentRefresh'
+import { CardItem } from './CardItem'
+import { router } from '@kit.ArkUI'
 
 @Component
 export default struct BookFindContent {
   @Prop currentIndex: number
   @Prop bookSourceUrl: string
   @Prop exploreItem: ExploreItem
-  @Prop @Watch('getList')counter: number = 0
+  @Prop @Watch('getList') counter: number = 0
   @State loading: boolean = true
   @State errorExplore: boolean = false
-  @State contentExplore: string = ''
+  @State bookList: ExploreRule[] = []
+  @Prop exploreRule: ExploreRule = {}
+  handleClick: () => void = () => {
+  }
 
   aboutToAppear() {
     this.getList()
@@ -30,12 +36,29 @@ export default struct BookFindContent {
     if (!isNetworkUrl(url)) {
       url = this.bookSourceUrl + url
     }
-    console.info('TagInfo 请求地址：', url)
-    // TODO 需要可正常使用的进行调试
-    axios.get(url).then((res: AxiosResponse) => {
+    const exploreQuery: ExploreQuery = {
+      url,
+      bookList: this.exploreRule.bookList,
+      pageSize: 3,
+      name: this.exploreRule.name,
+      author: this.exploreRule.author,
+      intro: this.exploreRule.intro,
+      kind: this.exploreRule.kind,
+      lastChapter: this.exploreRule.lastChapter,
+      bookUrl: this.exploreRule.bookUrl,
+      coverUrl: this.exploreRule.coverUrl,
+      wordCount: this.exploreRule.wordCount
+    }
+    axios.post('http://legado.wisdoms.xin/analysisRules', exploreQuery).then((res: AxiosResponse) => {
+      console.info('TagInfo, 解析内容：', JSON.stringify(res.data))
+      this.bookList = (res.data as ExploreRule[]).map(item => {
+        if (item.coverUrl && !isNetworkUrl(item.coverUrl)) {
+          item.coverUrl = this.bookSourceUrl + item.coverUrl
+        }
+        return item
+      })
       this.loading = false
-      console.info('TagInfo 请求成功：', JSON.stringify(res.data))
-      this.contentExplore = JSON.stringify(res.data)
+      this.errorExplore = false
     }).catch((err: AxiosError) => {
       console.log('TagInfo 请求失败：', JSON.stringify(err.message));
       this.loading = false
@@ -49,29 +72,67 @@ export default struct BookFindContent {
     }) {
       Column() {
         mayAlsoLike({
-          mayAlsoLike: this.exploreItem.title
+          mayAlsoLike: this.exploreItem.title,
+          handleClick: this.handleClick
         })
         if (this.loading) {
           Column() {
             LoadingProgress()
               .color(0xff6600)
               .width('50%')
-            Text('加载中...')
+            Text('内容加载中...')
           }
           .justifyContent(FlexAlign.Center)
           .layoutWeight(1)
         } else if (this.errorExplore) {
-          noFind().padding({
-            top: 75
+          noFind({
+            onclick: () => {
+              this.getList()
+            }
+          })
+        } else if (this.bookList.length === 0) {
+          noFind({
+            hintIndex: 0
           })
         } else {
-          Text('请求成功，需要解析')
-          Text(this.contentExplore)
-            .textOverflow({overflow: TextOverflow.Ellipsis})
-            .maxLines(15)
+          Column() {
+            ForEach(this.bookList, (item: ExploreRule, index) => {
+              CardItem({ item: item })
+            })
+            if (this.bookList.length === 3) {
+              Column() {
+                Text('查看更多')
+                  .lineHeight(20)
+                  .fontColor('#73000000')
+              }
+              .width('100%')
+              .padding({ top: 8, bottom: 8 })
+              .margin({ top: 20 })
+              .backgroundColor('#0F000000')
+              .borderRadius(4)
+              .onClick(() => {
+                router.pushUrl({
+                  url: 'pages/view/Find/CategoryList/Index',
+                  params: {
+                    bookSourceUrl: this.bookSourceUrl,
+                    exploreItem: this.exploreItem,
+                    exploreRule: this.exploreRule
+                  }
+                })
+              })
+            }
+          }
+          .height('100%')
+          .alignItems(HorizontalAlign.Start)
+          .justifyContent(FlexAlign.Start)
         }
       }
-      .padding({left: 16, right: 16, top: 20, bottom: 20})
+      .padding({
+        left: 16,
+        right: 16,
+        top: 20,
+        bottom: 20
+      })
       .borderRadius(12)
       .backgroundColor(Color.White)
       .height(436)

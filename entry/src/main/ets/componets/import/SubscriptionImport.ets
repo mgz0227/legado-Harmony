@@ -59,6 +59,11 @@ export default struct SubscriptionImport {
         }
         // 向当前group的list中添加BookSource对象
         groupMap[title].list.push(item);
+      } else {
+        if (!groupMap['其他']) {
+          groupMap['其他'] = { title: '其他', list: [] };
+        }
+        groupMap['其他'].list.push(item);
       }
       for (let i = 0; i < this.localSourceList.length; i++) {
         const localItem = this.localSourceList[i];
@@ -225,6 +230,7 @@ export default struct SubscriptionImport {
             //将insertRssSources里面的分组改为sourceGroup
             insertRssSources.forEach((item: rssSources) => {
               item.sourceGroup = this.sourceGroup
+              item.sourceIconIsUrl = true
             })
             await SubscriptionDao.batchInsert(insertRssSources)
             this.show = false;
@@ -408,7 +414,9 @@ export default struct SubscriptionImport {
   addNewGroupType: CustomDialogController | null = new CustomDialogController({
     builder: addBookTypeDialog({
       cancel: ()=> { this.addNewGroupType?.close() },
-      confirm: ()=> { this.addGroupType() },
+      confirm: ()=> {
+        this.addGroupType()
+      },
       bookType: this.newGroupType
     }),
     autoCancel: true,
@@ -417,12 +425,23 @@ export default struct SubscriptionImport {
     customStyle: false,
     cornerRadius: 25
   })
-
+  @State isInsert:boolean = false
   addGroupType(){
-    programDataPreferences.updateRssSourcesData(this.newGroupType)
-    //添加分组后再次刷新分组列表
-    this.getRssSourceList()
-    showMessage(`添加${this.newGroupType}成功!`)
+    programDataPreferences.getRssSourcesListData().map((data:string)=>{
+      if(data === this.newGroupType){
+        this.isInsert = true
+      }
+    })
+    if (this.isInsert) {
+      showMessage('分组名称重复')
+      this.isInsert = false
+    } else {
+      programDataPreferences.updateRssSourcesData(this.newGroupType)
+      //添加分组后再次刷新分组列表
+      this.getRssSourceList()
+      showMessage(`添加分组${this.newGroupType}成功!`)
+    }
+    this.newGroupType = ''
   }
 }
 

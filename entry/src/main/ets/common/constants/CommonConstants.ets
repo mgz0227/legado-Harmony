@@ -218,6 +218,7 @@ export default class CommonConstants {
   static readonly SPACE_6: number = 6;
   static readonly SPACE_10: number = 10;
   static readonly SPACE_12: number = 12;
+  static readonly SPACE_16: number = 16;
   static readonly SPACE_20: number = 20;
 
   /**
@@ -232,6 +233,7 @@ export default class CommonConstants {
   static readonly GROUP_LIST_DATA:string = 'GROUP_LIST_DATA'
   static readonly SHELF_LIST_DATA:string = 'SHELF_LIST_DATA'
   static readonly HAS_EXPLORE_URL:string = 'HAS_EXPLORE_URL'
+  static readonly BOOK_IS_BOOK_REFRESHING:string = 'BOOK_IS_BOOK_REFRESHING'
   // 订阅源分组数据
   //分组是否初始化key
   static readonly RSS_SOURCES_GROUP_INIT:string = 'RSS_SOURCES_GROUP_INIT'
