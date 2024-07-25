@@ -6,7 +6,7 @@
 import { buttonList } from '../dataList/buttonList'
 
 @Component
-export default struct  InsideCircleIcon{
+export default struct InsideCircleIcon{
   @Prop item:buttonList
   build() {
     Column({

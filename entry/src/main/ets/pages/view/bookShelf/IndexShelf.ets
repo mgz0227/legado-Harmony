@@ -12,7 +12,7 @@ export default struct IndexShelf {
   titleArray: Array<string> = ['小说', '漫画', '有声书']
 
   @State bookType:string = '全部'
-  @State bookTypeNumber:number = 1
+  @State bookTypeNumber:number = 2
   @State EXHIBIT: string = '列表'
   @State GROUP: string = '标签'
   @State searchValue: string = '最近阅读'

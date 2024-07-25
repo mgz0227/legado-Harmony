@@ -7,6 +7,9 @@ import BooksDao from '../../database/dao/BooksDao'
 import { Books } from '../../database/entities/Books'
 
 class booksUtils{
+  async isTopBook(id: number): Promise<boolean> {
+    return BooksDao.isUpdateBookTop(id)
+  }
   async addBooks(books: Books){
     BooksDao.insert(books)
   }

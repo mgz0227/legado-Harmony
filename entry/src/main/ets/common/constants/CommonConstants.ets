@@ -234,6 +234,7 @@ export default class CommonConstants {
   static readonly SHELF_LIST_DATA:string = 'SHELF_LIST_DATA'
   static readonly HAS_EXPLORE_URL:string = 'HAS_EXPLORE_URL'
   static readonly BOOK_IS_BOOK_REFRESHING:string = 'BOOK_IS_BOOK_REFRESHING'
+  static readonly BOOK_IS_BOOK_GROUPS_REFRESHING:string = 'BOOK_IS_BOOK_GROUPS_REFRESHING'
   // 订阅源分组数据
   //分组是否初始化key
   static readonly RSS_SOURCES_GROUP_INIT:string = 'RSS_SOURCES_GROUP_INIT'
