@@ -1,7 +1,6 @@
 import BookMark from '../../../componets/head/BookMark'
 import { router } from '@kit.ArkUI'
 import BookBodyContent from './components/BookBodyContent'
-import { picker } from '@kit.CoreFileKit'
 import { FileHandler } from '../../../common/utils/FileHandler'
 import Dialog from '../../../componets/common/Dialog'
 
@@ -10,19 +9,32 @@ export default struct IndexShelf {
   @State currentIndex: number = 0
   THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单', '批量管理']
   titleArray: Array<string> = ['小说', '漫画', '有声书']
-
-  @State bookType:string = '全部'
-  @State bookTypeNumber:number = 1
+  @State bookType: string = '全部'
+  @State bookTypeNumber: number = 1
   @State EXHIBIT: string = '列表'
   @State GROUP: string = '标签'
   @State searchValue: string = '最近阅读'
   @State isClear: boolean = false
-
   @State isShowImport: boolean = false
   @State isShowCloudImport: boolean = false
   @State isShowImportBookList: boolean = false
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
+  @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
+  // 网址导入dialog
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: Dialog({
+      title: '网址导入',
+      child: () => {
+        this.DialogInput("请输入书籍目录或详情页", 10)
+      }
+    }),
+    cornerRadius: 8,
+    offset: { dx: 0, dy: 0 }
+  })
+  tabsController: TabsController = new TabsController();
+  private scrollController: Scroller = new Scroller();
+
   build() {
     Column() {
       Flex({
@@ -151,17 +163,17 @@ export default struct IndexShelf {
       }) {
         ForEach(this.titleArray, () => {
           TabContent() {
-           Column(){
-             BookBodyContent({
-               currentIndex: this.currentIndex,
-               EXHIBIT: this.EXHIBIT,
-               GROUP: this.GROUP,
-               searchValue: this.searchValue,
-               isClear: this.isClear,
-               bookType: this.bookType,
-               bookTypeNumber:this.bookTypeNumber
-             })
-           }
+            Column() {
+              BookBodyContent({
+                currentIndex: this.currentIndex,
+                EXHIBIT: this.EXHIBIT,
+                GROUP: this.GROUP,
+                searchValue: this.searchValue,
+                isClear: this.isClear,
+                bookType: this.bookType,
+                bookTypeNumber: this.bookTypeNumber
+              })
+            }
           }
         })
       }
@@ -184,14 +196,13 @@ export default struct IndexShelf {
     .borderRadius({ bottomRight: 5, bottomLeft: 5 })
   }
 
-
   @Builder
   TabBuilderImage(index: number, name: string) {
     Column() {
       Image($r('app.media.SUB_theme'))
     }.width('100%')
   }
-  @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
+
   @Builder
   // 书籍导入UI盒子
   ImportClickBox(index: number, image: string, text: string) {
@@ -224,21 +235,16 @@ export default struct IndexShelf {
     .onClick(async () => {
       switch (index) {
         case 0:
-        // 本地导入
-        //   router.pushUrl({
-        //     url: 'pages/view/bookShelf/LocalImportPage'
-        //   });
-          let documentSelectOptions = new picker.DocumentSelectOptions();
-          let documentPicker = new picker.DocumentViewPicker();
-          let filePath: string = ""
-          await documentPicker.select(documentSelectOptions).then((documentSelectResult: Array<string>) => {
-            filePath = documentSelectResult[0];
-          })
-          FileHandler.CopyFile(filePath,this.currentIndex)
+          // 本地导入
+          //   router.pushUrl({
+          //     url: 'pages/view/bookShelf/LocalImportPage'
+          //   });
+          let FileResult = await FileHandler.documentPickerFile(1, ['.txt', '.epub'])
+          FileHandler.CopyFile(FileResult[0], this.currentIndex)
           this.isShowImport = false
-          setTimeout(()=>{
+          setTimeout(() => {
             this.isBookRefreshing++
-          },500)
+          }, 500)
           break
         case 1:
           // 云盘导入
@@ -297,20 +303,6 @@ export default struct IndexShelf {
       })
     }
   }
-
-  // 网址导入dialog
-  dialogController: CustomDialogController = new CustomDialogController({
-    builder: Dialog({
-      title: '网址导入',
-      child: () => {
-        this.DialogInput("请输入书籍目录或详情页", 10)
-      }
-    }),
-    cornerRadius: 8,
-    offset: { dx: 0, dy: 0 }
-  })
-  tabsController: TabsController = new TabsController();
-  private scrollController: Scroller = new Scroller();
 
   @Builder
   DialogInput(placeholder: string, maxlength: number) {
@@ -480,17 +472,17 @@ export default struct IndexShelf {
     // 右上角更多
     switch (themeNum) {
       case 0:
-      // 书籍导入弹窗
+        // 书籍导入弹窗
         this.isShowImport = true
         break
       case 1:
-      // 下载管理页
+        // 下载管理页
         router.pushUrl({
           url: 'pages/view/bookShelf/DownloadManagementPage'
         });
         break
       case 2:
-      // 导入书单弹窗
+        // 导入书单弹窗
         this.isShowImportBookList = true
         break
       case 3:
