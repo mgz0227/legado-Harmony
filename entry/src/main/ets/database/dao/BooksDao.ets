@@ -40,7 +40,7 @@ class BooksDao {
       if (type !== undefined) {
         whereClause.push(`bookType = ${type}`);
       }
-      if (bookGroup !== undefined) {
+      if (bookGroup !== undefined && bookGroup !== 2) {
         whereClause.push(`bookGroup = ${bookGroup}`);
       }
       if (searchKey) {
@@ -110,7 +110,6 @@ class BooksDao {
       predicates.equalTo('id', books.id)
       const count = await DbUtil.queryForCount(predicates, column)
       if (count === 0 && books instanceof Books) {
-        // books.createTime = Date.now()
         this.insert(books)
         return true
       }
@@ -120,7 +119,59 @@ class BooksDao {
       console.log('TagInfo, Error, ', JSON.stringify(err))
       return false
     }
-
+  }
+  //置顶
+  async isUpdateBookTop(id: number) {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('id', id)
+      const count = await DbUtil.queryForList<Books>(predicates, column)
+      if (column.length > 0) {
+        count.forEach((item) => {
+          item.isTop = !item.isTop
+          item.updateTime = Date.now()
+          this.update(item)
+        })
+        return true
+      }
+      return false
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
+  }
+  //批量更新书籍分组
+  async batchUpdateBookGroup(id: number[],groupId:number) {
+    try {
+      for (let index = 0; index < id.length; index++) {
+       this.updateBookGroup(id[index],groupId)
+      }
+      return true
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
+  }
+  //更新书籍分组
+  async updateBookGroup(id: number,groupId:number) {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('id', id)
+      const count = await DbUtil.queryForList<Books>(predicates, column)
+      if (column.length > 0) {
+        count.forEach((item) => {
+          item.bookGroup = groupId
+          this.update(item)
+        })
+        return true
+      }
+      return false
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
   }
 
   //批量删除订阅源历史记录
