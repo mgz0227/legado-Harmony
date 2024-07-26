@@ -16,33 +16,6 @@ export default struct bookListManage{
   }
 
   @State delCache:boolean = false
-  //弹窗
-  bookInfoDel: CustomDialogController | null = new CustomDialogController({
-    builder: confirmDialogExample({
-      cancel: ()=> { this.onCancel() },
-      confirm: ()=> { this.onAccept() },
-      delCache:this.delCache,
-      isShowCache:true
-    }),
-    cancel: this.exitApp,
-    autoCancel: true,
-    alignment: DialogAlignment.Center,
-    gridCount: 4,
-    customStyle: false,
-    cornerRadius: 25,
-  })
-
-  onCancel() {
-
-  }
-
-  onAccept() {
-
-  }
-
-  exitApp() {
-
-  }
 
   build() {
     if (this.bookList === null || this.bookList.length === 0) {

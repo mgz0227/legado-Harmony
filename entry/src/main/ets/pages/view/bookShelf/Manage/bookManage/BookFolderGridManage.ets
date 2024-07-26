@@ -1,5 +1,6 @@
-import BookOverlay from '../../../../../componets/bookDetail/BookOverlay'
-import { folderList } from '../../../../../componets/dataList/folderList'
+import { showMessage } from '../../../../../componets/common/promptShow'
+import BooksDao from '../../../../../database/dao/BooksDao'
+import { BookGroups } from '../../../../../database/entities/BookGroups'
 
 /**
  * 文件夹宫格_管理页
@@ -7,58 +8,56 @@ import { folderList } from '../../../../../componets/dataList/folderList'
 @Component
 export default struct BookFolderGridManage {
 
-  @Prop folderList:folderList
-
+  @Prop group:BookGroups
+  @State count:number = 0
+  aboutToAppear(): void {
+    if (this.group.groupId) {
+      BooksDao.countBookByGroup(this.group.groupId)
+        .then((val)=>{
+          showMessage(JSON.stringify(val))
+          this.count = val
+        })
+    }
+  }
   build() {
     Column() {
       Stack() {
-        Flex({
-          alignItems: ItemAlign.End,
-          justifyContent: FlexAlign.End
-        }) {
-          Flex({
-            alignItems: ItemAlign.End,
-          }) {
-            if (this.folderList.isTop) {
-              Text('置顶')
-                .fontColor(Color.White)
-                .fontWeight(300)
-                .fontSize(8)
-                .padding(5)
-                .margin({ left: 1, bottom: 1 })
-                .borderRadius({ bottomLeft: 10, bottomRight: 5, topRight: 5, topLeft: 5 })
-                .backgroundColor('rgba(0, 0, 0, 0.45)')
-            }
-          }
-          .align(Alignment.Bottom)
-
+        Stack(){
           Checkbox({
-            name: this.folderList.title,
+            name: JSON.stringify(this.group.groupId),
             group:'checkboxGroup'
           })
-            .zIndex(2)
+            .zIndex(999)
             .selectedColor($r('app.color.theme_color'))
             .unselectedColor('rgba(0, 0, 0, 0.35)')
+
+          Stack(){
+            if (this.group.isTop){
+              Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
+                .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
+            }
+            Image(this.group.coverUrl)
+              .alt($r('app.media.icon_book_default_cover_one'))
+              .width(88)
+              .height(120)
+          }.alignContent(Alignment.BottomStart)
         }
-        .backgroundColor('rgba(0, 0, 0, 0.45)')
-        .width(88)
-        .height(120)
-        .backgroundImage(this.folderList.bookImage)
-        .backgroundImageSize({ width: 88, height: 120 })
         .zIndex(2)
+        // .alignContent(Alignment.BottomStart)
+
+
         Row() {
           Image($r('app.media.occlusion1'))
         }
-        .zIndex(1)
-        .width(95).height(110)
-
+        .zIndex(1).width(95).height(110)
         Row() {
           Image($r('app.media.occlusion2'))
-        }.zIndex(0)
-        .width(100).height(100)
+        }
+        .zIndex(0).width(100).height(100)
       }
+      .alignContent(Alignment.BottomStart)
       Row().width(100).height(20).backgroundColor('rgba(255, 255, 255, 0.6)').borderRadius(10)
-      Text(this.folderList.title)
+      Text(this.group.groupName)
           .fontSize(15)
           .fontWeight(700)
           .textOverflow({
@@ -66,7 +65,7 @@ export default struct BookFolderGridManage {
           })
           .ellipsisMode(EllipsisMode.END)
           .maxLines(2)
-        Text(`共${this.folderList.countNumber}本`).fontSize(12).fontColor('rgb(174,174,174)')
+      Text(`共${this.count}本`).fontSize(12).fontColor('rgb(174,174,174)')
           .textOverflow({
             overflow:TextOverflow.Ellipsis
           })

@@ -145,6 +145,7 @@ export default struct groupTypePanel{
                   .onAction((event: GestureEvent) => {
                     if (event.repeat) {
                       if (!this.isShow) {
+                        this.dialogGroupData = item
                         // this.group = item
                         this.isShow = true
                         this.changeNumber = 1
@@ -206,8 +207,6 @@ export default struct groupTypePanel{
 
   @State dragIndex: number = 0
   changeIndex(index1: number, index2: number,type:number = 2) { // 交换数组位置
-    //@State hideGroupType:string[] = ['游戏','玄幻','都市', '历史', '军事', '科幻', '灵异', '二次元', '耽美', '同人']
-    //hideGroupType数组位置交换
     if (!this.isShowIcon) {
       showMessage('请在管理状态下拖到改变顺序')
       return
@@ -249,12 +248,12 @@ export default struct groupTypePanel{
    }
   }
 
-  @State @Watch('watchFolder')group:folderList = new folderList(0,'',0,$r('app.media.folder_test'),'')
   @State changeNumber:number = 0
   @State isShow:boolean = false
+  @State dialogGroupData:BookGroups = new BookGroups()
   groupInfoDialog: CustomDialogController | null = new CustomDialogController({
     builder: FolderInfoDialog({
-      itemData:this.group,
+      itemData:this.dialogGroupData,
       cancel: () => {
         this.exitDialog()
       }
@@ -273,11 +272,6 @@ export default struct groupTypePanel{
     this.groupInfoDialog?.close()
   }
 
-  watchFolder(){
-    if (this.changeNumber === 1) {
-      updateDateGroup(this.group)
-    }
-  }
   @State isShowBookFolderInfoDialog:boolean = false
   @State folderType:string = ''
   @Builder bookFolderInfoDialog(){

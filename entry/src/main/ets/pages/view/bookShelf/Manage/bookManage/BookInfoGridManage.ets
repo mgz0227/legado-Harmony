@@ -21,6 +21,8 @@ export default struct BookInfoGridManage{
             name: JSON.stringify(this.bookData.id),
             group: 'checkboxGroup'
           })
+            .selectedColor($r('app.color.theme_color'))
+            .unselectedColor('rgba(0, 0, 0, 0.35)')
             .zIndex(2)
         }
         Stack(){

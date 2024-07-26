@@ -9,7 +9,7 @@ import BookOverlay from '../../componets/bookDetail/BookOverlay'
 @Component
 export default struct coverInfoImageShow {
   @Prop coverCount:number
-  @Prop image:Resource
+  @Prop image:Resource|string
   @Prop imageString:string
   build() {
     if (this.coverCount === 1){
@@ -21,7 +21,7 @@ export default struct coverInfoImageShow {
     }
   }
 
-  @Builder coverImageOne(bookImage:Resource){
+  @Builder coverImageOne(bookImage:Resource|string){
     Column(){
       BookOverlay({
         bookImage:bookImage,

@@ -18,7 +18,6 @@ export default struct BookBodyContent {
   @Link EXHIBIT: string
   @Link GROUP: string
   @Link searchValue: string
-  @Link bookType: string
   @Link bookTypeNumber:number
   @State title: string = '最近阅读'
   @State groupCoverShow: boolean = false
@@ -56,7 +55,6 @@ export default struct BookBodyContent {
                         currentIndex: this.currentIndex,
                         EXHIBIT: this.EXHIBIT,
                         GROUPName: this.GROUP,
-                        bookTypes: this.bookType,
                         bookTypeNumber: this.bookTypeNumber
                       }
                     })
@@ -103,7 +101,6 @@ export default struct BookBodyContent {
               GROUP: this.GROUP,
               searchValue: this.searchValue,
               currentIndex: this.currentIndex,
-              bookType: this.bookType,
               bookTypeNumber:this.bookTypeNumber
             })
           }

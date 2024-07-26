@@ -12,9 +12,9 @@ import BookContent from './BookContent'
 export default struct BookContentRefresh {
   @State @Watch('changeRefreshing')isRefreshing: boolean = false
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
+  @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') isGroupRefreshing: number = 0
   @State counter: number = 0
   @State RefreshingTitle: string = '松开刷新'
-  @Link bookType:string
   @Prop currentIndex: number = 0
   @Link EXHIBIT: string
   @Link GROUP: string
@@ -24,13 +24,14 @@ export default struct BookContentRefresh {
   changeRefreshing(){
     if (this.isRefreshing) {
       this.isBookRefreshing++
+      this.isGroupRefreshing++
     }
   }
   build() {
     Refresh({ refreshing: $$this.isRefreshing, builder: this.refreshComponent }) {
       Scroll() {
         Column() {
-          if (this.bookType === '书单' && this.searchValue !== '浏览历史') {
+          if (this.bookTypeNumber === 5 && this.searchValue !== '浏览历史') {
             ShelfBookList({
               EXHIBIT: this.EXHIBIT
             })
@@ -44,7 +45,8 @@ export default struct BookContentRefresh {
               })
             } else {
               BookFolder({
-                EXHIBIT: this.EXHIBIT
+                EXHIBIT: this.EXHIBIT,
+                currentIndex:this.currentIndex
               })
             }
           }
