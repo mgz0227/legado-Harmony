@@ -10,10 +10,16 @@ export default struct IndexShelf {
   THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单', '批量管理']
   titleArray: Array<string> = ['小说', '漫画', '有声书']
 
-  @State bookType:string = '全部'
   @State bookTypeNumber:number = 2
   @State EXHIBIT: string = '列表'
-  @State GROUP: string = '标签'
+  @State @Watch('changeGroup')GROUP: string = '标签'
+  changeGroup(){
+    if (this.GROUP === '文件夹') {
+      this.bookTypeNumber = 1
+    } else {
+      this.bookTypeNumber = 2
+    }
+  }
   @State searchValue: string = '最近阅读'
 
   @State isShowImport: boolean = false
@@ -169,7 +175,6 @@ export default struct IndexShelf {
                EXHIBIT: this.EXHIBIT,
                GROUP: this.GROUP,
                searchValue: this.searchValue,
-               bookType: this.bookType,
                bookTypeNumber:this.bookTypeNumber
              })
            }

@@ -155,7 +155,7 @@ export default struct BookInfoDialogs{
         },500)
       },
       currentIndex:this.bookData.bookType,
-      bookIds:this.bookData.id
+      Ids:this.bookData.id
     }),
     height: 400,
     cancel: this.exitApp,

@@ -5,6 +5,7 @@ import { showMessage } from '../../../componets/common/promptShow'
 import TitleContentDialog from '../../../componets/common/TitleContentDialog'
 import { buttonList } from '../../../componets/dataList/buttonList'
 import { folderList } from '../../../componets/dataList/folderList'
+import { BookGroups } from '../../../database/entities/BookGroups'
 import { updateBookListData } from '../../../storage/bookListData'
 import { delGroupById } from '../../../storage/groupData'
 import coverInfoDialog from './coverInfoDialog'
@@ -16,7 +17,7 @@ import coverInfoDialog from './coverInfoDialog'
 export default struct FolderInfoDialog{
   controller?: CustomDialogController
   //推送提醒
-  @Link itemData:folderList
+  @Prop itemData:BookGroups
   @State pushReminder:boolean = false
   @State buttonListInfo:buttonList[] = [
     new buttonList(1,'重命名',$r('app.media.edit')),
@@ -30,6 +31,7 @@ export default struct FolderInfoDialog{
   ]
 
   cancel: () => void = () => {
+
   }
 
   build() {
@@ -39,15 +41,15 @@ export default struct FolderInfoDialog{
         alignItems:ItemAlign.Center
       }){
         Column(){
-          Text(this.itemData.title).fontColor('rgba(0, 0, 0, 0.88)').fontSize(16).fontWeight(500).lineHeight(24)
-          Text(`共${(this.itemData.countNumber)}本`).fontColor('rgba(0, 0, 0, 0.45)').fontWeight(400).lineHeight(20).fontSize(12)
+          Text(this.itemData.groupName).fontColor('rgba(0, 0, 0, 0.88)').fontSize(16).fontWeight(500).lineHeight(24)
+          Text(`共${0}本`).fontColor('rgba(0, 0, 0, 0.45)').fontWeight(400).lineHeight(20).fontSize(12)
         }
         Row(){
           Text('更新提醒')
-          Toggle({ type: ToggleType.Switch, isOn: this.itemData.isUpdateReminder})
+          Toggle({ type: ToggleType.Switch, isOn: this.itemData.canDelete})
             .selectedColor("#F60").hoverEffect(HoverEffect.None)
-            .onChange(()=>{
-              this.itemData.isUpdateReminder = !this.itemData.isUpdateReminder
+            .onChange((val)=>{
+              this.itemData.canDelete = val
             })
         }
       }.padding(20)
@@ -113,12 +115,11 @@ export default struct FolderInfoDialog{
   }
   restTitle(){
     this.restTitleDialog?.open()
-    this.inputValue = this.itemData.title
+    this.inputValue = this.itemData.groupName
   }
 
   isFolderTop(){
     this.itemData.isTop = true
-    this.itemData.topUpdateTime = new Date()
   }
 
   @State inputValue:string = ''
@@ -148,11 +149,11 @@ export default struct FolderInfoDialog{
   }
   restTitleConfirm(){
     console.log(this.inputValue + 'inputValue')
-    this.itemData.title = this.inputValue
+    this.itemData.groupName = this.inputValue
     this.inputValue = ''
     showMessage('重命名成功')
     console.log(JSON.stringify(this.itemData))
-    console.log(JSON.stringify(this.itemData.title))
+    console.log(JSON.stringify(this.itemData.groupName))
     this.restTitleDialog?.close()
   }
 
@@ -172,7 +173,9 @@ export default struct FolderInfoDialog{
   })
 
   deleteGroup() {
-    delGroupById(this.itemData.id)
+    if (this.itemData.groupId) {
+      delGroupById(this.itemData.groupId)
+    }
     this.cancel()
   }
 
@@ -215,7 +218,7 @@ export default struct FolderInfoDialog{
   }
   //隐藏分组
   hideGroup(){
-    this.itemData.isShow = true
+    this.itemData.show = false
     this.cancel()
   }
 

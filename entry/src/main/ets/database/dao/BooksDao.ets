@@ -199,6 +199,38 @@ class BooksDao {
       return false
     }
   }
+
+  //根据分组id统计书籍数量
+  async countBookByGroup(groupId: number) {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('bookGroup', groupId)
+      const count = await DbUtil.queryForCount(predicates, column)
+      return count
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return 0
+    }
+  }
+
+  //分组删除情况下根据删除分组id查询书籍更新未分组
+  async queryBookByGroup(groupId: number,updateGroupId: number) {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('bookGroup', groupId)
+      const bookDbList = await DbUtil.queryForList<Books>(predicates, column)
+      if (bookDbList.length > 0) {
+        bookDbList.forEach((item) => {
+          item.bookGroup = updateGroupId
+          this.update(item)
+        })
+      }
+    } catch (e) {
+      console.log('TagInfo, Error, ', JSON.stringify(e))
+    }
+  }
 }
 
 

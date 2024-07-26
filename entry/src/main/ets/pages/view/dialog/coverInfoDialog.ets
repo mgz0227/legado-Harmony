@@ -1,6 +1,7 @@
 import { folderList } from '../../../componets/dataList/folderList'
 import { pickerAvatar } from '../../../common/utils/photoViewPicker'
 import coverInfoImageShow from '../coverInfoImageShow'
+import { BookGroups } from '../../../database/entities/BookGroups'
 
 @CustomDialog
 /**
@@ -10,7 +11,7 @@ import coverInfoImageShow from '../coverInfoImageShow'
 export default struct coverInfoDialog{
   controller?: CustomDialogController
   //推送提醒
-  @Link itemData:folderList
+  @Prop itemData:BookGroups
   @State coverImages:string = ''
   cancel: () => void = () => {
   }
@@ -22,8 +23,8 @@ export default struct coverInfoDialog{
         alignItems:ItemAlign.Center
       }){
         Column(){
-          Text(this.itemData.title).fontColor('rgba(0, 0, 0, 0.88)').fontSize(16).fontWeight(500).lineHeight(24)
-          Text(`共${this.itemData.countNumber}本`).fontColor('rgba(0, 0, 0, 0.45)').fontWeight(400).lineHeight(20).fontSize(12)
+          Text(this.itemData.groupName).fontColor('rgba(0, 0, 0, 0.88)').fontSize(16).fontWeight(500).lineHeight(24)
+          Text(`共${0}本`).fontColor('rgba(0, 0, 0, 0.45)').fontWeight(400).lineHeight(20).fontSize(12)
         }
         Row(){
           Text('仅用于当前分组')
@@ -41,7 +42,7 @@ export default struct coverInfoDialog{
       }){
         coverInfoImageShow({
           coverCount:1,
-          image:this.itemData.bookImage
+          image:this.itemData.coverUrl
         })
         coverInfoImageShow({
           coverCount:2,

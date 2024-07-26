@@ -2,9 +2,7 @@ import CommonConstants from '../../common/constants/CommonConstants'
 
 @Component
 export default struct BookOverlay {
-  // @Prop bookWidth:number
-  // @Prop bookHeight:number
-  @Prop bookImage:Resource
+  @Prop bookImage:Resource|string
   @Prop isTop:boolean
   @Prop isShow:boolean = false
   build() {
@@ -18,19 +16,20 @@ export default struct BookOverlay {
         .backgroundColor('rgba(0,0,0,0.45)')
         .width(CommonConstants.NOVEL_IMG_WIDTH).height(CommonConstants.NOVEL_IMG_HEIGHT)
       }
-      Flex({
-        alignItems: ItemAlign.End,
-      }){
+
+      Stack(){
         if (this.isTop){
           Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
-            .backgroundColor('rgba(0, 0, 0, 0.45)')
+            .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
         }
+        Image(this.bookImage)
+          .draggable(false)
+          .alt($r('app.media.icon_book_default_cover_one'))
+          .width(CommonConstants.NOVEL_IMG_WIDTH)
+          .height(CommonConstants.NOVEL_IMG_HEIGHT)
       }
-      .align(Alignment.Start)
-      .width(CommonConstants.NOVEL_IMG_WIDTH).height(CommonConstants.NOVEL_IMG_HEIGHT)
-      .backgroundImage(this.bookImage)
-      .backgroundImageSize({width:CommonConstants.NOVEL_IMG_WIDTH,height:CommonConstants.NOVEL_IMG_HEIGHT})
       .zIndex(2)
+      .alignContent(Alignment.BottomStart)
 
       Row(){
         Image($r('app.media.occlusion1'))

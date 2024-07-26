@@ -36,4 +36,8 @@ export class BookGroups {
   canUpdate:boolean = false
   //是否可删除
   canDelete:boolean = true
+  //是否置顶
+  isTop:boolean = false
+  //是否系统参数
+  isSystem:boolean = false
 }

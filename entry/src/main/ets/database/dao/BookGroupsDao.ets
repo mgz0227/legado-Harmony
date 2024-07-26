@@ -47,6 +47,8 @@ class BookGroupsDao{
 
       sql += `
   ORDER BY
+    isSystem DESC,
+    isTop DESC,
     sort ASC
 `;
       const groupDbList = await DbUtil.querySqlForList<BookGroups>(sql, column);
@@ -172,6 +174,46 @@ class BookGroupsDao{
     }
   }
 
+  //置顶
+  async isUpdateGroupTop(id: number, isTop?: boolean) {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('groupId', id)
+      const count = await DbUtil.queryForList<BookGroups>(predicates, column)
+      if (column.length > 0) {
+        count.forEach((item) => {
+          item.isTop = isTop||!item.isTop
+          item.updateTime = Date.now()
+          this.update(item)
+        })
+        return true
+      }
+      return false
+    } catch (err) {
+      console.log('TagInfo, Error, ', JSON.stringify(err))
+      return false
+    }
+  }
+
+  //更新分组显示状态
+  async updateGroupShow(id: number, show?: boolean) {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('groupId', id)
+      const count = await DbUtil.queryForList<BookGroups>(predicates, column)
+      if (column.length > 0)
+        count.forEach((item) => {
+          item.show = show||!item.show
+          item.updateTime = Date.now()
+          this.update(item)
+        })
+    } catch (e){
+      console.log('TagInfo, Error, ', JSON.stringify(e))
+    }
+  }
+
   //系统初始分组数据
   async initGroupData() {
     let initGroup = ['分组','全部','未分组','本地','书单']
@@ -187,6 +229,8 @@ class BookGroupsDao{
           group.show = true
           group.groupType = 123
           group.canDelete = false
+          group.isSystem = true
+          group.isTop = true
           await bookGroupsDao.insert(group)
       }
     }catch (e){

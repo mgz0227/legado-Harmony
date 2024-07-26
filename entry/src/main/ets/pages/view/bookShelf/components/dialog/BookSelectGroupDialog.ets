@@ -6,6 +6,7 @@
  */
 import CommonConstants from '../../../../../common/constants/CommonConstants'
 import PaddingConstants from '../../../../../common/constants/PaddingConstants'
+import bookGroupUtils from '../../../../../common/utils/bookGroupUtils'
 import booksUtils from '../../../../../common/utils/booksUtils'
 import addBookTypeDialog from '../../../../../componets/common/addBookTypeDialog'
 import { showMessage } from '../../../../../componets/common/promptShow'
@@ -19,7 +20,8 @@ import { BookGroups } from '../../../../../database/entities/BookGroups'
 export default struct BookSelectGroupDialog{
   controller?: CustomDialogController
   currentIndex:number = 0
-  bookIds:number|number[] = 0
+  Ids:number|number[] = 0
+  isMoveStatus:number = 0
   moveGroup:Function = ()=>{
 
   }
@@ -86,6 +88,7 @@ export default struct BookSelectGroupDialog{
     .height(CommonConstants.FULL_HEIGHT)
   }
   @State moveGroupId:number = 0
+  @State moveTitle:string = ''
   @Builder title(item?:BookGroups) {
     Column() {
       if (item){
@@ -103,6 +106,7 @@ export default struct BookSelectGroupDialog{
       }
       if (item.groupId) {
         this.moveGroupId = item.groupId
+        this.moveTitle = item.groupName
         this.clickBookTypeDialog?.open()
       }
     })
@@ -173,7 +177,7 @@ export default struct BookSelectGroupDialog{
       confirm: ()=> {
         this.clickBookAccept()
       },
-      title:`移动分组至${this.bookType}`
+      title:`移动分组至${this.moveTitle}`
     }),
     autoCancel: true,
     alignment: DialogAlignment.Center,
@@ -183,8 +187,16 @@ export default struct BookSelectGroupDialog{
   })
 
   clickBookAccept() {
-    booksUtils.updateBooks(this.bookIds,this.moveGroupId)
-    this.moveGroup()
+    switch (this.isMoveStatus){
+      //0标识书籍
+      case 0:
+        booksUtils.updateBooks(this.Ids,this.moveGroupId);
+        break
+      //1标识分组
+      case 1:
+        bookGroupUtils.moveBookByGroupId(this.Ids,this.moveGroupId)
+        break
+    }
   }
 
 }
