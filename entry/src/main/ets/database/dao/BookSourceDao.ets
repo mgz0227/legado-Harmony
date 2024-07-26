@@ -134,6 +134,7 @@ class BookSourceDao {
     const type = searchParams?.type;
     const enabled = searchParams?.enabled;
     const hasExploreUrl = searchParams?.hasExploreUrl;
+    const showExplore = searchParams?.showExplore;
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       let sql = `SELECT * FROM book_sources`;
@@ -147,6 +148,9 @@ class BookSourceDao {
       }
       if (hasExploreUrl !== undefined) {
         whereClause.push(`COALESCE(exploreUrl, '') ${hasExploreUrl ? '<>' : '='} ''`);
+      }
+      if (showExplore !== undefined) {
+        whereClause.push(`showExplore = ${showExplore ? 1 : 0}`);
       }
       if (searchKey) { // 确保 searchKey 不为空或未定义
         whereClause.push(`(
