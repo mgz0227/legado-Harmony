@@ -69,6 +69,22 @@ export default struct SourceView {
           background: '#FF6600',
           fontColor: '#FFFFFF',
           action: async () => {
+            if (this.isBatch) {
+              const sourceList: BookSourcePart[] = []
+              this.sourceList.forEach((item, i) => {
+                if (this.activeNameMap[item.bookSourceUrl]) {
+                  item.bookSourceGrade = this.dialogItem.bookSourceGrade
+                  item.bookSourceScore = this.dialogItem.bookSourceScore
+                  sourceList.push(item)
+                }
+              })
+              await BookSourceDao.batchUpdateFlow(sourceList)
+              this.getList()
+              this.activeNameMap = {}
+              this.dialogController.close()
+              this.dialogItem = {}
+              return
+            }
             await BookSourceDao.updateFlow(this.dialogItem as BookSourcePart)
             this.getList()
             this.dialogItem = {}
@@ -382,6 +398,11 @@ export default struct SourceView {
                   this.isShowGroup = true;
                   break;
                 case 1:
+                  if (!Object.values(this.activeNameMap).filter(o => o).length) {
+                    showMessage('请至少选择一个')
+                    return
+                  }
+                  this.dialogItem = this.sourceList.filter(item => this.activeNameMap[item.bookSourceUrl])[0]
                   this.dialogController.open()
                   break;
                 case 2:
