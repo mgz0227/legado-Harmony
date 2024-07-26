@@ -49,7 +49,7 @@ struct RssWebView {
           })
           .layoutWeight(1)
           .onPageEnd((event) => {
-            this.getOnclickUrl(event.url)
+            this.getOnclickUrl(event?.url || '')
           })
           .onScroll((event) => {
             showMessage("x = " + event.xOffset)
