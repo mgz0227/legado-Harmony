@@ -9,9 +9,10 @@ import Tag from '../../../../../componets/common/Tag'
 import { IconTitleVo } from '../../../../../componetsmodel/IconTitleVo'
 import { CustomContentDialog, router } from '@kit.ArkUI'
 import BookSourceDao from '../../../../../database/dao/BookSourceDao'
-import { GroupPartList } from '../../../../../database/entities/BookSource'
+import { GroupPartList, SOURCE_GROUP_MAP } from '../../../../../database/entities/BookSource'
 import { BookSourcePart } from '../../../../../database/entities/BookSourcePart'
 import { JSON } from '@kit.ArkTS'
+import SourceGroup from '../../../../../componets/ui/sourceGroup'
 
 @Component
 export default struct SourceView {
@@ -40,6 +41,7 @@ export default struct SourceView {
   private secondScroll = new Scroller()
   @State dialogItem: Partial<BookSourcePart> = {}
   @StorageLink('refreshCount') refreshCount: number = 0
+  @State isShowGroup: boolean = false
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: CustomContentDialog({
       primaryTitle: '书源评分',
@@ -67,6 +69,22 @@ export default struct SourceView {
           background: '#FF6600',
           fontColor: '#FFFFFF',
           action: async () => {
+            if (this.isBatch) {
+              const sourceList: BookSourcePart[] = []
+              this.sourceList.forEach((item, i) => {
+                if (this.activeNameMap[item.bookSourceUrl]) {
+                  item.bookSourceGrade = this.dialogItem.bookSourceGrade
+                  item.bookSourceScore = this.dialogItem.bookSourceScore
+                  sourceList.push(item)
+                }
+              })
+              await BookSourceDao.batchUpdateFlow(sourceList)
+              this.getList()
+              this.activeNameMap = {}
+              this.dialogController.close()
+              this.dialogItem = {}
+              return
+            }
             await BookSourceDao.updateFlow(this.dialogItem as BookSourcePart)
             this.getList()
             this.dialogItem = {}
@@ -373,7 +391,20 @@ export default struct SourceView {
             this.rightDialogBuilder(this.More_Right_Dialog_Data, async (index: number) => {
               switch (index) {
                 case 0:
+                  if (!Object.values(this.activeNameMap).filter(o => o).length) {
+                    showMessage('请至少选择一个')
+                    return
+                  }
+                  this.isShowGroup = true;
+                  break;
                 case 1:
+                  if (!Object.values(this.activeNameMap).filter(o => o).length) {
+                    showMessage('请至少选择一个')
+                    return
+                  }
+                  this.dialogItem = this.sourceList.filter(item => this.activeNameMap[item.bookSourceUrl])[0]
+                  this.dialogController.open()
+                  break;
                 case 2:
                   showMessage(this.More_Right_Dialog_Data[index].title)
                   break;
@@ -424,6 +455,17 @@ export default struct SourceView {
       .animation({
         duration: 300
       })
+
+      //分组
+      Flex()
+        .bindSheet($$this.isShowGroup, this.showCheckGroup(), {
+          height: 320,
+          dragBar: true,
+          showClose: false,
+          onDisappear: () => {
+            this.isShowGroup = false
+          }
+        })
     }
     .alignContent(Alignment.Top)
   }
@@ -770,5 +812,31 @@ export default struct SourceView {
           })
       })
     }
+  }
+
+  //移动分组
+  @Builder
+  showCheckGroup() {
+    Flex() {
+      SourceGroup({
+        groupList: SOURCE_GROUP_MAP[[0, 2, 1][this.index]],
+        confirm: async (groupName) => {
+          this.sourceList.forEach((item, i) => {
+            if (this.activeNameMap[item.bookSourceUrl]) {
+              item.bookSourceGroup = groupName
+              this.sourceList[i] = item
+            }
+          })
+          await BookSourceDao.batchUpdateFlow(this.sourceList)
+          this.getList()
+          this.activeNameMap = {}
+          this.isShowGroup = false
+        },
+        cancel: () => {
+          this.isShowGroup = false
+        }
+      })
+    }
+    .padding({ bottom: this.bottomRectHeight })
   }
 }
