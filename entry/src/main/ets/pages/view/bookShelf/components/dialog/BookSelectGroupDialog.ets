@@ -12,12 +12,12 @@ import addBookTypeDialog from '../../../../../componets/common/addBookTypeDialog
 import { showMessage } from '../../../../../componets/common/promptShow'
 import TitleContentDialog from '../../../../../componets/common/TitleContentDialog'
 import BookGroupsDao from '../../../../../database/dao/BookGroupsDao'
-import BooksDao from '../../../../../database/dao/BooksDao'
 import { BookGroups } from '../../../../../database/entities/BookGroups'
 
 @Component
 @CustomDialog
 export default struct BookSelectGroupDialog{
+  oldBookId?:number
   controller?: CustomDialogController
   currentIndex:number = 0
   Ids:number|number[] = 0
@@ -58,7 +58,7 @@ export default struct BookSelectGroupDialog{
             this.title()
           }
           ForEach(this.groupList,(item:BookGroups)=>{
-            if (item.groupId && item.groupId > 5) {
+            if (item.groupId && !item.isSystem && item.show) {
               GridCol(){
                 this.title(item)
               }
@@ -197,6 +197,11 @@ export default struct BookSelectGroupDialog{
         bookGroupUtils.moveBookByGroupId(this.Ids,this.moveGroupId)
         break
     }
+    showMessage(`已移动到${this.moveTitle}`)
+    this.controller?.close()
+    setTimeout(()=>{
+      this.BOOK_IS_BOOK_GROUPS_REFRESHING++
+    },500)
   }
 
 }

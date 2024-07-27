@@ -149,7 +149,6 @@ export default struct BookInfoDialogs{
   bookMoveGroup: CustomDialogController | null = new CustomDialogController({
     builder: BookSelectGroupDialog({
       moveGroup: ()=> {
-        this.bookMoveGroup?.close()
         setTimeout(()=>{
           this.isBookRefreshing++
         },500)

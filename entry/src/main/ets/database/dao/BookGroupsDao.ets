@@ -5,9 +5,10 @@
  */
 import DbUtil from '../../common/utils/DbUtil';
 import AppDatabaseUtil from '../AppDatabaseUtil';
-import { BookGroups } from '../entities/BookGroups';
+import { BookGroupDb, BookGroups, ToBookGroups, ToBookGroupsDb } from '../entities/BookGroups';
 import { BookGroupTypeParams } from '../types/BookGroupType';
 import { ColumnInfo } from '../types/ColumnInfo';
+import { data } from '@kit.TelephonyKit';
 
 class BookGroupsDao{
   TABLE_NAME: string = 'book_groups'
@@ -21,7 +22,9 @@ class BookGroupsDao{
       }
       await DbUtil.createTable(createSql)
       AppDatabaseUtil.existsTable(this.TABLE_NAME)
-      this.initGroupData()
+      setTimeout(() => {
+        this.initGroupData()
+      },10)
       return
     } catch (err) {
       console.info('TagInfo', JSON.stringify(err))
@@ -36,7 +39,6 @@ class BookGroupsDao{
       let sql = `SELECT * FROM ${this.TABLE_NAME}`;
       // 动态添加 WHERE 子句
       let whereClause: string[] = [];
-
       if (type !== undefined){
         whereClause.push(`groupType = ${type} OR groupType = 123`);
       }
@@ -51,9 +53,10 @@ class BookGroupsDao{
     isTop DESC,
     sort ASC
 `;
-      const groupDbList = await DbUtil.querySqlForList<BookGroups>(sql, column);
+      const groupDbList = await DbUtil.querySqlForList<BookGroupDb>(sql, column);
+      const groupList = groupDbList.map((item): BookGroups => ToBookGroups(item));
       console.log("TagInfo", '书籍：' + groupDbList.length)
-      return groupDbList
+      return groupList
     } catch (err) {
       console.log("TagInfo", JSON.stringify(err))
       return []
@@ -84,9 +87,10 @@ class BookGroupsDao{
   ORDER BY
     sort ASC
 `;
-      const groupDbList = await DbUtil.querySqlForList<BookGroups>(sql, column);
-      console.log("TagInfo", '书籍：' + groupDbList.length)
-      return groupDbList
+      const groupDbList = await DbUtil.querySqlForList<BookGroupDb>(sql, column);
+      const groupList = groupDbList.map((item): BookGroups => ToBookGroups(item));
+      console.log("TagInfo", '书籍：' + groupList.length)
+      return groupList
     } catch (err) {
       console.log("TagInfo", JSON.stringify(err))
       return []
@@ -119,8 +123,9 @@ class BookGroupsDao{
           return true
         }
       }
-      group.createTime = Date.now()
-      await DbUtil.insert(this.TABLE_NAME, group, column)
+      const bookGroupsDb = ToBookGroupsDb(group)
+      bookGroupsDb.createTime = Date.now()
+      await DbUtil.insert(this.TABLE_NAME, bookGroupsDb, column)
       console.log('TagInfo', '创建成功')
       return true
     } catch (err) {
@@ -135,11 +140,13 @@ class BookGroupsDao{
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
       predicates.equalTo('groupId', group.groupId)
       const count = await DbUtil.queryForCount(predicates, column)
-      if (count === 0 && group instanceof BookGroups) {
+      if (count === 0) {
         this.insert(group)
         return true
       }
-      await DbUtil.update(predicates, group, column)
+      const bookGroupsDb = ToBookGroupsDb(group)
+      bookGroupsDb.createTime = Date.now()
+      await DbUtil.update(predicates, bookGroupsDb, column)
       return true
     } catch (err) {
       console.log('TagInfo, Error, ', JSON.stringify(err))
@@ -231,9 +238,62 @@ class BookGroupsDao{
           group.canDelete = false
           group.isSystem = true
           group.isTop = true
+          group.bookIds = []
           await bookGroupsDao.insert(group)
       }
     }catch (e){
+      console.log('TagInfo, Error, ', JSON.stringify(e))
+    }
+  }
+  //根据分组groupId更新bookIds书籍id存在不做更新
+  updateAddBookIds(groupId: number, bookIds: number) {
+    try {
+      const bookId = JSON.stringify(bookIds)
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('groupId', groupId)
+      //查询出来只有一个值
+      DbUtil.queryForList<BookGroupDb>(predicates, column).then((data) => {
+        data.forEach((item) => {
+          const groupList = ToBookGroups(item);
+          if (groupList.bookIds?.includes(bookId)) {
+            return
+          }
+          if (groupList.bookIds) {
+            groupList.bookIds.push(bookId)
+          } else {
+            groupList.bookIds = [bookId]
+          }
+          this.update(groupList)
+          console.log("TagInfo", '书籍bookIds：' + groupList.bookIds?.length + JSON.stringify(groupList.bookIds))
+        })
+      })
+
+
+    } catch (e){
+      console.log('TagInfo, Error, ', JSON.stringify(e))
+    }
+  }
+  //同时在更新后将旧的分组的bookIds中的书籍id移除
+  updateMoveBookIdsByGroupId(oldGroupId: number,bookIds: number) {
+    try {
+      const bookId = JSON.stringify(bookIds)
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('groupId', oldGroupId)
+      //查询出来只有一个值
+      DbUtil.queryForList<BookGroupDb>(predicates, column).then((data)=>{
+        data.forEach((item) => {
+          const groupList = ToBookGroups(item);
+          if (groupList.bookIds?.includes(bookId)) {
+            groupList.bookIds = groupList.bookIds.filter((item) => {
+              return item !== bookId
+            })
+            this.update(groupList)
+          }
+        })
+      })
+    } catch (e) {
       console.log('TagInfo, Error, ', JSON.stringify(e))
     }
   }

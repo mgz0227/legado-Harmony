@@ -14,7 +14,7 @@ class booksUtils{
     BooksDao.insert(books)
   }
 
-  async updateBooks(id:number|number[], group:number){
+  async updateBooks(id:number|number[], group:number,oldGroup?:number){
     //循环更新
     let booId:number[] = []
     if (typeof id === 'number'){

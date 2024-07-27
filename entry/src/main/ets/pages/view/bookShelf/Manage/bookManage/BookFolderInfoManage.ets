@@ -10,16 +10,7 @@ import { BookGroups } from '../../../../../database/entities/BookGroups'
 export default struct BookFolderInfoManage {
 
   @Prop group:BookGroups
-  @State count:number = 0
-  aboutToAppear(): void {
-    if (this.group.groupId) {
-      BooksDao.countBookByGroup(this.group.groupId)
-        .then((val)=>{
-          showMessage(JSON.stringify(val))
-          this.count = val
-        })
-    }
-  }
+
   build() {
     Flex(
       {
@@ -41,7 +32,7 @@ export default struct BookFolderInfoManage {
           Text(this.group.groupName)
             .fontWeight(700)
           Column(){
-            Text(`共${this.count}本`).fontSize(12).fontColor('rgb(174,174,174)')
+            Text(`共${this.group.bookIds?.length||0}本`).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
               })
