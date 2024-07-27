@@ -21,6 +21,7 @@ import BookGroupsDao from '../../../../database/dao/BookGroupsDao';
 import { BookGroups } from '../../../../database/entities/BookGroups';
 import PaddingConstants from '../../../../common/constants/PaddingConstants';
 import bookGroupUtil from '../../../../common/utils/bookGroupUtils';
+import catalogAddShelf from './components/catalogAddShelf';
 
 class routerParams {
   currentIndex:number
@@ -46,14 +47,12 @@ struct BookManagePage {
 
   @State isAddShelfShow:boolean = false
 
-  @State ShelfList:string[] = ['玄幻神作', '精品小说,亲自品鉴', '冷门小说不容错过','冷门小说不容错过']
-
   @State topTitle:string = '置顶'
   @State bookList:Books[] = []
   @State checkList:string[] = []
   @State bookGroups:BookGroups[] = []
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
-  @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
+  @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') @Watch('getGroupList')BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
 
   selectIsAllTop(){
     let allTopNumber = 0
@@ -92,6 +91,7 @@ struct BookManagePage {
     }
   }
   getBookList(){
+    this.checkList = []
     booksDao.search({
       type:this.currentIndex,
       bookGroup:this.bookTypeNumber
@@ -101,6 +101,7 @@ struct BookManagePage {
   }
 
   getGroupList(){
+    this.checkList = []
     BookGroupsDao.search({
       type:this.currentIndex
     }).then((val)=>{
@@ -133,6 +134,7 @@ struct BookManagePage {
   folderCheckNumber(){
 
   }
+  @State isCatalogAddShelf:boolean = false
   @State showNumber:number = 0
   @State addCheckShelf:BookList[] = [
     new BookList('1','开局长生万古，苟到天荒地老','这个世界，有儒;有道；有佛书;有妖;有术士。警校毕业的许七安幽幽醒来，发现自己将要远赴','更新至·第340章 镇压',$r('app.media.shelf_book'),'玄幻')]
@@ -160,6 +162,15 @@ struct BookManagePage {
         top:this.topRectHeight,
         bottom:this.bottomRectHeight
       })
+      Flex()
+        .bindSheet($$this.isCatalogAddShelf, this.dialogCatalogAddShelf(), {
+          height:400,
+          dragBar: true,
+          showClose: false,
+          onDisappear: () => {
+            this.isCatalogAddShelf = false
+          }
+        })
     }
     // .height('100%')
     // .linearGradient({
@@ -198,7 +209,7 @@ struct BookManagePage {
             }
           }
         }
-        .height('90%')
+        .layoutWeight(1)
         .align(Alignment.TopStart)
         .scrollBar(BarState.Off)
       }
@@ -212,6 +223,17 @@ struct BookManagePage {
       }
     }
   }
+  @Builder dialogCatalogAddShelf(){
+    Column(){
+      catalogAddShelf({
+        onClickShelf:(val:boolean)=>{
+          this.isCatalogAddShelf = val
+        }
+      })
+    }
+  }
+
+
   @State fullActive:boolean = false
   @Builder headTitle(){
     Flex(
@@ -359,6 +381,7 @@ struct BookManagePage {
         }
         this.bookMoveGroup?.open(); break;
       case 3 :
+        this.isCatalogAddShelf = true
         showMessage('加入书单'); break;
       case 4 :
         if (this.checkList.length <= 0) {
@@ -381,20 +404,8 @@ struct BookManagePage {
       showMessage('请选择要操作的内容')
       return
     }
-    if (this.bookTypeNumber !== 5 && this.bookTypeNumber !== 1) {
-      this.checkList.forEach((item:string)=>{
-        //将item转换为number
-        let bookId = Number(item)
-        if (bookId) {
-          booksUtil.isTopBook(bookId, this.topTitle==='置顶'?true:false)
-        }
-      })
-      this.checkList = []
-     setTimeout(()=>{
-       this.getBookList()
-       this.topTitle = '置顶'
-       this.fullActive = !this.fullActive
-     },500)
+    if (this.bookTypeNumber === 5) {
+
     } else if(this.bookTypeNumber === 1){
       this.checkList.forEach((item:string)=>{
         //将item转换为number
@@ -409,8 +420,22 @@ struct BookManagePage {
         this.topTitle = '置顶'
         this.fullActive = !this.fullActive
       },500)
+    } else {
+      this.checkList.forEach((item:string)=>{
+        //将item转换为number
+        let bookId = Number(item)
+        if (bookId) {
+          booksUtil.isTopBook(bookId, this.topTitle==='置顶'?true:false)
+        }
+      })
+      this.checkList = []
+      setTimeout(()=>{
+        this.getBookList()
+        this.topTitle = '置顶'
+        this.fullActive = !this.fullActive
+      },500)
     }
-    showMessage('已置顶')
+    showMessage('操作成功')
   }
   @State delCache:boolean = false
   //弹窗
@@ -459,110 +484,6 @@ struct BookManagePage {
     },500)
 
   }
-
-  @Builder catalogAddShelf() {
-    Column() {
-      Column(){
-        Text('加入书单').fontSize(16).fontWeight(700).lineHeight(24)
-      }.padding({right:20,left:20,top:12,bottom:12})
-      Divider().strokeWidth(0.5)
-      Flex(){
-        this.ColumnTitle('')
-      }
-      Scroll(){
-        Column(){
-          ForEach(this.ShelfList,(item:string)=>{
-            this.ColumnTitle(item)
-          })
-        }
-      }
-      .height('45%')
-      .scrollBar(BarState.Off)
-      Divider().strokeWidth(0.5)
-      Row({
-        space:20
-      }) {
-        Column(){
-          Text('取消').fontSize(16).fontWeight(400).fontColor($r('app.color.theme_color'))
-            .lineHeight(24)
-            .padding({left:32,right:32,bottom:12,top:12})
-        }
-        .width('50%')
-        .borderRadius(20)
-        .alignItems(HorizontalAlign.Center)
-        .backgroundColor('rgba(255, 102, 0, 0.12)')
-        Column(){
-          Text('确定').fontSize(16).fontWeight(400).fontColor(Color.White)
-            .lineHeight(24)
-            .padding({left:32,right:32,bottom:12,top:12})
-        }
-        .width('50%')
-        .borderRadius(20)
-        .alignItems(HorizontalAlign.Center)
-        .backgroundColor($r('app.color.theme_color'))
-      }
-      .onClick(()=>{
-        this.isAddShelfShow = false
-      })
-      .padding({
-        left: 32,
-        right:32,
-        top: 16
-      })
-    }
-    .width(CommonConstants.FULL_WIDTH)
-    .height(CommonConstants.FULL_HEIGHT)
-  }
-
-  @Builder ColumnTitle(title:string) {
-    Column() {
-      if (title === ''){
-        Flex({
-          justifyContent:FlexAlign.SpaceBetween,
-          alignItems:ItemAlign.Center
-        }){
-          Row({
-            space:12
-          }){
-            Image($r('app.media.add')).width(24).fillColor($r('app.color.theme_color'))
-            Text('新建书单').fontSize(14).fontColor($r('app.color.theme_color')).fontWeight(400).lineHeight(22)
-          }.onClick(()=>{
-            this.showNumber = 1
-          })
-        }
-      } else {
-       Flex({
-         justifyContent:FlexAlign.SpaceBetween,
-         alignItems:ItemAlign.Center
-       }){
-         Row({
-           space:12
-         }){
-           Image($r('app.media.shelf')).width(24)
-           Text(title).fontSize(14).fontWeight(400).lineHeight(22).textOverflow({
-             overflow:TextOverflow.Ellipsis
-           }).ellipsisMode(EllipsisMode.END).maxLines(1)
-         }
-
-         if (false) {
-           Image($r('app.media.ic_public_return_right')).width(24).height(24)
-         } else {
-           Text('已在书单').fontSize(12).fontWeight(400).lineHeight(20).fontColor('rgba(0, 0, 0, 0.45)')
-         }
-       }
-      }
-    }
-    .onClick(()=>{
-
-    })
-    .padding({
-      left:20,
-      right:20,
-      top:12,
-      bottom:12
-    })
-  }
-
   //是否隐藏分组
   clickHideDialog: CustomDialogController | null = new CustomDialogController({
     builder: hideDialogExample({

@@ -116,7 +116,7 @@ export default struct BookFolder {
         })
         .ellipsisMode(EllipsisMode.END)
         .maxLines(2)
-      Text(`共${0}本`).fontSize(12).fontColor('rgb(174,174,174)')
+      Text(`共${item.bookIds?.length}本`).fontSize(12).fontColor('rgb(174,174,174)')
         .textOverflow({
           overflow:TextOverflow.Ellipsis
         })
@@ -163,7 +163,7 @@ export default struct BookFolder {
           Text(group.groupName)
             .fontWeight(700)
           Column(){
-            Text(`共${0}本`).fontSize(12).fontColor('rgb(174,174,174)')
+            Text(`共${group.bookIds?.length||0}本`).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
               })

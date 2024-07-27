@@ -4,11 +4,13 @@
  * @className: BooksDao
  * 订阅源
  */
+import bookGroupUtils from '../../common/utils/bookGroupUtils';
 import DbUtil from '../../common/utils/DbUtil';
 import AppDatabaseUtil from '../AppDatabaseUtil';
 import { Books } from '../entities/Books';
 import { BooksTypeSearchParams } from '../types/BooksType';
 import { ColumnInfo } from '../types/ColumnInfo';
+import bookGroupsDao from './BookGroupsDao';
 
 class BooksDao {
   TABLE_NAME: string = 'books'
