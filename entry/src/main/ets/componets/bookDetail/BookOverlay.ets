@@ -32,13 +32,13 @@ export default struct BookOverlay {
       .alignContent(Alignment.BottomStart)
 
       Row(){
-        Image($r('app.media.occlusion1'))
+        Image($r('app.media.occlusion1')).draggable(false)
       }
       .zIndex(1)
       .width(CommonConstants.NOVEL_IMG_WIDTH + 5).height(CommonConstants.NOVEL_IMG_HEIGHT - 5)
 
       Row(){
-        Image($r('app.media.occlusion2'))
+        Image($r('app.media.occlusion2')).draggable(false)
       }.zIndex(0)
       .width(CommonConstants.NOVEL_IMG_WIDTH + 10).height(CommonConstants.NOVEL_IMG_HEIGHT - 10)
     }

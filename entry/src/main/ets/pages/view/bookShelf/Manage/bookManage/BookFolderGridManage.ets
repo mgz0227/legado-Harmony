@@ -1,5 +1,3 @@
-import { showMessage } from '../../../../../componets/common/promptShow'
-import BooksDao from '../../../../../database/dao/BooksDao'
 import { BookGroups } from '../../../../../database/entities/BookGroups'
 
 /**
@@ -7,41 +5,45 @@ import { BookGroups } from '../../../../../database/entities/BookGroups'
  */
 @Component
 export default struct BookFolderGridManage {
-
   @Prop group:BookGroups
+  @Link checkGroup:Record<number, boolean>
+  @Prop isManage:boolean
   build() {
     Column() {
       Stack() {
         Stack(){
-          Checkbox({
-            name: JSON.stringify(this.group.groupId),
-            group:'checkboxGroup'
-          })
-            .zIndex(999)
-            .selectedColor($r('app.color.theme_color'))
-            .unselectedColor('rgba(0, 0, 0, 0.35)')
-
+          if (this.isManage){
+            Checkbox()
+              .zIndex(9)
+              .select(this.group.groupId?this.checkGroup[this.group.groupId] ?? false:false)
+              .selectedColor($r('app.color.theme_color'))
+              .onChange((val: boolean) => {
+                if (this.group.groupId) {
+                  this.checkGroup[this.group.groupId] = val
+                }
+              })
+          }
           Stack(){
             if (this.group.isTop){
               Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
                 .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
             }
             Image(this.group.coverUrl)
+              .draggable(false)
               .alt($r('app.media.icon_book_default_cover_one'))
               .width(88)
               .height(120)
           }.alignContent(Alignment.BottomStart)
         }
         .zIndex(2)
-        // .alignContent(Alignment.BottomStart)
 
 
         Row() {
-          Image($r('app.media.occlusion1'))
+          Image($r('app.media.occlusion1')).draggable(false)
         }
         .zIndex(1).width(95).height(110)
         Row() {
-          Image($r('app.media.occlusion2'))
+          Image($r('app.media.occlusion2')).draggable(false)
         }
         .zIndex(0).width(100).height(100)
       }

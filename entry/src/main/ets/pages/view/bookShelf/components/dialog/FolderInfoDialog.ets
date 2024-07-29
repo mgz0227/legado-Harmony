@@ -1,13 +1,12 @@
-import commonInputDialog from '../../../componets/common/commonInputDialog'
-import confirmDialogExample from '../../../componets/common/confirmDialog'
-import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
-import { showMessage } from '../../../componets/common/promptShow'
-import TitleContentDialog from '../../../componets/common/TitleContentDialog'
-import { buttonList } from '../../../componets/dataList/buttonList'
-import { folderList } from '../../../componets/dataList/folderList'
-import { BookGroups } from '../../../database/entities/BookGroups'
-import { updateBookListData } from '../../../storage/bookListData'
-import { delGroupById } from '../../../storage/groupData'
+import bookGroupUtil from '../../../../../common/utils/bookGroupUtils'
+import commonInputDialog from '../../../../../componets/common/commonInputDialog'
+import confirmDialogExample from '../../../../../componets/common/confirmDialog'
+import InsideCircleIcon from '../../../../../componets/common/InsideCircleIcon'
+import { showMessage } from '../../../../../componets/common/promptShow'
+import TitleContentDialog from '../../../../../componets/common/TitleContentDialog'
+import { buttonList } from '../../../../../componets/dataList/buttonList'
+import { BookGroups } from '../../../../../database/entities/BookGroups'
+import BookSelectGroupDialog from './BookSelectGroupDialog'
 import coverInfoDialog from './coverInfoDialog'
 
 @CustomDialog
@@ -25,7 +24,7 @@ export default struct FolderInfoDialog{
     new buttonList(3,'移动至',$r('app.media.folder')),
     new buttonList(4,'加入书单',$r('app.media.shelf')),
     new buttonList(5,'封面样式',$r('app.media.style_icon')),
-    new buttonList(6,'隐藏分组',$r('app.media.hide')),
+    new buttonList(6, this.itemData.show?'隐藏分组':'显示分组',this.itemData.show?$r('app.media.hide'):$r('app.media.show')),
     new buttonList(7,'解散分组',$r('app.media.disband')),
     new buttonList(8,'删除',$r('app.media.ic_public_delete'))
   ]
@@ -33,7 +32,9 @@ export default struct FolderInfoDialog{
   cancel: () => void = () => {
 
   }
-
+  @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
+  @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
+  @State topTitle:string = this.itemData.isTop?'取消置顶':'置顶'
   build() {
     Column(){
       Flex({
@@ -42,7 +43,7 @@ export default struct FolderInfoDialog{
       }){
         Column(){
           Text(this.itemData.groupName).fontColor('rgba(0, 0, 0, 0.88)').fontSize(16).fontWeight(500).lineHeight(24)
-          Text(`共${0}本`).fontColor('rgba(0, 0, 0, 0.45)').fontWeight(400).lineHeight(20).fontSize(12)
+          Text(`共${this.itemData.bookIds?.length||0}本`).fontColor('rgba(0, 0, 0, 0.45)').fontWeight(400).lineHeight(20).fontSize(12)
         }
         Row(){
           Text('更新提醒')
@@ -59,12 +60,23 @@ export default struct FolderInfoDialog{
         justifyContent:FlexAlign.Start
       }){
         ForEach(this.buttonListInfo,(item:buttonList)=>{
-          InsideCircleIcon({
-            item:item
-          })
-            .onClick(()=>{
-              this.folderInfo(item.id)
+          if (item.id === 2){
+            InsideCircleIcon({
+              icon:item.icon,
+              title:this.topTitle
             })
+              .onClick(()=>{
+                this.folderInfo(item.id)
+              })
+          } else {
+            InsideCircleIcon({
+              icon:item.icon,
+              title:item.title
+            })
+              .onClick(()=>{
+                this.folderInfo(item.id)
+              })
+          }
         })
       }
       Divider().strokeWidth(0.5).padding({bottom:16})
@@ -88,9 +100,9 @@ export default struct FolderInfoDialog{
       case 1 :
         this.restTitle(); break;
       case 2 :
-        showMessage('置顶'); this.isFolderTop(); break;
+        this.isFolderTop(); break;
       case 3 :
-        showMessage('移动至'); break;
+        this.bookMoveGroup?.open(); break;
       case 4 :
         showMessage('加入书单'); break;
       case 5 :
@@ -99,8 +111,13 @@ export default struct FolderInfoDialog{
         break;
       case 6 :
         showMessage('隐藏分组');
-        this.dialogTitle = this.dialogHideTitle;
-        this.dialogContent = this.dialogHideContent;
+        if (this.itemData.show) {
+          this.dialogTitle = this.dialogHideTitle;
+          this.dialogContent = this.dialogHideContent;
+        } else {
+          this.dialogTitle = '显示分组'
+          this.dialogContent = ''
+        }
         this.hideDisbandDelDialog?.open();
         break;
       case 7 :
@@ -110,18 +127,28 @@ export default struct FolderInfoDialog{
         this.hideDisbandDelDialog?.open();
         break;
       case 8 :
-        showMessage('删除'); this.groupDelDialog?.open(); break;
+       this.groupDelDialog?.open(); break;
     }
   }
+  //打开重名弹窗
   restTitle(){
     this.restTitleDialog?.open()
     this.inputValue = this.itemData.groupName
   }
-
+  //置顶/取消置顶
   isFolderTop(){
-    this.itemData.isTop = true
-  }
+    if (this.itemData.groupId) {
+      bookGroupUtil.isTopGroup(this.itemData.groupId, !this.itemData.isTop)
+      this.itemData.isTop = !this.itemData.isTop
+    }
 
+    setTimeout(() => {
+      showMessage(this.itemData.isTop? '置顶成功' : '取消置顶成功')
+      this.topTitle = this.itemData.isTop?'取消置顶':'置顶'
+      this.BOOK_IS_BOOK_GROUPS_REFRESHING++
+    },500)
+  }
+  //重命名弹窗
   @State inputValue:string = ''
   restTitleDialog: CustomDialogController | null = new CustomDialogController({
     builder: commonInputDialog({
@@ -136,7 +163,6 @@ export default struct FolderInfoDialog{
       title:'重命名'
     }),
     gridCount: 4,
-    cancel: this.restTitleCancel,
     autoCancel: true,
     alignment: DialogAlignment.Center,
     customStyle: false,
@@ -147,18 +173,47 @@ export default struct FolderInfoDialog{
     this.restTitleDialog?.close()
     this.inputValue = ''
   }
-  restTitleConfirm(){
-    console.log(this.inputValue + 'inputValue')
-    this.itemData.groupName = this.inputValue
+
+  async restTitleConfirm(){
+    let result = await bookGroupUtil.onlyGroupUpdateName(this.inputValue, this.itemData.groupId ?? 0)
+    if (result) {
+      this.itemData.groupName = this.inputValue
+      showMessage('重命名成功')
+      setTimeout(() => {
+        this.BOOK_IS_BOOK_GROUPS_REFRESHING++
+      },500)
+    } else {
+      showMessage('已存在其它相同分组名')
+    }
     this.inputValue = ''
-    showMessage('重命名成功')
-    console.log(JSON.stringify(this.itemData))
-    console.log(JSON.stringify(this.itemData.groupName))
     this.restTitleDialog?.close()
   }
 
+  //移动分组弹窗
+  bookMoveGroup: CustomDialogController | null = new CustomDialogController({
+    builder: BookSelectGroupDialog({
+      moveGroup: ()=> {
+        setTimeout(()=>{
+          this.isBookRefreshing++
+          this.BOOK_IS_BOOK_GROUPS_REFRESHING++
+        },500)
+        this.bookMoveGroup?.close()
+      },
+      oldGroupId:this.itemData.groupId,
+      currentIndex:this.itemData.groupType,
+      Ids:this.itemData.groupId,
+      isMoveStatus: 1
+    }),
+    height: 400,
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
+
   @State delCache:boolean = false
-  //弹窗
+  //删除分组弹窗
   groupDelDialog: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       confirm: ()=> { this.deleteGroup() },
@@ -171,12 +226,16 @@ export default struct FolderInfoDialog{
     customStyle: false,
     cornerRadius: 25,
   })
-
+  //删除分组
   deleteGroup() {
     if (this.itemData.groupId) {
-      delGroupById(this.itemData.groupId)
+      bookGroupUtil.delGroupById(this.itemData.groupId)
     }
     this.cancel()
+    setTimeout(()=>{
+      this.BOOK_IS_BOOK_GROUPS_REFRESHING++
+      showMessage('删除成功')
+    },500)
   }
 
   exitApp() {
@@ -204,22 +263,35 @@ export default struct FolderInfoDialog{
     customStyle: false,
     cornerRadius: 25,
   })
-
+  //显示/隐藏
   hideOrDisband(){
-    if (this.dialogTitle === '隐藏分组') {
+    if (this.dialogTitle === '隐藏分组' || this.dialogTitle === '显示分组') {
       this.hideGroup()
     } else {
       this.disbandGroup()
     }
   }
-
+  //解散分组
   disbandGroup(){
-    //TODO 删除分组将原来小说分类类型置为空
+    bookGroupUtil.delGroupById(this.itemData.groupId ?? [])
+    setTimeout(()=>{
+      this.BOOK_IS_BOOK_GROUPS_REFRESHING++
+      this.cancel()
+      showMessage('解散分组成功')
+    },500)
   }
+
   //隐藏分组
   hideGroup(){
-    this.itemData.show = false
-    this.cancel()
+    this.itemData.show = this.itemData.show ? false : true
+    if (this.itemData.groupId) {
+      bookGroupUtil.updateGroupShow(this.itemData.groupId)
+    }
+    setTimeout(()=>{
+      this.BOOK_IS_BOOK_GROUPS_REFRESHING++
+      this.cancel()
+      showMessage(this.itemData.show ? '隐藏成功' : '显示成功')
+    },500)
   }
 
   coverDialog: CustomDialogController | null = new CustomDialogController({

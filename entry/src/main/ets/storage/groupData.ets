@@ -42,14 +42,6 @@ const getGroupData = ()=>{
   return groupListData
 }
 
-export const delGroupById = (id:number)=>{
-  let groupList = getGroupData()
-  groupList = groupList.filter(group => group.id !== id);
-  AppStorage.set(CommonConstants.GROUP_LIST_DATA,showGroupSort(groupList))
-}
-
-
-
 const showGroupSort = (group:folderList[]) =>{
   return group.sort((a, b) => {
     if (a.isTop && !b.isTop) {

@@ -11,6 +11,8 @@ export default struct BookInfoGridManage{
 
   @Prop bookData:Books
 
+  @Link checkGroup:Record<number, boolean>
+
   build() {
     Column({
       space:CommonConstants.SPACE_6
@@ -21,9 +23,15 @@ export default struct BookInfoGridManage{
             name: JSON.stringify(this.bookData.id),
             group: 'checkboxGroup'
           })
+            .select(this.bookData.id?this.checkGroup[this.bookData.id] ?? false:false)
             .selectedColor($r('app.color.theme_color'))
             .unselectedColor('rgba(0, 0, 0, 0.35)')
             .zIndex(2)
+            .onChange((val:boolean)=>{
+              if (this.bookData.id) {
+                this.checkGroup[this.bookData.id] = val
+              }
+            })
         }
         Stack(){
           if (this.bookData.isTop){

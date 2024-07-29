@@ -17,7 +17,7 @@ import { BookGroups } from '../../../../../database/entities/BookGroups'
 @Component
 @CustomDialog
 export default struct BookSelectGroupDialog{
-  oldBookId?:number
+  oldGroupId?:number
   controller?: CustomDialogController
   currentIndex:number = 0
   Ids:number|number[] = 0
@@ -58,7 +58,7 @@ export default struct BookSelectGroupDialog{
             this.title()
           }
           ForEach(this.groupList,(item:BookGroups)=>{
-            if (item.groupId && !item.isSystem && item.show) {
+            if (item.groupId && !item.isSystem && item.show && this.oldGroupId !== item.groupId) {
               GridCol(){
                 this.title(item)
               }
@@ -122,7 +122,7 @@ export default struct BookSelectGroupDialog{
       bottom:8
     })
   }
-
+  //添加分组弹窗
   @State bookType:string = ''
   addBookType: CustomDialogController | null = new CustomDialogController({
     builder: addBookTypeDialog({
@@ -130,23 +130,23 @@ export default struct BookSelectGroupDialog{
       confirm: ()=> { this.onAccept() },
       bookType: this.bookType
     }),
-    cancel: this.exitDialog,
+    cancel: this.onCancel,
     autoCancel: true,
     alignment: DialogAlignment.Center,
     gridCount: 4,
     customStyle: false,
     cornerRadius: 25
   })
-  //退出弹框
-  exitDialog(){
-    this.bookType = ''
-  }
   //取消
   onCancel(){
     this.bookType = ''
   }
   //确定
   onAccept(){
+    if (this.bookType.length === 0) {
+      showMessage('分组名称不能为空')
+      return
+    }
     let isInsert = true
     //对比bookType看是否BooTypeList数组中存在
     this.groupList.forEach((element:BookGroups) => {
@@ -174,8 +174,11 @@ export default struct BookSelectGroupDialog{
   //是否确认移动分组
   clickBookTypeDialog: CustomDialogController | null = new CustomDialogController({
     builder: TitleContentDialog({
-      confirm: ()=> {
-        this.clickBookAccept()
+      confirm: async ()=> {
+        await this.clickBookAccept()
+        setTimeout(()=>{
+          this.moveGroup()
+        },500)
       },
       title:`移动分组至${this.moveTitle}`
     }),
@@ -186,7 +189,7 @@ export default struct BookSelectGroupDialog{
     cornerRadius: 25,
   })
 
-  clickBookAccept() {
+ async clickBookAccept() {
     switch (this.isMoveStatus){
       //0标识书籍
       case 0:
@@ -198,10 +201,6 @@ export default struct BookSelectGroupDialog{
         break
     }
     showMessage(`已移动到${this.moveTitle}`)
-    this.controller?.close()
-    setTimeout(()=>{
-      this.BOOK_IS_BOOK_GROUPS_REFRESHING++
-    },500)
   }
 
 }

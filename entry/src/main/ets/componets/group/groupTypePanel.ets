@@ -1,12 +1,12 @@
+import bookGroupUtil from '../../common/utils/bookGroupUtils'
 import BookGroupsDao from '../../database/dao/BookGroupsDao'
 import { BookGroups } from '../../database/entities/BookGroups'
-import FolderInfoDialog from '../../pages/view/dialog/FolderInfoDialog'
-import FolderManageDialog from '../../pages/view/dialog/FolderManageDialog'
+import BookManageDialog from '../../pages/view/bookShelf/components/dialog/BookManageDialog'
+import FolderInfoDialog from '../../pages/view/bookShelf/components/dialog/FolderInfoDialog'
 import { updateAppData } from '../../storage/appData'
-import { updateDateGroup } from '../../storage/groupData'
 import customizeDialogExample from '../common/customizeDialog'
+import hideDialogExample from '../common/hideDialog'
 import { showMessage } from '../common/promptShow'
-import { folderList } from '../dataList/folderList'
 
 @Component
 export default struct groupTypePanel{
@@ -17,6 +17,7 @@ export default struct groupTypePanel{
   @Prop currentIndex:number = 0
 
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = true
+  @Prop clickGroup:BookGroups
 
   aboutToAppear(): void {
     this.getGroupList()
@@ -85,6 +86,11 @@ export default struct groupTypePanel{
               console.log('onDrop')
               this.changeIndex(this.dragIndex, index,0)
             })
+            .onClick(() => {
+              showMessage('点击查看分组书籍')
+              this.clickGroup = item
+              this.isShowBookFolderInfoDialog = true
+            })
           }
         })
       }
@@ -119,6 +125,12 @@ export default struct groupTypePanel{
                 this.GroupType(item.groupName)
                 if (this.isShowIcon) {
                   Image($r('app.media.add_new_fill')).width(12).height(12).offset({x:-20,y:-20})
+                    .onClick(() => {
+                      if (item.groupId) {
+                        this.checkListNumber = item.groupId
+                      }
+                      this.clickHideDialog?.open()
+                    })
                 }
               }
               .onTouch((event: TouchEvent) => {
@@ -136,9 +148,8 @@ export default struct groupTypePanel{
                 this.changeIndex(this.dragIndex, index,1)
               })
               .onClick(()=>{
-                // this.group = item
+                this.clickGroup = item
                 this.isShowBookFolderInfoDialog = true
-                // this.folderType = item.title
               })
               .gesture(
                 LongPressGesture({ repeat: true,duration:500 })
@@ -156,16 +167,6 @@ export default struct groupTypePanel{
               .width('25%')
           })
         }
-        .bindSheet($$this.isShowBookFolderInfoDialog, this.bookFolderInfoDialog(), {
-          detents: [SheetSize.MEDIUM, SheetSize.LARGE, 200],
-          showClose: false,
-          dragBar: true,
-          maskColor: 'rgba(0,0,0,0.6)',
-          onDisappear:()=>{
-            console.log('隐藏')
-          }
-        })
-
       } else {
         Flex({
           justifyContent:FlexAlign.Center
@@ -178,6 +179,16 @@ export default struct groupTypePanel{
         .padding({top:6,bottom:6})
 
       }
+      Flex()
+        .bindSheet($$this.isShowBookFolderInfoDialog, this.bookFolderInfoDialog(), {
+          detents: [SheetSize.MEDIUM, SheetSize.LARGE, 200],
+          showClose: false,
+          dragBar: true,
+          maskColor: 'rgba(0,0,0,0.6)',
+          onDisappear:()=>{
+            console.log('隐藏')
+          }
+        })
 
     }
     .offset({y:-15})
@@ -269,17 +280,43 @@ export default struct groupTypePanel{
   exitDialog(){
     this.changeNumber = 0
     this.isShow = false
+    this.getGroupList()
     this.groupInfoDialog?.close()
   }
 
   @State isShowBookFolderInfoDialog:boolean = false
-  @State folderType:string = ''
   @Builder bookFolderInfoDialog(){
     Column(){
-      FolderManageDialog({
-        folderType:this.folderType
+      BookManageDialog({
+        title:this.clickGroup.groupName,
+        currentIndex:this.currentIndex,
+        bookTypeNumber:this.clickGroup.groupId,
       })
-    }.padding(15)
+    }
+  }
+  //需要显示的Id
+  @State checkListNumber:number = 0
+  @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
+  //是否隐藏分组弹窗
+  clickHideDialog: CustomDialogController | null = new CustomDialogController({
+    builder: hideDialogExample({
+      confirm: ()=> { this.clickHideAccept() },
+      isHide: false
+    }),
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
+  //隐藏操作
+  clickHideAccept() {
+    bookGroupUtil.updateGroupShow(this.checkListNumber,true)
+    setTimeout(()=>{
+      this.getGroupList()
+      this.BOOK_IS_BOOK_GROUPS_REFRESHING++
+      showMessage('显示成功')
+    },500)
   }
 
 }
