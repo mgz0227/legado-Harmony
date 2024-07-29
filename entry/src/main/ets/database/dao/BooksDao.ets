@@ -1,16 +1,9 @@
-/**
- * @author 2008
- * @datetime 2024/7/22 23:05
- * @className: BooksDao
- * 订阅源
- */
-import bookGroupUtils from '../../common/utils/bookGroupUtils';
 import DbUtil from '../../common/utils/DbUtil';
+import toolsUtils from '../../common/utils/ToolsUtils';
 import AppDatabaseUtil from '../AppDatabaseUtil';
 import { Books } from '../entities/Books';
 import { BooksTypeSearchParams } from '../types/BooksType';
 import { ColumnInfo } from '../types/ColumnInfo';
-import bookGroupsDao from './BookGroupsDao';
 
 class BooksDao {
   TABLE_NAME: string = 'books'
@@ -123,7 +116,7 @@ class BooksDao {
     }
   }
   //置顶
-  async isUpdateBookTop(id: number, isTop?: boolean) {
+  async isUpdateBookTop(id: number, isTop: boolean) {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
@@ -131,7 +124,7 @@ class BooksDao {
       const count = await DbUtil.queryForList<Books>(predicates, column)
       if (column.length > 0) {
         count.forEach((item) => {
-          item.isTop = isTop||!item.isTop
+          item.isTop = isTop
           item.updateTime = Date.now()
           this.update(item)
         })
@@ -139,7 +132,7 @@ class BooksDao {
       }
       return false
     } catch (err) {
-      console.log('TagInfo, Error, ', JSON.stringify(err))
+      console.log('isUpdateBookTop, Error, ', JSON.stringify(err))
       return false
     }
   }
@@ -151,49 +144,97 @@ class BooksDao {
       }
       return true
     } catch (err) {
-      console.log('TagInfo, Error, ', JSON.stringify(err))
+      console.log('batchUpdateBookGroup, Error, ', JSON.stringify(err))
       return false
     }
   }
   //更新书籍分组
-  async updateBookGroup(id: number,groupId:number) {
+  async updateBookGroup(bookIds: number|number[],groupId:number) {
     try {
+      let Ids: number[] = toolsUtils.numberArrays(bookIds)
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const validIds = Ids.filter(id => typeof id === 'number');
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates.equalTo('id', id)
+      predicates.in('id', validIds)
       const count = await DbUtil.queryForList<Books>(predicates, column)
-      if (column.length > 0) {
-        count.forEach((item) => {
+      if (count.length > 0) {
+        count.forEach(async (item) => {
           item.bookGroup = groupId
-          this.update(item)
+          await this.update(item)
         })
         return true
       }
       return false
     } catch (err) {
-      console.log('TagInfo, Error, ', JSON.stringify(err))
+      console.log('updateBookGroup, Error, ', JSON.stringify(err))
       return false
     }
   }
 
-  //批量删除订阅源历史记录
-  async deleteBookList(books: Books[]) {
+  //根据书籍获取旧的分组Id
+  async getBookIdsByGroupId(ids: number[]) {
+    let BookGroupId: Record<number, number> = {};
     try {
-      for (let index = 0; index < books.length; index++) {
-        await this.deleteBook(books[index]?.id||0)
-      }
-      return true
-    } catch (err) {
-      console.log('TagInfo, Error, ', JSON.stringify(err))
-      return false
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+
+      // 确保 ids 数组的每个元素都是数字
+      const validIds = ids.filter(id => typeof id === 'number');
+
+      // 创建查询条件，查找所有给定的 id
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.in('id', validIds);  // 使用 in 条件一次性查找多个 id
+
+      // 执行一次查询获取所有匹配的书籍
+      const books = await DbUtil.queryForList<Books>(predicates, column);
+
+      // 遍历查询结果，将书籍的 bookGroup 分组
+      books.forEach(book => {
+        const bookId = book.id;  // 获取书籍的 id
+        if (bookId !== undefined) {
+          if (!BookGroupId[bookId]) {
+            BookGroupId[bookId] = 0;
+          }
+          BookGroupId[bookId] = book.bookGroup ?? 0;
+        }
+      });
+
+      return BookGroupId;
+    } catch (e) {
+      console.log('getBookIdsByGroupId, Error, ', JSON.stringify(e));
+      return [];
+    }
+  }
+
+  //根据分组获取书籍id
+  async queryBooksByGroupId(groupId: number[]){
+    let GroupBookId: number[] = [];
+    try {
+      // 确保 ids 数组的每个元素都是数字
+      const validIds = groupId.filter(id => typeof id === 'number');
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.in('bookGroup', validIds)
+      // 执行一次查询获取所有匹配的书籍
+      const books = await DbUtil.queryForList<Books>(predicates, column);
+      // 遍历查询结果，将书籍的 bookGroup 分组
+      books.forEach(book => {
+        const bookId = book.id;  // 获取书籍的 id
+        if (bookId !== undefined) {
+          GroupBookId.push(bookId)
+        }
+      });
+      return GroupBookId
+    } catch (e) {
+      console.log('queryBooksByGroupId, Error, ', JSON.stringify(e));
+      return []
     }
   }
 
   //删除订阅源历史记录
-  async deleteBook(id: number) {
+  async deleteBook(id: number[]) {
     try {
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates.equalTo('id', id)
+      predicates.in('id', id)
       await DbUtil.delete(predicates)
       return true
     }  catch (err) {
@@ -217,11 +258,11 @@ class BooksDao {
   }
 
   //分组删除情况下根据删除分组id查询书籍更新未分组
-  async queryBookByGroup(groupId: number,updateGroupId: number) {
+  async queryBookByGroup(groupId: number[],updateGroupId: number) {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates.equalTo('bookGroup', groupId)
+      predicates.in('bookGroup', groupId)
       const bookDbList = await DbUtil.queryForList<Books>(predicates, column)
       if (bookDbList.length > 0) {
         bookDbList.forEach((item) => {

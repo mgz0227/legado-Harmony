@@ -30,7 +30,8 @@ export default struct ShelfInfoDialog{
       }){
         ForEach(this.buttonListInfo,(item:buttonList)=>{
           InsideCircleIcon({
-            item:item
+            icon:item.icon,
+            title:item.title
           })
         })
       }

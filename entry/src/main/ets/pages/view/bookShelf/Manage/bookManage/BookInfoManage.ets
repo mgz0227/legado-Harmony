@@ -7,8 +7,7 @@ import { Books } from '../../../../../database/entities/Books'
 export default struct BookInfoManage{
   @Prop isManage:boolean
   @Prop bookData:Books
-
-
+  @Link checkGroup:Record<number, boolean>
   build() {
     Flex(
       {
@@ -60,10 +59,16 @@ export default struct BookInfoManage{
       if (this.isManage){
         Row() {
           Checkbox({
-            name: JSON.stringify(this.bookData.id),
-            group: 'checkboxGroup'
+            name: JSON.stringify(this.bookData.id)
           })
+            .select(this.bookData.id?this.checkGroup[this.bookData.id] ?? false:false)
+            .onChange((val:boolean)=>{
+              if (this.bookData.id) {
+                this.checkGroup[this.bookData.id] = val
+              }
+            })
             .selectedColor($r('app.color.theme_color'))
+            .unselectedColor('rgba(0, 0, 0, 0.35)')
         }
         .padding({ left: 15, right: 15, bottom: 5, top: 5 })
       }

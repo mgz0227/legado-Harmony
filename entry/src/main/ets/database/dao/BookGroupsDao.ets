@@ -145,7 +145,7 @@ class BookGroupsDao{
         return true
       }
       const bookGroupsDb = ToBookGroupsDb(group)
-      bookGroupsDb.createTime = Date.now()
+      bookGroupsDb.updateTime = Date.now()
       await DbUtil.update(predicates, bookGroupsDb, column)
       return true
     } catch (err) {
@@ -155,24 +155,11 @@ class BookGroupsDao{
 
   }
 
-  //批量删除订阅源历史记录
-  async deleteBookList(group: BookGroups[]) {
-    try {
-      for (let index = 0; index < group.length; index++) {
-        await this.deleteBook(group[index]?.groupId||0)
-      }
-      return true
-    } catch (err) {
-      console.log('TagInfo, Error, ', JSON.stringify(err))
-      return false
-    }
-  }
-
   //删除订阅源历史记录
-  async deleteBook(id: number) {
+  async deleteBook(id: number[]) {
     try {
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates.equalTo('groupId', id)
+      predicates.in('groupId', id)
       await DbUtil.delete(predicates)
       return true
     }  catch (err) {
@@ -182,7 +169,7 @@ class BookGroupsDao{
   }
 
   //置顶
-  async isUpdateGroupTop(id: number, isTop?: boolean) {
+  async isUpdateGroupTop(id: number, isTop: boolean) {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
@@ -190,7 +177,7 @@ class BookGroupsDao{
       const count = await DbUtil.queryForList<BookGroups>(predicates, column)
       if (column.length > 0) {
         count.forEach((item) => {
-          item.isTop = isTop||!item.isTop
+          item.isTop = isTop
           item.updateTime = Date.now()
           this.update(item)
         })
@@ -246,9 +233,8 @@ class BookGroupsDao{
     }
   }
   //根据分组groupId更新bookIds书籍id存在不做更新
-  updateAddBookIds(groupId: number, bookIds: number) {
+  updateAddBookIds(groupId: number, bookIds: string[]) {
     try {
-      const bookId = JSON.stringify(bookIds)
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
       predicates.equalTo('groupId', groupId)
@@ -256,47 +242,104 @@ class BookGroupsDao{
       DbUtil.queryForList<BookGroupDb>(predicates, column).then((data) => {
         data.forEach((item) => {
           const groupList = ToBookGroups(item);
-          if (groupList.bookIds?.includes(bookId)) {
-            return
-          }
-          if (groupList.bookIds) {
-            groupList.bookIds.push(bookId)
-          } else {
-            groupList.bookIds = [bookId]
-          }
+          bookIds.forEach((bookId) => {
+            //存在将bookId不做添加
+            if (groupList.bookIds?.includes(bookId)) {
+              return
+            }
+            if (groupList.bookIds) {
+              groupList.bookIds.push(bookId)
+            } else {
+              groupList.bookIds = [bookId]
+            }
+          })
           this.update(groupList)
           console.log("TagInfo", '书籍bookIds：' + groupList.bookIds?.length + JSON.stringify(groupList.bookIds))
         })
       })
-
-
     } catch (e){
       console.log('TagInfo, Error, ', JSON.stringify(e))
     }
   }
   //同时在更新后将旧的分组的bookIds中的书籍id移除
-  updateMoveBookIdsByGroupId(oldGroupId: number,bookIds: number) {
+  async updateMoveBookIdsByGroupId(data: Record<number, number>) {
     try {
-      const bookId = JSON.stringify(bookIds)
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
-      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates.equalTo('groupId', oldGroupId)
-      //查询出来只有一个值
-      DbUtil.queryForList<BookGroupDb>(predicates, column).then((data)=>{
-        data.forEach((item) => {
-          const groupList = ToBookGroups(item);
-          if (groupList.bookIds?.includes(bookId)) {
-            groupList.bookIds = groupList.bookIds.filter((item) => {
-              return item !== bookId
-            })
-            this.update(groupList)
+
+      const bookIds = Object.keys(data);
+
+      for (const bookIdStr of bookIds) {
+        const bookId = Number(bookIdStr);
+        const oldGroupId = data[bookId];
+
+        const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+        predicates.equalTo('groupId', oldGroupId);
+
+        // 查询旧分组
+        const groups = await DbUtil.queryForList<BookGroupDb>(predicates, column);
+        if (groups.length > 0) {
+          const group = groups[0];
+          const groupList = ToBookGroups(group);
+
+          if (groupList.bookIds?.includes(bookId.toString())) {
+            // 移除旧分组中的 bookId
+            groupList.bookIds = groupList.bookIds.filter(item => item !== bookId.toString());
+            await this.update(groupList);
           }
-        })
-      })
+        }
+      }
     } catch (e) {
-      console.log('TagInfo, Error, ', JSON.stringify(e))
+      console.log('updateMoveBookIdsByGroupId, Error, ', JSON.stringify(e));
     }
   }
+
+  async updateMoveGroupBookIds(ids: number[]) {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      // 确保 ids 数组的每个元素都是数字
+      const validIds = ids.filter(id => typeof id === 'number');
+      predicates.in('groupId', validIds);  // 使用 in 条件一次性查找多个 id
+      // 执行一次查询获取所有匹配的分组
+      const groups = await DbUtil.queryForList<BookGroupDb>(predicates, column);
+
+      if (groups.length > 0) {
+        for (const group of groups) {
+          const groupList = ToBookGroups(group);
+          groupList.bookIds = [];
+          await this.update(groupList); // 确保逐个更新
+        }
+      }
+    } catch (e) {
+      console.log('updateMoveBookIdsByGroupId, Error, ', JSON.stringify(e));
+    }
+  }
+  //校验唯一性,同时进行更新
+  async onlyGroupUpdateName(groupId: number, newGroupName: string) {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('groupName', newGroupName)
+      const groups = await DbUtil.queryForList<BookGroupDb>(predicates, column);
+      if (groups.length > 1) return false
+      if (groups.length === 0){
+        const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+        predicates.equalTo('groupId', groupId)
+        const groupDate = await DbUtil.queryForList<BookGroupDb>(predicates, column);
+        groupDate[0].groupName = newGroupName
+        return await this.update(ToBookGroups(groupDate[0]))
+      }
+      if ((groups.length === 1 && groups[0].groupId && groups[0].groupId === groupId)) {
+        groups[0].groupName = newGroupName
+        return await this.update(ToBookGroups(groups[0]))
+      }
+      return false
+    } catch (e){
+      console.log('onlyGroupName, Error, ', JSON.stringify(e))
+      return false
+    }
+  }
+
 }
 
 const bookGroupsDao = new BookGroupsDao()

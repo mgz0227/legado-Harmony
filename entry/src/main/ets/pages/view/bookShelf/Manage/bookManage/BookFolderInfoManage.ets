@@ -1,6 +1,4 @@
 import BookOverlay from '../../../../../componets/bookDetail/BookOverlay'
-import { showMessage } from '../../../../../componets/common/promptShow'
-import BooksDao from '../../../../../database/dao/BooksDao'
 import { BookGroups } from '../../../../../database/entities/BookGroups'
 
 /**
@@ -8,9 +6,9 @@ import { BookGroups } from '../../../../../database/entities/BookGroups'
  */
 @Component
 export default struct BookFolderInfoManage {
-
   @Prop group:BookGroups
-
+  @Link checkGroup:Record<number, boolean>
+  @Prop isManage:boolean
   build() {
     Flex(
       {
@@ -55,14 +53,21 @@ export default struct BookFolderInfoManage {
         }
         .alignItems(HorizontalAlign.Start)
       }
-      Row() {
-        Checkbox({
-          name: JSON.stringify(this.group.groupId),
-          group:'checkboxGroup'
-        })
-          .selectedColor($r('app.color.theme_color'))
+      if (this.isManage){
+        Row() {
+          Checkbox()
+            //判断是否存在当前id
+            .select(this.group.groupId?this.checkGroup[this.group.groupId] ?? false:false)
+            .selectedColor($r('app.color.theme_color'))
+            .onChange((val: boolean) => {
+              if (this.group.groupId) {
+                this.checkGroup[this.group.groupId] = val
+              }
+            })
+        }
+        .padding({ left: 15, right: 15, bottom: 5, top: 5 })
       }
-      .padding({ left: 15, right: 15, bottom: 5, top: 5 })
+
 
     }
     .padding(10)

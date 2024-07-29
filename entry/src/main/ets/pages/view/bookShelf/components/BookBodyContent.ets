@@ -38,11 +38,13 @@ export default struct BookBodyContent {
             justifyContent: FlexAlign.SpaceBetween
           }) {
             Row({ space: 15 }) {
+              // todo 筛选暂未实现
               IndexSearchType({ title: this.title, searchValue: this.searchValue })
               IndexSearchType({ title: '浏览历史', searchValue: this.searchValue })
                 .onClick(() => {
                   this.GROUP = '标签'
                   this.searchValue = '浏览历史'
+                  //todo 历史记录暂未实现
                 })
               if (this.searchValue !== '浏览历史') {
                 this.GroupBuilder()
@@ -54,7 +56,6 @@ export default struct BookBodyContent {
                       params: {
                         currentIndex: this.currentIndex,
                         EXHIBIT: this.EXHIBIT,
-                        GROUPName: this.GROUP,
                         bookTypeNumber: this.bookTypeNumber
                       }
                     })

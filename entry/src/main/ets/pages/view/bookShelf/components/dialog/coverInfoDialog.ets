@@ -1,7 +1,6 @@
-import { folderList } from '../../../componets/dataList/folderList'
-import { pickerAvatar } from '../../../common/utils/photoViewPicker'
-import coverInfoImageShow from '../coverInfoImageShow'
-import { BookGroups } from '../../../database/entities/BookGroups'
+import { pickerAvatar } from '../../../../../common/utils/photoViewPicker'
+import coverInfoImageShow from '../../../coverInfoImageShow'
+import { BookGroups } from '../../../../../database/entities/BookGroups'
 
 @CustomDialog
 /**

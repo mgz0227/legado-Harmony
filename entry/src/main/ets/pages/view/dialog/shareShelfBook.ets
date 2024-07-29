@@ -12,8 +12,6 @@ import image from '@ohos.multimedia.image'
 import fs from '@ohos.file.fs';
 import { photoAccessHelper } from '@kit.MediaLibraryKit'
 import { showMessage } from '../../../componets/common/promptShow'
-import fileIo from '@ohos.file.fs'
-import { picker } from '@kit.CoreFileKit'
 import { common } from '@kit.AbilityKit'
 import { BusinessError } from '@kit.BasicServicesKit'
 
@@ -113,7 +111,8 @@ export default struct shareShelfBook {
         }) {
           ForEach(this.buttonListInfo, (item: buttonList) => {
             InsideCircleIcon({
-              item: item
+              icon: item.icon,
+              title:item.title
             }).onClick(() => {
               switch (item.id) {
                 case 1:

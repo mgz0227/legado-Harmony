@@ -65,7 +65,8 @@ export default struct BookInfoDialogs{
       }){
         ForEach(this.buttonListInfo,(item:buttonList)=>{
           InsideCircleIcon({
-            item:item
+            icon:item.icon,
+            title:item.title
           })
             .onClick(()=>{
               this.bookInfoButton(item.id)
@@ -127,7 +128,9 @@ export default struct BookInfoDialogs{
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
 
   async deleteBook(){
-    booksUtil.delBooksById(this.bookData.id || 0)
+    if (this.bookData.id){
+      booksUtil.delBooksById(this.bookData.id)
+    }
     setTimeout(()=>{
       this.isBookRefreshing++
     },500)
@@ -135,9 +138,11 @@ export default struct BookInfoDialogs{
   }
 
   async isTopBook(){
-    booksUtil.isTopBook(this.bookData.id || 0).then((val)=>{
-      val?showMessage(this.bookData.isTop?'置顶成功':'取消置顶成功'):showMessage('数据更新失败')
-    })
+    if (this.bookData.id){
+      booksUtil.isTopBook(this.bookData.id, !this.bookData.isTop).then((val)=>{
+        val?showMessage(this.bookData.isTop?'置顶成功':'取消置顶成功'):showMessage('数据更新失败')
+      })
+    }
     setTimeout(()=>{
       this.controller?.close()
       this.isBookRefreshing++
@@ -151,8 +156,10 @@ export default struct BookInfoDialogs{
       moveGroup: ()=> {
         setTimeout(()=>{
           this.isBookRefreshing++
+          this.bookMoveGroup?.close()
         },500)
       },
+      oldGroupId:this.bookData.bookGroup,
       currentIndex:this.bookData.bookType,
       Ids:this.bookData.id
     }),

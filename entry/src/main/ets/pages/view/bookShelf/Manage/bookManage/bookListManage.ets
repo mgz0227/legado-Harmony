@@ -6,11 +6,9 @@ import { Books } from '../../../../../database/entities/Books'
 @Component
 export default struct bookListManage{
   @Prop EXHIBIT:string
-  @Link checkList:string[]
-  @Link bookList:Books[]
-  @Prop shelfType:number
+  @Prop bookList:Books[]
   @Prop isManage:boolean = true
-
+  @Link checkGroup:Record<number, boolean>
   isTopChange(){
 
   }
@@ -37,7 +35,8 @@ export default struct bookListManage{
              GridCol(){
                BookInfoGridManage({
                  bookData:item,
-                 isManage:this.isManage
+                 isManage:this.isManage,
+                 checkGroup:this.checkGroup
                })
              }
            })
@@ -49,7 +48,8 @@ export default struct bookListManage{
             ForEach(this.bookList, (item: Books,index:number) => {
               BookInfoManage({
                 bookData:item,
-                isManage:this.isManage
+                isManage:this.isManage,
+                checkGroup:this.checkGroup
               })
             })
           }

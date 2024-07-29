@@ -1,6 +1,5 @@
 import confirmDialogExample from '../../../../../componets/common/confirmDialog'
 import { showMessage } from '../../../../../componets/common/promptShow'
-import { folderList } from '../../../../../componets/dataList/folderList'
 import { BookGroups } from '../../../../../database/entities/BookGroups'
 import BookFolderGridManage from './BookFolderGridManage'
 import BookFolderInfoManage from './BookFolderInfoManage'
@@ -8,8 +7,10 @@ import BookFolderInfoManage from './BookFolderInfoManage'
 @Component
 export default struct BookFolderManages {
   @Prop bookGroups:BookGroups[] = []
+  @Link checkGroup:Record<number, boolean>
   @Prop EXHIBIT:string
   @State delCache:boolean = false
+  @Prop isManage:boolean = true
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
@@ -53,7 +54,9 @@ export default struct BookFolderManages {
          ForEach(this.bookGroups, (item: BookGroups) => {
            if (item.show && !item.isSystem) {
              BookFolderInfoManage({
-               group:item
+               group:item,
+               checkGroup:this.checkGroup,
+               isManage:this.isManage
              })
            }
          })
@@ -65,7 +68,9 @@ export default struct BookFolderManages {
              if (item.show && !item.isSystem) {
                GridCol(){
                  BookFolderGridManage({
-                   group:item
+                   group:item,
+                   checkGroup:this.checkGroup,
+                   isManage:this.isManage
                  })
                }
              }

@@ -1,9 +1,9 @@
-import CommonConstants from '../../../common/constants/CommonConstants'
-import confirmDialogExample from '../../../componets/common/confirmDialog'
-import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
-import { showMessage } from '../../../componets/common/promptShow'
-import { BookList } from '../../../componets/dataList/bookList'
-import { buttonList } from '../../../componets/dataList/buttonList'
+import CommonConstants from '../../../../../common/constants/CommonConstants'
+import confirmDialogExample from '../../../../../componets/common/confirmDialog'
+import InsideCircleIcon from '../../../../../componets/common/InsideCircleIcon'
+import { showMessage } from '../../../../../componets/common/promptShow'
+import { BookList } from '../../../../../componets/dataList/bookList'
+import { buttonList } from '../../../../../componets/dataList/buttonList'
 import { router } from '@kit.ArkUI'
 
 @CustomDialog
@@ -72,7 +72,8 @@ export default struct BookInfoDialog{
       }){
         ForEach(this.buttonListInfo,(item:buttonList)=>{
           InsideCircleIcon({
-            item:item
+            icon:item.icon,
+            title:item.title
           })
             .onClick(()=>{
               this.bookInfoButton(item.id)

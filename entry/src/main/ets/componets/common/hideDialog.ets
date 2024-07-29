@@ -9,12 +9,15 @@ export default struct hideDialogExample {
   confirm: () => void = () => {
   }
   @Prop title:string
+  @Prop isHide:boolean = true
 
   build() {
     Column() {
-      Text(`确定隐藏吗？` ).fontWeight(600).maxLines(1).minFontSize(12).maxFontSize(20).margin({ top: 20, bottom: 10 })
-      Text('隐藏后可点击分组标签栏右侧分组管理入口查看隐藏分组并进入').width('70%').textAlign(TextAlign.Center)
-        .fontColor('rgba(0, 0, 0, 0.45)').fontSize(14).fontWeight(400).lineHeight(22)
+      Text(`确定${this.isHide?'隐藏':'显示'}吗？` ).fontWeight(600).maxLines(1).minFontSize(12).maxFontSize(20).margin({ top: 20, bottom: 10 })
+      if (this.isHide){
+        Text('隐藏后可点击分组标签栏右侧分组管理入口查看隐藏分组并进入').width('70%').textAlign(TextAlign.Center)
+          .fontColor('rgba(0, 0, 0, 0.45)').fontSize(14).fontWeight(400).lineHeight(22)
+      }
       Row({space:24}) {
         Text('取消')
           .onClick(() => {

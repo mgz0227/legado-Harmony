@@ -1,47 +1,39 @@
-import router from '@ohos.router';
-import bookListManage from './bookManage/bookListManage';
-import { BookList } from '../../../../componets/dataList/bookList';
-import {showMessage} from '../../../../componets/common/promptShow'
-import confirmDialogExample from '../../../../componets/common/confirmDialog';
-import BookFolderManages from './bookManage/BookFolderManages';
-import newBookShelf from './bookManage/newBookShelf';
-import newAddShelf from './bookManage/newAddShelf';
-import hideDialogExample from '../../../../componets/common/hideDialog';
-import ShelfBookList from '../Shelf/ShelfBookList';
-import booksDao from '../../../../database/dao/BooksDao';
-import { Books } from '../../../../database/entities/Books';
-import { buttonList } from '../../../../componets/dataList/buttonList';
-import booksUtil from '../../../../common/utils/booksUtils';
-import BookSelectGroupDialog from '../components/dialog/BookSelectGroupDialog';
-import BookGroupsDao from '../../../../database/dao/BookGroupsDao';
-import { BookGroups } from '../../../../database/entities/BookGroups';
-import bookGroupUtil from '../../../../common/utils/bookGroupUtils';
-import catalogAddShelf from './components/catalogAddShelf';
-import Header from '../../../../componets/common/Header';
+import PaddingConstants from '../../../../../common/constants/PaddingConstants';
+import bookGroupUtil from '../../../../../common/utils/bookGroupUtils';
+import booksUtil from '../../../../../common/utils/booksUtils';
+import confirmDialogExample from '../../../../../componets/common/confirmDialog';
+import Header from '../../../../../componets/common/Header';
+import hideDialogExample from '../../../../../componets/common/hideDialog';
+import { showMessage } from '../../../../../componets/common/promptShow';
+import { BookList } from '../../../../../componets/dataList/bookList';
+import { buttonList } from '../../../../../componets/dataList/buttonList';
+import IndexSearchType from '../../../../../componets/head/IndexSearchType';
+import BookGroupsDao from '../../../../../database/dao/BookGroupsDao';
+import booksDao from '../../../../../database/dao/BooksDao';
+import { BookGroups } from '../../../../../database/entities/BookGroups';
+import { Books } from '../../../../../database/entities/Books';
+import BookSelectGroupDialog from './BookSelectGroupDialog';
+import BookFolderManages from '../../Manage/bookManage/BookFolderManages';
+import bookListManage from '../../Manage/bookManage/bookListManage';
+import newAddShelf from '../../Manage/bookManage/newAddShelf';
+import newBookShelf from '../../Manage/bookManage/newBookShelf';
+import catalogAddShelf from '../../Manage/components/catalogAddShelf';
+import ShelfBookList from '../../Shelf/ShelfBookList';
 
-class routerParams {
-  currentIndex:number
-  EXHIBIT:string
-  bookTypeNumber:number
-  constructor(param:routerParams) {
-    this.currentIndex = param.currentIndex
-    this.EXHIBIT = param.EXHIBIT
-    this.bookTypeNumber = param.bookTypeNumber
-  }
-}
+
 /**
- * 管理跳转页面
+ * 分组页面单击跳转页面
  */
-@Entry
 @Component
-struct BookManagePage {
-  @State currentIndex: number = (router.getParams() as routerParams).currentIndex
-  @State EXHIBIT: string = (router.getParams() as routerParams).EXHIBIT
-  @State bookTypeNumber:number = (router.getParams() as routerParams).bookTypeNumber
+export default  struct BookManageDialog {
+  @Prop currentIndex: number
+  @State EXHIBIT: string = '标签'
+  @Prop title:string
+  @Prop bookTypeNumber:number
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State isAddShelfShow:boolean = false
-
+  @State isManage:boolean = false
   @State topTitle:string = '置顶'
   @State bookList:Books[] = []
   @State @Watch('listenCheckList')checkLists: Record<number, boolean> = {}
@@ -104,7 +96,7 @@ struct BookManagePage {
     })
   }
   //初始
-  onPageShow(): void {
+  aboutToAppear(): void {
     if (this.bookTypeNumber === 1) {
       this.getGroupList()
       this.isMoveStatus = 1
@@ -123,27 +115,21 @@ struct BookManagePage {
     new BookList('1','开局长生万古，苟到天荒地老','这个世界，有儒;有道；有佛书;有妖;有术士。警校毕业的许七安幽幽醒来，发现自己将要远赴','更新至·第340章 镇压',$r('app.media.shelf_book'),'玄幻')]
   build() {
     Column(){
-      Column(){
-        if (this.showNumber === 0){
-          this.bookManage()
-        } else if(this.showNumber === 1){
-          newBookShelf({
-            addCheckShelf:this.addCheckShelf,
-            showNumber:this.showNumber,
-            isAddShelfShow:this.isAddShelfShow
-          })
-        } else if (this.showNumber === 2){
-          newAddShelf({
-            addCheckShelf:this.addCheckShelf,
-            showNumber:this.showNumber,
-            isAddShelfShow:this.isAddShelfShow
-          })
-        }
+      if (this.showNumber === 0){
+        this.bookManage()
+      } else if(this.showNumber === 1){
+        newBookShelf({
+          addCheckShelf:this.addCheckShelf,
+          showNumber:this.showNumber,
+          isAddShelfShow:this.isAddShelfShow
+        })
+      } else if (this.showNumber === 2){
+        newAddShelf({
+          addCheckShelf:this.addCheckShelf,
+          showNumber:this.showNumber,
+          isAddShelfShow:this.isAddShelfShow
+        })
       }
-      .backgroundColor(Color.White)
-      .margin({
-        bottom:this.bottomRectHeight
-      })
       Flex()
         .bindSheet($$this.isCatalogAddShelf, this.dialogCatalogAddShelf(), {
           height:400,
@@ -154,13 +140,9 @@ struct BookManagePage {
           }
         })
     }
-    // .height('100%')
-    // .linearGradient({
-    //   direction: GradientDirection.Bottom, // 渐变方向
-    //   colors: [["rgb(254, 203, 169)", 0.1],["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
-    // })
-    // .borderRadius({ bottomRight: 5, bottomLeft: 5 })
-
+    .margin({
+      bottom:this.bottomRectHeight
+    })
   }
   //主要操作页面
   @Builder bookManage(){
@@ -169,15 +151,20 @@ struct BookManagePage {
       direction:FlexDirection.Column
     }) {
       Column(){
-        Header({
-          customLeftBuilder: () => {
-            this.selectAll()
-          },
-          title:`已选${this.checkListNumber.length}项`,
-          customRightBuilder: () => {
-            this.complete()
-          }
-        })
+        if (!this.isManage){
+          this.headTitleManage()
+        } else {
+          Header({
+            customLeftBuilder: () => {
+              this.selectAll()
+            },
+            title:`已选${this.checkListNumber.length}项`,
+            customRightBuilder: () => {
+              this.complete()
+            },
+            paddingTop:-30
+          })
+        }
         Scroll(){
           if (this.bookTypeNumber === 5){
             ShelfBookList({
@@ -189,13 +176,15 @@ struct BookManagePage {
               BookFolderManages({
                 checkGroup:this.checkLists,
                 EXHIBIT:this.EXHIBIT,
-                bookGroups:this.bookGroups
+                bookGroups:this.bookGroups,
+                isManage:this.isManage
               })
             } else {
               bookListManage({
                 checkGroup:this.checkLists,
                 EXHIBIT:this.EXHIBIT,
-                bookList:this.bookList
+                bookList:this.bookList,
+                isManage:this.isManage
               })
             }
           }
@@ -204,16 +193,79 @@ struct BookManagePage {
         .align(Alignment.TopStart)
         .scrollBar(BarState.Off)
       }
-      Column(){
-        Divider()
-        if (this.bookTypeNumber === 5){
-          this.footerDel()
-        } else {
-          this.footerTitle()
+      if (this.isManage){
+        Column(){
+          Divider()
+          if (this.bookTypeNumber === 5){
+            this.footerDel()
+          } else {
+            this.footerTitle()
+          }
         }
       }
     }
+    .height('100%')
   }
+  @State titleManage:string = '最近阅读'
+  @State searchValue: string = '最近阅读'
+  @Builder headTitleManage(){
+    Flex(
+      {
+        alignItems:ItemAlign.Center,
+        justifyContent:FlexAlign.Center
+      }
+    ){
+      Column(){
+        IndexSearchType({ title: this.titleManage, searchValue: this.searchValue })
+      }
+      .alignItems(HorizontalAlign.Start)
+      .width('33%')
+      Column(){
+        Text(`${this.title}`)
+          .textAlign(TextAlign.Center)
+          .fontSize(16).fontWeight(500).fontColor($r('app.string.color_black_88'))
+      }
+      .width('33%')
+      .onClick(()=>{
+
+      })
+      Row(
+        {
+          space:12
+        }
+      ){
+        Text(this.EXHIBIT === '列表'?'宫格':'列表')
+          .textAlign(TextAlign.Center)
+          .fontSize(14).fontWeight(400).fontColor($r('app.string.color_black_88'))
+          .onClick(()=>{
+            if (this.EXHIBIT === '列表') {
+              this.EXHIBIT = '宫格'
+            } else {
+              this.EXHIBIT = '列表'
+            }
+          })
+
+        Divider()
+          .vertical(true)
+          .height(15)
+          .color('#989797')
+          .opacity(0.3)
+          .strokeWidth(1)
+
+        Text('管理')
+          .textAlign(TextAlign.Center)
+          .fontSize(14).fontWeight(400).fontColor($r('app.string.color_black_88'))
+          .onClick(()=>{
+            this.isManage = !this.isManage
+          })
+      }
+      .justifyContent(FlexAlign.End)
+      .width('33%')
+    }
+    .padding(PaddingConstants.PADDING_20)
+  }
+
+
   //书单弹窗
   @Builder dialogCatalogAddShelf(){
     Column(){
@@ -294,7 +346,7 @@ struct BookManagePage {
       Text('完成')
     }
     .onClick(async () => {
-      router.back()
+      this.isManage = !this.isManage
       setTimeout(()=>{
         this.refreshData()
       },100)
@@ -307,9 +359,10 @@ struct BookManagePage {
     }.onClick(()=>{
 
     })
-    .backgroundColor(Color.White)
+    .margin({
+      top:PaddingConstants.PADDING_10
+    })
     .alignItems(HorizontalAlign.Center)
-    .padding(20)
   }
   @State buttonListInfo5:buttonList[] = [
     new buttonList(1,'置顶',$r('app.media.top')),
@@ -356,11 +409,9 @@ struct BookManagePage {
           }
         })
       }
-      .padding({
-        top:10,
-        bottom:10
+      .margin({
+        top:PaddingConstants.PADDING_10
       })
-      .backgroundColor(Color.White)
     }
   //底部操作栏功能
   bookInfoButton(index:number){
@@ -476,15 +527,12 @@ struct BookManagePage {
   refreshData(){
    switch (this.bookTypeNumber){
      case 1:
-       showMessage('刷新分组')
        this.getGroupList();
        this.BOOK_IS_BOOK_GROUPS_REFRESHING++
        break;
      case 5:
-       showMessage('刷新书单')
        break;
        default:
-         showMessage('刷新书籍')
          this.getBookList();
          this.isBookRefreshing++
          break;

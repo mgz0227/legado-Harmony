@@ -72,13 +72,13 @@ export default struct BookShelfGrid {
         .backgroundImageSize({ width: 88, height: 120 })
         .zIndex(2)
         Row() {
-          Image($r('app.media.occlusion1'))
+          Image($r('app.media.occlusion1')).draggable(false)
         }
         .zIndex(1)
         .width(95).height(110)
 
         Row() {
-          Image($r('app.media.occlusion2'))
+          Image($r('app.media.occlusion2')).draggable(false)
         }.zIndex(0)
         .width(100).height(100)
       }.align(Alignment.BottomStart)

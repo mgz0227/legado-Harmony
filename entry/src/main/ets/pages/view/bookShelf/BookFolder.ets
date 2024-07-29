@@ -4,9 +4,8 @@ import { showMessage } from '../../../componets/common/promptShow'
 import { folderList } from '../../../componets/dataList/folderList'
 import BookGroupsDao from '../../../database/dao/BookGroupsDao'
 import { BookGroups } from '../../../database/entities/BookGroups'
-import { updateDateGroup } from '../../../storage/groupData'
-import FolderInfoDialog from '../dialog/FolderInfoDialog'
-import FolderManageDialog from '../dialog/FolderManageDialog'
+import BookManageDialog from './components/dialog/BookManageDialog'
+import FolderInfoDialog from './components/dialog/FolderInfoDialog'
 
 /**
  * 文件夹
@@ -45,9 +44,21 @@ export default struct BookFolder {
             }
           }
         }
+        .gesture(
+          LongPressGesture({ repeat: true,duration:500 })
+            .onAction((event: GestureEvent) => {
+              if (event.repeat) {
+                if (!this.isShow) {
+                  this.dialogGroupData = item
+                  this.isShow = true
+                  this.changeNumber = 1
+                  this.groupInfoDialog?.open()
+                }
+              }
+            }))
         .onClick(()=>{
           this.isShowBookFolderInfoDialog = true
-          this.folderType = item.groupName
+          this.clickGroup = item
         })
       })
     }
@@ -61,13 +72,15 @@ export default struct BookFolder {
       }
     })
   }
-  @State folderType:string = ''
+  @Prop clickGroup:BookGroups
   @Builder bookFolderInfoDialog(){
     Column(){
-      FolderManageDialog({
-        folderType:this.folderType
+      BookManageDialog({
+        title:this.clickGroup.groupName,
+        currentIndex:this.currentIndex,
+        bookTypeNumber:this.clickGroup.groupId,
       })
-    }.padding(15)
+    }
   }
 
   @Builder bookInfoGrid(item: BookGroups){
@@ -93,7 +106,7 @@ export default struct BookFolder {
             .zIndex(2)
 
             Row(){
-              Image($r('app.media.occlusion1'))
+              Image($r('app.media.occlusion1')).draggable(false)
             }
             .zIndex(1)
             .width(95).height(110)
@@ -116,7 +129,7 @@ export default struct BookFolder {
         })
         .ellipsisMode(EllipsisMode.END)
         .maxLines(2)
-      Text(`共${item.bookIds?.length}本`).fontSize(12).fontColor('rgb(174,174,174)')
+      Text(`共${item.bookIds?.length||0}本`).fontSize(12).fontColor('rgb(174,174,174)')
         .textOverflow({
           overflow:TextOverflow.Ellipsis
         })
@@ -144,18 +157,6 @@ export default struct BookFolder {
           bookImage:group.coverUrl,
           isTop:group.isTop
         })
-          .gesture(
-          LongPressGesture({ repeat: true,duration:500 })
-            .onAction((event: GestureEvent) => {
-              if (event.repeat) {
-                if (!this.isShow) {
-                  this.dialogGroupData = group
-                  this.isShow = true
-                  this.changeNumber = 1
-                  this.groupInfoDialog?.open()
-                }
-              }
-            }))
         Column({
           space:24
         })
