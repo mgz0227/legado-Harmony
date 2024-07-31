@@ -41,7 +41,7 @@ struct BookManagePage {
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State isAddShelfShow:boolean = false
-
+  tabsController: TabsController = new TabsController();
   @State topTitle:string = '置顶'
   @State bookList:Books[] = []
   @State @Watch('listenCheckList')checkLists: Record<number, boolean> = {}
@@ -123,26 +123,52 @@ struct BookManagePage {
     new BookList('1','开局长生万古，苟到天荒地老','这个世界，有儒;有道；有佛书;有妖;有术士。警校毕业的许七安幽幽醒来，发现自己将要远赴','更新至·第340章 镇压',$r('app.media.shelf_book'),'玄幻')]
   build() {
     Column(){
-      Column(){
-        if (this.showNumber === 0){
-          this.bookManage()
-        } else if(this.showNumber === 1){
-          newBookShelf({
-            addCheckShelf:this.addCheckShelf,
-            showNumber:this.showNumber,
-            isAddShelfShow:this.isAddShelfShow
-          })
-        } else if (this.showNumber === 2){
-          newAddShelf({
-            addCheckShelf:this.addCheckShelf,
-            showNumber:this.showNumber,
-            isAddShelfShow:this.isAddShelfShow
-          })
+      Header({
+        customLeftBuilder: () => {
+          this.selectAll()
+        },
+        title:`已选${this.checkListNumber.length}项`,
+        customRightBuilder: () => {
+          this.complete()
         }
+      })
+        .visibility(this.showNumber === 0?Visibility.Visible:Visibility.None)
+        .opacity(this.showNumber === 0?1:0)
+      Tabs({
+        index:this.showNumber,
+        controller: this.tabsController
+      }){
+       TabContent(){
+         this.bookManage()
+       }
+       TabContent(){
+         newBookShelf({
+           addCheckShelf:this.addCheckShelf,
+           showNumber:this.showNumber,
+           isAddShelfShow:this.isAddShelfShow
+         })
+       }
+       .padding({
+         top:this.topRectHeight
+       })
+       TabContent(){
+         newAddShelf({
+           addCheckShelf:this.addCheckShelf,
+           showNumber:this.showNumber,
+           isAddShelfShow:this.isAddShelfShow
+         })
+       }
+       .padding({
+         top:this.topRectHeight
+       })
       }
       .backgroundColor(Color.White)
-      .margin({
-        bottom:this.bottomRectHeight
+      .barWidth(0)
+      .barHeight(0)
+      .layoutWeight(1)
+      .scrollable(false)
+      .onChange((index: number) => {
+        this.showNumber = index
       })
       Flex()
         .bindSheet($$this.isCatalogAddShelf, this.dialogCatalogAddShelf(), {
@@ -154,30 +180,26 @@ struct BookManagePage {
           }
         })
     }
-    // .height('100%')
-    // .linearGradient({
-    //   direction: GradientDirection.Bottom, // 渐变方向
-    //   colors: [["rgb(254, 203, 169)", 0.1],["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
-    // })
-    // .borderRadius({ bottomRight: 5, bottomLeft: 5 })
+    .margin({
+      bottom:this.bottomRectHeight
+    })
+    .linearGradient({
+      direction: GradientDirection.Bottom, // 渐变方向
+      colors: [["rgb(254, 203, 169)", 0.1],["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
+    })
+    .borderRadius({ bottomRight: 5, bottomLeft: 5 })
 
   }
   //主要操作页面
   @Builder bookManage(){
     Flex({
       justifyContent:FlexAlign.SpaceBetween,
-      direction:FlexDirection.Column
+      alignContent:FlexAlign.Center,
+      alignItems:ItemAlign.Center,
+      direction:FlexDirection.Column,
+      wrap:FlexWrap.NoWrap
     }) {
       Column(){
-        Header({
-          customLeftBuilder: () => {
-            this.selectAll()
-          },
-          title:`已选${this.checkListNumber.length}项`,
-          customRightBuilder: () => {
-            this.complete()
-          }
-        })
         Scroll(){
           if (this.bookTypeNumber === 5){
             ShelfBookList({
@@ -211,7 +233,7 @@ struct BookManagePage {
         } else {
           this.footerTitle()
         }
-      }
+      }.backgroundColor(Color.White)
     }
   }
   //书单弹窗
@@ -220,6 +242,10 @@ struct BookManagePage {
       catalogAddShelf({
         onClickShelf:(val:boolean)=>{
           this.isCatalogAddShelf = val
+        },
+        changeShowNumber:(val:number)=>{
+          this.showNumber = val
+          this.isCatalogAddShelf = false
         }
       })
     }
@@ -307,7 +333,6 @@ struct BookManagePage {
     }.onClick(()=>{
 
     })
-    .backgroundColor(Color.White)
     .alignItems(HorizontalAlign.Center)
     .padding(20)
   }
@@ -460,6 +485,7 @@ struct BookManagePage {
         },500)
         this.bookMoveGroup?.close()
       },
+      oldGroupId:this.bookTypeNumber,
       currentIndex:this.currentIndex,
       Ids:this.checkListNumber,
       isMoveStatus:this.isMoveStatus
@@ -476,15 +502,12 @@ struct BookManagePage {
   refreshData(){
    switch (this.bookTypeNumber){
      case 1:
-       showMessage('刷新分组')
        this.getGroupList();
        this.BOOK_IS_BOOK_GROUPS_REFRESHING++
        break;
      case 5:
-       showMessage('刷新书单')
        break;
        default:
-         showMessage('刷新书籍')
          this.getBookList();
          this.isBookRefreshing++
          break;

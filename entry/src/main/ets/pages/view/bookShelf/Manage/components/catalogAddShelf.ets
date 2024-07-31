@@ -10,8 +10,12 @@ import buttonCommon from '../../../../../componets/common/buttonCommon'
 @Component
 export default struct catalogAddShelf{
   onClickShelf:Function = (_isCatalogAddShelf:boolean)=>{
+  }
+  changeShowNumber:Function = (_index:number)=>{
 
   }
+
+  @Prop showNumber:number = 0
   @State ShelfList:string[] = ['玄幻神作', '精品小说,亲自品鉴', '冷门小说不容错过','冷门小说不容错过']
   build() {
     Flex({
@@ -64,7 +68,7 @@ export default struct catalogAddShelf{
             Image($r('app.media.add')).width(24).fillColor($r('app.color.theme_color'))
             Text('新建书单').fontSize(14).fontColor($r('app.color.theme_color')).fontWeight(400).lineHeight(22)
           }.onClick(()=>{
-
+            this.changeShowNumber(1)
           })
         }
       } else {
