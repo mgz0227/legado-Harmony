@@ -54,6 +54,7 @@ export default struct BookInfoGrids{
               .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
           }
           Image(this.book.coverUrl)
+            .draggable(false)
             .alt($r('app.media.icon_book_default_cover_one'))
             .width(100)
             .height(120)

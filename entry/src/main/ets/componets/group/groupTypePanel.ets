@@ -69,7 +69,14 @@ export default struct groupTypePanel{
                 this.GroupType(item.groupName)
               }
               if (this.isShowIcon) {
-                Image($r('app.media.sort')).width(12).height(12).offset({x:-20,y:-20})
+                Image(!item.isSystem?$r('app.media.clear'):$r('app.media.sort')).width(12).height(12).offset({x:-20,y:-20})
+                  .onClick(()=>{
+                    if (!item.isSystem && item.groupId) {
+                      this.isHide = true
+                      this.checkListNumber = item.groupId
+                      this.clickHideDialog?.open()
+                    }
+                  })
               }
             }.width('25%')
             .onTouch((event: TouchEvent) => {
@@ -87,7 +94,6 @@ export default struct groupTypePanel{
               this.changeIndex(this.dragIndex, index,0)
             })
             .onClick(() => {
-              showMessage('点击查看分组书籍')
               this.clickGroup = item
               this.isShowBookFolderInfoDialog = true
             })
@@ -127,6 +133,7 @@ export default struct groupTypePanel{
                   Image($r('app.media.add_new_fill')).width(12).height(12).offset({x:-20,y:-20})
                     .onClick(() => {
                       if (item.groupId) {
+                        this.isHide = false
                         this.checkListNumber = item.groupId
                       }
                       this.clickHideDialog?.open()
@@ -296,12 +303,13 @@ export default struct groupTypePanel{
   }
   //需要显示的Id
   @State checkListNumber:number = 0
+  @State isHide:boolean = false
   @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
   //是否隐藏分组弹窗
   clickHideDialog: CustomDialogController | null = new CustomDialogController({
     builder: hideDialogExample({
       confirm: ()=> { this.clickHideAccept() },
-      isHide: false
+      isHide: this.isHide
     }),
     autoCancel: true,
     alignment: DialogAlignment.Center,
@@ -311,12 +319,14 @@ export default struct groupTypePanel{
   })
   //隐藏操作
   clickHideAccept() {
-    bookGroupUtil.updateGroupShow(this.checkListNumber,true)
+    bookGroupUtil.updateGroupShow(this.checkListNumber,!this.isHide)
     setTimeout(()=>{
       this.getGroupList()
       this.BOOK_IS_BOOK_GROUPS_REFRESHING++
       showMessage('显示成功')
     },500)
+    this.checkListNumber = 0
+    this.isHide = false
   }
 
 }

@@ -19,6 +19,7 @@ import newAddShelf from '../../Manage/bookManage/newAddShelf';
 import newBookShelf from '../../Manage/bookManage/newBookShelf';
 import catalogAddShelf from '../../Manage/components/catalogAddShelf';
 import ShelfBookList from '../../Shelf/ShelfBookList';
+import CommonConstants from '../../../../../common/constants/CommonConstants';
 
 
 /**
@@ -148,23 +149,39 @@ export default  struct BookManageDialog {
   @Builder bookManage(){
     Flex({
       justifyContent:FlexAlign.SpaceBetween,
-      direction:FlexDirection.Column
+      direction:FlexDirection.Column,
+      wrap:FlexWrap.NoWrap
     }) {
       Column(){
-        if (!this.isManage){
+        Column(){
           this.headTitleManage()
-        } else {
-          Header({
-            customLeftBuilder: () => {
-              this.selectAll()
-            },
-            title:`已选${this.checkListNumber.length}项`,
-            customRightBuilder: () => {
-              this.complete()
-            },
-            paddingTop:-30
-          })
         }
+        .visibility(!this.isManage?Visibility.Visible:Visibility.None)
+        .opacity(!this.isManage?1:0)
+        .scale({
+          y: !this.isManage? 1 : 0,
+        })
+        .animation({
+          duration: 500,
+          curve: CommonConstants.UniCurve
+        })
+        Header({
+          customLeftBuilder: () => {
+            this.selectAll()
+          },
+          title:`已选${this.checkListNumber.length}项`,
+          customRightBuilder: () => {
+            this.complete()
+          },
+          paddingTop:-30
+        })
+          .visibility(this.isManage?Visibility.Visible:Visibility.None)
+          .opacity(this.isManage?1:0)
+          .translate({ y: this.isManage ? 0 : -50})
+          .animation({
+            duration: 500,
+            curve: CommonConstants.UniCurve
+          })
         Scroll(){
           if (this.bookTypeNumber === 5){
             ShelfBookList({
@@ -193,16 +210,21 @@ export default  struct BookManageDialog {
         .align(Alignment.TopStart)
         .scrollBar(BarState.Off)
       }
-      if (this.isManage){
-        Column(){
-          Divider()
-          if (this.bookTypeNumber === 5){
-            this.footerDel()
-          } else {
-            this.footerTitle()
-          }
+      Column(){
+        Divider()
+        if (this.bookTypeNumber === 5){
+          this.footerDel()
+        } else {
+          this.footerTitle()
         }
       }
+      .visibility(this.isManage?Visibility.Visible:Visibility.None)
+      .opacity(this.isManage?1:0)
+      .translate({ y: this.isManage ? 0 : 50})
+      .animation({
+        duration: 500,
+        curve: CommonConstants.UniCurve
+      })
     }
     .height('100%')
   }
@@ -212,7 +234,7 @@ export default  struct BookManageDialog {
     Flex(
       {
         alignItems:ItemAlign.Center,
-        justifyContent:FlexAlign.Center
+        justifyContent:FlexAlign.SpaceBetween
       }
     ){
       Column(){
@@ -511,6 +533,7 @@ export default  struct BookManageDialog {
         },500)
         this.bookMoveGroup?.close()
       },
+      oldGroupId:this.bookTypeNumber,
       currentIndex:this.currentIndex,
       Ids:this.checkListNumber,
       isMoveStatus:this.isMoveStatus
