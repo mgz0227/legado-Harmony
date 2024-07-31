@@ -5,7 +5,7 @@ export interface BookSourceSearchParams {
   type?: number,
   // 是否启用
   enabled?: boolean,
-  // TODO 排序，还未实现
+  // 排序 0 按评分排序 1 按时间排序
   order?: number,
   // 等级
   bookSourceGrade?: number,
