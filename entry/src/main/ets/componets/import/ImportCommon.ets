@@ -10,7 +10,7 @@ import Score from '../common/Score';
 import Tag from '../common/Tag';
 import BookSourceDao from '../../database/dao/BookSourceDao';
 import { BookSource, GroupList, SOURCE_GROUP_MAP } from '../../database/entities/BookSource';
-import SourceGroup from '../ui/sourceGroup';
+import SourceGroup from '../ui/SourceGroup';
 
 @Component
 export default struct ImportCommon {
