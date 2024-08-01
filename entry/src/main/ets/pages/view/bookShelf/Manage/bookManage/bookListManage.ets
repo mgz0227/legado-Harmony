@@ -1,29 +1,29 @@
 import { BookList } from '../../../../../componets/dataList/bookList'
-import { promptAction } from '@kit.ArkUI'
+import { promptAction, router } from '@kit.ArkUI'
 import BookInfoManage from './BookInfoManage'
 import BookInfoGridManage from './BookInfoGridManage'
 import confirmDialogExample from '../../../../../componets/common/confirmDialog'
-import {showMessage} from '../../../../../componets/common/promptShow'
+import { showMessage } from '../../../../../componets/common/promptShow'
 import { delBookListByBookId, shortDateList, updateBookListData } from '../../../../../storage/bookListData'
 
 @Component
-export default struct bookListManage{
-  @Link @Watch('onIsClearChange') isClear:boolean
-  @Link allCheck:boolean
-  @Prop @Watch('onIsEXHIBITChange') EXHIBIT:string
-  @Link @Watch('isChangeBookList')checkBookList:BookList[]
-  @Link showBookList:BookList[]
-  @Link checkNumber:number
-  @Link @Watch('isTopChange') changeTop:boolean
-  @Prop shelfType:number
-  @Prop isManage:boolean = true
+export default struct bookListManage {
+  @Link @Watch('onIsClearChange') isClear: boolean
+  @Link allCheck: boolean
+  @Prop @Watch('onIsEXHIBITChange') EXHIBIT: string
+  @Link @Watch('isChangeBookList') checkBookList: BookList[]
+  @Link showBookList: BookList[]
+  @Link checkNumber: number
+  @Link @Watch('isTopChange') changeTop: boolean
+  @Prop shelfType: number
+  @Prop isManage: boolean = true
 
-  isTopChange(){
+  isTopChange() {
     console.log('置顶操作中')
-    if (this.changeTop){
+    if (this.changeTop) {
       if (this.checkBookList.length === this.showBookList.length) {
-          this.checkBookList.reverse()
-          this.showBookList = this.checkBookList
+        this.checkBookList.reverse()
+        this.showBookList = this.checkBookList
         for (let index = 0; index < this.showBookList.length; index++) {
           this.showBookList[index].isTop = true
         }
@@ -42,7 +42,7 @@ export default struct bookListManage{
       this.changeTop = false
       this.allCheck = false
       //更新缓存
-      updateBookListData(this.shelfType,this.showBookList)
+      updateBookListData(this.shelfType, this.showBookList)
       this.checkBookList = []
       this.showBookList = shortDateList(this.showBookList)
     }
@@ -75,8 +75,8 @@ export default struct bookListManage{
 
   deleteBook() {
     for (let index = 0; index < this.checkBookList.length; index++) {
-     delBookListByBookId(this.shelfType, this.checkBookList[index].bookId)
-     this.showBookList = this.showBookList.filter(book => book.bookId !== this.checkBookList[index].bookId);
+      delBookListByBookId(this.shelfType, this.checkBookList[index].bookId)
+      this.showBookList = this.showBookList.filter(book => book.bookId !== this.checkBookList[index].bookId);
     }
     console.log(JSON.stringify(this.showBookList))
     this.isClear = false
@@ -94,14 +94,19 @@ export default struct bookListManage{
   onIsEXHIBITChange() {
     console.log(this.EXHIBIT)
   }
-  @State delCache:boolean = false
+
+  @State delCache: boolean = false
   //弹窗
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
-      cancel: ()=> { this.onCancel() },
-      confirm: ()=> { this.onAccept() },
-      delCache:this.delCache,
-      isShowCache:true
+      cancel: () => {
+        this.onCancel()
+      },
+      confirm: () => {
+        this.onAccept()
+      },
+      delCache: this.delCache,
+      isShowCache: true
     }),
     cancel: this.exitApp,
     autoCancel: true,
@@ -133,17 +138,17 @@ export default struct bookListManage{
 
     } else {
       Column(
-        {space:10}
-      ){
+        { space: 10 }
+      ) {
         if (this.EXHIBIT === '宫格') {
-          Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
-            ForEach(this.showBookList, (item: BookList,index:number) => {
+          Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap, alignContent: FlexAlign.Center }) {
+            ForEach(this.showBookList, (item: BookList, index: number) => {
               BookInfoGridManage({
-                bookData:item,
-                allCheck:this.allCheck,
-                changeTop:this.changeTop,
-                checkBookList:this.checkBookList,
-                isManage:this.isManage
+                bookData: item,
+                allCheck: this.allCheck,
+                changeTop: this.changeTop,
+                checkBookList: this.checkBookList,
+                isManage: this.isManage
               }).width('33%')
             })
           }
@@ -151,16 +156,28 @@ export default struct bookListManage{
           Column(
             { space: 10 }
           ) {
-            ForEach(this.showBookList, (item: BookList,index:number) => {
+            ForEach(this.showBookList, (item: BookList, index: number) => {
               BookInfoManage({
-                bookData:item,
-                allCheck:this.allCheck,
-                changeTop:this.changeTop,
-                checkBookList:this.checkBookList,
-                isManage:this.isManage
+                bookData: item,
+                allCheck: this.allCheck,
+                changeTop: this.changeTop,
+                checkBookList: this.checkBookList,
+                isManage: this.isManage
+              }).onClick(() => {
+                router.pushUrl({
+                  url: 'pages/view/BookDetailPage',
+                  params: {
+                    bookId: '1',
+                    bookName: '大奉打更人',
+                    bookAuthor: '卖报小郎君',
+                    bookImage: $r('app.media.cover_list'),
+                    bookDescribe: '《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... '
+                  }
+                })
               })
             })
           }
+
           // .backgroundColor('rgba(255,250,247,0.8)')
         }
         // Divider().vertical(false)

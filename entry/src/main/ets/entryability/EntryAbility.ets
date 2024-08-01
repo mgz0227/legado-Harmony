@@ -89,6 +89,12 @@ export default class EntryAbility extends UIAbility {
       AppStorage.setOrCreate('WindowHeight', px2vp(WindowHeight));
       AppStorage.setOrCreate('WindowWidth', px2vp(WindowWidth));
 
+      let avoidAreaSys = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
+      let navi = windowClass.getWindowAvoidArea(window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR);
+      let total = avoidAreaSys.topRect.height + navi.bottomRect.height;
+      AppStorage.setOrCreate('avoidHeight', total);
+      AppStorage.setOrCreate('stateHeight', px2vp(avoidAreaSys.topRect.height));
+
     })
     windowStage.loadContent('pages/welcomePage', (err, data) => {
       if (err.code) {

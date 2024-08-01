@@ -3,10 +3,19 @@ import ReadRecordItem from '../../componets/bookDetail/ReadRecordItem'
 import TagIndex from '../../componets/bookDetail/TagIndex'
 import { router, SwipeRefresher } from '@kit.ArkUI'
 import NoteIndex from '../../componets/bookDetail/note/NoteIndex'
+import { BookList } from 'ets/componets/dataList/bookList'
 import { chaptersItem } from '../../componets/dataList/ReaderChaptersItem'
 import { FileHandler } from '../../common/utils/FileHandler'
 import ChaptersDataSource from '../../common/LazyIDataSource/ChaptersDataSource'
 import { Books } from '../../database/entities/Books'
+import display from '@ohos.display';
+import resmgr from '@ohos.resourceManager';
+import buffer from '@ohos.buffer';
+import taskPool from '@ohos.taskpool';
+import measure from '@ohos.measure'
+import I18n from '@ohos.i18n';
+import { BusinessError } from '@ohos.base';
+import util from '@ohos.util';
 
 /**
  * 标题图片样式
@@ -27,6 +36,60 @@ function recordDividerStyle() {
   .width(0.5)
   .height(24)
   .color('#40ffffff')
+}
+
+@Concurrent
+async function loadNovel(context: Context): Promise<chaptersItem[]> {
+  try {
+    return await context.resourceManager.getRawFileContent("蛊真人.txt")
+      .then(async (value: Uint8Array) => {
+        let rawFile = value;
+        try {
+          let textDecoderOptions: util.TextDecoderOptions = {
+            // fatal: false,
+            ignoreBOM: true
+          }
+          let decodeWithStreamOptions: util.DecodeWithStreamOptions = {
+            stream: false
+          }
+          let textDecoder = util.TextDecoder.create('utf-8', textDecoderOptions);
+          console.log(`loadNovel 开始解析`)
+
+          let retStr = textDecoder.decodeWithStream(rawFile, decodeWithStreamOptions);
+          console.log(`loadNovel 解析完成`)
+
+          let chapterNumber = 0
+          const chapters: chaptersItem[] = [];
+          const regex =
+            /^[=|<]{0,4}((?:序章|楔子|番外|第\s{0,4})([\d〇零一二两三四五六七八九十百千万壹贰叁肆伍陆柒捌玖拾佰仟]+?\s{0,4})(?:章|回(?!合)|话(?!说)|节(?!课)|卷|篇(?!张)))(.{0,30})/g;
+          let contentLines = retStr.split('\n');
+
+          contentLines.forEach((value, index, array) => {
+            const match = regex.exec(value);
+            if (match) {
+              const chapterTitleNumber = match[1]; // 书源内部章节
+              const chapterTitle = match[3];
+              chapterNumber++
+              chapters.push(new chaptersItem(chapterNumber, chapterTitle, chapterTitleNumber, ''))
+            } else {
+              if (chapters.length > 0) {
+                chapters[chapters.length - 1].content += '\u3000'+'\u3000' + value + '\n'
+              }
+            }
+          });
+
+          return chapters;
+
+        } catch (e) {
+          console.info('loadNovel 出错 ' + e)
+          return []
+        }
+      })
+  } catch (e) {
+    console.info('loadNovel 出错 ' + e)
+    return [];
+  }
+
 }
 
 /**
@@ -82,6 +145,7 @@ struct BookDetailPage {
   })
   @State txtFiles: chaptersItem[] = [];
   @State txtFile: ChaptersDataSource = new ChaptersDataSource()
+
   onPageShow() {
     this.isShow = true
   }
@@ -90,9 +154,14 @@ struct BookDetailPage {
     console.log('router BookDetailPage:' + JSON.stringify(router.getParams()))
     if (router.getParams() as Books) {
       this.bookData = router.getParams() as Books
-      let temp = await FileHandler.readFile(this.bookData?.bookUrl||'') //txt小说
-      this.txtFile.pushAllData(temp)
-      this.txtFiles = this.txtFile.getListData()
+      // let temp = await FileHandler.readFile(this.bookData?.bookUrl||'') //txt小说
+      taskPool.execute(loadNovel, getContext(this)).then(async (value) => {
+        let chapters = (value as chaptersItem[]);
+        this.txtFile.pushAllData(chapters)
+        this.txtFiles = this.txtFile.getListData()
+      })
+      // this.txtFile.pushAllData(temp)
+      // this.txtFiles = this.txtFile.getListData()
     }
   }
 
@@ -149,7 +218,7 @@ struct BookDetailPage {
                     .onClick(() => {
                       // 跳转到阅读器
                       router.pushUrl({
-                        url: 'pages/view/Reader/ReaderPage',
+                        url: 'pages/view/Reader/ReaderPage2',
                         //跳转到对应的章节，传index过去，对面TotalChapters接收
                         params: {
                           bookData: this.bookData,
@@ -225,7 +294,7 @@ struct BookDetailPage {
           .onClick(() => {
             // 跳转到阅读器
             router.pushUrl({
-              url: 'pages/view/Reader/ReaderPage',
+              url: 'pages/view/Reader/ReaderPage2',
               params: {
                 bookData: this.bookData,
                 //后续持久化后再获取已经读到的章节序号，目前先传默认的0
@@ -329,7 +398,7 @@ struct BookDetailPage {
 
       // 小说标题
       Row({ space: CommonConstants.SPACE_20 }) {
-        Image(this.bookData.coverUrl?? $r('app.media.cover_list'))
+        Image(this.bookData.coverUrl ?? $r('app.media.cover_list'))
           .width(CommonConstants.NOVEL_IMG_WIDTH)
           .height(CommonConstants.NOVEL_IMG_HEIGHT)
           .borderRadius(5)
@@ -396,10 +465,11 @@ struct BookDetailPage {
 
       // 书籍简介
       Flex() {
-        Text(this.bookData.intro ?? '《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... ' +
-          '\n他起初的目的只是自保，顺便在这个没有人权的社会里当个富家翁悠闲度日。 ...... 多年后，许七安回首前尘，身后是早已逝去的敌人，以及累累白骨。 ' +
-          '\n滚滚长江东逝水，浪花淘尽英雄，是非成败转头空。 ' +
-          '\n青山依旧在，几度夕阳红。')
+        Text(this.bookData.intro ??
+          '《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... ' +
+            '\n他起初的目的只是自保，顺便在这个没有人权的社会里当个富家翁悠闲度日。 ...... 多年后，许七安回首前尘，身后是早已逝去的敌人，以及累累白骨。 ' +
+            '\n滚滚长江东逝水，浪花淘尽英雄，是非成败转头空。 ' +
+            '\n青山依旧在，几度夕阳红。')
           .fontColor('#FFFFFF')
           .fontSize(14)
           .fontWeight(400)

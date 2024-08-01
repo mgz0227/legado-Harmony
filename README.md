@@ -47,6 +47,9 @@ Legado is a free and open source novel reader for Harmony OS.
 </a>
 
 # Other-其他 [![](https://img.shields.io/badge/-Other-F5F5F5.svg)](#Other-其他-)
+
+本项目由[【legado-Harmony】](https://github.com/mgz0227/legado-Harmony)修改而来，在此感谢大佬们的无私奉献。
+
 ##### 免责声明
 https://gedoor.github.io/Disclaimer
 

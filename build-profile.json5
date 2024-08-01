@@ -26,6 +26,18 @@
     {
       "name": "colorLibrary",
       "srcPath": "./commons/colorLibrary",
+    },
+    {
+      "name": "reader",
+      "srcPath": "./reader",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     }
   ]
 }
