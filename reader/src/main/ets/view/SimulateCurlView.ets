@@ -28,8 +28,8 @@ export struct SimulateCurlView {
   @Provide('batteryPixelMap') @Watch('setBatteryPixelMap') batteryPixelMap: image.PixelMap | null = null;
   @Consume('displaySize') @Watch('onTextDisplaySizeChanged') displaySize: number[];
   drawManager: SimulateDrawManager | null = null;
-  isTurnNext: boolean = false;
-  isTurnPreView: boolean = false;
+  isTurnNext: boolean | null = null;
+  animationEndValue: number | null = null;
 
   aboutToDisappear(): void {
     this.animatorResult = undefined;
@@ -51,25 +51,23 @@ export struct SimulateCurlView {
     };
     this.animatorResult = animator.create(options)
     this.animatorResult.onFinish = () => {
-      // console.info(`animation: onFinish callback time is ${Date.now()}`)
-      // this.drawHelper.mTouch = Offset.zero();
-      // this.context.invalidate();
-      // this.drawHelper.draw(this.context.canvas)
-
       console.info(`animation: onFinish callback time is ${Date.now()}`)
       this.isOnAnimation = false;
       if (this.drawManager !== null) {
         this.drawManager.dispatchPointerUPEvent();
       }
-      // this.currentPageNum++;
+      if (this.isTurnNext && this.animationEndValue === 1.0) {
+        this.currentPageNum++;
+        this.drawManager?.updatePageIndex(this.currentPageNum)
+      } else if (!this.isTurnNext && this.animationEndValue === -1.0) {
+        this.currentPageNum--;
+        this.drawManager?.updatePageIndex(this.currentPageNum)
+      }
+      this.isTurnNext = null;
+      this.animationEndValue = null;
     }
     this.animatorResult.onFrame = (progress) => {
-      // console.info(`animation: onFrame call,progress is ${progress} time is ${Date.now()}`)
-      // this.drawHelper.applyAnimation(progress)
-      // this.context.invalidate();
-      // this.drawHelper.draw(this.context.canvas)
-
-      console.info(`animation: onFrame callback time is ${Date.now()}`)
+      console.info(`animation: onFrame callback time is ${Date.now()} , progress : ${progress}}`)
       if (this.drawManager !== null) {
         this.drawManager.applyAnimationProgressToTouch(progress);
         this.drawManager.draw()
@@ -83,13 +81,14 @@ export struct SimulateCurlView {
     }
   }
 
-  onTextDisplaySizeChanged(){
+  onTextDisplaySizeChanged() {
     if (this.drawManager !== null) {
       this.drawManager.setTextDisplaySize(this.displaySize)
     }
   }
 
   startAnimation(isRecover: boolean, isTurnNext: boolean) {
+    this.animationEndValue = (isTurnNext !== isRecover) ? 1.0 : -1.0;
     let options: AnimatorOptions = {
       duration: 300,
       easing: "linear",
@@ -98,7 +97,7 @@ export struct SimulateCurlView {
       direction: "normal",
       iterations: 1,
       begin: 0.0,
-      end: isTurnNext && !isRecover ? 1.0 : -1.0
+      end: this.animationEndValue
     };
     this.animatorResult?.cancel();
     this.animatorResult?.reset(options);
@@ -123,16 +122,6 @@ export struct SimulateCurlView {
             if (this.drawManager !== null) {
               if (!this.drawManager.canvasSize.isEmpty() && !this.drawManager.touch.offset.isEmpty()) {
                 this.drawManager.draw()
-              } else {
-                let preColor: common2D.Color = {
-                  alpha: 255,
-                  red: 255,
-                  green: 0,
-                  blue: 0
-                };
-                if (canIUse('SystemCapability.Graphics.Drawing')) {
-                  this.context.canvas.drawColor(preColor);
-                }
               }
             }
           })
@@ -152,8 +141,7 @@ export struct SimulateCurlView {
       PanGesture()
         .onActionStart((event) => {
           console.info('PanGesture:start');
-          // 每次手指按下，创建一个MyRenderNode对象，用于记录和绘制手指移动的轨迹
-          this.isOnGesture = true;
+
           if (this.drawManager !== null) {
             this.drawManager.dispatchPointerStart(event)
           }
@@ -166,9 +154,10 @@ export struct SimulateCurlView {
             console.info('PanGesture:update');
 
             if (this.drawManager !== null) {
-
-              this.drawManager.dispatchPointerMoveEvent(event)
-
+              this.isTurnNext = this.drawManager.dispatchPointerMoveEvent(event)
+              if (this.isTurnNext != null) {
+                this.isOnGesture = true;
+              }
               if (this.isReady) {
                 this.drawManager.draw();
               }
@@ -180,22 +169,23 @@ export struct SimulateCurlView {
           }
         })
         .onActionEnd((event) => {
-          let velocity = event.velocityX;
-          // this.drawManager.dispatchPointerUPEvent();
-          this.isOnGesture = false;
-          let isTurnNext = velocity < 0;
-          let isShowStartInertiaAnimation = Math.abs(velocity) >= 30;
-          this.startAnimation(!isShowStartInertiaAnimation, isTurnNext);
-          console.info(`animation: start time is ${Date.now()}`)
+          if (this.isTurnNext != null) {
+            let velocity = event.velocityX;
+            // this.drawManager.dispatchPointerUPEvent();
+            this.isOnGesture = false;
+            let isShowStartInertiaAnimation = this.isTurnNext ? velocity <= -30 : velocity >= -30;
+            this.startAnimation(!isShowStartInertiaAnimation, this.isTurnNext);
+            console.info(`animation: start time is ${Date.now()}`)
+          }
         })
         .onActionCancel(() => {
           if (this.drawManager !== null) {
             this.drawManager.dispatchPointerUPEvent();
           }
           this.isOnGesture = false;
+          this.isTurnNext = null;
         })
     )
-    .backgroundColor('#FF0000')
   }
 }
 

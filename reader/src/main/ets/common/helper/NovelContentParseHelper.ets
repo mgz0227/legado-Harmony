@@ -71,10 +71,16 @@ export class NovelContentParseHelper {
 
       let currentLineIndex = 0;
 
+      const lineFeed = '\n';
+
       while (currentLineIndex < maxLines && paragraphs.length != 0) {
         let currentTarget = paragraphs[0]
+        let isNeedAddLineFeed = currentTarget.endsWith(lineFeed);
+        if (isNeedAddLineFeed) {
+          currentTarget = currentTarget.substring(0, currentTarget.length - 1)
+        }
         if (currentTarget.length < guessLineWordCount) {
-          result[currentLineIndex] = currentTarget;
+          result[currentLineIndex] = currentTarget + (isNeedAddLineFeed ? lineFeed : '');
           currentLineIndex++
           paragraphs.splice(0, 1)
         } else {
@@ -85,7 +91,7 @@ export class NovelContentParseHelper {
             lineHeight) / wordHeight);
 
           if (lineCount == 1) {
-            result[currentLineIndex] = tempCurrentTarget;
+            result[currentLineIndex] = tempCurrentTarget + (isNeedAddLineFeed ? lineFeed : '');
             currentLineIndex++
             paragraphs.splice(0, 1)
           } else {

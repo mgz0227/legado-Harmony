@@ -92,16 +92,6 @@ export struct ReaderForCurlView {
       }).catch((err: Error) => {
       console.log("error: " + err)
     })
-    // componentSnapshot.createFromBuilder(this.batteryContainerId, async (error: Error, pixelMap: image.PixelMap) => {
-    //   if (pixelMap !== null) {
-    //     this.batteryPixelMap = pixelMap;
-    //   }
-    // })
-    // componentSnapshot.get(this.batteryContainerId, async (error: Error, pixelMap: image.PixelMap) => {
-    //   if (pixelMap !== null) {
-    //     this.batteryPixelMap = pixelMap;
-    //   }
-    // })
   }
 
   build() {
@@ -160,10 +150,14 @@ export struct ReaderBottom {
       TextClock({ timeZoneOffset: -8 })
         .format('hh:mm')
         .fontSize(12)
+        .onDateChange((value) => {
+          /// todo: 更新到SimulateDrawManager
+        })
         .fontWeight(400)
+      /// todo:电池状态监听与更新到SimulateDrawManager
       battery()
       Blank(0)
-      Text("1/14"+"\u3000"+"0.1%").font({
+      Text("1/14" + "\u3000" + "0.1%").font({
         size: this.fontSize,
       })
         .fontColor($r('sys.color.black'))
@@ -179,6 +173,8 @@ export class SimulateDrawManager {
   currentDrawHelper: SimulationDrawHelper | null = null;
   // 当前画布大小
   canvasSize: Size = Size.zero();
+  // 起始触摸点
+  startTouch: TouchEvent = TouchEvent.zero();
   // 当前触摸点
   touch: TouchEvent = TouchEvent.zero();
   // 上一次触摸点
@@ -187,25 +183,34 @@ export class SimulateDrawManager {
   private fontSize: number;
   private lineHeight: number;
   private chapterList: ReaderChapterItem[];
-  private currentChapterNum: number;
-  private currentPageNum: number;
+  private currentChapterIndex: number;
+  private currentPageIndex: number;
   private bgColor: string;
   batteryPixelMap: image.PixelMap | null = null;
   textDisplaySize: number[] = [0, 0];
+  private isTurnNext: boolean | null = null;
 
   constructor(context: DrawingRenderingContext, fontSize: number, lineHeight: number,
-    chapterList: ReaderChapterItem[], currentChapterNum: number, currentPageNum: number, bgColor: string) {
+    chapterList: ReaderChapterItem[], currentChapterIndex: number, currentPageIndex: number, bgColor: string) {
     this.context = context;
     this.fontSize = fontSize;
     this.lineHeight = lineHeight;
     this.chapterList = chapterList;
-    this.currentChapterNum = currentChapterNum;
-    this.currentPageNum = currentPageNum;
+    this.currentChapterIndex = currentChapterIndex;
+    this.currentPageIndex = currentPageIndex;
     this.bgColor = bgColor;
   }
 
   setCanvasSize(size: Size) {
     this.canvasSize = size;
+  }
+
+  updatePageIndex(index: number) {
+    this.currentPageIndex = index;
+  }
+
+  updateChapterIndex(index: number) {
+    this.currentChapterIndex = index;
   }
 
   applyAnimationProgressToTouch(process: number) {
@@ -221,47 +226,89 @@ export class SimulateDrawManager {
   }
 
   dispatchPointerStart(pointerEvent: GestureEvent) {
-    this.lastTouch = new TouchEvent(vp2px(pointerEvent.fingerList[0].localX), vp2px(pointerEvent.fingerList[0].localY),
-      pointerEvent.velocityX, pointerEvent.velocityY, pointerEvent.velocity);
+    let currentTouch =
+      new TouchEvent(vp2px(pointerEvent.fingerList[0].localX), vp2px(pointerEvent.fingerList[0].localY),
+        pointerEvent.velocityX, pointerEvent.velocityY, pointerEvent.velocity);
 
-    this.touch = new TouchEvent(vp2px(pointerEvent.fingerList[0].localX), vp2px(pointerEvent.fingerList[0].localY),
-      pointerEvent.velocityX, pointerEvent.velocityY, pointerEvent.velocity);
+    this.lastTouch = new TouchEvent(currentTouch.x, currentTouch.y,
+      currentTouch.velocityX, currentTouch.velocityY, currentTouch.velocity);
+
+    this.startTouch = new TouchEvent(currentTouch.x, currentTouch.y,
+      currentTouch.velocityX, currentTouch.velocityY, currentTouch.velocity);
+
+    this.touch = new TouchEvent(currentTouch.x, currentTouch.y,
+      currentTouch.velocityX, currentTouch.velocityY, currentTouch.velocity);
 
     if (this.canvasSize.equal(Size.zero())) {
       this.setCanvasSize(new Size(vp2px(this.context.size.width), vp2px(this.context.size.height)));
     }
 
-    if (this.touch.y <= this.canvasSize.height / 3 || this.touch.y >= this.canvasSize.height / 3 * 2) {
-      this.currentDrawHelper =
-        new SimulationCornerTurnDrawHelper(this, this.fontSize, this.lineHeight, this.chapterList,
-          this.currentChapterNum, this.currentPageNum, this.bgColor);
-    } else {
-      this.currentDrawHelper =
-        new SimulationPageTurnDrawHelper(this, this.fontSize, this.lineHeight, this.chapterList, this.currentChapterNum,
-          this.currentPageNum, this.bgColor);
-    }
   }
 
+  /**
+   * 分发move事件的手势信息
+   *
+   * @return {boolean|null} true表示向下翻页，false是向上翻页，null表示无操作
+   */
   dispatchPointerMoveEvent(
-    pointerEvent: GestureEvent) {
+    pointerEvent: GestureEvent): boolean | null {
+    let currentTouch =
+      new TouchEvent(vp2px(pointerEvent.fingerList[0].localX), vp2px(pointerEvent.fingerList[0].localY),
+        pointerEvent.velocityX, pointerEvent.velocityY, pointerEvent.velocity);
 
-    this.lastTouch = new TouchEvent(vp2px(pointerEvent.fingerList[0].localX), vp2px(pointerEvent.fingerList[0].localY),
-      pointerEvent.velocityX, pointerEvent.velocityY, pointerEvent.velocity);
+    this.lastTouch = new TouchEvent(currentTouch.x, currentTouch.y,
+      currentTouch.velocityX, currentTouch.velocityY, currentTouch.velocity);
 
-    this.touch = new TouchEvent(vp2px(pointerEvent.fingerList[0].localX), vp2px(pointerEvent.fingerList[0].localY),
-      pointerEvent.velocityX, pointerEvent.velocityY, pointerEvent.velocity);
+    this.touch = new TouchEvent(currentTouch.x, currentTouch.y,
+      currentTouch.velocityX, currentTouch.velocityY, currentTouch.velocity);
 
     if (this.canvasSize.equal(Size.zero())) {
       this.setCanvasSize(new Size(vp2px(this.context.size.width), vp2px(this.context.size.height)));
+    }
+
+    if (this.currentDrawHelper === null) {
+      let isTurnNextByHorizontal: boolean = (this.lastTouch.x - this.startTouch.x) < 0 ||
+        (this.lastTouch.x === this.startTouch.x && this.lastTouch.velocityX < 0);
+      let isTurnNextByVertical: boolean =
+        (this.startTouch.y <= this.canvasSize.height / 2) ? (this.lastTouch.y > this.startTouch.y) :
+          (this.startTouch.y > this.lastTouch.y);
+
+      this.isTurnNext = isTurnNextByHorizontal || isTurnNextByVertical
+
+      // todo: 这部分的限制逻辑不该放在这里，需要等到章节缓存处理模块做完再移走
+      if (this.isTurnNext &&
+        this.currentPageIndex === this.chapterList[this.currentChapterIndex].chapterPageList.length - 1) {
+        return null;
+      }
+
+      if ((!this.isTurnNext) && this.currentPageIndex === 0) {
+        return null;
+      }
+      if (this.startTouch.y <= this.canvasSize.height / 3 || this.startTouch.y >= this.canvasSize.height / 3 * 2) {
+        this.currentDrawHelper =
+          new SimulationCornerTurnDrawHelper(this, this.context, this.fontSize, this.lineHeight, this.chapterList,
+            this.currentChapterIndex, this.isTurnNext ? this.currentPageIndex : this.currentPageIndex - 1,
+            this.bgColor);
+      } else {
+        this.currentDrawHelper =
+          new SimulationPageTurnDrawHelper(this, this.context, this.fontSize, this.lineHeight, this.chapterList,
+            this.currentChapterIndex,
+            this.isTurnNext ? this.currentPageIndex : this.currentPageIndex - 1, this.bgColor);
+      }
+
     }
 
     this.currentDrawHelper?.onMove();
+
+    return this.isTurnNext;
   }
 
   dispatchPointerUPEvent() {
     this.touch = TouchEvent.zero();
     this.lastTouch = null;
     this.currentDrawHelper?.reset();
+    this.currentDrawHelper = null;
+    this.isTurnNext = null;
   }
 
   draw() {
@@ -280,18 +327,20 @@ abstract class SimulationDrawHelper {
   protected fontSize: number;
   protected lineHeight: number;
   protected chapterList: ReaderChapterItem[];
-  protected currentChapterNum: number;
-  protected currentPageNum: number;
+  protected currentChapterIndex: number;
+  protected currentPageIndex: number;
   protected bgColor: string;
+  protected context: DrawingRenderingContext;
 
-  constructor(hostManager: SimulateDrawManager, fontSize: number, lineHeight: number,
-    chapterList: ReaderChapterItem[], currentChapterNum: number, currentPageNum: number, bgColor: string) {
+  constructor(hostManager: SimulateDrawManager, context: DrawingRenderingContext, fontSize: number, lineHeight: number,
+    chapterList: ReaderChapterItem[], currentChapterIndex: number, currentPageIndex: number, bgColor: string) {
     this.hostManager = hostManager;
+    this.context = context;
     this.fontSize = fontSize;
     this.lineHeight = lineHeight;
     this.chapterList = chapterList;
-    this.currentChapterNum = currentChapterNum;
-    this.currentPageNum = currentPageNum;
+    this.currentChapterIndex = currentChapterIndex;
+    this.currentPageIndex = currentPageIndex;
     this.bgColor = bgColor;
   }
 
@@ -316,6 +365,11 @@ abstract class SimulationDrawHelper {
   }
 
   abstract draw(canvas: drawing.Canvas,)
+
+  move(): boolean {
+    this.onMove();
+    return true;
+  }
 
   abstract onMove();
 
@@ -351,27 +405,21 @@ abstract class SimulationDrawHelper {
       blue: (bgColorRGB?.[2] ?? 0)
     }
 
-    let textColor: common2D.Color = {
-      alpha: 255,
-      red: 0,
-      green: 0,
-      blue: 0
-    }
     if (canIUse('SystemCapability.Graphics.Drawing')) {
       // const canvas = context.canvas;
       canvas.drawColor(preColor)
-      const preBrush = new drawing.Brush();
-      preBrush.setColor({
+      const brush = new drawing.Brush();
+      brush.setColor({
         alpha: 255,
         red: 0,
         green: 0,
         blue: 0
       });
-      const preFont = new drawing.Font();
+      const font = new drawing.Font();
 
-      preFont.setSize(fp2px(this.fontSize));
-      canvas.attachBrush(preBrush);
-      let fontMetrics = preFont.getMetrics();
+      font.setSize(fp2px(this.fontSize));
+      canvas.attachBrush(brush);
+      let fontMetrics = font.getMetrics();
       // 36是lineHeight，20是字号
       let lineHeight = Math.round(fp2px(this.lineHeight))
       let startY =
@@ -379,31 +427,27 @@ abstract class SimulationDrawHelper {
         vp2px(Constants.SCREEN_MARGIN_LEFT)
 
       let currentY = startY;
-      let pen = new drawing.Pen();
-      pen.setColor(textColor)
+
       // if(maskFilter!=null){
       //   pen.setMaskFilter(maskFilter)
       // }
-      // canvas.attachPen(pen)
       let currentPageLineList =
-        this.chapterList[this.currentChapterNum].chapterPageList[this.currentPageNum].lineContentList;
+        this.chapterList[this.currentChapterIndex].chapterPageList[this.currentPageIndex].lineContentList;
       for (let index = 0; index < currentPageLineList.length; index++) {
         const textBlob =
           drawing.TextBlob.makeFromString(currentPageLineList[index],
-            preFont, drawing.TextEncoding.TEXT_ENCODING_UTF8);
+            font, drawing.TextEncoding.TEXT_ENCODING_UTF8);
         currentY = startY + (lineHeight * index)
         canvas.drawTextBlob(textBlob, vp2px(Constants.SCREEN_MARGIN_LEFT), currentY);
       }
-      // canvas.detachPen();
-
 
       canvas.drawImage(this.hostManager.batteryPixelMap,
         vp2px(Constants.SCREEN_MARGIN_LEFT), this.hostManager.textDisplaySize[1] + vp2px(Constants.SCREEN_MARGIN_LEFT))
 
-      const pageTip = "1/14"+"\u3000"+"0.1%";
+      const pageTip = "1/14" + "\u3000" + "0.1%";
       const textBlob =
         drawing.TextBlob.makeFromString(pageTip,
-          preFont, drawing.TextEncoding.TEXT_ENCODING_UTF8);
+          font, drawing.TextEncoding.TEXT_ENCODING_UTF8);
       let tipWidth = MeasureText.measureText({
         textContent: pageTip,
         fontSize: this.fontSize,
@@ -411,8 +455,75 @@ abstract class SimulationDrawHelper {
       }
       );
       canvas.drawTextBlob(textBlob,
-        this.hostManager.textDisplaySize[0] - tipWidth,
-        this.hostManager.textDisplaySize[1] + vp2px(Constants.SCREEN_MARGIN_LEFT) + vp2px(16));
+        this.hostManager.textDisplaySize[0] + vp2px(Constants.SCREEN_MARGIN_LEFT) - tipWidth,
+        this.hostManager.textDisplaySize[1] + vp2px(Constants.SCREEN_MARGIN_LEFT) + vp2px(16) + vp2px(36 / 2));
+      canvas.detachBrush();
+
+
+    }
+  }
+
+  protected drawNextPage(canvas: drawing.Canvas): void {
+    let bgColorRGB = this.hexToRgb(this.bgColor);
+    let preColor: common2D.Color = {
+      alpha: 255,
+      red: (bgColorRGB?.[0] ?? 0),
+      green: (bgColorRGB?.[1] ?? 0),
+      blue: (bgColorRGB?.[2] ?? 0)
+    }
+
+    if (canIUse('SystemCapability.Graphics.Drawing')) {
+      // const canvas = context.canvas;
+      canvas.drawColor(preColor)
+      const brush = new drawing.Brush();
+      brush.setColor({
+        alpha: 255,
+        red: 0,
+        green: 0,
+        blue: 0
+      });
+      const font = new drawing.Font();
+
+      font.setSize(fp2px(this.fontSize));
+      canvas.attachBrush(brush);
+      let fontMetrics = font.getMetrics();
+      // 36是lineHeight，20是字号
+      let lineHeight = Math.round(fp2px(this.lineHeight))
+      let startY =
+        Math.round(lineHeight * (Math.abs(fontMetrics.ascent) / (fontMetrics.descent - fontMetrics.ascent))) +
+        vp2px(Constants.SCREEN_MARGIN_LEFT)
+
+      let currentY = startY;
+
+      // if(maskFilter!=null){
+      //   pen.setMaskFilter(maskFilter)
+      // }
+      let currentPageLineList =
+        this.chapterList[this.currentChapterIndex].chapterPageList[this.currentPageIndex+1].lineContentList;
+      for (let index = 0; index < currentPageLineList.length; index++) {
+        const textBlob =
+          drawing.TextBlob.makeFromString(currentPageLineList[index],
+            font, drawing.TextEncoding.TEXT_ENCODING_UTF8);
+        currentY = startY + (lineHeight * index)
+        canvas.drawTextBlob(textBlob, vp2px(Constants.SCREEN_MARGIN_LEFT), currentY);
+      }
+
+      canvas.drawImage(this.hostManager.batteryPixelMap,
+        vp2px(Constants.SCREEN_MARGIN_LEFT), this.hostManager.textDisplaySize[1] + vp2px(Constants.SCREEN_MARGIN_LEFT))
+
+      const pageTip = "1/14" + "\u3000" + "0.1%";
+      const textBlob =
+        drawing.TextBlob.makeFromString(pageTip,
+          font, drawing.TextEncoding.TEXT_ENCODING_UTF8);
+      let tipWidth = MeasureText.measureText({
+        textContent: pageTip,
+        fontSize: this.fontSize,
+        lineHeight: lineHeight
+      }
+      );
+      canvas.drawTextBlob(textBlob,
+        this.hostManager.textDisplaySize[0] + vp2px(Constants.SCREEN_MARGIN_LEFT) - tipWidth,
+        this.hostManager.textDisplaySize[1] + vp2px(Constants.SCREEN_MARGIN_LEFT) + vp2px(16) + vp2px(36 / 2));
       canvas.detachBrush();
 
 
@@ -632,10 +743,16 @@ class SimulationCornerTurnDrawHelper extends SimulationDrawHelper {
       let startTime = Date.now();
       try {
         this.calPath();
-
+        let color: common2D.Color = {
+          alpha: 255,
+          red: 0,
+          green: 0,
+          blue: 0
+        }
+        canvas.drawColor(color, drawing.BlendMode.CLEAR);
         console.info('draw called')
         this.drawCurrentPageArea(canvas);
-        this.drawNextPage(canvas);
+        this.drawNextPageArea(canvas);
         this.drawCurrentTurningPage(canvas)
 
         let endTime = Date.now();
@@ -660,6 +777,38 @@ class SimulationCornerTurnDrawHelper extends SimulationDrawHelper {
     this.drawCurrentPage(canvas)
   }
 
+  private drawNextPageArea(canvas: drawing.Canvas): void {
+    if (canIUse('SystemCapability.Graphics.Drawing')) {
+
+      canvas.save()
+      canvas.clipPath(this.nextPagePath, drawing.ClipOp.INTERSECT, true)
+      this.drawNextPage(canvas)
+      this.drawNextPageShadow(canvas)
+      canvas.restore()
+    }
+
+  }
+
+  private drawNextPageShadow(canvas: drawing.Canvas) {
+    if (canIUse('SystemCapability.Graphics.Drawing')) {
+
+      let k1 = (this.bezierVertex1.y - this.bezierVertex2.y) / (this.bezierVertex1.x - this.bezierVertex2.x);
+      let b1 = this.bezierVertex1.y - this.bezierVertex1.x * k1;
+
+      let shadowWidth =
+        (Math.abs(k1 * this.bezierStart1.x - this.bezierStart1.y + b1)) / (Math.sqrt(Math.pow(k1, 2) + 1)) * 4
+      let shadowMaskFilter = drawing.MaskFilter.createBlurMaskFilter(drawing.BlurType.NORMAL, shadowWidth)
+
+      const shadowPen = new drawing.Pen();
+      shadowPen.setStrokeWidth(shadowWidth)
+      shadowPen.setMaskFilter(shadowMaskFilter)
+
+      canvas.attachPen(shadowPen)
+      canvas.drawLine(this.bezierStart1.x, this.bezierStart1.y, this.bezierStart2.x, this.bezierStart2.y)
+      canvas.detachPen()
+    }
+  }
+
   private drawCurrentTurningPage(canvas: drawing.Canvas): void {
     if (canIUse('SystemCapability.Graphics.Drawing')) {
       canvas.save()
@@ -675,22 +824,31 @@ class SimulationCornerTurnDrawHelper extends SimulationDrawHelper {
       let angle =
         2 * (Math.PI / 2 - Math.atan2(this.cornerY - this.touchOffset.dy, this.cornerX - this.touchOffset.dx));
 
-      if (this.cornerY === 0) {
-        canvas.translate(this.canvasSize.width, 0)
-        canvas.scale(-1.0, 1.0)
-        canvas.translate(-this.touchOffset.x, this.touchOffset.y)
-        canvas.rotate(180 * ((angle) / Math.PI) - 180, this.cornerX, this.cornerY)
-        this.drawCurrentPage(canvas,)
-      } else {
-        canvas.translate(0, this.canvasSize.height,)
-        canvas.scale(1.0, -1.0)
-        canvas.translate(this.touchOffset.x - this.canvasSize.width, -this.touchOffset.y)
-        canvas.rotate(angle / Math.PI * 180, this.canvasSize.width, this.canvasSize.height,)
-        this.drawCurrentPage(canvas,)
+      let bgColorRGB = this.hexToRgb(this.bgColor);
+      let preColor: common2D.Color = {
+        alpha: 255,
+        red: (bgColorRGB?.[0] ?? 0),
+        green: (bgColorRGB?.[1] ?? 0),
+        blue: (bgColorRGB?.[2] ?? 0)
       }
 
+      /// todo: 性能差，待优化，先就放个背景色
+      // if (this.cornerY === 0) {
+      //   canvas.translate(this.canvasSize.width, 0)
+      //   canvas.scale(-1.0, 1.0)
+      //   canvas.translate(-this.touchOffset.x, this.touchOffset.y)
+      //   canvas.rotate(180 * ((angle) / Math.PI) - 180, this.cornerX, this.cornerY)
+      //   this.drawCurrentPage(canvas,)
+      // } else {
+      //   canvas.translate(0, this.canvasSize.height,)
+      //   canvas.scale(1.0, -1.0)
+      //   canvas.translate(this.touchOffset.x - this.canvasSize.width, -this.touchOffset.y)
+      //   canvas.rotate(angle / Math.PI * 180, this.canvasSize.width, this.canvasSize.height,)
+      //   this.drawCurrentPage(canvas,)
+      // }
 
-      // canvas.drawColor(preBackColor)
+
+      canvas.drawColor(preColor)
       canvas.restore();
 
       // const backMaskFilter = drawing.MaskFilter.createBlurMaskFilter(drawing.BlurType.INNER, 50);
@@ -726,120 +884,6 @@ class SimulationCornerTurnDrawHelper extends SimulationDrawHelper {
     }
 
   }
-
-  // private async drawCurrentPage(canvas: drawing.Canvas,): Promise<void> {
-  //   let bgColorRGB = this.hexToRgb(this.bgColor);
-  //   let preColor: common2D.Color = {
-  //     alpha: 255,
-  //     red: (bgColorRGB?.[0] ?? 0),
-  //     green: (bgColorRGB?.[1] ?? 0),
-  //     blue: (bgColorRGB?.[2] ?? 0)
-  //   }
-  //
-  //   let textColor: common2D.Color = {
-  //     alpha: 255,
-  //     red: 0,
-  //     green: 0,
-  //     blue: 0
-  //   }
-  //   if (canIUse('SystemCapability.Graphics.Drawing')) {
-  //     // const canvas = context.canvas;
-  //     canvas.drawColor(preColor)
-  //     const preBrush = new drawing.Brush();
-  //     preBrush.setColor({
-  //       alpha: 255,
-  //       red: 0,
-  //       green: 0,
-  //       blue: 0
-  //     });
-  //     const preFont = new drawing.Font();
-  //
-  //     preFont.setSize(fp2px(this.fontSize));
-  //     canvas.attachBrush(preBrush);
-  //     let fontMetrics = preFont.getMetrics();
-  //     // 36是lineHeight，20是字号
-  //     let lineHeight = Math.round(fp2px(this.lineHeight))
-  //     let startY =
-  //       Math.round(lineHeight * (Math.abs(fontMetrics.ascent) / (fontMetrics.descent - fontMetrics.ascent))) +
-  //       vp2px(Constants.SCREEN_MARGIN_LEFT)
-  //
-  //     let currentY = startY;
-  //     let pen = new drawing.Pen();
-  //     pen.setColor(textColor)
-  //     // if(maskFilter!=null){
-  //     //   pen.setMaskFilter(maskFilter)
-  //     // }
-  //     // canvas.attachPen(pen)
-  //     let currentPageLineList =
-  //       this.chapterList[this.currentChapterNum].chapterPageList[this.currentPageNum].lineContentList;
-  //     for (let index = 0; index < currentPageLineList.length; index++) {
-  //       const textBlob =
-  //         drawing.TextBlob.makeFromString(currentPageLineList[index],
-  //           preFont, drawing.TextEncoding.TEXT_ENCODING_UTF8);
-  //       currentY = startY + (lineHeight * index)
-  //       canvas.drawTextBlob(textBlob, vp2px(Constants.SCREEN_MARGIN_LEFT), currentY);
-  //     }
-  //     // canvas.detachPen();
-  //
-  //     canvas.detachBrush();
-  //     canvas.drawImage(this.hostManager.batteryPixelMap,
-  //       vp2px(Constants.SCREEN_MARGIN_LEFT), currentY + lineHeight)
-  //   }
-  // }
-
-  private drawNextPage(canvas: drawing.Canvas): void {
-    if (canIUse('SystemCapability.Graphics.Drawing')) {
-
-      canvas.save()
-      canvas.clipPath(this.nextPagePath, drawing.ClipOp.INTERSECT, true)
-      let curColor: common2D.Color = {
-        alpha: 255,
-        red: 240,
-        green: 240,
-        blue: 40
-      }
-      canvas.drawColor(curColor)
-      const curBrush = new drawing.Brush();
-      curBrush.setColor({
-        alpha: 255,
-        red: 0,
-        green: 0,
-        blue: 0
-      });
-      const curFont = new drawing.Font();
-      curFont.setSize(fp2px(this.fontSize));
-      canvas.attachBrush(curBrush);
-      let fontMetrics = curFont.getMetrics();
-      // 36是lineHeight，20是字号
-      let lineHeight = Math.round(fp2px(this.lineHeight))
-      let startY = Math.round(lineHeight * (Math.abs(fontMetrics.ascent) / (fontMetrics.descent - fontMetrics.ascent)))
-
-      for (let index = 0; index <= 5; index++) {
-        const textBlob = drawing.TextBlob.makeFromString("第二页，第二页，第二页，第二页", curFont,
-          drawing.TextEncoding.TEXT_ENCODING_UTF8);
-        canvas.drawTextBlob(textBlob, vp2px(20), startY + (lineHeight * index));
-      }
-
-      canvas.detachBrush();
-
-      let k1 = (this.bezierVertex1.y - this.bezierVertex2.y) / (this.bezierVertex1.x - this.bezierVertex2.x);
-      let b1 = this.bezierVertex1.y - this.bezierVertex1.x * k1;
-
-      let shadowWidth =
-        (Math.abs(k1 * this.bezierStart1.x - this.bezierStart1.y + b1)) / (Math.sqrt(Math.pow(k1, 2) + 1)) * 4
-      let shadowMaskFilter = drawing.MaskFilter.createBlurMaskFilter(drawing.BlurType.NORMAL, shadowWidth)
-
-      const shadowPen = new drawing.Pen();
-      shadowPen.setStrokeWidth(shadowWidth)
-      shadowPen.setMaskFilter(shadowMaskFilter)
-
-      canvas.attachPen(shadowPen)
-      canvas.drawLine(this.bezierStart1.x, this.bezierStart1.y, this.bezierStart2.x, this.bezierStart2.y)
-      canvas.detachPen()
-
-      canvas.restore()
-    }
-  }
 }
 
 // 整页一起翻的仿真翻页
@@ -864,11 +908,31 @@ class SimulationPageTurnDrawHelper extends SimulationDrawHelper {
   }
 
   draw(canvas: drawing.Canvas): void {
-    this.calPath();
-    this.drawCurrentPage(canvas)
-    this.drawCurrentPageShadow(canvas)
-    this.drawNextPage(canvas);
-    this.drawCurrentTurningPage(canvas);
+    if (canIUse('SystemCapability.Graphics.Drawing')) {
+
+      this.calPath();
+      let color: common2D.Color = {
+        alpha: 255,
+        red: 0,
+        green: 0,
+        blue: 0
+      }
+      canvas.drawColor(color, drawing.BlendMode.CLEAR);
+      this.drawCurrentPage(canvas)
+      this.drawCurrentPageShadow(canvas)
+      this.drawNextPageArea(canvas)
+      this.drawCurrentTurningPage(canvas);
+    }
+  }
+
+  private drawNextPageArea(canvas: drawing.Canvas): void {
+    if (canIUse('SystemCapability.Graphics.Drawing')) {
+      canvas.save()
+      canvas.clipPath(this.nextPagePath, drawing.ClipOp.INTERSECT, true)
+      this.drawNextPage(canvas);
+      this.drawNextPageShadow(canvas);
+      canvas.restore()
+    }
   }
 
   private drawCurrentTurningPageShadow(canvas: drawing.Canvas): void {
@@ -892,58 +956,6 @@ class SimulationPageTurnDrawHelper extends SimulationDrawHelper {
     }
   }
 
-  // private drawCurrentPage(canvas: drawing.Canvas,): void {
-  //   let preColor: common2D.Color = {
-  //     alpha: 255,
-  //     red: 255,
-  //     green: 0,
-  //     blue: 0
-  //   }
-  //
-  //   let textColor: common2D.Color = {
-  //     alpha: 255,
-  //     red: 255,
-  //     green: 255,
-  //     blue: 255
-  //   }
-  //   if (canIUse('SystemCapability.Graphics.Drawing')) {
-  //     // const canvas = context.canvas;
-  //     canvas.drawColor(preColor)
-  //     const preBrush = new drawing.Brush();
-  //     preBrush.setColor({
-  //       alpha: 255,
-  //       red: 255,
-  //       green: 255,
-  //       blue: 255
-  //     });
-  //     const preFont = new drawing.Font();
-  //
-  //     preFont.setSize(fp2px(this.fontSize));
-  //     canvas.attachBrush(preBrush);
-  //     let fontMetrics = preFont.getMetrics();
-  //     // 36是lineHeight，20是字号
-  //     let lineHeight = Math.round(fp2px(this.lineHeight))
-  //     let startY = Math.round(lineHeight * (Math.abs(fontMetrics.ascent) / (fontMetrics.descent - fontMetrics.ascent)))
-  //
-  //     let pen = new drawing.Pen();
-  //     pen.setColor(textColor)
-  //     // if(maskFilter!=null){
-  //     //   pen.setMaskFilter(maskFilter)
-  //     // }
-  //     canvas.attachPen(pen)
-  //     for (let index = 0; index < 20; index++) {
-  //       const textBlob = drawing.TextBlob.makeFromString("第一页，第一页，第一页，第一页", preFont,
-  //         drawing.TextEncoding.TEXT_ENCODING_UTF8);
-  //       canvas.drawTextBlob(textBlob, 0, startY + (lineHeight * index));
-  //     }
-  //     canvas.detachPen();
-  //
-  //     canvas.detachBrush();
-  //   }
-  //
-  //   this.drawCurrentPageShadow(canvas);
-  // }
-
   private drawCurrentPageShadow(canvas: drawing.Canvas): void {
     if (canIUse('SystemCapability.Graphics.Drawing')) {
 
@@ -961,45 +973,6 @@ class SimulationPageTurnDrawHelper extends SimulationDrawHelper {
       canvas.attachPen(pen);
       canvas.drawLine(this.touch.dx, -shadowWidth, this.touch.dx, this.canvasSize.height + shadowWidth);
       canvas.detachPen();
-    }
-  }
-
-  private drawNextPage(canvas: drawing.Canvas): void {
-    if (canIUse('SystemCapability.Graphics.Drawing')) {
-      canvas.save()
-      canvas.clipPath(this.nextPagePath, drawing.ClipOp.INTERSECT, true)
-      let curColor: common2D.Color = {
-        alpha: 255,
-        red: 240,
-        green: 240,
-        blue: 40
-      }
-      canvas.drawColor(curColor)
-      const curBrush = new drawing.Brush();
-      curBrush.setColor({
-        alpha: 255,
-        red: 0,
-        green: 0,
-        blue: 0
-      });
-      const curFont = new drawing.Font();
-      curFont.setSize(fp2px(this.fontSize));
-      canvas.attachBrush(curBrush);
-      let fontMetrics = curFont.getMetrics();
-      // 36是lineHeight，20是字号
-      let lineHeight = Math.round(fp2px(this.lineHeight))
-      let startY = Math.round(lineHeight * (Math.abs(fontMetrics.ascent) / (fontMetrics.descent - fontMetrics.ascent)))
-
-      for (let index = 0; index <= 5; index++) {
-        const textBlob = drawing.TextBlob.makeFromString("第二页，第二页，第二页，第二页", curFont,
-          drawing.TextEncoding.TEXT_ENCODING_UTF8);
-        canvas.drawTextBlob(textBlob, vp2px(20), startY + (lineHeight * index));
-      }
-
-      canvas.detachBrush();
-      this.drawNextPageShadow(canvas);
-
-      canvas.restore()
     }
   }
 
@@ -1025,8 +998,16 @@ class SimulationPageTurnDrawHelper extends SimulationDrawHelper {
     if (canIUse('SystemCapability.Graphics.Drawing')) {
       canvas.save()
       canvas.clipPath(this.turningPagePath, drawing.ClipOp.INTERSECT)
-
+      // let bgColorRGB = this.hexToRgb(this.bgColor);
+      // let bgColor: common2D.Color = {
+      //   alpha: 255,
+      //   red: (bgColorRGB?.[0] ?? 0),
+      //   green: (bgColorRGB?.[1] ?? 0),
+      //   blue: (bgColorRGB?.[2] ?? 0)
+      // }
+      // canvas.drawColor(bgColor)
       canvas.save();
+
       canvas.translate(this.canvasSize.width, 0)
       canvas.scale(-1.0, 1.0)
       canvas.translate(-this.touchOffset.x, 0)
