@@ -5,7 +5,7 @@
  */
 import RefreshComponent from '../../../../componets/common/RefreshComponent'
 import BookFolder from '../BookFolder'
-import ShelfBookList from '../Shelf/ShelfBookList'
+import WorksBookLists from '../Shelf/WorksBookLists'
 import BookContent from './BookContent'
 
 @Component
@@ -20,7 +20,7 @@ export default struct BookContentRefresh {
   @Link GROUP: string
   @Link searchValue: string
   @Link bookTypeNumber:number
-
+  @State checkGroup:Record<number, boolean> = {}
   changeRefreshing(){
     if (this.isRefreshing) {
       this.isBookRefreshing++
@@ -32,8 +32,11 @@ export default struct BookContentRefresh {
       Scroll() {
         Column() {
           if (this.bookTypeNumber === 5 && this.searchValue !== '浏览历史') {
-            ShelfBookList({
-              EXHIBIT: this.EXHIBIT
+            WorksBookLists({
+              checkGroup: this.checkGroup,
+              EXHIBIT: this.EXHIBIT,
+              currentIndex:this.currentIndex,
+              isShowCheck:false
             })
           } else {
             if (this.GROUP === '标签') {

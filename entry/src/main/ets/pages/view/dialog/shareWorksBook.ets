@@ -6,7 +6,6 @@
 import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
 import { BookList } from '../../../componets/dataList/bookList'
 import { buttonList } from '../../../componets/dataList/buttonList'
-import { shelfList } from '../../../componets/dataList/shelfList'
 import componentSnapshot from '@ohos.arkui.componentSnapshot'
 import image from '@ohos.multimedia.image'
 import fs from '@ohos.file.fs';
@@ -14,14 +13,14 @@ import { photoAccessHelper } from '@kit.MediaLibraryKit'
 import { showMessage } from '../../../componets/common/promptShow'
 import { common } from '@kit.AbilityKit'
 import { BusinessError } from '@kit.BasicServicesKit'
+import { WorksLists } from '../../../database/entities/WorksLists'
 
 @CustomDialog
 @Preview
 @Component
-export default struct shareShelfBook {
+export default struct shareWorksBook {
   controller?: CustomDialogController
-  @Prop shelf: shelfList = new shelfList(1,'测试书单','测试书单描述','测试书单描述理由',[
-    new BookList('1','仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'),'玄幻')])
+  @Prop works:WorksLists
   @State buttonListInfo: buttonList[] = [
     new buttonList(1, '微信', $r('app.media.wechat')),
     new buttonList(2, 'QQ', $r('app.media.QQ_blue')),
@@ -49,17 +48,17 @@ export default struct shareShelfBook {
         justifyContent:FlexAlign.SpaceBetween
       }){
         Column(){
-          Text(this.shelf.title)
+          Text(this.works.worksName)
             .textAlign(TextAlign.Center)
             .fontSize(16).fontWeight(500).lineHeight(24).fontColor($r('app.string.color_black_88'))
-          Text(this.shelf.describe)
+          Text(this.works.worksDescribe)
             .textAlign(TextAlign.Center)
             .fontSize(12).fontWeight(400).lineHeight(20).fontColor($r('app.string.color_black_88'))
             .margin({top:12})
           Column(){
-            ForEach(this.shelf.bookList,(item:BookList,index:number)=>{
-              this.BookShelfInfo(item,index)
-            })
+            // ForEach(this.shelf.bookList,(item:BookList,index:number)=>{
+            //   this.BookShelfInfo(item,index)
+            // })
           }
         }
         .alignItems(HorizontalAlign.Start)
@@ -72,22 +71,22 @@ export default struct shareShelfBook {
       //用于图片保存不做显示
       Column(){
         Column() {
-          Text(this.shelf.title)
+          Text(this.works.worksName)
             .textAlign(TextAlign.Center)
             .fontSize(16)
             .fontWeight(500)
             .lineHeight(24)
             .fontColor($r('app.string.color_black_88'))
-          Text(this.shelf.describe)
+          Text(this.works.worksDescribe)
             .textAlign(TextAlign.Center)
             .fontSize(12)
             .fontWeight(400)
             .lineHeight(20)
             .fontColor($r('app.string.color_black_88'))
             .margin({ top: 12 })
-          ForEach(this.shelf.bookList, (item: BookList, index: number) => {
-            this.BookShelfInfo(item, index)
-          })
+          // ForEach(this.shelf.bookList, (item: BookList, index: number) => {
+          //   this.BookShelfInfo(item, index)
+          // })
         }
         .alignItems(HorizontalAlign.Start)
         .padding({ top: 24, left: 20, right: 20,bottom:12 })
