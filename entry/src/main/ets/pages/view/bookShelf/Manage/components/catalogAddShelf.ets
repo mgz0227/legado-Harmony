@@ -7,6 +7,9 @@
  */
 import CommonConstants from '../../../../../common/constants/CommonConstants'
 import buttonCommon from '../../../../../componets/common/buttonCommon'
+import worksListsDao from '../../../../../database/dao/WorksListsDao'
+import { WorksLists } from '../../../../../database/entities/WorksLists'
+
 @Component
 export default struct catalogAddShelf{
   onClickShelf:Function = (_isCatalogAddShelf:boolean)=>{
@@ -14,9 +17,20 @@ export default struct catalogAddShelf{
   changeShowNumber:Function = (_index:number)=>{
 
   }
-
+  @Prop currentIndex:number = 0
   @Prop showNumber:number = 0
-  @State ShelfList:string[] = ['玄幻神作', '精品小说,亲自品鉴', '冷门小说不容错过','冷门小说不容错过']
+
+  @State worksLists:WorksLists[] =[]
+  getWorkLists() {
+    worksListsDao.search({
+      type:this.currentIndex
+    }).then((val)=>{
+      this.worksLists = val
+    })
+  }
+  aboutToAppear(): void {
+    this.getWorkLists()
+  }
   build() {
     Flex({
       justifyContent:FlexAlign.SpaceBetween,
@@ -34,8 +48,8 @@ export default struct catalogAddShelf{
         }
         Scroll(){
           Column(){
-            ForEach(this.ShelfList,(item:string)=>{
-              this.ColumnTitle(item)
+            ForEach(this.worksLists,(item:WorksLists)=>{
+              this.ColumnTitle(item.worksName)
             })
           }
         }

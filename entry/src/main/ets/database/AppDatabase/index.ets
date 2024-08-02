@@ -2158,6 +2158,102 @@ export default {
         "indices": [],
         "foreignKeys": []
       },
+      {
+        "tableName": "works_lists",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`worksId` INTEGER NOT NULL, `worksName` TEXT NOT NULL, `worksDescribe` TEXT NOT NULL, `worksRemark` TEXT NOT NULL, `worksCoverUrl` TEXT NOT NULL, `createTime` INTEGER NOT NULL, `updateTime` INTEGER NOT NULL, `worksType` INTEGER NOT NULL, `worksBookNum` INTEGER NOT NULL, `worksBookList` TEXT, `isTop` INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(`worksId`))",
+        "fields": [
+          {
+            "fieldPath": "worksId",
+            "columnName": "worksId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "worksName",
+            "columnName": "worksName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "worksDescribe",
+            "columnName": "worksDescribe",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "worksRemark",
+            "columnName": "worksRemark",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "worksCoverUrl",
+            "columnName": "worksCoverUrl",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createTime",
+            "columnName": "createTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "updateTime",
+            "columnName": "updateTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "worksType",
+            "columnName": "worksType",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "worksBookNum",
+            "columnName": "worksBookNum",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "worksBookList",
+            "columnName": "worksBookList",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isTop",
+            "columnName": "isTop",
+            "affinity": "isTop",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "0"
+          },
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "worksId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_works_lists_worksName",
+            "unique": false,
+            "columnNames": [
+              "worksName"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_works_lists_worksName` ON `${TABLE_NAME}` (`worksName`)"
+          }
+        ],
+        "foreignKeys": []
+      }
     ],
     "views": [],
     "setupQueries": [

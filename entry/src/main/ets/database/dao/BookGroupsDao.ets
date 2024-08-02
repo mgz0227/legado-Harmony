@@ -8,7 +8,6 @@ import AppDatabaseUtil from '../AppDatabaseUtil';
 import { BookGroupDb, BookGroups, ToBookGroups, ToBookGroupsDb } from '../entities/BookGroups';
 import { BookGroupTypeParams } from '../types/BookGroupType';
 import { ColumnInfo } from '../types/ColumnInfo';
-import { data } from '@kit.TelephonyKit';
 
 class BookGroupsDao{
   TABLE_NAME: string = 'book_groups'

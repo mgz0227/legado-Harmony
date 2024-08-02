@@ -1,23 +1,22 @@
 import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
 import { buttonList } from '../../../componets/dataList/buttonList'
-import { shelfList } from '../../../componets/dataList/shelfList'
+import { WorksLists } from '../../../database/entities/WorksLists'
+
 @CustomDialog
 /**
  * 书单长按弹窗
  */
-export default struct ShelfInfoDialog{
+export default struct worksBookInfoDialog{
   controller?: CustomDialogController
   //推送提醒
-  @Link @Watch('itemDataFunction')itemData:shelfList
+  @Prop works:WorksLists
   @State pushReminder:boolean = false
   @State buttonListInfo:buttonList[] = [
     new buttonList(1,'编辑',$r('app.media.edit')),
     new buttonList(2,'分享',$r('app.media.icon_share')),
     new buttonList(3,'删除',$r('app.media.ic_public_delete'))
   ]
-  itemDataFunction(){
-    console.log(JSON.stringify(this.itemData))
-  }
+
   cancel: () => void = () => {
   }
 
