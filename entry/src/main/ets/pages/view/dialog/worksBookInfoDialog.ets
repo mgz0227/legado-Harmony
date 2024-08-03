@@ -1,6 +1,9 @@
+import worksListsUtils from '../../../common/utils/WorksListsUtils'
+import confirmDialogExample from '../../../componets/common/confirmDialog'
 import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
 import { buttonList } from '../../../componets/dataList/buttonList'
 import { WorksLists } from '../../../database/entities/WorksLists'
+import newBookShelf from '../bookShelf/Manage/bookManage/newBookShelf'
 
 @CustomDialog
 /**
@@ -10,7 +13,8 @@ export default struct worksBookInfoDialog{
   controller?: CustomDialogController
   //推送提醒
   @Prop works:WorksLists
-  @State pushReminder:boolean = false
+  @StorageLink('topRectHeight') topRectHeight: number = 0
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State buttonListInfo:buttonList[] = [
     new buttonList(1,'编辑',$r('app.media.edit')),
     new buttonList(2,'分享',$r('app.media.icon_share')),
@@ -32,11 +36,28 @@ export default struct worksBookInfoDialog{
             icon:item.icon,
             title:item.title
           })
+            .onClick(()=>{
+               switch (item.id){
+                 case 1:
+                   this.isShowEditBook = true
+                   break
+                 case 2:
+                   break
+                 case 3:
+                   this.delDialog?.open()
+                   break;
+               }
+            })
         })
       }
       Divider().strokeWidth(0.5).padding({bottom:16})
       Column(){
-        Text('取消').fontColor('rgba(0, 0, 0, 0.88)').fontSize(16).fontWeight(400).lineHeight(24).textAlign(TextAlign.Center)
+        Text('取消')
+          .fontColor('rgba(0, 0, 0, 0.88)')
+          .fontSize(16)
+          .fontWeight(400)
+          .lineHeight(24)
+          .textAlign(TextAlign.Center)
       }
       .onClick(()=>{
         this.cancel()
@@ -44,9 +65,54 @@ export default struct worksBookInfoDialog{
       })
       .alignItems(HorizontalAlign.Center)
       .padding({bottom:16})
+      Flex()
+        .bindContentCover($$this.isShowEditBook, this.showEditBook(), {
+          modalTransition: ModalTransition.DEFAULT,
+          onDisappear: () => {
+            this.isShowEditBook = false;
+          }
+        })
     }
     .borderRadius({topLeft:20,topRight:20})
     .backgroundColor(Color.White)
     .width('100%')
   }
+  @State isShowEditBook:boolean = false
+  @Builder showEditBook(){
+    Column(){
+      newBookShelf({
+        currentIndex:this.works.worksType,
+        changeShowNumber:()=>{
+          this.isShowEditBook = false
+        },
+        returnClose:true,
+        workBookListStatus: 1,
+        lastWorkBookList:this.works
+      })
+    }
+    .padding({
+      top:this.topRectHeight,
+      bottom:this.bottomRectHeight
+    })
+    .backgroundColor(Color.White)
+  }
+
+  @State delCache:boolean = false
+  delDialog: CustomDialogController | null = new CustomDialogController({
+    builder: confirmDialogExample({
+      confirm: ()=> {
+        if (this.works.worksId) {
+          worksListsUtils.delWorksByIds(this.works.worksId);
+          this.controller?.close()
+          this.cancel()
+        }
+      },
+      delCache:this.delCache
+    }),
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
 }

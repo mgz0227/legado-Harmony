@@ -3,7 +3,6 @@ import bookListManage from './bookManage/bookListManage';
 import {showMessage} from '../../../../componets/common/promptShow'
 import confirmDialogExample from '../../../../componets/common/confirmDialog';
 import BookFolderManages from './bookManage/BookFolderManages';
-import newBookShelf from './bookManage/newBookShelf';
 import hideDialogExample from '../../../../componets/common/hideDialog';
 import booksDao from '../../../../database/dao/BooksDao';
 import { Books } from '../../../../database/entities/Books';
@@ -141,24 +140,6 @@ struct BookManagePage {
           this.complete()
         }
       })
-        .visibility(this.showNumber === 0?Visibility.Visible:Visibility.None)
-        .opacity(this.showNumber === 0?1:0)
-      // Tabs({
-      //   index:this.showNumber,
-      //   controller: this.tabsController
-      // }){
-      //  TabContent(){
-      //
-      //  }
-      // }
-      // .backgroundColor(Color.White)
-      // .barWidth(0)
-      // .barHeight(0)
-      // .layoutWeight(1)
-      // .scrollable(false)
-      // .onChange((index: number) => {
-      //   this.showNumber = index
-      // })
       Column(){
         this.bookManage()
       }
@@ -171,13 +152,6 @@ struct BookManagePage {
           showClose: false,
           onDisappear: () => {
             this.isCatalogAddShelf = false
-          }
-        })
-      Flex()
-        .bindContentCover($$this.isShowEditBook, this.showEditBook(), {
-          modalTransition: ModalTransition.DEFAULT,
-          onDisappear: () => {
-            this.isShowEditBook = false;
           }
         })
     }
@@ -239,41 +213,17 @@ struct BookManagePage {
       }.backgroundColor(Color.White)
     }
   }
-  //新建书单弹出
-  @State isShowEditBook:boolean = false
-  @Builder showEditBook(){
-    Column(){
-      newBookShelf({
-        currentIndex:this.currentIndex,
-        changeShowNumber:(index:number)=>{
-          this.showNumber = index
-          this.isShowEditBook = false
-          this.refreshData()
-        },
-        bookIds:this.checkListNumber,
-        bookOrFolder:this.bookOrFolder
-      })
-    }
-    .padding({
-      top:this.topRectHeight,
-      bottom:this.bottomRectHeight
-    })
-    .backgroundColor(Color.White)
-  }
-
   //书单弹窗
   @Builder dialogCatalogAddShelf(){
     Column(){
       catalogAddShelf({
         onClickShelf:(val:boolean)=>{
           this.isCatalogAddShelf = val
+          this.refreshData()
         },
-        changeShowNumber:(val:number)=>{
-          this.showNumber = val
-          this.isCatalogAddShelf = false
-          this.isShowEditBook = true
-        },
-        currentIndex:this.currentIndex
+        currentIndex:this.currentIndex,
+        ids:this.checkListNumber,
+        bookOrFolder:this.bookOrFolder
       })
     }
   }

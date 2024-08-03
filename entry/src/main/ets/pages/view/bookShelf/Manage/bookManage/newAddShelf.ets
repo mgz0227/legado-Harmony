@@ -34,6 +34,7 @@ export default struct newAddShelf{
       searchKey:this.searchValue
     }).then((val)=>{
       this.bookList = val
+      this.allSelect = this.bookList.length === this.selectBookIdList.length
     })
   }
   build() {
