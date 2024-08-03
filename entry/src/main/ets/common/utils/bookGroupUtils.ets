@@ -98,6 +98,11 @@ class bookGroupUtils{
   updateMoveGroupBookIds(data:Record<number, number>){
     BookGroupsDao.updateMoveBookIdsByGroupId(data)
   }
+  //根据分组获取分组下的书籍Id
+  async queryBookByGroupId(groupId:number|number[]){
+    let Ids:number[] = toolsUtils.numberArrays(groupId)
+    return await BookGroupsDao.queryBookByGroup(Ids)
+  }
 }
 let bookGroupUtil = new bookGroupUtils();
 export default bookGroupUtil as bookGroupUtils;

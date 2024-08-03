@@ -123,7 +123,7 @@ export default  struct BookManageDialog {
 
   @State isCatalogAddShelf:boolean = false
   @State showNumber:number = 0
-  tabsController: TabsController = new TabsController();
+  @State bookOrFolder:number = 0
   build() {
     Column(){
       if (this.showNumber === 0){
@@ -158,31 +158,11 @@ export default  struct BookManageDialog {
           })
       }
 
-      Tabs({
-        index:this.showNumber,
-        controller: this.tabsController
-      }){
-        TabContent(){
-          this.bookManage()
-        }
-        TabContent(){
-          newBookShelf({
-            currentIndex:this.currentIndex,
-            changeShowNumber:(index:number)=>{
-              this.showNumber = index
-              this.refreshData()
-            },
-            bookIds:this.checkListNumber
-          })
-        }
+      Column(){
+        this.bookManage()
       }
-      .barWidth(0)
-      .barHeight(0)
       .layoutWeight(1)
-      .scrollable(false)
-      .onChange((index: number) => {
-        this.showNumber = index
-      })
+
       Flex()
         .bindSheet($$this.isCatalogAddShelf, this.dialogCatalogAddShelf(), {
           height:400,
@@ -192,11 +172,40 @@ export default  struct BookManageDialog {
             this.isCatalogAddShelf = false
           }
         })
+      Flex()
+        .bindContentCover($$this.isShowEditBook, this.showEditBook(), {
+          modalTransition: ModalTransition.DEFAULT,
+          onDisappear: () => {
+            this.isShowEditBook = false;
+          }
+        })
     }
     .padding({
       bottom:this.bottomRectHeight
     })
   }
+  //新建书单弹出
+  @State isShowEditBook:boolean = false
+  @Builder showEditBook(){
+    Column(){
+      newBookShelf({
+        currentIndex:this.currentIndex,
+        changeShowNumber:(index:number)=>{
+          this.showNumber = index
+          this.isShowEditBook = false
+          this.refreshData()
+        },
+        bookIds:this.checkListNumber,
+        bookOrFolder:this.bookOrFolder
+      })
+    }
+    .padding({
+      top:this.topRectHeight,
+      bottom:this.bottomRectHeight
+    })
+    .backgroundColor(Color.White)
+  }
+
   //主要操作页面
   @Builder bookManage(){
     Flex({
@@ -322,6 +331,7 @@ export default  struct BookManageDialog {
         changeShowNumber:(val:number)=>{
           this.showNumber = val
           this.isCatalogAddShelf = false
+          this.isShowEditBook = true
         },
         currentIndex:this.currentIndex
       })
@@ -345,7 +355,6 @@ export default  struct BookManageDialog {
         })
       Text(!this.allCheck?'全选':'取消全选')
     }
-
     .alignItems(VerticalAlign.Center)
   }
   //校验是否存页面数据内容
@@ -489,6 +498,11 @@ export default  struct BookManageDialog {
         this.bookMoveGroup?.open(); break;
       case 3 :
         this.isCatalogAddShelf = true
+        if (this.bookTypeNumber === 1) {
+          this.bookOrFolder = 1
+        } else {
+          this.bookOrFolder = 0
+        }
         this.dataCheckList();
         break;
       case 4 :
