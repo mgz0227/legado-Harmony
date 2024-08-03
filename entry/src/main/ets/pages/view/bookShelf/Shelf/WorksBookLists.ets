@@ -111,6 +111,7 @@ export default struct WorksBookLists {
             this.getWorkLists()
           },200)
         },
+        returnClose:true,
         workBookListStatus:this.workBookListStatus,
         lastWorkBookList:this.worksBook
       })

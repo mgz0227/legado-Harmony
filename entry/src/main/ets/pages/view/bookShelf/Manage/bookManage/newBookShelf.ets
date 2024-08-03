@@ -3,7 +3,6 @@
  */
 import CommonConstants from '../../../../../common/constants/CommonConstants'
 import PaddingConstants from '../../../../../common/constants/PaddingConstants'
-import bookGroupUtil from '../../../../../common/utils/bookGroupUtils'
 import worksListsUtils from '../../../../../common/utils/WorksListsUtils'
 import confirmDialogExample from '../../../../../componets/common/confirmDialog'
 import { showMessage } from '../../../../../componets/common/promptShow'
@@ -23,10 +22,10 @@ export default struct newBookShelf{
   @Prop bookIds:number[] = []
   @State  @Watch('changeBookIds')newBookIds:number[] = []
   @State isShowAddBook:boolean = false
-  //默认0为书籍 1为分组
-  @Prop bookOrFolder:number = 0
   changeShowNumber:Function = (_index:number)=>{
 
+  }
+  submit:Function = ()=>{
   }
   @Prop lastWorkBookList:WorksLists
   //状态管理0新增,1预览,2修改
@@ -34,31 +33,31 @@ export default struct newBookShelf{
   changeBookIds(){
     this.getBookIds()
   }
+  @Prop returnClose:boolean = false
 
   async aboutToAppear(): Promise<void> {
-    if (this.bookOrFolder === 1){
-     let bookId =  await bookGroupUtil.queryBookByGroupId(this.bookIds)
-      if (bookId.length) {
-        this.newBookIds = bookId
-      }
-    }
-    if (this.bookOrFolder === 0) {
-      if (this.workBookListStatus === 0) {
-        this.newBookIds = this.bookIds
-      } else {
-        this.workBookList = this.lastWorkBookList
-        if (this.workBookList.worksBookList) {
-          //初始推荐理由
-          this.workBookList.worksBookList.forEach((item: WorksBookList) => {
-            if (item.bookId) {
-              this.TextRecommend[item.bookId] = item.recommend ?? '';
-            }
-          })
-          //初始书籍
-          let bookIds = worksListsUtils.getBookIds(this.workBookList.worksBookList).toString()
-          if (bookIds.length) {
-            this.newBookIds = bookIds.split(',').map(Number);
+    if (this.workBookListStatus === 0) {
+      this.newBookIds = this.bookIds
+    } else {
+      this.workBookList = this.lastWorkBookList
+      if (this.workBookList.worksBookList) {
+        //初始推荐理由
+        this.workBookList.worksBookList.forEach((item: WorksBookList) => {
+          if (item.bookId) {
+            this.TextRecommend[item.bookId] = item.recommend ?? '';
           }
+        })
+        //初始书籍
+        let bookIds = worksListsUtils.getBookIds(this.workBookList.worksBookList)
+        if (this.bookIds && this.bookIds.length && this.workBookListStatus === 2) {
+          this.bookIds.forEach((id: number) => {
+            if (!bookIds.includes(id)) {
+              bookIds.push(id);
+            }
+          });
+        }
+        if (bookIds.length) {
+          this.newBookIds = bookIds;
         }
       }
     }
@@ -141,7 +140,11 @@ export default struct newBookShelf{
               if (this.workBookListStatus !== 2) {
                 this.changeShowNumber(0)
               } else {
-                this.workBookListStatus = 1
+                if (this.returnClose) {
+                  this.workBookListStatus = 1
+                } else {
+                  this.submit()
+                }
               }
             })
 
@@ -330,6 +333,7 @@ export default struct newBookShelf{
         showMessage(this.workBookListStatus === 0?'创建书单成功':'修改书单成功')
         this.initWorkData()
         this.changeShowNumber(0)
+        this.submit()
       })
       .borderRadius(20)
       .width('50%')

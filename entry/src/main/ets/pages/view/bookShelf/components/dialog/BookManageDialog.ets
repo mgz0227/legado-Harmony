@@ -5,7 +5,6 @@ import confirmDialogExample from '../../../../../componets/common/confirmDialog'
 import Header from '../../../../../componets/common/Header';
 import hideDialogExample from '../../../../../componets/common/hideDialog';
 import { showMessage } from '../../../../../componets/common/promptShow';
-import { BookList } from '../../../../../componets/dataList/bookList';
 import { buttonList } from '../../../../../componets/dataList/buttonList';
 import IndexSearchType from '../../../../../componets/head/IndexSearchType';
 import BookGroupsDao from '../../../../../database/dao/BookGroupsDao';
@@ -15,7 +14,6 @@ import { Books } from '../../../../../database/entities/Books';
 import BookSelectGroupDialog from './BookSelectGroupDialog';
 import BookFolderManages from '../../Manage/bookManage/BookFolderManages';
 import bookListManage from '../../Manage/bookManage/bookListManage';
-import newBookShelf from '../../Manage/bookManage/newBookShelf';
 import catalogAddShelf from '../../Manage/components/catalogAddShelf';
 import CommonConstants from '../../../../../common/constants/CommonConstants';
 import WorksBookLists from '../../Shelf/WorksBookLists';
@@ -122,41 +120,38 @@ export default  struct BookManageDialog {
   }
 
   @State isCatalogAddShelf:boolean = false
-  @State showNumber:number = 0
   @State bookOrFolder:number = 0
   build() {
     Column(){
-      if (this.showNumber === 0){
-        Column(){
-          this.headTitleManage()
-        }
-        .visibility(!this.isManage?Visibility.Visible:Visibility.None)
-        .opacity(!this.isManage?1:0)
-        .scale({
-          y: !this.isManage? 1 : 0,
-        })
+      Column(){
+        this.headTitleManage()
+      }
+      .visibility(!this.isManage?Visibility.Visible:Visibility.None)
+      .opacity(!this.isManage?1:0)
+      .scale({
+        y: !this.isManage? 1 : 0,
+      })
+      .animation({
+        duration: 500,
+        curve: CommonConstants.UniCurve
+      })
+      Header({
+        customLeftBuilder: () => {
+          this.selectAll()
+        },
+        title:`已选${this.checkListNumber.length}项`,
+        customRightBuilder: () => {
+          this.complete()
+        },
+        paddingTop:-30
+      })
+        .visibility(this.isManage?Visibility.Visible:Visibility.None)
+        .opacity(this.isManage?1:0)
+        .translate({ y: this.isManage ? 0 : -50})
         .animation({
           duration: 500,
           curve: CommonConstants.UniCurve
         })
-        Header({
-          customLeftBuilder: () => {
-            this.selectAll()
-          },
-          title:`已选${this.checkListNumber.length}项`,
-          customRightBuilder: () => {
-            this.complete()
-          },
-          paddingTop:-30
-        })
-          .visibility(this.isManage?Visibility.Visible:Visibility.None)
-          .opacity(this.isManage?1:0)
-          .translate({ y: this.isManage ? 0 : -50})
-          .animation({
-            duration: 500,
-            curve: CommonConstants.UniCurve
-          })
-      }
 
       Column(){
         this.bookManage()
@@ -172,38 +167,10 @@ export default  struct BookManageDialog {
             this.isCatalogAddShelf = false
           }
         })
-      Flex()
-        .bindContentCover($$this.isShowEditBook, this.showEditBook(), {
-          modalTransition: ModalTransition.DEFAULT,
-          onDisappear: () => {
-            this.isShowEditBook = false;
-          }
-        })
     }
     .padding({
       bottom:this.bottomRectHeight
     })
-  }
-  //新建书单弹出
-  @State isShowEditBook:boolean = false
-  @Builder showEditBook(){
-    Column(){
-      newBookShelf({
-        currentIndex:this.currentIndex,
-        changeShowNumber:(index:number)=>{
-          this.showNumber = index
-          this.isShowEditBook = false
-          this.refreshData()
-        },
-        bookIds:this.checkListNumber,
-        bookOrFolder:this.bookOrFolder
-      })
-    }
-    .padding({
-      top:this.topRectHeight,
-      bottom:this.bottomRectHeight
-    })
-    .backgroundColor(Color.White)
   }
 
   //主要操作页面
@@ -327,13 +294,11 @@ export default  struct BookManageDialog {
       catalogAddShelf({
         onClickShelf:(val:boolean)=>{
           this.isCatalogAddShelf = val
+          this.refreshData()
         },
-        changeShowNumber:(val:number)=>{
-          this.showNumber = val
-          this.isCatalogAddShelf = false
-          this.isShowEditBook = true
-        },
-        currentIndex:this.currentIndex
+        currentIndex:this.currentIndex,
+        ids:this.checkListNumber,
+        bookOrFolder:this.bookOrFolder
       })
     }
   }

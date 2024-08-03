@@ -6,6 +6,7 @@ import { showMessage } from '../../../../../componets/common/promptShow'
 import confirmDialogExample from '../../../../../componets/common/confirmDialog'
 import booksUtil from '../../../../../common/utils/booksUtils'
 import BookSelectGroupDialog from './BookSelectGroupDialog'
+import catalogAddShelf from '../../Manage/components/catalogAddShelf'
 
 @CustomDialog
 /**
@@ -25,6 +26,9 @@ export default struct BookInfoDialogs{
 
   cancel: () => void = () => {
   }
+  @StorageLink('topRectHeight') topRectHeight: number = 0
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @State isCatalogAddShelf:boolean = false
 
   build() {
     Column(){
@@ -83,10 +87,33 @@ export default struct BookInfoDialogs{
       })
       .alignItems(HorizontalAlign.Center)
       .padding({bottom:16})
+
+      Flex()
+        .bindSheet($$this.isCatalogAddShelf, this.dialogCatalogAddShelf(), {
+          height:400,
+          dragBar: true,
+          showClose: false,
+          onDisappear: () => {
+            this.isCatalogAddShelf = false
+          }
+        })
     }
     .borderRadius({topLeft:20,topRight:20})
     .backgroundColor(Color.White)
     .width('100%')
+  }
+
+  //书单弹窗
+  @Builder dialogCatalogAddShelf(){
+    Column(){
+      catalogAddShelf({
+        onClickShelf:(val:boolean)=>{
+          this.isCatalogAddShelf = val
+        },
+        currentIndex:this.bookData.bookType,
+        ids:this.bookData.id ? [this.bookData.id]:[]
+      })
+    }
   }
 
   bookInfoButton(id:number){
@@ -96,7 +123,7 @@ export default struct BookInfoDialogs{
       case 2 :
         this.bookMoveGroup?.open(); break;
       case 3 :
-        showMessage('加入书单'); break;
+        this.isCatalogAddShelf = true;break;
       case 4 :
         this.bookDelDialog?.open(); break;
     }

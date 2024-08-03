@@ -24,11 +24,18 @@ export class WorksListsUtils{
     worksListsDao.deleteWorks(ids)
   }
   //获取书单中的bookId
-  getBookIds(worksBookList:WorksBookList[]){
-    return worksBookList
+  getBookIds(worksBookList: WorksBookList[]): number[] {
+    const bookIds = worksBookList
       .filter(item => item !== undefined)  // 过滤掉 undefined 的 item
       .map(item => item.bookId)
-      .filter(bookId => bookId !== undefined);  // 过滤掉 undefined 的 bookId
+      .filter(bookId => bookId !== undefined);
+
+    // 如果 bookIds 长度为 0，直接返回空数组
+    if (bookIds.length === 0) {
+      return [];
+    }
+
+    return bookIds.toString().split(',').map(Number);
   }
 }
 const worksListsUtils = new WorksListsUtils()
