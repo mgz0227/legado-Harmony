@@ -338,6 +338,33 @@ class BookGroupsDao{
       return false
     }
   }
+  /**
+   * 分组id查询分组下的书籍Id然后去重
+   * @param ids
+   */
+  async queryBookByGroup(ids:number[]){
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      const validIds = ids.filter(id => typeof id === 'number');
+      predicates.in('groupId', validIds);
+      const groups = await DbUtil.queryForList<BookGroupDb>(predicates, column);
+      const bookIds:number[] = []
+      if (groups.length > 0) {
+        groups.forEach((item) => {
+          ToBookGroups(item).bookIds?.forEach((bookId) => {
+            if (!bookIds.includes(Number(bookId))) {
+              bookIds.push(Number(bookId))
+            }
+          })
+        })
+      }
+      return bookIds
+    } catch (e){
+      console.log('queryBookByGroup, Error, ', JSON.stringify(e))
+      return []
+    }
+  }
 
 }
 

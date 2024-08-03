@@ -13,6 +13,7 @@ export default struct BookContentRefresh {
   @State @Watch('changeRefreshing')isRefreshing: boolean = false
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') isGroupRefreshing: number = 0
+  @StorageLink('BOOK_IS_BOOK_WORKS_BOOK_LIST') isWorksBookListRefreshing: number = 0
   @State counter: number = 0
   @State RefreshingTitle: string = '松开刷新'
   @Prop currentIndex: number = 0
@@ -23,8 +24,17 @@ export default struct BookContentRefresh {
   @State checkGroup:Record<number, boolean> = {}
   changeRefreshing(){
     if (this.isRefreshing) {
-      this.isBookRefreshing++
-      this.isGroupRefreshing++
+      switch (this.bookTypeNumber){
+        case 1:
+          this.isGroupRefreshing++
+          break;
+        case 5:
+          this.isWorksBookListRefreshing++
+          break;
+        default:
+          this.isBookRefreshing++
+          break
+      }
     }
   }
   build() {

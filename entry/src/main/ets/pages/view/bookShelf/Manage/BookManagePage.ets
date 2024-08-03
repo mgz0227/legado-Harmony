@@ -42,7 +42,6 @@ struct BookManagePage {
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State isAddShelfShow:boolean = false
-  tabsController: TabsController = new TabsController();
   @State topTitle:string = '置顶'
   @State bookList:Books[] = []
   @State @Watch('listenCheckList')checkLists: Record<number, boolean> = {}
@@ -122,7 +121,6 @@ struct BookManagePage {
     } else if (this.bookTypeNumber === 5){
       this.getWorkLists()
       this.isMoveStatus = 2
-      // this.getBookList() //todo 获取书单
     } else {
       this.getBookList()
       this.isMoveStatus = 0
@@ -131,6 +129,7 @@ struct BookManagePage {
 
   @State isCatalogAddShelf:boolean = false
   @State showNumber:number = 0
+  @State bookOrFolder:number = 0
   build() {
     Column(){
       Header({
@@ -144,35 +143,27 @@ struct BookManagePage {
       })
         .visibility(this.showNumber === 0?Visibility.Visible:Visibility.None)
         .opacity(this.showNumber === 0?1:0)
-      Tabs({
-        index:this.showNumber,
-        controller: this.tabsController
-      }){
-       TabContent(){
-         this.bookManage()
-       }
-       TabContent(){
-         newBookShelf({
-           currentIndex:this.currentIndex,
-           changeShowNumber:(index:number)=>{
-             this.showNumber = index
-             this.refreshData()
-           },
-           bookIds:this.checkListNumber
-         })
-       }
-       .padding({
-         top:this.topRectHeight
-       })
+      // Tabs({
+      //   index:this.showNumber,
+      //   controller: this.tabsController
+      // }){
+      //  TabContent(){
+      //
+      //  }
+      // }
+      // .backgroundColor(Color.White)
+      // .barWidth(0)
+      // .barHeight(0)
+      // .layoutWeight(1)
+      // .scrollable(false)
+      // .onChange((index: number) => {
+      //   this.showNumber = index
+      // })
+      Column(){
+        this.bookManage()
       }
-      .backgroundColor(Color.White)
-      .barWidth(0)
-      .barHeight(0)
       .layoutWeight(1)
-      .scrollable(false)
-      .onChange((index: number) => {
-        this.showNumber = index
-      })
+      .backgroundColor(Color.White)
       Flex()
         .bindSheet($$this.isCatalogAddShelf, this.dialogCatalogAddShelf(), {
           height:400,
@@ -180,6 +171,13 @@ struct BookManagePage {
           showClose: false,
           onDisappear: () => {
             this.isCatalogAddShelf = false
+          }
+        })
+      Flex()
+        .bindContentCover($$this.isShowEditBook, this.showEditBook(), {
+          modalTransition: ModalTransition.DEFAULT,
+          onDisappear: () => {
+            this.isShowEditBook = false;
           }
         })
     }
@@ -241,6 +239,28 @@ struct BookManagePage {
       }.backgroundColor(Color.White)
     }
   }
+  //新建书单弹出
+  @State isShowEditBook:boolean = false
+  @Builder showEditBook(){
+    Column(){
+      newBookShelf({
+        currentIndex:this.currentIndex,
+        changeShowNumber:(index:number)=>{
+          this.showNumber = index
+          this.isShowEditBook = false
+          this.refreshData()
+        },
+        bookIds:this.checkListNumber,
+        bookOrFolder:this.bookOrFolder
+      })
+    }
+    .padding({
+      top:this.topRectHeight,
+      bottom:this.bottomRectHeight
+    })
+    .backgroundColor(Color.White)
+  }
+
   //书单弹窗
   @Builder dialogCatalogAddShelf(){
     Column(){
@@ -251,7 +271,7 @@ struct BookManagePage {
         changeShowNumber:(val:number)=>{
           this.showNumber = val
           this.isCatalogAddShelf = false
-
+          this.isShowEditBook = true
         },
         currentIndex:this.currentIndex
       })
@@ -418,6 +438,11 @@ struct BookManagePage {
         this.bookMoveGroup?.open(); break;
       case 3 :
         this.isCatalogAddShelf = true
+        if (this.bookTypeNumber === 1) {
+          this.bookOrFolder = 1
+        } else {
+          this.bookOrFolder = 0
+        }
         this.dataCheckList();
         break;
       case 4 :

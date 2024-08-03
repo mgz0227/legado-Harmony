@@ -20,6 +20,7 @@ export default struct WorksBookLists {
   @State worksBook:WorksLists = new WorksLists()
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageLink('BOOK_IS_BOOK_WORKS_BOOK_LIST') @Watch('getWorkLists')isWorksBookListRefreshing: number = 0
   aboutToAppear(): void {
     if (this.worksLists.length === 0) {
       this.getWorkLists()

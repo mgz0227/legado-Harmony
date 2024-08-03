@@ -3,7 +3,6 @@
  * @datetime 2024/7/26 20:35
  * @className: catalogAddShelf
  * 加入书单弹窗
- * todo 书单功能db暂未实现
  */
 import CommonConstants from '../../../../../common/constants/CommonConstants'
 import buttonCommon from '../../../../../componets/common/buttonCommon'
