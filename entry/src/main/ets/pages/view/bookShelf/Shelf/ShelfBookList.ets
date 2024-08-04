@@ -5,7 +5,6 @@ import ShelfInfoDialog from '../../dialog/ShelfInfoDialog'
 import BookShelfGrid from './BookShelfGrid'
 import BookShelfInfo from './BookShelfInfo'
 import editBookShelf from './editBookShelf'
-import { router } from '@kit.ArkUI'
 
 /**
  * 书单
@@ -71,21 +70,11 @@ export default struct ShelfBookList {
                     }
                   }))
               .onClick(()=>{
-                // if (!this.isShow) {
-                //   this.shelfBook = item
-                //   this.isShow = true
-                //   this.shelfAllInfoDialog?.open()
-                // }
-                router.pushUrl({
-                  url: 'pages/view/BookDetailPage',
-                  params: {
-                    bookId: '1',
-                    bookName: '大奉打更人',
-                    bookAuthor: '卖报小郎君',
-                    bookImage: $r('app.media.cover_list'),
-                    bookDescribe: '《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... '
-                  }
-                })
+                if (!this.isShow) {
+                  this.shelfBook = item
+                  this.isShow = true
+                  this.shelfAllInfoDialog?.open()
+                }
                 showMessage('跳转')
               })
           }
