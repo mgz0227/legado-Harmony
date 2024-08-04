@@ -4,6 +4,7 @@ import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
 import { buttonList } from '../../../componets/dataList/buttonList'
 import { WorksLists } from '../../../database/entities/WorksLists'
 import newBookShelf from '../bookShelf/Manage/bookManage/newBookShelf'
+import shareWorksBook from './shareWorksBook'
 
 @CustomDialog
 /**
@@ -42,6 +43,7 @@ export default struct worksBookInfoDialog{
                    this.isShowEditBook = true
                    break
                  case 2:
+                   this.shareShelfBookDialog?.open()
                    break
                  case 3:
                    this.delDialog?.open()
@@ -86,7 +88,7 @@ export default struct worksBookInfoDialog{
           this.isShowEditBook = false
         },
         returnClose:true,
-        workBookListStatus: 1,
+        workBookListStatus: 2,
         lastWorkBookList:this.works
       })
     }
@@ -97,6 +99,19 @@ export default struct worksBookInfoDialog{
     .backgroundColor(Color.White)
   }
 
+  //分享弹窗
+  shareShelfBookDialog: CustomDialogController | null = new CustomDialogController({
+    builder: shareWorksBook({
+      works:this.works
+    }),
+    autoCancel: true,
+    width:'100%',
+    height:'100%',
+    alignment: DialogAlignment.Bottom,
+    customStyle:true
+  })
+
+  //删除确认弹出框
   @State delCache:boolean = false
   delDialog: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
