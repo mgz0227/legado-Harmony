@@ -8,7 +8,6 @@ import { BookList } from '../../../../../componets/dataList/bookList'
 export default struct newBookShelf{
   @Link showNumber:number
   @Link isAddShelfShow:boolean
-  @StorageLink('topRectHeight') topRectHeight: number = 0
   @Link addCheckShelf:BookList[]
   @State TextValue:string = ''
   @State deByBookId:string = ''
@@ -53,9 +52,6 @@ export default struct newBookShelf{
     }
     ){
      Column(){
-       if (this.topIsShow){
-         Blank(this.topRectHeight)
-       }
        Column({
          space:24
        }) {
@@ -107,11 +103,12 @@ export default struct newBookShelf{
         justifyContent:FlexAlign.Center
       }){
         this.newFooter()
-      }.padding({bottom:this.bottomRectHeight}).backgroundColor(Color.White)
+      }
+      .backgroundColor(Color.White)
     }
 
   }
-  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+
   @Builder newFooter(){
     Row({
       space:20

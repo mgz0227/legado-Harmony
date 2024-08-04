@@ -47,27 +47,21 @@ export default struct BookInfoGrids{
 
   build() {
     Column() {
-      Column(){
-        Flex({
-          alignItems: ItemAlign.End,
-          justifyContent:FlexAlign.End
-        }){
-          Flex({
-            alignItems: ItemAlign.End,
-          }){
-            // if (this.book.isTop){
-            //   Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(5).margin({left:1,bottom:1}).borderRadius({ bottomLeft:10,bottomRight:5,topRight:5,topLeft:5 })
-            //     .backgroundColor('rgba(0, 0, 0, 0.45)')
-            // }
+      Stack(){
+        Stack(){
+          if (this.book.isTop){
+            Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
+              .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
           }
-          .align(Alignment.Bottom)
-        }
-        .width(100).height(120)
+          Image(this.book.coverUrl)
+            .draggable(false)
+            .alt($r('app.media.icon_book_default_cover_one'))
+            .width(100)
+            .height(120)
+        }.alignContent(Alignment.BottomStart)
       }
+      .backgroundColor($r('app.string.color_black_45'))
       .borderRadius(10)
-      .width(100).height(120)
-      .backgroundImage(this.book.coverUrl?$r('app.media.cover_list'):$r('app.media.cover_list'))
-      .backgroundImageSize({width:100,height:120})
       Text(this.book.bookName)
         .fontSize(15)
         .fontWeight(700)

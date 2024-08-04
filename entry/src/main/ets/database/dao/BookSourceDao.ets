@@ -27,7 +27,8 @@ class BookSourceDao {
   getFlowColumn() {
     const column: ColumnInfo[] = AppDatabaseUtil.getAssignColumn(this.TABLE_NAME,
       ['bookSourceUrl', 'bookSourceName', 'bookSourceGroup', 'bookSourceGrade', 'bookSourceScore', 'customOrder',
-        'enabled', 'enabledExplore', 'lastUpdateTime', 'respondTime', 'weight', 'isTop', 'showRecentIcon', 'showExplore']);
+        'enabled', 'enabledExplore', 'lastUpdateTime', 'respondTime', 'weight', 'isTop', 'showRecentIcon',
+        'showExplore']);
     column.push(...[
       {
         name: 'hasLoginUrl',
@@ -63,6 +64,7 @@ class BookSourceDao {
     const bookSourceGrade = searchParams?.bookSourceGrade;
     const hasLoginUrl = searchParams?.hasLoginUrl;
     const showExplore = searchParams?.showExplore;
+    const order = searchParams?.order;
     try {
       let sql = `
   SELECT
@@ -117,10 +119,12 @@ class BookSourceDao {
         sql += ` WHERE ${whereClause.join(' AND ')}`;
       }
 
-      sql += `
-  ORDER BY
-    isTop DESC, customOrder ASC
-`;
+      sql += ` ORDER BY`;
+      if (order !== undefined) {
+        sql += ` ${order === 0 ? 'bookSourceGroup' : 'lastUpdateTime'} DESC`
+      } else {
+        sql += ` isTop DESC, customOrder ASC`;
+      }
       const column: ColumnInfo[] = this.getFlowColumn()
       return await DbUtil.querySqlForList<BookSourcePart>(sql, column)
     } catch (err) {
@@ -134,6 +138,7 @@ class BookSourceDao {
     const type = searchParams?.type;
     const enabled = searchParams?.enabled;
     const hasExploreUrl = searchParams?.hasExploreUrl;
+    const showExplore = searchParams?.showExplore;
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       let sql = `SELECT * FROM book_sources`;
@@ -147,6 +152,9 @@ class BookSourceDao {
       }
       if (hasExploreUrl !== undefined) {
         whereClause.push(`COALESCE(exploreUrl, '') ${hasExploreUrl ? '<>' : '='} ''`);
+      }
+      if (showExplore !== undefined) {
+        whereClause.push(`showExplore = ${showExplore ? 1 : 0}`);
       }
       if (searchKey) { // 确保 searchKey 不为空或未定义
         whereClause.push(`(

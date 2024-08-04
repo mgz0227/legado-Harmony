@@ -18,10 +18,9 @@ export default struct BookBodyContent {
   @Link EXHIBIT: string
   @Link GROUP: string
   @Link searchValue: string
-  @Link bookType: string
+  @Link bookTypeNumber:number
   @State title: string = '最近阅读'
   @State groupCoverShow: boolean = false
-  @Prop isClear: boolean = false
   @State bookBodyIndex: number = 0
   tabsBookBodyController: TabsController = new TabsController();
   build() {
@@ -39,11 +38,13 @@ export default struct BookBodyContent {
             justifyContent: FlexAlign.SpaceBetween
           }) {
             Row({ space: 15 }) {
+              // todo 筛选暂未实现
               IndexSearchType({ title: this.title, searchValue: this.searchValue })
               IndexSearchType({ title: '浏览历史', searchValue: this.searchValue })
                 .onClick(() => {
                   this.GROUP = '标签'
                   this.searchValue = '浏览历史'
+                  //todo 历史记录暂未实现
                 })
               if (this.searchValue !== '浏览历史') {
                 this.GroupBuilder()
@@ -55,8 +56,7 @@ export default struct BookBodyContent {
                       params: {
                         currentIndex: this.currentIndex,
                         EXHIBIT: this.EXHIBIT,
-                        GROUPName: this.GROUP,
-                        bookTypes: this.bookType
+                        bookTypeNumber: this.bookTypeNumber
                       }
                     })
                   })
@@ -86,7 +86,7 @@ export default struct BookBodyContent {
       Stack() {
         if (this.searchValue !== '浏览历史') {
           groupTypeComponent({
-            bookType: this.bookType,
+            bookTypeNumber:this.bookTypeNumber,
             currentIndex: this.currentIndex,
             groupCoverShow: this.groupCoverShow,
             GROUP: this.GROUP
@@ -101,9 +101,8 @@ export default struct BookBodyContent {
               EXHIBIT: this.EXHIBIT,
               GROUP: this.GROUP,
               searchValue: this.searchValue,
-              isClear: this.isClear,
               currentIndex: this.currentIndex,
-              bookType: this.bookType
+              bookTypeNumber:this.bookTypeNumber
             })
           }
           .align(Alignment.Top)
@@ -143,7 +142,6 @@ export default struct BookBodyContent {
 
   onAccept() {
     console.info('确定')
-    this.isClear = true
   }
 
   onCancel() {

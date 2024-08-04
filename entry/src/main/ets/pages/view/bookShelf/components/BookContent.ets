@@ -1,10 +1,3 @@
-/**
- * @author 2008
- * @datetime 2024/7/23 14:16
- * @className: BookContent
- * 书籍详细列
- */
-import { showMessage } from '../../../../componets/common/promptShow'
 import booksDao from '../../../../database/dao/BooksDao'
 import { Books } from '../../../../database/entities/Books'
 import BookInfoGrids from './BookInfoGrids'
@@ -20,7 +13,7 @@ export default struct BookContent {
   @Prop EXHIBIT:string
   @Prop searchValue:string
   @Prop @Watch('changeBookType')currentIndex: number
-  @Prop @Watch('changeBookType')bookType:string
+  @Prop @Watch('changeBookType')bookTypeNumber:number
   //更新数据累加刷新数据页面
   @StorageLink('BOOK_IS_BOOK_REFRESHING') @Watch("isRefresh")isBookRefreshing: number = 0
   isRefresh(){
@@ -30,12 +23,14 @@ export default struct BookContent {
   }
 
   changeBookType(){
-    showMessage(JSON.stringify(`${this.bookType},${this.currentIndex}`))
     this.getBookList()
     this.isBookRefreshing++
   }
   getBookList(){
-    booksDao.search().then((val)=>{
+    booksDao.search({
+      type:this.currentIndex,
+      bookGroup:this.bookTypeNumber
+    }).then((val)=>{
       this.bookList = val
     })
   }

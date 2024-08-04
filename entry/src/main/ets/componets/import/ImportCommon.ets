@@ -9,7 +9,8 @@ import { showMessage } from '../common/promptShow';
 import Score from '../common/Score';
 import Tag from '../common/Tag';
 import BookSourceDao from '../../database/dao/BookSourceDao';
-import { BookSource, GroupList } from '../../database/entities/BookSource';
+import { BookSource, GroupList, SOURCE_GROUP_MAP } from '../../database/entities/BookSource';
+import SourceGroup from '../ui/SourceGroup';
 
 @Component
 export default struct ImportCommon {
@@ -25,6 +26,9 @@ export default struct ImportCommon {
   @State fullActive: boolean = false
   @State waringActive: boolean = false
   @StorageLink('refreshCount') refreshCount: number = 0
+  @State isShowGroup: boolean = false
+  @State groupName: string = ''
+  @State groupIndex: number = 0
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
 
@@ -88,6 +92,10 @@ export default struct ImportCommon {
     this.currentIndex = 0
   }
 
+  getSourceGroupAll () {
+    return Object.values(SOURCE_GROUP_MAP).flat()
+  }
+
   build() {
     Column() {
       Row({ space: 12 }) {
@@ -104,7 +112,7 @@ export default struct ImportCommon {
         List({ scroller: this.secondScroll }) {
           ForEach(this.groupList, (item: GroupList, index: number) => {
             ListItemGroup({
-              header: this.classifyHeader(`${item.title} (${item.list.length})`, index),
+              header: this.classifyHeader(`${item.title}`, ` (${item.list.length})` , index, item.list[0].bookSourceType || 0),
               space: 0
             }) {
               ForEach(item.list, (bookSource: BookSource, j: number) => {
@@ -201,15 +209,26 @@ export default struct ImportCommon {
         top: 12,
         bottom: 12
       })
+
+      //分组
+      Flex()
+        .bindSheet($$this.isShowGroup, this.showCheckGroup(), {
+          height: 320,
+          dragBar: true,
+          showClose: false,
+          onDisappear: () => {
+            this.isShowGroup = false
+          }
+        })
     }
     .padding({ top: 12, bottom: 12 })
     .backgroundColor(0xF5F5F5)
   }
 
   @Builder
-  classifyHeader(title: string, index: number) {
+  classifyHeader(title: string, num: string, index: number, groupIndex: number) {
     Row() {
-      Text(title)
+      Text(title + num)
         .textAlign(TextAlign.Start)
         .height(48)
         .fontSize(16)
@@ -218,10 +237,32 @@ export default struct ImportCommon {
         .textOverflow({
           overflow: TextOverflow.Ellipsis
         })
+
+      Blank()
+
+      if (!this.getSourceGroupAll().includes(title)) {
+        Row() {
+          Text(SOURCE_GROUP_MAP[groupIndex][0])
+            .fontSize(14)
+            .lineHeight(22)
+            .fontColor('#FF6600')
+          Image($r('app.media.f60_right'))
+            .width(16)
+        }
+        .alignItems(VerticalAlign.Center)
+        .padding({ right: 6 })
+        .onClick(() => {
+          this.groupName = title
+          this.groupIndex = groupIndex
+          this.isShowGroup = true
+        })
+      }
+
       CheckboxGroup({ group: 'checkboxGroup' + index })
         .checkboxShape(CheckBoxShape.CIRCLE)
         .selectedColor(0xff6600)
     }
+    .alignItems(VerticalAlign.Center)
     .padding({ right: 16 })
     .backgroundColor('#f5f5f5')
   }
@@ -277,6 +318,31 @@ export default struct ImportCommon {
       bottom: 12
     })
     .backgroundColor(Color.White)
+  }
+
+  //移动分组
+  @Builder
+  showCheckGroup() {
+    Flex() {
+      SourceGroup({
+        title: '导入至',
+        groupList: SOURCE_GROUP_MAP[this.groupIndex],
+        confirm: async (groupName) => {
+          const sourceList = this.sourceList.map(item => {
+            if (item.bookSourceGroup === this.groupName) {
+              item.bookSourceGroup = groupName
+            }
+            return item
+          })
+          this.sourceList = sourceList
+          this.getGroupList()
+          this.isShowGroup = false
+        },
+        cancel: () => {
+          this.isShowGroup = false
+        }
+      })
+    }
   }
 }
 

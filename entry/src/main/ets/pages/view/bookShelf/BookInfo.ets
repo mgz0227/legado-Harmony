@@ -4,7 +4,7 @@ import { promptAction } from '@kit.ArkUI'
 import { updateDateListById } from '../../../storage/bookListData'
 import { BookList } from '../../../componets/dataList/bookList'
 import { showMessage } from '../../../componets/common/promptShow'
-import BookInfoDialog from '../dialog/BookInfoDialog'
+import BookInfoDialog from './components/dialog/BookInfoDialog'
 
 @Component
 /**

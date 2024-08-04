@@ -26,7 +26,7 @@ export class FileHandler {
       bookName: file.name,
       bookUrl: dstPath,
       author: '暂无',
-      bookGroup: 2,
+      bookGroup: 4,
       latestChapterTime: 0,
       totalChapterNum: 0,
       durChapterIndex: 0,
@@ -38,7 +38,7 @@ export class FileHandler {
       syncTime: 0,
       bookType: currentIndex,
       isTop: false,
-      isJoin: false
+      isJoin: true
     }
     booksUtil.addBooks(book)
     showMessage('添加到书架成功')

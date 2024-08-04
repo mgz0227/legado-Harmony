@@ -8,26 +8,10 @@ import { shelfList } from '../../../../componets/dataList/shelfList'
 @Component
 export default struct BookShelfInfo{
 
-  @Prop @Watch('isCheckChange')allCheck:boolean
   @Prop bookShelf:shelfList
   @Link checkBookShelf:shelfList[]
-  @Link @Watch('isTopChange')changeTop:boolean
   @Prop isShowCheck:boolean
-  isTopChange(){
-    this.allCheck = false
-  }
 
-  isCheckChange(){
-    if (this.allCheck) {
-      //判断bookId是否有存在
-      if (this.checkBookShelf.some(book => book.id === this.bookShelf.id)) {
-        return
-      }
-      this.checkBookShelf.push(this.bookShelf)
-    } else {
-      this.checkBookShelf = this.checkBookShelf.filter(book => book.id !== this.bookShelf.id);
-    }
-  }
   build() {
     Flex(
       {
@@ -79,13 +63,10 @@ export default struct BookShelfInfo{
       if (this.isShowCheck){
         Row() {
           Checkbox({
-            name: this.bookShelf.title
+            name: this.bookShelf.title,
+            group: 'checkboxGroup'
           })
             .selectedColor($r('app.color.theme_color'))
-            .select(this.allCheck)
-            .onClick(()=>{
-              this.allCheck = !this.allCheck
-            })
         }
         .padding({ left: 15, right: 15, bottom: 5, top: 5 })
       }

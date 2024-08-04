@@ -2,7 +2,7 @@ import confirmDialogExample from '../../../componets/common/confirmDialog'
 import router from '@ohos.router'
 import { BookList } from '../../../componets/dataList/bookList'
 import { showMessage } from '../../../componets/common/promptShow'
-import BookInfoDialog from '../dialog/BookInfoDialog'
+import BookInfoDialog from './components/dialog/BookInfoDialog'
 
 @Component
 /**

@@ -1,86 +1,55 @@
-import BookOverlay from '../../../../../componets/bookDetail/BookOverlay'
-import { folderList } from '../../../../../componets/dataList/folderList'
+import { BookGroups } from '../../../../../database/entities/BookGroups'
 
 /**
  * 文件夹宫格_管理页
  */
 @Component
 export default struct BookFolderGridManage {
-
-  @Prop @Watch('isCheckChange')allCheck:boolean
-  @Link folderCheckList:folderList[]
-  @Prop @Watch('isTopChange')changeTop:boolean
-  @Prop folderList:folderList
-
-  isTopChange(){
-    this.allCheck = false
-  }
-
-  isCheckChange(){
-    if (this.allCheck) {
-      //判断bookId是否有存在
-      if (this.folderCheckList.some(item => item.id === this.folderList.id)) {
-        return
-      }
-      this.folderCheckList.push(this.folderList)
-    } else {
-      this.folderCheckList = this.folderCheckList.filter(item => item.id !== this.folderList.id);
-    }
-  }
-
+  @Prop group:BookGroups
+  @Link checkGroup:Record<number, boolean>
+  @Prop isManage:boolean
   build() {
     Column() {
       Stack() {
-        Flex({
-          alignItems: ItemAlign.End,
-          justifyContent: FlexAlign.End
-        }) {
-          Flex({
-            alignItems: ItemAlign.End,
-          }) {
-            if (this.folderList.isTop) {
-              Text('置顶')
-                .fontColor(Color.White)
-                .fontWeight(300)
-                .fontSize(8)
-                .padding(5)
-                .margin({ left: 1, bottom: 1 })
-                .borderRadius({ bottomLeft: 10, bottomRight: 5, topRight: 5, topLeft: 5 })
-                .backgroundColor('rgba(0, 0, 0, 0.45)')
-            }
+        Stack(){
+          if (this.isManage){
+            Checkbox()
+              .zIndex(9)
+              .select(this.group.groupId?this.checkGroup[this.group.groupId] ?? false:false)
+              .selectedColor($r('app.color.theme_color'))
+              .onChange((val: boolean) => {
+                if (this.group.groupId) {
+                  this.checkGroup[this.group.groupId] = val
+                }
+              })
           }
-          .align(Alignment.Bottom)
-
-          Checkbox({
-            name: this.folderList.title
-          })
-            .zIndex(2)
-            .selectedColor($r('app.color.theme_color'))
-            .unselectedColor('rgba(0, 0, 0, 0.35)')
-            .select(this.allCheck)
-            .onClick(() => {
-              this.allCheck = !this.allCheck
-            })
+          Stack(){
+            if (this.group.isTop){
+              Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
+                .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
+            }
+            Image(this.group.coverUrl)
+              .draggable(false)
+              .alt($r('app.media.icon_book_default_cover_one'))
+              .width(88)
+              .height(120)
+          }.alignContent(Alignment.BottomStart)
         }
-        .backgroundColor('rgba(0, 0, 0, 0.45)')
-        .width(88)
-        .height(120)
-        .backgroundImage(this.folderList.bookImage)
-        .backgroundImageSize({ width: 88, height: 120 })
         .zIndex(2)
-        Row() {
-          Image($r('app.media.occlusion1'))
-        }
-        .zIndex(1)
-        .width(95).height(110)
+
 
         Row() {
-          Image($r('app.media.occlusion2'))
-        }.zIndex(0)
-        .width(100).height(100)
+          Image($r('app.media.occlusion1')).draggable(false)
+        }
+        .zIndex(1).width(95).height(110)
+        Row() {
+          Image($r('app.media.occlusion2')).draggable(false)
+        }
+        .zIndex(0).width(100).height(100)
       }
+      .alignContent(Alignment.BottomStart)
       Row().width(100).height(20).backgroundColor('rgba(255, 255, 255, 0.6)').borderRadius(10)
-      Text(this.folderList.title)
+      Text(this.group.groupName)
           .fontSize(15)
           .fontWeight(700)
           .textOverflow({
@@ -88,7 +57,7 @@ export default struct BookFolderGridManage {
           })
           .ellipsisMode(EllipsisMode.END)
           .maxLines(2)
-        Text(`共${this.folderList.countNumber}本`).fontSize(12).fontColor('rgb(174,174,174)')
+      Text(`共${this.group.bookIds?.length||0}本`).fontSize(12).fontColor('rgb(174,174,174)')
           .textOverflow({
             overflow:TextOverflow.Ellipsis
           })

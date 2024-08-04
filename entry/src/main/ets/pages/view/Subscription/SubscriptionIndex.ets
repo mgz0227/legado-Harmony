@@ -182,6 +182,74 @@ export default struct SubscriptionIndex {
         .scrollBar(BarState.Off)
         .scrollable(ScrollDirection.Vertical)
       }
+      Blank(1)
+
+      if (this.batchEdit) {
+        Grid() {
+          GridItem() {
+            Button() {
+              Text("移动至")
+                .lineHeight(24)
+                .fontColor($r('app.string.ThemeColor'))
+                .font({
+                  size: 16,
+                  weight: 500
+                })
+            }
+            .width("100%")
+            .height(40)
+            .backgroundColor($r('app.string.BackgroundThemeColor'))
+          }
+
+          GridItem() {
+            Button() {
+              Text("分享")
+                .lineHeight(24)
+                .fontColor($r('app.string.ThemeColor'))
+                .font({
+                  size: 16,
+                  weight: 500
+                })
+            }
+            .width("100%")
+            .height(40)
+            .backgroundColor($r('app.string.BackgroundThemeColor'))
+          }
+
+          GridItem() {
+            Button() {
+              Text("导出")
+                .lineHeight(24)
+                .fontColor($r('app.string.ThemeColor'))
+                .font({
+                  size: 16,
+                  weight: 500
+                })
+            }
+            .width("100%")
+            .height(40)
+            .backgroundColor($r('app.string.BackgroundThemeColor'))
+          }
+
+          GridItem() {
+            Button() {
+              Text("删除")
+                .lineHeight(24)
+                .fontColor($r('app.string.ThemeColor'))
+                .font({
+                  size: 16,
+                  weight: 500
+                })
+            }
+            .width("100%")
+            .height(40)
+            .backgroundColor($r('app.string.BackgroundThemeColor'))
+          }
+        }
+        .height(40)
+        .borderWidth(1)
+        .columnsTemplate("1fr 1fr 1fr 1fr")
+      }
 
       Flex()
         .bindSheet($$this.isShowImport, this.dialogImportFunction(), {
@@ -211,8 +279,7 @@ export default struct SubscriptionIndex {
       top: this.topRectHeight,
       left: PaddingConstants.PADDING_20,
       right: PaddingConstants.PADDING_20
-    }
-    )
+    })
     .height('100%')
   }
 
@@ -279,11 +346,12 @@ export default struct SubscriptionIndex {
     switch (value) {
       case 0:
         // 粘贴导入
-        this.pasteAnalyze(0);
+        this.pasteAnalyze();
         break;
       case 1:
         // 本地导入
-        this.pasteAnalyze(1);
+        showMessage('请选择本地json文件导入')
+        this.localImport()
         break
       case 2:
         this.isShowNewSources = true
@@ -296,7 +364,16 @@ export default struct SubscriptionIndex {
     }
   }
 
-  async pasteAnalyze(value: number) {
+  async localImport() {
+    let FileResult = await FileHandler.documentPickerFile(1, ['.json'])
+    FileHandler.ReadJSONFile(FileResult[0]).then(result => {
+      // console.log('result:' + result)
+      this.subscriptionList = JSON.parse(result) as rssSources[]
+      this.isShowImport = true;
+    })
+  }
+
+  async pasteAnalyze() {
     try {
       const url = getPasteDataSync()
       if (!url) {
@@ -309,18 +386,10 @@ export default struct SubscriptionIndex {
       //   showMessage('复制的链接不正确')
       //   return
       // }
-      if (value === 1) {
-        let FileResult = await FileHandler.documentPickerFile(1, ['.json'])
-        FileHandler.ReadJSONFile(FileResult[0]).then(result => {
-          // console.log('result:' + result)
-          this.subscriptionList = JSON.parse(result) as rssSources[]
-        })
-      } else if (value === 0) {
-        const res: AxiosResponse = await axios
-          .get(url ?? 'http://yuedu.miaogongzi.net/shuyuan/miaogongziDY.json');
-        console.log('res', JSON.stringify(res))
-        this.subscriptionList = res.data;
-      }
+      const res: AxiosResponse = await axios
+        .get(url ?? 'http://yuedu.miaogongzi.net/shuyuan/miaogongziDY.json');
+      console.log('res', JSON.stringify(res))
+      this.subscriptionList = res.data;
       this.isShowImport = true;
     } catch (err) {
       console.error('错误 ' + err);

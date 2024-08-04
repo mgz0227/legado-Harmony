@@ -9,9 +9,13 @@ import Tag from '../../../../../componets/common/Tag'
 import { IconTitleVo } from '../../../../../componetsmodel/IconTitleVo'
 import { CustomContentDialog, router } from '@kit.ArkUI'
 import BookSourceDao from '../../../../../database/dao/BookSourceDao'
-import { GroupPartList } from '../../../../../database/entities/BookSource'
+import { GroupPartList, SOURCE_GROUP_MAP } from '../../../../../database/entities/BookSource'
 import { BookSourcePart } from '../../../../../database/entities/BookSourcePart'
 import { JSON } from '@kit.ArkTS'
+import SourceGroup from '../../../../../componets/ui/SourceGroup'
+import { BookSourceSearchParams } from '../../../../../database/types/BookSourceType'
+import FiltrateOption from './FiltrateOption'
+import FilterText from './FilterText'
 
 @Component
 export default struct SourceView {
@@ -40,6 +44,14 @@ export default struct SourceView {
   private secondScroll = new Scroller()
   @State dialogItem: Partial<BookSourcePart> = {}
   @StorageLink('refreshCount') refreshCount: number = 0
+  @State isShowGroup: boolean = false
+  @State currentTitle: number = -1
+  @State query: BookSourceSearchParams = {
+    enabled: undefined,
+    bookSourceGrade: undefined,
+    order: undefined,
+    hasLoginUrl: undefined
+  }
   private dialogController: CustomDialogController = new CustomDialogController({
     builder: CustomContentDialog({
       primaryTitle: '书源评分',
@@ -67,6 +79,22 @@ export default struct SourceView {
           background: '#FF6600',
           fontColor: '#FFFFFF',
           action: async () => {
+            if (this.isBatch) {
+              const sourceList: BookSourcePart[] = []
+              this.sourceList.forEach((item, i) => {
+                if (this.activeNameMap[item.bookSourceUrl]) {
+                  item.bookSourceGrade = this.dialogItem.bookSourceGrade
+                  item.bookSourceScore = this.dialogItem.bookSourceScore
+                  sourceList.push(item)
+                }
+              })
+              await BookSourceDao.batchUpdateFlow(sourceList)
+              this.getList()
+              this.activeNameMap = {}
+              this.dialogController.close()
+              this.dialogItem = {}
+              return
+            }
             await BookSourceDao.updateFlow(this.dialogItem as BookSourcePart)
             this.getList()
             this.dialogItem = {}
@@ -96,7 +124,11 @@ export default struct SourceView {
     this.refreshCount += 1
     BookSourceDao.flowSearch({
       type: [0, 2, 1][this.index],
-      searchKey: this.searchValue
+      searchKey: this.searchValue,
+      enabled: this.query.enabled,
+      bookSourceGrade: this.query.bookSourceGrade,
+      order: this.query.order,
+      hasLoginUrl: this.query.hasLoginUrl
     }).then(data => {
       const bookSource = data ?? []
       console.info('TagInfo', JSON.stringify(bookSource.slice(0, 3)))
@@ -169,19 +201,72 @@ export default struct SourceView {
 
         // 筛选器
         Row() {
-          this.filterText('全部')
+          FilterText({
+            index: 0,
+            title: this.query.enabled === undefined ? '全部' : (this.query.enabled ? '启用' : '禁用'),
+            hasActive: this.query.enabled !== undefined,
+            onChange: (index) => {
+              if (this.currentTitle === index) {
+                this.currentTitle = -1
+                return
+              }
+              this.currentTitle = index
+            }
+          })
 
           Row().width(12)
-          this.filterText('排序')
+          FilterText({
+            index: 1,
+            title: this.query.order === undefined ? '排序' : ['按评分', '按时间'][this.query.order],
+            hasActive: this.query.order !== undefined,
+            onChange: (index) => {
+              if (this.currentTitle === index) {
+                this.currentTitle = -1
+                return
+              }
+              this.currentTitle = index
+            }
+          })
 
           Row().width(12)
-          this.filterText('校验')
+          FilterText({
+            index: 2,
+            title: '校验',
+            hasActive: this.query.verify !== undefined,
+            onChange: (index) => {
+              showMessage('校验，开发中')
+            }
+          })
 
           Row().width(12)
-          this.filterText('等级')
+          FilterText({
+            index: 3,
+            title: this.query.bookSourceGrade === undefined ? '等级' : ['常规', '优质', '精品'][this.query.bookSourceGrade],
+            hasActive: this.query.bookSourceGrade !== undefined,
+            onChange: (index) => {
+              if (this.currentTitle === index) {
+                this.currentTitle = -1
+                return
+              }
+              this.currentTitle = index
+            }
+          })
 
           Row().width(12)
-          this.filterText('登录', false)
+          FilterText({
+            index: 4,
+            title: '登录',
+            hasActive: this.query.hasLoginUrl !== undefined,
+            isIcon: false,
+            onChange: () => {
+              if (this.query.hasLoginUrl) {
+                this.query.hasLoginUrl = undefined
+              } else {
+                this.query.hasLoginUrl = true
+              }
+              this.getList()
+            }
+          })
         }
         .padding({
           left: 20,
@@ -218,79 +303,223 @@ export default struct SourceView {
           delay: this.isBatch ? 300 : 0
         })
 
-      Column() {
-        // 内容主体
-        Row({ space: 12 }) {
-          SideBar({
-            currentIndex: this.currentIndex,
-            sideBarList: this.groupList,
-            scroller: this.scroll,
-            clickAction: (index: number) => {
-              this.scrollChangeAction(index, true)
-            },
-            isBadge: !this.isBatch,
-            isDrag: this.isBatch,
-            onDragChange: async (list) => {
-              this.groupList = list as GroupPartList[]
-              const bookSourcePartList =
-                this.groupList.reduce((acc: BookSourcePart[], item) => acc.concat(item.list), [])
-              const sortBookSourcePartList = bookSourcePartList.map((item, index) => {
-                if (index !== 0) {
-                  item.customOrder = bookSourcePartList[index - 1].customOrder + 1
-                }
-                return item
-              })
-              console.info('TagInfo bookSourcePartList:', JSON.stringify(bookSourcePartList))
-              await BookSourceDao.batchUpdateFlow(sortBookSourcePartList)
-              this.refreshCount += 1
+      Stack() {
+        Column() {
+          Stack() {
+            Column() {
             }
-          })
-            .width(88)
+            .backgroundColor('#99000000')
+            .width('100%')
+            .height('100%')
+            .opacity(this.currentTitle !== -1 ? 1 : 0)
+            .animation({
+              duration: this.currentTitle !== -1 ? 300 : 0
+            })
 
-          List({ scroller: this.secondScroll }) {
-            ForEach(this.groupList, (item: GroupPartList, index: number) => {
-              ListItemGroup({
-                header: this.classifyHeader(`${item.title} (${item.list.length})`, index),
-                space: 0
-              }) {
-                ForEach(item.list, (bookSource: BookSourcePart, j: number) => {
-                  this.CourseItem(bookSource, index, j)
+            Row() {
+              if (this.currentTitle === 0) {
+                FiltrateOption({
+                  options: [
+                    {
+                      label: '全部',
+                      value: undefined
+                    },
+                    {
+                      label: '启用',
+                      value: true
+                    },
+                    {
+                      label: '禁用',
+                      value: false
+                    }
+                  ],
+                  value: this.query.enabled,
+                  onChange: (value) => {
+                    this.query.enabled = value as boolean
+                    this.getList()
+                    setTimeout(() => {
+                      this.currentTitle = -1
+                    }, 200)
+                  }
                 })
               }
+              if (this.currentTitle === 1) {
+                FiltrateOption({
+                  options: [
+                    {
+                      label: '按评分排序',
+                      value: 0
+                    },
+                    {
+                      label: '按时间排序',
+                      value: 1
+                    }
+                  ],
+                  columns: 2,
+                  isAgain: true,
+                  value: this.query.order,
+                  onChange: (value) => {
+                    this.query.order = value as number
+                    this.getList()
+                    setTimeout(() => {
+                      this.currentTitle = -1
+                    }, 200)
+                  }
+                })
+              }
+              if (this.currentTitle === 3) {
+                FiltrateOption({
+                  options: [
+                    {
+                      label: '全部',
+                      value: undefined
+                    },
+                    {
+                      label: '精选',
+                      value: 2
+                    },
+                    {
+                      label: '优质',
+                      value: 1
+                    },
+                    {
+                      label: '常规',
+                      value: 0
+                    }
+                  ],
+                  columns: 4,
+                  value: this.query.bookSourceGrade,
+                  onChange: (value) => {
+                    this.query.bookSourceGrade = value as number
+                    this.getList()
+                    setTimeout(() => {
+                      this.currentTitle = -1
+                    }, 200)
+                  }
+                })
+              }
+            }
+            .height([0, 1, 3].includes(this.currentTitle) ? 64 : 0)
+            .backgroundColor('#f5f5f5')
+            .padding({ left: 20, right: 20, bottom: 8 })
+            .borderRadius({
+              bottomLeft: 8,
+              bottomRight: 8
+            })
+            .translate({ y: this.currentTitle !== -1 ? 0 : -64 })
+            .width('100%')
+            .animation({
+              duration: this.currentTitle !== -1 ? 300 : 0
             })
           }
-          .padding({ right: 20 })
-          .sticky(StickyStyle.Header)
-          .onScrollIndex((start) => {
-            this.scrollChangeAction(start, false)
-          })
+          .width('100%')
           .height('100%')
-          .layoutWeight(1)
-          .gesture(
-            LongPressGesture({ repeat: true, duration: 500 })
-              .onAction((event: GestureEvent) => {
-                if (event && event.repeat) {
-                  if (this.longCount >= 1) {
-                    this.isBatch = true
+          .alignContent(Alignment.Top)
+        }
+        .width('100%')
+        .height('100%')
+        .padding({ top: 122 })
+        .zIndex(this.currentTitle !== -1 ? 99 : -1)
+        .onClick(() => {
+          this.currentTitle = -1
+        })
+
+        Column() {
+          // 内容主体
+          Row({ space: 12 }) {
+            SideBar({
+              currentIndex: this.currentIndex,
+              sideBarList: this.groupList,
+              scroller: this.scroll,
+              clickAction: (index: number) => {
+                this.scrollChangeAction(index, true)
+              },
+              isBadge: !this.isBatch,
+              isDrag: this.isBatch,
+              onDragChange: async (list) => {
+                this.groupList = list as GroupPartList[]
+                const bookSourcePartList =
+                  this.groupList.reduce((acc: BookSourcePart[], item) => acc.concat(item.list), [])
+                const sortBookSourcePartList = bookSourcePartList.map((item, index) => {
+                  if (index !== 0) {
+                    item.customOrder = bookSourcePartList[index - 1].customOrder + 1
                   }
-                  this.longCount++
+                  return item
+                })
+                console.info('TagInfo bookSourcePartList:', JSON.stringify(bookSourcePartList))
+                await BookSourceDao.batchUpdateFlow(sortBookSourcePartList)
+                this.refreshCount += 1
+              }
+            })
+              .width(88)
+
+            List({ scroller: this.secondScroll }) {
+              ForEach(this.groupList, (item: GroupPartList, index: number) => {
+                ListItemGroup({
+                  header: this.classifyHeader(`${item.title} (${item.list.length})`, index),
+                  space: 0
+                }) {
+                  ForEach(item.list, (bookSource: BookSourcePart, j: number) => {
+                    this.CourseItem(bookSource, index, j)
+                  })
                 }
               })
-              .onActionEnd(() => {
-                this.longCount = 0
-              })
-          )
+            }
+            .padding({ right: 20 })
+            .sticky(StickyStyle.Header)
+            .onScrollIndex((start) => {
+              this.scrollChangeAction(start, false)
+            })
+            .height('100%')
+            .layoutWeight(1)
+            .gesture(
+              LongPressGesture({ repeat: true, duration: 500 })
+                .onAction((event: GestureEvent) => {
+                  if (event && event.repeat) {
+                    if (this.longCount >= 1) {
+                      this.isBatch = true
+                    }
+                    this.longCount++
+                  }
+                })
+                .onActionEnd(() => {
+                  this.longCount = 0
+                })
+            )
+          }
+          .layoutWeight(1)
+          .animation({
+            duration: 300
+          })
         }
-        .layoutWeight(1)
+        .height('100%')
+        .padding({
+          top: this.isBatch ? 50 + this.topRectHeight : 122,
+          bottom: this.isBatch ? 68 + this.bottomRectHeight : this.bottomRectHeight
+        })
+
+        Column() {
+          if (this.errorText && !this.sourceList.length) {
+            Text(this.errorText)
+          } else {
+            LoadingProgress()
+              .color(0xff6600)
+              .width('50%')
+            Text('加载中...')
+          }
+        }
+        .justifyContent(FlexAlign.Center)
+        .zIndex(this.loading || (this.errorText && !this.sourceList.length) ? 9 : -1)
+        .opacity(this.loading || (this.errorText && !this.sourceList.length) ? 1 : 0)
+        .width('100%')
+        .height('100%')
+        .backgroundColor('#f5f5f5')
         .animation({
           duration: 300
         })
       }
       .height('100%')
-      .padding({
-        top: this.isBatch ? 50 + this.topRectHeight : 122,
-        bottom: this.isBatch ? 68 + this.bottomRectHeight : this.bottomRectHeight
-      })
+
 
       Row() {
         Row() {
@@ -373,7 +602,20 @@ export default struct SourceView {
             this.rightDialogBuilder(this.More_Right_Dialog_Data, async (index: number) => {
               switch (index) {
                 case 0:
+                  if (!Object.values(this.activeNameMap).filter(o => o).length) {
+                    showMessage('请至少选择一个')
+                    return
+                  }
+                  this.isShowGroup = true;
+                  break;
                 case 1:
+                  if (!Object.values(this.activeNameMap).filter(o => o).length) {
+                    showMessage('请至少选择一个')
+                    return
+                  }
+                  this.dialogItem = this.sourceList.filter(item => this.activeNameMap[item.bookSourceUrl])[0]
+                  this.dialogController.open()
+                  break;
                 case 2:
                   showMessage(this.More_Right_Dialog_Data[index].title)
                   break;
@@ -405,25 +647,17 @@ export default struct SourceView {
       })
       .padding({ bottom: this.bottomRectHeight })
 
-      Column() {
-        if (this.errorText && !this.sourceList.length) {
-          Text(this.errorText)
-        } else {
-          LoadingProgress()
-            .color(0xff6600)
-            .width('50%')
-          Text('加载中...')
-        }
-      }
-      .justifyContent(FlexAlign.Center)
-      .zIndex(this.loading || (this.errorText && !this.sourceList.length) ? 9 : -1)
-      .opacity(this.loading || (this.errorText && !this.sourceList.length) ? 1 : 0)
-      .width('100%')
-      .height('100%')
-      .backgroundColor('#f5f5f5')
-      .animation({
-        duration: 300
-      })
+
+      //分组
+      Flex()
+        .bindSheet($$this.isShowGroup, this.showCheckGroup(), {
+          height: 320,
+          dragBar: true,
+          showClose: false,
+          onDisappear: () => {
+            this.isShowGroup = false
+          }
+        })
     }
     .alignContent(Alignment.Top)
   }
@@ -450,32 +684,6 @@ export default struct SourceView {
       this.activeNameMap = {}
       this.getList()
     })
-  }
-
-  @Builder
-  filterText(title: string, isIcon: boolean = true) {
-    Row() {
-      Text(title)
-        .fontSize(12)
-
-      if (isIcon) {
-        Image($r('app.media.down_arrow'))
-          .width(8)
-          .margin({ left: 6 })
-      }
-    }
-    .height(22)
-    .padding({
-      top: 2,
-      bottom: 2,
-      left: 4,
-      right: 4
-    })
-    .layoutWeight(1)
-    .backgroundColor(Color.White)
-    .borderRadius(4)
-    .alignItems(VerticalAlign.Center)
-    .justifyContent(FlexAlign.Center)
   }
 
   @Builder
@@ -770,5 +978,31 @@ export default struct SourceView {
           })
       })
     }
+  }
+
+  //移动分组
+  @Builder
+  showCheckGroup() {
+    Flex() {
+      SourceGroup({
+        groupList: SOURCE_GROUP_MAP[[0, 2, 1][this.index]],
+        confirm: async (groupName) => {
+          this.sourceList.forEach((item, i) => {
+            if (this.activeNameMap[item.bookSourceUrl]) {
+              item.bookSourceGroup = groupName
+              this.sourceList[i] = item
+            }
+          })
+          await BookSourceDao.batchUpdateFlow(this.sourceList)
+          this.getList()
+          this.activeNameMap = {}
+          this.isShowGroup = false
+        },
+        cancel: () => {
+          this.isShowGroup = false
+        }
+      })
+    }
+    .padding({ bottom: this.bottomRectHeight })
   }
 }

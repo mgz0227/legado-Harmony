@@ -1,22 +1,37 @@
-import FolderInfoDialog from '../../pages/view/dialog/FolderInfoDialog'
-import FolderManageDialog from '../../pages/view/dialog/FolderManageDialog'
+import bookGroupUtil from '../../common/utils/bookGroupUtils'
+import BookGroupsDao from '../../database/dao/BookGroupsDao'
+import { BookGroups } from '../../database/entities/BookGroups'
+import BookManageDialog from '../../pages/view/bookShelf/components/dialog/BookManageDialog'
+import FolderInfoDialog from '../../pages/view/bookShelf/components/dialog/FolderInfoDialog'
 import { updateAppData } from '../../storage/appData'
-import { updateDateGroup } from '../../storage/groupData'
 import customizeDialogExample from '../common/customizeDialog'
+import hideDialogExample from '../common/hideDialog'
 import { showMessage } from '../common/promptShow'
-import { folderList } from '../dataList/folderList'
 
 @Component
 export default struct groupTypePanel{
   @Link groupCoverShow:boolean
   @State isShowIcon:boolean = false
-  @State groupType:string[] = ['分组','全部','未分组','本地','书单']
-  @State groupTypes:string[] = []
-  @State hideGroupType:string[] = ['游戏','玄幻','都市', '历史', '军事', '科幻', '灵异', '二次元', '耽美', '同人']
-
-  @StorageProp('GROUP_LIST_DATA') groupData:folderList[] = []
+  @Prop showGroupList:BookGroups[] = []
+  @State hideList:BookGroups[] = []
+  @Prop currentIndex:number = 0
 
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = true
+  @Prop clickGroup:BookGroups
+
+  aboutToAppear(): void {
+    this.getGroupList()
+  }
+
+  getGroupList(){
+    BookGroupsDao.searchHide({
+      type:this.currentIndex,
+      show: false
+    }).then((val)=>{
+      this.hideList = val
+    })
+  }
+
   build() {
     Column({
       space:15
@@ -40,16 +55,28 @@ export default struct groupTypePanel{
           })
         }
       }
+
       Flex({
         direction: FlexDirection.Row, wrap: FlexWrap.Wrap,
         justifyContent:FlexAlign.Start
       }){
-        ForEach(this.groupTypes.length > 0?this.groupTypes:this.groupType,(item:string,index:number)=>{
-          if (index === 0) {
+        ForEach(this.showGroupList,(item:BookGroups,index:number)=>{
+          if (item.show) {
             Row(){
-              this.GroupTypeColor(item)
+              if (index === 0){
+                this.GroupTypeColor(item.groupName)
+              } else {
+                this.GroupType(item.groupName)
+              }
               if (this.isShowIcon) {
-                Image($r('app.media.sort')).width(12).height(12).offset({x:-20,y:-20})
+                Image(!item.isSystem?$r('app.media.clear'):$r('app.media.sort')).width(12).height(12).offset({x:-20,y:-20})
+                  .onClick(()=>{
+                    if (!item.isSystem && item.groupId) {
+                      this.isHide = true
+                      this.checkListNumber = item.groupId
+                      this.clickHideDialog?.open()
+                    }
+                  })
               }
             }.width('25%')
             .onTouch((event: TouchEvent) => {
@@ -65,33 +92,13 @@ export default struct groupTypePanel{
             .onDrop((event: DragEvent, extraParams: string) => {
               console.log('onDrop')
               this.changeIndex(this.dragIndex, index,0)
-              this.groupTypes = []
             })
-
-          } else {
-            Row(){
-              this.GroupType(item)
-              if (this.isShowIcon) {
-                Image($r('app.media.sort')).width(12).height(12).offset({x:-20,y:-20})
-              }
-            }.width('25%')
-            .draggable(this.isShowIcon)
-            .onTouch((event: TouchEvent) => {
-              if (event.type === TouchType.Down) {
-                this.dragIndex = index // 获取当前拖拽子组件的索引
-                console.info('onTouch' + this.dragIndex)
-              }
-            })
-            .onDragStart(()=>{
-              console.log('onDragStart')
-            })
-            .onDrop((event: DragEvent, extraParams: string) => {
-              console.log('onDrop')
-              this.changeIndex(this.dragIndex, index,0)
+            .onClick(() => {
+              this.clickGroup = item
+              this.isShowBookFolderInfoDialog = true
             })
           }
         })
-
       }
 
       Flex({
@@ -115,15 +122,22 @@ export default struct groupTypePanel{
             })
         }.alignItems(VerticalAlign.Bottom).justifyContent(FlexAlign.End)
       }
-      if (this.hideGroupType.length > 0){
+      if (this.hideList.length > 0){
         Flex({
           direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center
         }){
-          ForEach(this.groupData, (item: folderList,index:number) => {
+          ForEach(this.hideList, (item: BookGroups,index:number) => {
               Row(){
-                this.GroupType(item.title)
+                this.GroupType(item.groupName)
                 if (this.isShowIcon) {
                   Image($r('app.media.add_new_fill')).width(12).height(12).offset({x:-20,y:-20})
+                    .onClick(() => {
+                      if (item.groupId) {
+                        this.isHide = false
+                        this.checkListNumber = item.groupId
+                      }
+                      this.clickHideDialog?.open()
+                    })
                 }
               }
               .onTouch((event: TouchEvent) => {
@@ -141,16 +155,16 @@ export default struct groupTypePanel{
                 this.changeIndex(this.dragIndex, index,1)
               })
               .onClick(()=>{
-                this.group = item
+                this.clickGroup = item
                 this.isShowBookFolderInfoDialog = true
-                this.folderType = item.title
               })
               .gesture(
                 LongPressGesture({ repeat: true,duration:500 })
                   .onAction((event: GestureEvent) => {
                     if (event.repeat) {
                       if (!this.isShow) {
-                        this.group = item
+                        this.dialogGroupData = item
+                        // this.group = item
                         this.isShow = true
                         this.changeNumber = 1
                         this.groupInfoDialog?.open()
@@ -160,16 +174,6 @@ export default struct groupTypePanel{
               .width('25%')
           })
         }
-        .bindSheet($$this.isShowBookFolderInfoDialog, this.bookFolderInfoDialog(), {
-          detents: [SheetSize.MEDIUM, SheetSize.LARGE, 200],
-          showClose: false,
-          dragBar: true,
-          maskColor: 'rgba(0,0,0,0.6)',
-          onDisappear:()=>{
-            console.log('隐藏')
-          }
-        })
-
       } else {
         Flex({
           justifyContent:FlexAlign.Center
@@ -182,6 +186,16 @@ export default struct groupTypePanel{
         .padding({top:6,bottom:6})
 
       }
+      Flex()
+        .bindSheet($$this.isShowBookFolderInfoDialog, this.bookFolderInfoDialog(), {
+          detents: [SheetSize.MEDIUM, SheetSize.LARGE, 200],
+          showClose: false,
+          dragBar: true,
+          maskColor: 'rgba(0,0,0,0.6)',
+          onDisappear:()=>{
+            console.log('隐藏')
+          }
+        })
 
     }
     .offset({y:-15})
@@ -211,23 +225,12 @@ export default struct groupTypePanel{
 
   @State dragIndex: number = 0
   changeIndex(index1: number, index2: number,type:number = 2) { // 交换数组位置
-    //@State hideGroupType:string[] = ['游戏','玄幻','都市', '历史', '军事', '科幻', '灵异', '二次元', '耽美', '同人']
-    //hideGroupType数组位置交换
     if (!this.isShowIcon) {
       showMessage('请在管理状态下拖到改变顺序')
       return
     }
     console.log('changeIndex' + index1 + ',' + index2)
-    switch (type){
-      case 0:
-        let temp1 = this.groupType[index1];
-        this.groupType[index1] = this.groupType[index2];
-        this.groupType[index2] = temp1;break;
-      case 1:
-        let temp = this.hideGroupType[index1];
-        this.hideGroupType[index1] = this.hideGroupType[index2];
-        this.hideGroupType[index2] = temp;break;
-    }
+    //TODO 更新排序顺序到数据库中sort
   }
   @Builder GroupTypeColor(title:string){
     Column(){
@@ -254,11 +257,7 @@ export default struct groupTypePanel{
        }).ellipsisMode(EllipsisMode.END)
          .maxLines(1).fontColor(Color.Black)
          .textAlign(TextAlign.Center)
-       // Image($r('app.media.sort')).width(12).height(12).offset({x:18,y:-12})
      }
-     // .backgroundImage($r('app.media.sort'))
-     // .backgroundImagePosition({x:-12,y:12})
-     // .backgroundImageSize({width:'100%',height:12})
      .margin({ right: 16, bottom: 16 })
      .justifyContent(FlexAlign.Center)
      .alignItems(VerticalAlign.Center)
@@ -267,12 +266,12 @@ export default struct groupTypePanel{
    }
   }
 
-  @State @Watch('watchFolder')group:folderList = new folderList(0,'',0,$r('app.media.folder_test'),'')
   @State changeNumber:number = 0
   @State isShow:boolean = false
+  @State dialogGroupData:BookGroups = new BookGroups()
   groupInfoDialog: CustomDialogController | null = new CustomDialogController({
     builder: FolderInfoDialog({
-      itemData:this.group,
+      itemData:this.dialogGroupData,
       cancel: () => {
         this.exitDialog()
       }
@@ -288,22 +287,46 @@ export default struct groupTypePanel{
   exitDialog(){
     this.changeNumber = 0
     this.isShow = false
+    this.getGroupList()
     this.groupInfoDialog?.close()
   }
 
-  watchFolder(){
-    if (this.changeNumber === 1) {
-      updateDateGroup(this.group)
-    }
-  }
   @State isShowBookFolderInfoDialog:boolean = false
-  @State folderType:string = ''
   @Builder bookFolderInfoDialog(){
     Column(){
-      FolderManageDialog({
-        folderType:this.folderType
+      BookManageDialog({
+        title:this.clickGroup.groupName,
+        currentIndex:this.currentIndex,
+        bookTypeNumber:this.clickGroup.groupId,
       })
-    }.padding(15)
+    }
+  }
+  //需要显示的Id
+  @State checkListNumber:number = 0
+  @State isHide:boolean = false
+  @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
+  //是否隐藏分组弹窗
+  clickHideDialog: CustomDialogController | null = new CustomDialogController({
+    builder: hideDialogExample({
+      confirm: ()=> { this.clickHideAccept() },
+      isHide: this.isHide
+    }),
+    autoCancel: true,
+    alignment: DialogAlignment.Center,
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 25,
+  })
+  //隐藏操作
+  clickHideAccept() {
+    bookGroupUtil.updateGroupShow(this.checkListNumber,!this.isHide)
+    setTimeout(()=>{
+      this.getGroupList()
+      this.BOOK_IS_BOOK_GROUPS_REFRESHING++
+      showMessage('显示成功')
+    },500)
+    this.checkListNumber = 0
+    this.isHide = false
   }
 
 }

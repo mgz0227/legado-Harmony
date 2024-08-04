@@ -1,3 +1,4 @@
+import BookGroupsDao from './dao/BookGroupsDao'
 import BooksDao from './dao/BooksDao'
 import BookSourceDao from './dao/BookSourceDao'
 import rssSourcesHistoryDao from './dao/RssSourcesHistoryDao'
@@ -9,6 +10,7 @@ class DataBase {
     await rssSourcesHistoryDao.initRssSourcesHistoryTable()
     await SubscriptionDao.initSubscriptionTable()
     await BooksDao.initBooksTable()
+    await BookGroupsDao.initGroupTable()
   }
 }
 

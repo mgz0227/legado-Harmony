@@ -9,7 +9,7 @@ import BookOverlay from '../../componets/bookDetail/BookOverlay'
 @Component
 export default struct coverInfoImageShow {
   @Prop coverCount:number
-  @Prop image:Resource
+  @Prop image:Resource|string
   @Prop imageString:string
   build() {
     if (this.coverCount === 1){
@@ -21,7 +21,7 @@ export default struct coverInfoImageShow {
     }
   }
 
-  @Builder coverImageOne(bookImage:Resource){
+  @Builder coverImageOne(bookImage:Resource|string){
     Column(){
       BookOverlay({
         bookImage:bookImage,
@@ -54,10 +54,10 @@ export default struct coverInfoImageShow {
           alignItems: ItemAlign.End,
         }){
           if (this.imageString) {
-            Image(this.imageString)
+            Image(this.imageString).draggable(false)
           } else {
             Column(){
-              Image($r('app.media.add_image')).width(24).height(24)
+              Image($r('app.media.add_image')).width(24).height(24).draggable(false)
               Text('添加图片或gif').fontColor(Color.White).fontWeight(400).fontSize(10).lineHeight(18)
             }
             .padding({top:19,bottom:19,left:17,right:17})
@@ -70,13 +70,13 @@ export default struct coverInfoImageShow {
         .zIndex(2)
 
         Row(){
-          Image($r('app.media.occlusion1'))
+          Image($r('app.media.occlusion1')).draggable(false)
         }
         .zIndex(1)
         .width(CommonConstants.NOVEL_IMG_WIDTH + 5).height(CommonConstants.NOVEL_IMG_HEIGHT - 5)
 
         Row(){
-          Image($r('app.media.occlusion2'))
+          Image($r('app.media.occlusion2')).draggable(false)
         }.zIndex(0)
         .width(CommonConstants.NOVEL_IMG_WIDTH + 10).height(CommonConstants.NOVEL_IMG_HEIGHT - 10)
       }

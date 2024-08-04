@@ -1,36 +1,13 @@
-import { BookList } from '../../../../../componets/dataList/bookList'
+import { Books } from '../../../../../database/entities/Books'
 
 @Component
 /**
  * 书签
  */
 export default struct BookInfoManage{
-  @Prop @Watch('isCheckChange')allCheck:boolean
-
-  @Link checkBookList:BookList[]
-
-  @Link @Watch('isTopChange')changeTop:boolean
-
   @Prop isManage:boolean
-
-  @Prop bookData:BookList
-
-  isTopChange(){
-    this.allCheck = false
-  }
-
-  isCheckChange(){
-    if (this.allCheck) {
-      //判断bookId是否有存在
-      if (this.checkBookList.some(book => book.bookId === this.bookData.bookId)) {
-        return
-      }
-      this.checkBookList.push(this.bookData)
-    } else {
-      this.checkBookList = this.checkBookList.filter(book => book.bookId !== this.bookData.bookId);
-    }
-  }
-
+  @Prop bookData:Books
+  @Link checkGroup:Record<number, boolean>
   build() {
     Flex(
       {
@@ -41,31 +18,32 @@ export default struct BookInfoManage{
       Row({
         space:20
       }){
-        Flex({
-          alignItems: ItemAlign.End,
-        }){
+        Stack(){
           if (this.bookData.isTop){
             Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
-              .backgroundColor('rgba(0, 0, 0, 0.45)')
+              .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
           }
-        }
-        .align(Alignment.Bottom).width(60).height(80).backgroundImage(this.bookData.bookImage).backgroundImageSize({width:60,height:80})
+          Image(this.bookData.coverUrl)
+            .alt($r('app.media.icon_book_default_cover_one'))
+            .width(60)
+            .height(80)
+        }.alignContent(Alignment.BottomStart)
 
         Column({
           space:24
         })
         {
-          Text(this.bookData.title)
+          Text(this.bookData.bookName)
             .fontWeight(700)
           Column(){
-            Text(this.bookData.describe).fontSize(12).fontColor('rgb(174,174,174)')
+            Text(this.bookData.intro).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
               })
               .ellipsisMode(EllipsisMode.END)
               .fontWeight(500)
               .maxLines(1)
-            Text(this.bookData.chapter).fontSize(12).fontColor('rgb(174,174,174)')
+            Text(this.bookData.latestChapterTitle).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
               })
@@ -81,13 +59,16 @@ export default struct BookInfoManage{
       if (this.isManage){
         Row() {
           Checkbox({
-            name: this.bookData.title
+            name: JSON.stringify(this.bookData.id)
           })
-            .selectedColor($r('app.color.theme_color'))
-            .select(this.allCheck)
-            .onClick(()=>{
-              this.allCheck = !this.allCheck
+            .select(this.bookData.id?this.checkGroup[this.bookData.id] ?? false:false)
+            .onChange((val:boolean)=>{
+              if (this.bookData.id) {
+                this.checkGroup[this.bookData.id] = val
+              }
             })
+            .selectedColor($r('app.color.theme_color'))
+            .unselectedColor('rgba(0, 0, 0, 0.35)')
         }
         .padding({ left: 15, right: 15, bottom: 5, top: 5 })
       }

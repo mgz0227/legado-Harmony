@@ -1,18 +1,16 @@
 import confirmDialogExample from '../../../../../componets/common/confirmDialog'
 import { showMessage } from '../../../../../componets/common/promptShow'
-import { folderList } from '../../../../../componets/dataList/folderList'
+import { BookGroups } from '../../../../../database/entities/BookGroups'
 import BookFolderGridManage from './BookFolderGridManage'
 import BookFolderInfoManage from './BookFolderInfoManage'
 
 @Component
 export default struct BookFolderManages {
-  @Link @Watch('onIsClearChange') isClear:boolean
-  @Link allCheck:boolean
-  @Link folderCheckList:folderList[]
-  @Prop changeTop:boolean
-  @Link folderList:folderList[]
+  @Prop bookGroups:BookGroups[] = []
+  @Link checkGroup:Record<number, boolean>
   @Prop EXHIBIT:string
   @State delCache:boolean = false
+  @Prop isManage:boolean = true
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
@@ -40,63 +38,46 @@ export default struct BookFolderManages {
   }
 
   deleteFolder() {
-    for (let index = 0; index < this.folderCheckList.length; index++) {
-      this.folderList = this.folderList.filter(folder => folder.id !== this.folderCheckList[index].id);
-    }
-    this.isClear = false
-    this.folderCheckList = []
     showMessage('删除成功')
   }
 
-  //监听isClear变化
-  onIsClearChange() {
-    console.log(JSON.stringify(this.isClear))
-    if (this.folderCheckList === null || this.folderCheckList.length === 0) {
-      showMessage('请选择要删除的内容')
-      this.isClear = false
-      return
-    }
-    if (this.isClear) {
-      this.bookInfoDel?.open()
-    }
-  }
-
  build() {
-   if (this.folderList === null || this.folderList.length === 0) {
+   if (this.bookGroups === null || this.bookGroups.length === 0) {
      Column() {
        Image($r('app.media.no_record')).width(200).height(200)
        Text('暂无浏览记录').fontSize(12).fontColor('rgba(96, 96, 96, 0.6)').fontWeight(500).padding(5)
      }
      .margin({ top: 120 })
    } else {
-     Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
+     Column(){
        if (this.EXHIBIT === '列表') {
-         ForEach(this.folderList, (item: folderList) => {
-           if (!item.isShow) {
+         ForEach(this.bookGroups, (item: BookGroups) => {
+           if (item.show && !item.isSystem) {
              BookFolderInfoManage({
-               folderList:item,
-               changeTop:this.changeTop,
-               allCheck:this.allCheck,
-               folderCheckList:this.folderCheckList
+               group:item,
+               checkGroup:this.checkGroup,
+               isManage:this.isManage
              })
            }
          })
        } else {
-         ForEach(this.folderList, (item: folderList) => {
-           if (!item.isShow) {
-             BookFolderGridManage({
-               folderList:item,
-               changeTop:this.changeTop,
-               allCheck:this.allCheck,
-               folderCheckList:this.folderCheckList
-             }).width('33%')
-           }
-         })
+         GridRow({
+           columns:3
+         }){
+           ForEach(this.bookGroups, (item: BookGroups) => {
+             if (item.show && !item.isSystem) {
+               GridCol(){
+                 BookFolderGridManage({
+                   group:item,
+                   checkGroup:this.checkGroup,
+                   isManage:this.isManage
+                 })
+               }
+             }
+           })
+         }
        }
-     }
+     }.layoutWeight(1)
    }
-
-
-
  }
 }
