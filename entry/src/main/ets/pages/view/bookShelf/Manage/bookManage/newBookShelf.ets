@@ -104,6 +104,7 @@ export default struct newBookShelf{
     this.newBookIds = this.newBookIds.filter(item => item !== this.delBookIds);
     // 重置 delBookIds
     this.delBookIds = 0;
+    showMessage('移除书单成功,提交生效!', 1000)
   }
 
   @State workBookList:WorksLists = {
@@ -280,6 +281,7 @@ export default struct newBookShelf{
         addBookList:(selectBookId:number[])=>{
           this.newBookIds = selectBookId
           this.isShowAddBook = false;
+          showMessage('加入书单成功,提交生效!', 1000)
         },
         close:() => {
           this.isShowAddBook = false;
@@ -355,8 +357,8 @@ export default struct newBookShelf{
           Image(book.coverUrl)
             .draggable(false)
             .alt($r('app.media.icon_book_default_cover_one'))
-            .width(60)
-            .height(80)
+            .width(69)
+            .height(92)
         }.alignContent(Alignment.BottomStart)
 
         Column({
