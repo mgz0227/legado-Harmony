@@ -7,7 +7,8 @@
   "license": "",
   "dependencies": {
     '@ohos/colorLibrary': 'file:../commons/colorLibrary',
-    '@ohos/reader': 'file:../reader'
+//    '@ohos/reader': 'file:../reader',
+    '@ohos/readerLibrary': 'file:../readerLibrary'
   }
 }
 

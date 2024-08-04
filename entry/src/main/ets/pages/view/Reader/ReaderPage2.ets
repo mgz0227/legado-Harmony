@@ -10,22 +10,22 @@ import { MusicPlayer } from 'ets/componets/Reader/MusicPlayer';
 import purificationView from './purificationView';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
 import { BookList } from 'ets/componets/dataList/bookList';
-import { CoverFlipView } from '@ohos/reader';
+import { CoverFlipView } from '@ohos/readerLibrary';
 import {
   BGColorType,
   BG_COLOR_ARRAY,
   Constants,
   FlipPageType
-} from '@ohos/reader/src/main/ets/common/constants/Constants';
-import { SlideFlipView } from '@ohos/reader/src/main/ets/view/SlideFlipView';
-import { UpDownFlipView } from '@ohos/reader/src/main/ets/view/UpDownFlipView';
+} from '@ohos/readerLibrary/src/main/ets/common/constants/Constants';
+import { SlideFlipView } from '@ohos/readerLibrary/src/main/ets/view/SlideFlipView';
+import { UpDownFlipView } from '@ohos/readerLibrary/src/main/ets/view/UpDownFlipView';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { SimulateCurlView } from '@ohos/reader/src/main/ets/view/SimulateCurlView';
-import { NovelContentParseHelper } from '@ohos/reader/src/main/ets/common/helper/NovelContentParseHelper';
+import { SimulateCurlView } from '@ohos/readerLibrary/src/main/ets/view/SimulateCurlView';
+import { NovelContentParseHelper } from '@ohos/readerLibrary/src/main/ets/common/helper/NovelContentParseHelper';
 import {
   ReaderChapterItem,
   ReaderChapterPageItem
-} from '@ohos/reader/src/main/ets/common/constants/ReaderChaptersItem';
+} from '@ohos/readerLibrary/src/main/ets/common/constants/ReaderChaptersItem';
 
 
 interface ParamsObj {

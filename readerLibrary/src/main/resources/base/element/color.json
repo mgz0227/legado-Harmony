@@ -1,0 +1,28 @@
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "font_size_button_bg_color",
+      "value": "#0d000000"
+    },
+    {
+      "name": "flip_type_unselected_color",
+      "value": "#99000000"
+    },
+    {
+      "name": "flip_type_bgc",
+      "value": "#EFEFEF"
+    },
+    {
+      "name": "bgc_name_unselected",
+      "value": "#66000000"
+    },
+    {
+      "name": "bgc_name_selected",
+      "value": "#0a59f7"
+    }
+  ]
+}
