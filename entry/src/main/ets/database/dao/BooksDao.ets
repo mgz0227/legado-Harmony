@@ -41,8 +41,8 @@ class BooksDao {
       if (searchKey) {
         whereClause.push(`(
         bookName LIKE '%${searchKey}%'
-        author LIKE '%${searchKey}%'
-        originName LIKE '%${searchKey}%'
+        OR author LIKE '%${searchKey}%'
+        OR originName LIKE '%${searchKey}%'
       )`);
 
       }
@@ -272,6 +272,29 @@ class BooksDao {
       }
     } catch (e) {
       console.log('TagInfo, Error, ', JSON.stringify(e))
+    }
+  }
+
+  //根据书籍Id获取书籍
+  async getBookByIds(ids: number[]) {
+
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+
+      // 确保 ids 数组的每个元素都是数字
+      const validIds = ids.filter(id => typeof id === 'number');
+      if (validIds.length === 0) return []
+      // 创建查询条件，查找所有给定的 id
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.in('id', validIds);  // 使用 in 条件一次性查找多个 id
+
+      // 执行一次查询获取所有匹配的书籍
+      const books = await DbUtil.queryForList<Books>(predicates, column);
+
+      return books;
+    } catch (e) {
+      console.log('getBookIds, Error, ', JSON.stringify(e));
+      return [];
     }
   }
 }

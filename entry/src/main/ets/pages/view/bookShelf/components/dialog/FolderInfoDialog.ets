@@ -6,6 +6,7 @@ import { showMessage } from '../../../../../componets/common/promptShow'
 import TitleContentDialog from '../../../../../componets/common/TitleContentDialog'
 import { buttonList } from '../../../../../componets/dataList/buttonList'
 import { BookGroups } from '../../../../../database/entities/BookGroups'
+import catalogAddShelf from '../../Manage/components/catalogAddShelf'
 import BookSelectGroupDialog from './BookSelectGroupDialog'
 import coverInfoDialog from './coverInfoDialog'
 
@@ -28,10 +29,15 @@ export default struct FolderInfoDialog{
     new buttonList(7,'解散分组',$r('app.media.disband')),
     new buttonList(8,'删除',$r('app.media.ic_public_delete'))
   ]
-
+  @StorageLink('topRectHeight') topRectHeight: number = 0
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   cancel: () => void = () => {
 
   }
+
+  @State isCatalogAddShelf:boolean = false
+
+
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
   @State topTitle:string = this.itemData.isTop?'取消置顶':'置顶'
@@ -89,10 +95,33 @@ export default struct FolderInfoDialog{
       })
       .alignItems(HorizontalAlign.Center)
       .padding({bottom:16})
+      Flex()
+        .bindSheet($$this.isCatalogAddShelf, this.dialogCatalogAddShelf(), {
+          height:400,
+          dragBar: true,
+          showClose: false,
+          onDisappear: () => {
+            this.isCatalogAddShelf = false
+          }
+        })
     }
     .borderRadius({topLeft:20,topRight:20})
     .backgroundColor(Color.White)
     .width('100%')
+  }
+
+  //书单弹窗
+  @Builder dialogCatalogAddShelf(){
+    Column(){
+      catalogAddShelf({
+        onClickShelf:(val:boolean)=>{
+          this.isCatalogAddShelf = val
+        },
+        currentIndex:this.itemData.groupType,
+        ids:this.itemData.groupId?[this.itemData.groupId]:[],
+        bookOrFolder:1
+      })
+    }
   }
 
   folderInfo(id:number){
@@ -104,7 +133,7 @@ export default struct FolderInfoDialog{
       case 3 :
         this.bookMoveGroup?.open(); break;
       case 4 :
-        showMessage('加入书单'); break;
+        this.isCatalogAddShelf = true;break;
       case 5 :
         showMessage('封面样式');
         this.coverDialog?.open();

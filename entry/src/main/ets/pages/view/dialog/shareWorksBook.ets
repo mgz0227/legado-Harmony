@@ -4,24 +4,26 @@
  * @className: shareShelfBook
  */
 import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
-import { BookList } from '../../../componets/dataList/bookList'
 import { buttonList } from '../../../componets/dataList/buttonList'
-import { shelfList } from '../../../componets/dataList/shelfList'
 import componentSnapshot from '@ohos.arkui.componentSnapshot'
 import image from '@ohos.multimedia.image'
 import fs from '@ohos.file.fs';
 import { photoAccessHelper } from '@kit.MediaLibraryKit'
 import { showMessage } from '../../../componets/common/promptShow'
-import { common } from '@kit.AbilityKit'
+import { abilityAccessCtrl, common } from '@kit.AbilityKit'
 import { BusinessError } from '@kit.BasicServicesKit'
+import { WorksLists } from '../../../database/entities/WorksLists'
+import worksListsUtils from '../../../common/utils/WorksListsUtils'
+import BooksDao from '../../../database/dao/BooksDao'
+import { Books } from '../../../database/entities/Books'
+import PaddingConstants from '../../../common/constants/PaddingConstants'
 
 @CustomDialog
 @Preview
 @Component
-export default struct shareShelfBook {
+export default struct shareWorksBook {
   controller?: CustomDialogController
-  @Prop shelf: shelfList = new shelfList(1,'测试书单','测试书单描述','测试书单描述理由',[
-    new BookList('1','仙人消失之后','会说话的肘子·未读过1','更新至·第340章 镇压',$r('app.media.cover_list'),'玄幻')])
+  @Prop works:WorksLists
   @State buttonListInfo: buttonList[] = [
     new buttonList(1, '微信', $r('app.media.wechat')),
     new buttonList(2, 'QQ', $r('app.media.QQ_blue')),
@@ -32,6 +34,23 @@ export default struct shareShelfBook {
     new buttonList(7, '保存图片', $r('app.media.save_img')),
     new buttonList(8, '系统分享', $r('app.media.more'))
   ]
+  @State bookList:Books[] = []
+
+  async aboutToAppear(): Promise<void> {
+    if (this.works.worksBookList) {
+      let bookIds = worksListsUtils.getBookIds(this.works.worksBookList)
+      if (bookIds.length > 0) {
+        this.getBookIds(bookIds)
+      }
+    }
+  }
+  private appContext: common.Context = getContext(this);
+  private atManager = abilityAccessCtrl.createAtManager();
+  getBookIds(ids:number[]){
+    BooksDao.getBookByIds(ids).then((val)=>{
+      this.bookList = val
+    })
+  }
 
   build() {
     Stack() {
@@ -48,16 +67,19 @@ export default struct shareShelfBook {
         direction:FlexDirection.Column,
         justifyContent:FlexAlign.SpaceBetween
       }){
-        Column(){
-          Text(this.shelf.title)
+        Column({
+          space:PaddingConstants.PADDING_10
+        }){
+          Text(this.works.worksName)
             .textAlign(TextAlign.Center)
             .fontSize(16).fontWeight(500).lineHeight(24).fontColor($r('app.string.color_black_88'))
-          Text(this.shelf.describe)
+          Text(this.works.worksDescribe)
             .textAlign(TextAlign.Center)
             .fontSize(12).fontWeight(400).lineHeight(20).fontColor($r('app.string.color_black_88'))
-            .margin({top:12})
-          Column(){
-            ForEach(this.shelf.bookList,(item:BookList,index:number)=>{
+          Column({
+            space:PaddingConstants.PADDING_8
+          }){
+            ForEach(this.bookList,(item:Books,index)=>{
               this.BookShelfInfo(item,index)
             })
           }
@@ -66,31 +88,36 @@ export default struct shareShelfBook {
       }
       .margin(40)
       .padding({top:24,left:20,right:20})
-      .width('80%')
       .backgroundColor(Color.White)
       .zIndex(2)
       //用于图片保存不做显示
       Column(){
-        Column() {
-          Text(this.shelf.title)
+        Column({
+          space:10
+        }){
+          Text(this.works.worksName)
             .textAlign(TextAlign.Center)
             .fontSize(16)
             .fontWeight(500)
             .lineHeight(24)
             .fontColor($r('app.string.color_black_88'))
-          Text(this.shelf.describe)
+          Text(this.works.worksDescribe)
             .textAlign(TextAlign.Center)
             .fontSize(12)
             .fontWeight(400)
             .lineHeight(20)
             .fontColor($r('app.string.color_black_88'))
-            .margin({ top: 12 })
-          ForEach(this.shelf.bookList, (item: BookList, index: number) => {
-            this.BookShelfInfo(item, index)
-          })
+
+          Column({
+            space:PaddingConstants.PADDING_8
+          }){
+            ForEach(this.bookList.slice(0, 4),(item:Books,index)=>{
+              this.BookShelfInfo(item,index)
+            })
+          }
         }
         .alignItems(HorizontalAlign.Start)
-        .padding({ top: 24, left: 20, right: 20,bottom:12 })
+        .padding({ top: 24, left: 20, right: 20 })
         .backgroundColor('#FFF7EC')
         this.footerSaveImage()
       }
@@ -134,8 +161,7 @@ export default struct shareShelfBook {
                   showMessage('已复制链接');
                   break;
                 case 7:
-                  showMessage('保存成功');
-                  // this.saveSnapshot();
+                  this.requestPermissionSaveImage();
                   break;
                 case 8:
                   showMessage('系统分享');
@@ -143,10 +169,6 @@ export default struct shareShelfBook {
               }
             })
           })
-
-          // SaveButton().onClick((e: ClickEvent, result: SaveButtonOnClickResult) => {
-          //   this.saveSnapshot()
-          // })
         }
 
         Column() {
@@ -163,32 +185,57 @@ export default struct shareShelfBook {
     .align(Alignment.Bottom)
   }
 
-  saveSnapshot() {
-    componentSnapshot.get('shareBook', async (error: Error, pixmap: image.PixelMap) => {
-      if (error) {
-        console.log("error: " + JSON.stringify(error))
-        return;
-      }
-      this.pixmap = pixmap
-      const imagePackerApi = image.createImagePacker();
-      let packOpts : image.PackingOption = { format:"image/jpeg", quality:98 };
+  //申请权限,保存图片
+  async requestPermissionSaveImage() {
+    try {
+      this.atManager.requestPermissionsFromUser(this.appContext,['ohos.permission.WRITE_IMAGEVIDEO']).then(async ()=>{
+       componentSnapshot.get('shareBook').then((pixmap: image.PixelMap)=>{
+          this.pixmap = pixmap
+          const imagePackerApi = image.createImagePacker();
+          let packOpts : image.PackingOption = { format:"image/jpeg", quality:98 };
 
-      imagePackerApi.packing(pixmap, packOpts).then( (data : ArrayBuffer) => {
-        this.saveImage(data)
-      }).catch((error : BusinessError) => {
-        console.error('Failed to pack the image. And the error is: ' + error);
+          imagePackerApi.packing(pixmap, packOpts).then(async (data : ArrayBuffer) => {
+            let context = getContext();
+            let helper = photoAccessHelper.getPhotoAccessHelper(context);
+            let uri = await helper.createAsset(photoAccessHelper.PhotoType.IMAGE, 'jpg');
+            let file = await fs.open(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
+            await fs.write(file.fd, data);
+            await fs.close(file.fd);
+            showMessage('保存成功');
+          }).catch((error : BusinessError) => {
+            showMessage('保存失败,未获取权限');
+            console.error('Failed to pack the image. And the error is: ' + error);
+          })
+        });
+        // componentSnapshot.get('shareBook', async (error: Error, pixmap: image.PixelMap) => {
+        //   if (error) {
+        //     console.log("error: " + JSON.stringify(error))
+        //     return;
+        //   }
+        //   this.pixmap = pixmap
+        //   const imagePackerApi = image.createImagePacker();
+        //   let packOpts : image.PackingOption = { format:"image/jpeg", quality:98 };
+        //
+        //   imagePackerApi.packing(pixmap, packOpts).then(async (data : ArrayBuffer) => {
+        //     let context = getContext();
+        //     let helper = photoAccessHelper.getPhotoAccessHelper(context);
+        //     let uri = await helper.createAsset(photoAccessHelper.PhotoType.IMAGE, 'jpg');
+        //     let file = await fs.open(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
+        //     await fs.write(file.fd, data);
+        //     await fs.close(file.fd);
+        //     showMessage('保存成功');
+        //   }).catch((error : BusinessError) => {
+        //     showMessage('保存失败,未获取权限');
+        //     console.error('Failed to pack the image. And the error is: ' + error);
+        //   })
+        // })
       })
-    })
+    } catch (e) {
+
+    }
   }
 
-  async saveImage(buffer: ArrayBuffer | string): Promise<void> {
-    let context = getContext(this) as common.UIAbilityContext;
-    let helper = photoAccessHelper.getPhotoAccessHelper(context);
-    let uri = await helper.createAsset(photoAccessHelper.PhotoType.IMAGE, 'jpg');
-    let file = await fs.open(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
-    await fs.write(file.fd, buffer);
-    await fs.close(file.fd);
-  }
+
 
   @State validDate:string = '7天有效'
   @State pixmap: image.PixelMap | undefined = undefined
@@ -210,7 +257,7 @@ export default struct shareShelfBook {
       this.footerDialogShow = true
     })
     .bindSheet($$this.footerDialogShow,this.footerDialog(), {
-      height:200,
+      height:150,
       showClose: false,
       blurStyle:BlurStyle.COMPONENT_ULTRA_THIN,
       maskColor: 'rgba(0,0,0,0.6)',
@@ -302,27 +349,28 @@ export default struct shareShelfBook {
 
   }
 
-  @Builder BookShelfInfo(book:BookList,index:number){
+  @Builder BookShelfInfo(book:Books,index:number){
     Column(){
       Row({
-        space: 12
-      }) {
-        Image($r('app.media.shelf_book'))
+        space:PaddingConstants.PADDING_10
+      }){
+        Image(book.coverUrl)
+          .draggable(false)
+          .alt($r('app.media.icon_book_default_cover_one'))
           .width(69)
           .height(92)
 
         Column({
-          space:5
+          space:10
         }) {
-          Row(){
-            Text(book.title).fontSize(16).fontWeight(500).lineHeight(24)
-              .textOverflow({
-                overflow:TextOverflow.Ellipsis
-              })
-              .ellipsisMode(EllipsisMode.END)
-              .maxLines(2)
-          }
-          Text(book.describe)
+          Text(book.bookName).fontSize(16).fontWeight(500).lineHeight(24)
+            .textOverflow({
+              overflow:TextOverflow.Ellipsis
+            })
+            .ellipsisMode(EllipsisMode.END)
+            .maxLines(2)
+            .position({y: 0})
+          Text(book.intro)
             .fontSize(12)
             .lineHeight(20)
             .fontColor('rgba(0, 0, 0, 0.45)')
@@ -332,28 +380,23 @@ export default struct shareShelfBook {
             .height(50)
             .ellipsisMode(EllipsisMode.END)
             .maxLines(2)
-          Row({
-            space:2
-          }){
+          Row(){
             Text('卖报小郎君·').fontSize(10).fontWeight(400).fontColor($r('app.string.color_black_45'))
             Text('玄幻·').fontSize(10).fontWeight(400).fontColor($r('app.string.color_black_45'))
             Text('完本·').fontSize(10).fontWeight(400).fontColor($r('app.string.color_black_45'))
             Text('380万字').fontSize(10).fontWeight(400).fontColor($r('app.string.color_black_45'))
           }
         }
-        .alignItems(HorizontalAlign.Start)
       }
-      Column(){
-        TextArea({placeholder:'添加推荐理由',text:book.describe})
-          .padding(10).borderRadius(8)
-      }.padding({top:12,bottom:5})
+
+      if (this.works.worksBookList){
+        Column(){
+          Text(this.works.worksBookList[index].recommend ?? '')
+            .padding(10)
+        }
+      }
     }
-    .align(Alignment.Start)
-    .padding({top:16})
+    .alignItems(HorizontalAlign.Start)
+    .width('100%')
   }
-}
-@Styles function fontStyles() {
-  .padding({left:6,right:6,top:5,bottom:5})
-  .backgroundColor('rgba(0, 0, 0, 0.06)')
-  .borderRadius(10)
 }

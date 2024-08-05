@@ -5,7 +5,7 @@
  */
 import RefreshComponent from '../../../../componets/common/RefreshComponent'
 import BookFolder from '../BookFolder'
-import ShelfBookList from '../Shelf/ShelfBookList'
+import WorksBookLists from '../Shelf/WorksBookLists'
 import BookContent from './BookContent'
 
 @Component
@@ -13,6 +13,7 @@ export default struct BookContentRefresh {
   @State @Watch('changeRefreshing')isRefreshing: boolean = false
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') isGroupRefreshing: number = 0
+  @StorageLink('BOOK_IS_BOOK_WORKS_BOOK_LIST') isWorksBookListRefreshing: number = 0
   @State counter: number = 0
   @State RefreshingTitle: string = '松开刷新'
   @Prop currentIndex: number = 0
@@ -20,11 +21,20 @@ export default struct BookContentRefresh {
   @Link GROUP: string
   @Link searchValue: string
   @Link bookTypeNumber:number
-
+  @State checkGroup:Record<number, boolean> = {}
   changeRefreshing(){
     if (this.isRefreshing) {
-      this.isBookRefreshing++
-      this.isGroupRefreshing++
+      switch (this.bookTypeNumber){
+        case 1:
+          this.isGroupRefreshing++
+          break;
+        case 5:
+          this.isWorksBookListRefreshing++
+          break;
+        default:
+          this.isBookRefreshing++
+          break
+      }
     }
   }
   build() {
@@ -32,8 +42,11 @@ export default struct BookContentRefresh {
       Scroll() {
         Column() {
           if (this.bookTypeNumber === 5 && this.searchValue !== '浏览历史') {
-            ShelfBookList({
-              EXHIBIT: this.EXHIBIT
+            WorksBookLists({
+              checkGroup: this.checkGroup,
+              EXHIBIT: this.EXHIBIT,
+              currentIndex:this.currentIndex,
+              isShowCheck:false
             })
           } else {
             if (this.GROUP === '标签') {

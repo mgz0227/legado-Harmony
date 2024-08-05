@@ -5,7 +5,6 @@ import confirmDialogExample from '../../../../../componets/common/confirmDialog'
 import Header from '../../../../../componets/common/Header';
 import hideDialogExample from '../../../../../componets/common/hideDialog';
 import { showMessage } from '../../../../../componets/common/promptShow';
-import { BookList } from '../../../../../componets/dataList/bookList';
 import { buttonList } from '../../../../../componets/dataList/buttonList';
 import IndexSearchType from '../../../../../componets/head/IndexSearchType';
 import BookGroupsDao from '../../../../../database/dao/BookGroupsDao';
@@ -15,11 +14,12 @@ import { Books } from '../../../../../database/entities/Books';
 import BookSelectGroupDialog from './BookSelectGroupDialog';
 import BookFolderManages from '../../Manage/bookManage/BookFolderManages';
 import bookListManage from '../../Manage/bookManage/bookListManage';
-import newAddShelf from '../../Manage/bookManage/newAddShelf';
-import newBookShelf from '../../Manage/bookManage/newBookShelf';
 import catalogAddShelf from '../../Manage/components/catalogAddShelf';
-import ShelfBookList from '../../Shelf/ShelfBookList';
 import CommonConstants from '../../../../../common/constants/CommonConstants';
+import WorksBookLists from '../../Shelf/WorksBookLists';
+import { WorksLists } from '../../../../../database/entities/WorksLists';
+import worksListsDao from '../../../../../database/dao/WorksListsDao';
+import worksListsUtils from '../../../../../common/utils/WorksListsUtils';
 
 
 /**
@@ -40,6 +40,7 @@ export default  struct BookManageDialog {
   @State @Watch('listenCheckList')checkLists: Record<number, boolean> = {}
   @State checkListNumber:number[] = []
   @State bookGroups:BookGroups[] = []
+  @State worksLists:WorksLists[] =[] //书单
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') @Watch('getGroupList')BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
   //判断是否全部置顶或取消置顶
@@ -53,21 +54,21 @@ export default  struct BookManageDialog {
       //从bookList更具id查询是否都isTop
       if (this.bookTypeNumber === 5){
         //todo 书单
-
+        this.worksLists.filter((item)=>{
+          if (item.isTop && Number(index) === item.worksId){
+            allTopNumber++
+          }
+        })
       } else if (this.bookTypeNumber === 1){
         this.bookGroups.filter((item)=>{
           if (item.isTop && Number(index) === item.groupId && !item.isSystem){
             allTopNumber++
-          }
-          if (!item.isTop && Number(index) === item.groupId && !item.isSystem){
           }
         })
       } else {
         this.bookList.filter((item)=>{
           if (item.isTop && Number(index) === item.id){
             allTopNumber++
-          }
-          if (!item.isTop && Number(index) === item.id){
           }
         })
       }
@@ -88,6 +89,14 @@ export default  struct BookManageDialog {
       this.bookList = val
     })
   }
+  //书单
+  getWorkLists() {
+    worksListsDao.search({
+      type:this.currentIndex
+    }).then((val)=>{
+      this.worksLists = val
+    })
+  }
   //分组
   getGroupList(){
     BookGroupsDao.search({
@@ -102,8 +111,8 @@ export default  struct BookManageDialog {
       this.getGroupList()
       this.isMoveStatus = 1
     } else if (this.bookTypeNumber === 5){
+      this.getWorkLists()
       this.isMoveStatus = 2
-      // this.getBookList() //todo 获取书单
     } else {
       this.getBookList()
       this.isMoveStatus = 0
@@ -111,26 +120,44 @@ export default  struct BookManageDialog {
   }
 
   @State isCatalogAddShelf:boolean = false
-  @State showNumber:number = 0
-  @State addCheckShelf:BookList[] = [
-    new BookList('1','开局长生万古，苟到天荒地老','这个世界，有儒;有道；有佛书;有妖;有术士。警校毕业的许七安幽幽醒来，发现自己将要远赴','更新至·第340章 镇压',$r('app.media.shelf_book'),'玄幻')]
+  @State bookOrFolder:number = 0
   build() {
     Column(){
-      if (this.showNumber === 0){
-        this.bookManage()
-      } else if(this.showNumber === 1){
-        newBookShelf({
-          addCheckShelf:this.addCheckShelf,
-          showNumber:this.showNumber,
-          isAddShelfShow:this.isAddShelfShow
-        })
-      } else if (this.showNumber === 2){
-        newAddShelf({
-          addCheckShelf:this.addCheckShelf,
-          showNumber:this.showNumber,
-          isAddShelfShow:this.isAddShelfShow
-        })
+      Column(){
+        this.headTitleManage()
       }
+      .visibility(!this.isManage?Visibility.Visible:Visibility.None)
+      .opacity(!this.isManage?1:0)
+      .scale({
+        y: !this.isManage? 1 : 0,
+      })
+      .animation({
+        duration: 500,
+        curve: CommonConstants.UniCurve
+      })
+      Header({
+        customLeftBuilder: () => {
+          this.selectAll()
+        },
+        title:`已选${this.checkListNumber.length}项`,
+        customRightBuilder: () => {
+          this.complete()
+        },
+        paddingTop:-30
+      })
+        .visibility(this.isManage?Visibility.Visible:Visibility.None)
+        .opacity(this.isManage?1:0)
+        .translate({ y: this.isManage ? 0 : -50})
+        .animation({
+          duration: 500,
+          curve: CommonConstants.UniCurve
+        })
+
+      Column(){
+        this.bookManage()
+      }
+      .layoutWeight(1)
+
       Flex()
         .bindSheet($$this.isCatalogAddShelf, this.dialogCatalogAddShelf(), {
           height:400,
@@ -141,10 +168,11 @@ export default  struct BookManageDialog {
           }
         })
     }
-    .margin({
+    .padding({
       bottom:this.bottomRectHeight
     })
   }
+
   //主要操作页面
   @Builder bookManage(){
     Flex({
@@ -153,38 +181,11 @@ export default  struct BookManageDialog {
       wrap:FlexWrap.NoWrap
     }) {
       Column(){
-        Column(){
-          this.headTitleManage()
-        }
-        .visibility(!this.isManage?Visibility.Visible:Visibility.None)
-        .opacity(!this.isManage?1:0)
-        .scale({
-          y: !this.isManage? 1 : 0,
-        })
-        .animation({
-          duration: 500,
-          curve: CommonConstants.UniCurve
-        })
-        Header({
-          customLeftBuilder: () => {
-            this.selectAll()
-          },
-          title:`已选${this.checkListNumber.length}项`,
-          customRightBuilder: () => {
-            this.complete()
-          },
-          paddingTop:-30
-        })
-          .visibility(this.isManage?Visibility.Visible:Visibility.None)
-          .opacity(this.isManage?1:0)
-          .translate({ y: this.isManage ? 0 : -50})
-          .animation({
-            duration: 500,
-            curve: CommonConstants.UniCurve
-          })
         Scroll(){
           if (this.bookTypeNumber === 5){
-            ShelfBookList({
+            WorksBookLists({
+              worksLists:this.worksLists,
+              checkGroup:this.checkLists,
               EXHIBIT:this.EXHIBIT,
               isShowCheck:true
             })
@@ -226,7 +227,6 @@ export default  struct BookManageDialog {
         curve: CommonConstants.UniCurve
       })
     }
-    .height('100%')
   }
   @State titleManage:string = '最近阅读'
   @State searchValue: string = '最近阅读'
@@ -294,7 +294,11 @@ export default  struct BookManageDialog {
       catalogAddShelf({
         onClickShelf:(val:boolean)=>{
           this.isCatalogAddShelf = val
-        }
+          this.refreshData()
+        },
+        currentIndex:this.currentIndex,
+        ids:this.checkListNumber,
+        bookOrFolder:this.bookOrFolder
       })
     }
   }
@@ -316,7 +320,6 @@ export default  struct BookManageDialog {
         })
       Text(!this.allCheck?'全选':'取消全选')
     }
-
     .alignItems(VerticalAlign.Center)
   }
   //校验是否存页面数据内容
@@ -329,6 +332,10 @@ export default  struct BookManageDialog {
         }
         break
       case 5:
+        if (this.worksLists.length === 0){
+          showMessage('页面暂无操作数据')
+          return true
+        }
         break
       default:
         if (this.bookList.length === 0){
@@ -350,7 +357,9 @@ export default  struct BookManageDialog {
         item.groupId && !item.isSystem && item.show ?this.checkLists[item.groupId] = value:''
       })
     } else if (this.bookTypeNumber === 5){
-
+      this.worksLists.forEach((item)=>{
+        item.worksId?this.checkLists[item.worksId] = value:''
+      })
     } else {
       this.bookList.forEach((item)=>{
         item.id?this.checkLists[item.id] = value:''
@@ -379,7 +388,11 @@ export default  struct BookManageDialog {
     Column(){
       Text('删除').fontSize(16).fontWeight(500).lineHeight(24).fontColor('#EF4444')
     }.onClick(()=>{
-
+      if (this.checkListNumber.length <= 0) {
+        showMessage('请选择要操作的内容');
+        return
+      }
+      this.delDialog?.open();
     })
     .margin({
       top:PaddingConstants.PADDING_10
@@ -431,8 +444,9 @@ export default  struct BookManageDialog {
           }
         })
       }
-      .margin({
-        top:PaddingConstants.PADDING_10
+      .padding({
+        top:10,
+        bottom:10
       })
     }
   //底部操作栏功能
@@ -449,7 +463,13 @@ export default  struct BookManageDialog {
         this.bookMoveGroup?.open(); break;
       case 3 :
         this.isCatalogAddShelf = true
-        showMessage('加入书单'); break;
+        if (this.bookTypeNumber === 1) {
+          this.bookOrFolder = 1
+        } else {
+          this.bookOrFolder = 0
+        }
+        this.dataCheckList();
+        break;
       case 4 :
         this.clickHideDialog?.open()
         break
@@ -490,10 +510,13 @@ export default  struct BookManageDialog {
   //删除功能
   manageDelete(){
     this.checkListNumber.forEach((item:number)=>{
-      if (this.bookTypeNumber !== 1 && this.bookTypeNumber !== 5) {
-        booksUtil.delBooksById(item)
-      } else if(this.bookTypeNumber === 1){
-        bookGroupUtil.delGroupById(item)
+      switch (this.bookTypeNumber){
+        case 1:
+          bookGroupUtil.delGroupById(item); break;
+        case 5:
+          worksListsUtils.delWorksByIds(item);break;
+        default:
+          booksUtil.delBooksById(item);break;
       }
     })
     setTimeout(()=>{
@@ -554,6 +577,7 @@ export default  struct BookManageDialog {
        this.BOOK_IS_BOOK_GROUPS_REFRESHING++
        break;
      case 5:
+       this.getWorkLists();
        break;
        default:
          this.getBookList();

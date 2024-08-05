@@ -2,14 +2,13 @@
  * 书单信息
  */
 import BookOverlay from '../../../../componets/bookDetail/BookOverlay'
-import { shelfList } from '../../../../componets/dataList/shelfList'
+import { WorksLists } from '../../../../database/entities/WorksLists'
 
 
 @Component
-export default struct BookShelfInfo{
-
-  @Prop bookShelf:shelfList
-  @Link checkBookShelf:shelfList[]
+export default struct WorksBookListInfo{
+  @Link checkGroup:Record<number, boolean>
+  @Prop work:WorksLists
   @Prop isShowCheck:boolean
 
   build() {
@@ -24,7 +23,7 @@ export default struct BookShelfInfo{
       }){
         Column(){
           BookOverlay({
-            bookImage:this.bookShelf.bookList[0].bookImage,
+            bookImage:this.work.worksCoverUrl,
             isTop:false,
             isShow:this.isShowCheck
           })
@@ -33,10 +32,10 @@ export default struct BookShelfInfo{
           space:24
         })
         {
-          Text(this.bookShelf.title)
+          Text(this.work.worksName)
             .fontWeight(700)
           Column(){
-            Text(`共${this.bookShelf.bookList.length}本`).fontSize(12).fontColor('rgb(174,174,174)')
+            Text(`共${this.work.worksBookNum}本`).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
               })
@@ -44,7 +43,7 @@ export default struct BookShelfInfo{
               .fontWeight(400)
               .maxLines(1)
               .lineHeight(20)
-            Text(this.bookShelf.describe)
+            Text(this.work.worksDescribe)
               .fontSize(12).fontColor('rgb(174,174,174)')
               .fontSize(12)
               .fontWeight(400)
@@ -62,11 +61,14 @@ export default struct BookShelfInfo{
       }
       if (this.isShowCheck){
         Row() {
-          Checkbox({
-            name: this.bookShelf.title,
-            group: 'checkboxGroup'
-          })
+          Checkbox()
             .selectedColor($r('app.color.theme_color'))
+            .select(this.work.worksId?this.checkGroup[this.work.worksId] ?? false:false)
+            .onChange((val: boolean) => {
+              if (this.work.worksId) {
+                this.checkGroup[this.work.worksId] = val
+              }
+            })
         }
         .padding({ left: 15, right: 15, bottom: 5, top: 5 })
       }
@@ -74,7 +76,6 @@ export default struct BookShelfInfo{
     }
     .padding(10)
     .borderRadius(10)
-
   }
 
 }
