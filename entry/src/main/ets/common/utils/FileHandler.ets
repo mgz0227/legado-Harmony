@@ -110,49 +110,6 @@ export class FileHandler {
     }
   }
 
-  static async readFileContent(content: string):Promise<chaptersItem[]> {
-    return new Promise<chaptersItem[]>((resolve, reject) => {
-      let chapterNumber = 0
-      const chapters: chaptersItem[] = [];
-      const regex =
-        /^[=|<]{0,4}((?:序章|楔子|番外|第\s{0,4})([\d〇零一二两三四五六七八九十百千万壹贰叁肆伍陆柒捌玖拾佰仟]+?\s{0,4})(?:章|回(?!合)|话(?!说)|节(?!课)|卷|篇(?!张)))(.{0,30})/g;
-      let contentLines = content.split('\n');
-      contentLines.forEach((value,index,array)=>{
-        const match = regex.exec(value);
-        if (match) {
-          const chapterTitleNumber = match[1]; // 书源内部章节
-          const chapterTitle = match[3];
-          chapterNumber++
-          chapters.push(new chaptersItem(chapterNumber, chapterTitle, chapterTitleNumber, ''))
-        } else {
-          if (chapters.length > 0) {
-            chapters[chapters.length - 1].content += value
-          }
-        }
-      });
-
-      // await .then((readerIterator: fs.ReaderIterator) => {
-      //   for (let it = readerIterator.next();!it.done; it = readerIterator.next()) {
-      //     const match = regex.exec(it.value);
-      //     if (match) {
-      //       const chapterTitleNumber = match[1]; // 书源内部章节
-      //       const chapterTitle = match[3];
-      //       chapterNumber++
-      //       chapters.push(new chaptersItem(chapterNumber, chapterTitle, chapterTitleNumber, ''))
-      //     } else {
-      //       if (chapters.length > 0) {
-      //         chapters[chapters.length - 1].content += it.value
-      //       }
-      //     }
-      //   }
-      // }).catch((err: BusinessError) => {
-      //   console.error("readLines failed with error message: " + err.message + ", error code: " + err.code);
-      // });
-      resolve(chapters)
-    });
-  }
-
-
   static async pickerFile(context: Context) {
     try {
       const documentSelectOptions = new picker.DocumentSelectOptions();

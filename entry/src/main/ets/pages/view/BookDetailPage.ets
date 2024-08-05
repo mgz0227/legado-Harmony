@@ -3,18 +3,10 @@ import ReadRecordItem from '../../componets/bookDetail/ReadRecordItem'
 import TagIndex from '../../componets/bookDetail/TagIndex'
 import { router, SwipeRefresher } from '@kit.ArkUI'
 import NoteIndex from '../../componets/bookDetail/note/NoteIndex'
-import { BookList } from 'ets/componets/dataList/bookList'
 import { chaptersItem } from '../../componets/dataList/ReaderChaptersItem'
-import { FileHandler } from '../../common/utils/FileHandler'
 import ChaptersDataSource from '../../common/LazyIDataSource/ChaptersDataSource'
 import { Books } from '../../database/entities/Books'
-import display from '@ohos.display';
-import resmgr from '@ohos.resourceManager';
-import buffer from '@ohos.buffer';
 import taskPool from '@ohos.taskpool';
-import measure from '@ohos.measure'
-import I18n from '@ohos.i18n';
-import { BusinessError } from '@ohos.base';
 import util from '@ohos.util';
 
 /**
@@ -73,7 +65,7 @@ async function loadNovel(context: Context): Promise<chaptersItem[]> {
               chapters.push(new chaptersItem(chapterNumber, chapterTitle, chapterTitleNumber, ''))
             } else {
               if (chapters.length > 0) {
-                chapters[chapters.length - 1].content += '\u3000'+'\u3000' + value + '\n'
+                chapters[chapters.length - 1].content += '\u3000' + '\u3000' + value + '\n'
               }
             }
           });
@@ -154,14 +146,11 @@ struct BookDetailPage {
     console.log('router BookDetailPage:' + JSON.stringify(router.getParams()))
     if (router.getParams() as Books) {
       this.bookData = router.getParams() as Books
-      // let temp = await FileHandler.readFile(this.bookData?.bookUrl||'') //txt小说
       taskPool.execute(loadNovel, getContext(this)).then(async (value) => {
         let chapters = (value as chaptersItem[]);
         this.txtFile.pushAllData(chapters)
         this.txtFiles = this.txtFile.getListData()
       })
-      // this.txtFile.pushAllData(temp)
-      // this.txtFiles = this.txtFile.getListData()
     }
   }
 
