@@ -236,6 +236,7 @@ export default class CommonConstants {
   static readonly BOOK_IS_BOOK_REFRESHING:string = 'BOOK_IS_BOOK_REFRESHING'
   static readonly BOOK_IS_BOOK_GROUPS_REFRESHING:string = 'BOOK_IS_BOOK_GROUPS_REFRESHING'
   static readonly BOOK_IS_BOOK_WORKS_BOOK_LIST:string = 'BOOK_IS_BOOK_WORKS_BOOK_LIST'
+  static readonly BOOK_IS_BOOK_HISTORY_REFRESHING:string = 'BOOK_IS_BOOK_HISTORY_REFRESHING'
   // 订阅源分组数据
   //分组是否初始化key
   static readonly RSS_SOURCES_GROUP_INIT:string = 'RSS_SOURCES_GROUP_INIT'

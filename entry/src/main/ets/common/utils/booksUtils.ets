@@ -55,6 +55,11 @@ class booksUtils{
 
     BooksDao.deleteBook(bookId)
   }
+
+  async getBookByIds(ids:number|number[]){
+    let bookId: number[] = toolsUtils.numberArrays(ids)
+    return await BooksDao.getBookByIds(bookId)
+  }
 }
 let booksUtil = new booksUtils();
 export default booksUtil as booksUtils;

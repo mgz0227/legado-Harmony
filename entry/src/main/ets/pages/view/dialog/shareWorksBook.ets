@@ -184,7 +184,7 @@ export default struct shareWorksBook {
     }
     .align(Alignment.Bottom)
   }
-
+  @State pixmap: image.PixelMap | undefined = undefined
   //申请权限,保存图片
   async requestPermissionSaveImage() {
     try {
@@ -207,38 +207,13 @@ export default struct shareWorksBook {
             console.error('Failed to pack the image. And the error is: ' + error);
           })
         });
-        // componentSnapshot.get('shareBook', async (error: Error, pixmap: image.PixelMap) => {
-        //   if (error) {
-        //     console.log("error: " + JSON.stringify(error))
-        //     return;
-        //   }
-        //   this.pixmap = pixmap
-        //   const imagePackerApi = image.createImagePacker();
-        //   let packOpts : image.PackingOption = { format:"image/jpeg", quality:98 };
-        //
-        //   imagePackerApi.packing(pixmap, packOpts).then(async (data : ArrayBuffer) => {
-        //     let context = getContext();
-        //     let helper = photoAccessHelper.getPhotoAccessHelper(context);
-        //     let uri = await helper.createAsset(photoAccessHelper.PhotoType.IMAGE, 'jpg');
-        //     let file = await fs.open(uri, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE);
-        //     await fs.write(file.fd, data);
-        //     await fs.close(file.fd);
-        //     showMessage('保存成功');
-        //   }).catch((error : BusinessError) => {
-        //     showMessage('保存失败,未获取权限');
-        //     console.error('Failed to pack the image. And the error is: ' + error);
-        //   })
-        // })
       })
     } catch (e) {
-
+      showMessage('保存失败,未获取权限');
     }
   }
 
-
-
   @State validDate:string = '7天有效'
-  @State pixmap: image.PixelMap | undefined = undefined
   @State footerDialogShow:boolean = false
   @Builder footerTitle(){
     Flex({
@@ -257,7 +232,7 @@ export default struct shareWorksBook {
       this.footerDialogShow = true
     })
     .bindSheet($$this.footerDialogShow,this.footerDialog(), {
-      height:150,
+      height:200,
       showClose: false,
       blurStyle:BlurStyle.COMPONENT_ULTRA_THIN,
       maskColor: 'rgba(0,0,0,0.6)',
