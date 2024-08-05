@@ -149,7 +149,7 @@ struct BookDetailPage {
                     .onClick(() => {
                       // 跳转到阅读器
                       router.pushUrl({
-                        url: 'pages/view/Reader/ReaderPage',
+                        url: 'pages/view/Reader/ReaderPage2',
                         //跳转到对应的章节，传index过去，对面TotalChapters接收
                         params: {
                           bookData: this.bookData,
@@ -225,7 +225,7 @@ struct BookDetailPage {
           .onClick(() => {
             // 跳转到阅读器
             router.pushUrl({
-              url: 'pages/view/Reader/ReaderPage',
+              url: 'pages/view/Reader/ReaderPage2',
               params: {
                 bookData: this.bookData,
                 //后续持久化后再获取已经读到的章节序号，目前先传默认的0
@@ -329,7 +329,7 @@ struct BookDetailPage {
 
       // 小说标题
       Row({ space: CommonConstants.SPACE_20 }) {
-        Image(this.bookData.coverUrl?? $r('app.media.cover_list'))
+        Image(this.bookData.coverUrl ?? $r('app.media.cover_list'))
           .width(CommonConstants.NOVEL_IMG_WIDTH)
           .height(CommonConstants.NOVEL_IMG_HEIGHT)
           .borderRadius(5)

@@ -26,6 +26,10 @@
     {
       "name": "colorLibrary",
       "srcPath": "./commons/colorLibrary",
+    },
+    {
+      "name": "readerLibrary",
+      "srcPath": "./readerLibrary",
     }
   ]
 }
