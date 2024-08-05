@@ -7,6 +7,8 @@ import { chaptersItem } from '../../componets/dataList/ReaderChaptersItem'
 import { FileHandler } from '../../common/utils/FileHandler'
 import ChaptersDataSource from '../../common/LazyIDataSource/ChaptersDataSource'
 import { Books } from '../../database/entities/Books'
+import { BookHistory } from '../../database/entities/BookHistory'
+import bookHistoryUtils from '../../common/utils/BookHistoryUtils'
 
 /**
  * 标题图片样式
@@ -157,6 +159,9 @@ struct BookDetailPage {
                           txtFile: this.txtFiles
                         }
                       })
+                      if (this.txtFiles && this.txtFile.getListData()[index]) {
+                        this.jumpReadPage(`${item.chapterTitleNumber} ${item.title}`,index)
+                      }
                     })
                   }
                 })
@@ -233,6 +238,9 @@ struct BookDetailPage {
                 txtFile: this.txtFiles
               }
             })
+            if (this.txtFiles && this.txtFile.getListData()[0]) {
+              this.jumpReadPage(`${this.txtFile.getListData()[0].chapterTitleNumber} ${this.txtFile.getListData()[0].title}`,0)
+            }
           })
       }
       .padding({ top: 12, bottom: 12 })
@@ -434,5 +442,24 @@ struct BookDetailPage {
     .height(CommonConstants.FULL_HEIGHT)
     .width(CommonConstants.FULL_WIDTH)
     .backgroundColor($r('app.color.book_detail_background'))
+  }
+  @StorageLink('BOOK_IS_BOOK_HISTORY_REFRESHING') isBookHistoryRefreshing: number = 0
+  //跳转阅读界面更新或者添加阅读历史记录方法
+  async jumpReadPage(durChapterTitle:string,durChapterIndex:number) {
+    let bookHistory = new BookHistory()
+    bookHistory.id = this.bookData.id
+    bookHistory.bookName = this.bookData.bookName
+    bookHistory.author = this.bookData.author
+    bookHistory.durChapterTime = Date.now()
+    bookHistory.bookType = this.bookData.bookType
+    bookHistory.bookUrl = this.bookData.bookUrl??''
+    bookHistory.coverUrl = this.bookData.coverUrl??''
+    bookHistory.originBookId = this.bookData.id
+    bookHistory.durChapterTitle = durChapterTitle
+    bookHistory.durChapterIndex = durChapterIndex
+    await bookHistoryUtils.addBooks(bookHistory)
+    setTimeout(()=>{
+      this.isBookHistoryRefreshing++
+    },200)
   }
 }

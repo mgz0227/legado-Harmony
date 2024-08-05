@@ -2253,6 +2253,108 @@ export default {
           }
         ],
         "foreignKeys": []
+      },
+      {
+        "tableName": "book_history",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `bookName` TEXT NOT NULL, `author` TEXT NOT NULL, `durChapterTime` INTEGER NOT NULL, `durChapterIndex` INTEGER NOT NULL,`durChapterTitle` TEXT NOT NULL, `durChapterContent` TEXT NOT NULL,`sort` INTEGER NOT NULL, `bookType` INTEGER, `originBookId` INTEGER , `createTime` INTEGER NOT NULL, `updateTime` INTEGER NOT NULL,`bookUrl` TEXT NOT NULL,`coverUrl` TEXT NOT NULL,PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bookName",
+            "columnName": "bookName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "author",
+            "columnName": "author",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "durChapterTime",
+            "columnName": "durChapterTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "durChapterIndex",
+            "columnName": "durChapterIndex",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue":"0"
+          },
+          {
+            "fieldPath": "durChapterTitle",
+            "columnName": "durChapterTitle",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "durChapterContent",
+            "columnName": "durChapterContent",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sort",
+            "columnName": "sort",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "bookType",
+            "columnName": "bookType",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "originBookId",
+            "columnName": "originBookId",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createTime",
+            "columnName": "createTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "updateTime",
+            "columnName": "updateTime",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "bookUrl",
+            "columnName": "bookUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "coverUrl",
+            "columnName": "coverUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],

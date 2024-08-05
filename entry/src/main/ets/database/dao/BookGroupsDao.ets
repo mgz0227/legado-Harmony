@@ -20,11 +20,8 @@ class BookGroupsDao{
         return
       }
       await DbUtil.createTable(createSql)
-      AppDatabaseUtil.existsTable(this.TABLE_NAME)
-      setTimeout(() => {
-        this.initGroupData()
-      },10)
-      return
+      await AppDatabaseUtil.existsTable(this.TABLE_NAME)
+      this.initGroupData()
     } catch (err) {
       console.info('TagInfo', JSON.stringify(err))
     }

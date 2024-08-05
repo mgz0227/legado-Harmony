@@ -8,6 +8,8 @@ import IndexSearchType from '../../../../componets/head/IndexSearchType'
 import { router } from '@kit.ArkUI'
 import confirmDialogExample from '../../../../componets/common/confirmDialog'
 import BookContentRefresh from './BookContentRefresh'
+import bookHistoryUtils from '../../../../common/utils/BookHistoryUtils'
+import { showMessage } from '../../../../componets/common/promptShow'
 
 @Component
 export default struct BookBodyContent {
@@ -23,6 +25,7 @@ export default struct BookBodyContent {
   @State groupCoverShow: boolean = false
   @State bookBodyIndex: number = 0
   tabsBookBodyController: TabsController = new TabsController();
+  @StorageLink('BOOK_IS_BOOK_HISTORY_REFRESHING') isBookHistoryRefreshing: number = 0
   build() {
     Column() {
       Flex(
@@ -44,7 +47,6 @@ export default struct BookBodyContent {
                 .onClick(() => {
                   this.GROUP = '标签'
                   this.searchValue = '浏览历史'
-                  //todo 历史记录暂未实现
                 })
               if (this.searchValue !== '浏览历史') {
                 this.GroupBuilder()
@@ -122,16 +124,12 @@ export default struct BookBodyContent {
   @State delCache: boolean = false
   IndexShelf: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
-      cancel: () => {
-        this.onCancel()
-      },
       confirm: () => {
         this.onAccept()
       },
       title: '清空',
       delCache: this.delCache
     }),
-    cancel: this.exitApp,
     autoCancel: true,
     alignment: DialogAlignment.Center,
     // offset: { dx: 0, dy: '-40%' },
@@ -141,15 +139,11 @@ export default struct BookBodyContent {
   })
 
   onAccept() {
-    console.info('确定')
-  }
-
-  onCancel() {
-    console.info('取消')
-  }
-
-  exitApp() {
-    console.info('点外围取消')
+    bookHistoryUtils.deleteAllBookHistory()
+    setTimeout(() => {
+      this.isBookHistoryRefreshing++
+      showMessage('清空成功!')
+    },200)
   }
 
 
