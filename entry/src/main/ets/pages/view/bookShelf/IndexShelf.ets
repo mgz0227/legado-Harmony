@@ -483,6 +483,14 @@ export default struct IndexShelf {
         this.isShowImportBookList = true
         break
       case 3:
+        router.pushUrl({
+          url: 'pages/view/bookShelf/Manage/BookManagePage',
+          params: {
+            currentIndex: this.currentIndex,
+            EXHIBIT: this.EXHIBIT,
+            bookTypeNumber: this.bookTypeNumber
+          }
+        })
         break
     }
   }

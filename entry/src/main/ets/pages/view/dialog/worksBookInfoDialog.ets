@@ -80,12 +80,16 @@ export default struct worksBookInfoDialog{
     .width('100%')
   }
   @State isShowEditBook:boolean = false
+  @StorageLink('BOOK_IS_BOOK_WORKS_BOOK_LIST') isWorksBookListRefreshing: number = 0
   @Builder showEditBook(){
     Column(){
       newBookShelf({
         currentIndex:this.works.worksType,
         changeShowNumber:()=>{
           this.isShowEditBook = false
+          setTimeout(()=>{
+            this.isWorksBookListRefreshing++
+          },100)
         },
         returnClose:true,
         workBookListStatus: 2,

@@ -34,7 +34,8 @@ export default  struct BookManageDialog {
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State isAddShelfShow:boolean = false
-  @State isManage:boolean = false
+  @Prop isManage:boolean = false
+  @Prop isManageSearch:boolean = false
   @State topTitle:string = '置顶'
   @State bookList:Books[] = []
   @State @Watch('listenCheckList')checkLists: Record<number, boolean> = {}
@@ -43,6 +44,10 @@ export default  struct BookManageDialog {
   @State worksLists:WorksLists[] =[] //书单
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') @Watch('getGroupList')BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
+  searchCheck:Function = (_checkListNumber?:number[])=>{
+
+  }
+  @Consume searchBookList:number[] // 用于添加书籍时将选中的书籍id返回
   //判断是否全部置顶或取消置顶
   selectIsAllTop(){
     let allTopNumber = 0
@@ -177,6 +182,8 @@ export default  struct BookManageDialog {
   @Builder bookManage(){
     Flex({
       justifyContent:FlexAlign.SpaceBetween,
+      alignContent:FlexAlign.Center,
+      alignItems:ItemAlign.Center,
       direction:FlexDirection.Column,
       wrap:FlexWrap.NoWrap
     }) {
@@ -219,7 +226,7 @@ export default  struct BookManageDialog {
           this.footerTitle()
         }
       }
-      .visibility(this.isManage?Visibility.Visible:Visibility.None)
+      .visibility(this.isManage && !this.isManageSearch?Visibility.Visible:Visibility.None)
       .opacity(this.isManage?1:0)
       .translate({ y: this.isManage ? 0 : 50})
       .animation({
@@ -377,10 +384,15 @@ export default  struct BookManageDialog {
       Text('完成')
     }
     .onClick(async () => {
-      this.isManage = !this.isManage
-      setTimeout(()=>{
-        this.refreshData()
-      },100)
+      if (this.isManageSearch) {
+        this.searchBookList = this.checkListNumber
+        this.searchCheck()
+      } else {
+        this.isManage = !this.isManage
+        setTimeout(()=>{
+          this.refreshData()
+        },100)
+      }
     })
   }
   //书单底部操作栏

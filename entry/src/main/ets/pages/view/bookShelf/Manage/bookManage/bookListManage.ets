@@ -1,6 +1,5 @@
 import BookInfoManage from './BookInfoManage'
 import BookInfoGridManage from './BookInfoGridManage'
-import confirmDialogExample from '../../../../../componets/common/confirmDialog'
 import { Books } from '../../../../../database/entities/Books'
 
 @Component
@@ -9,10 +8,6 @@ export default struct bookListManage{
   @Prop bookList:Books[]
   @Prop isManage:boolean = true
   @Link checkGroup:Record<number, boolean>
-  isTopChange(){
-
-  }
-
   @State delCache:boolean = false
 
   build() {

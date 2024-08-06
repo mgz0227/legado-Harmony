@@ -1,4 +1,5 @@
 import { showMessage } from '../../../../../componets/common/promptShow'
+import groupTypeSearch from '../../../../../componets/group/GroupTypeSearch'
 import booksDao from '../../../../../database/dao/BooksDao'
 import { Books } from '../../../../../database/entities/Books'
 import BookInfoManage from './BookInfoManage'
@@ -19,6 +20,20 @@ export default struct newAddShelf{
   @State selectBookIdList:number[] = []
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @State @Watch('getBookList')bookTypeNumber:number = 2
+  @State groupCoverShow: boolean = false
+  @Provide @Watch('searchBook')searchBookList:number[] = []
+  //用于分组弹窗添加书籍
+  searchBook(){
+    if (this.searchBookList.length === 0 ) return
+    if (this.searchBookList.length > 0) {
+      this.searchBookList.forEach((item)=>{
+        this.selectBookId[item] = true
+      })
+      this.searchBookList = []
+      this.groupCoverShow = false
+    }
+  }
   aboutToAppear(): void {
     if (this.lastBookIds) {
       this.lastBookIds.forEach((item)=>{
@@ -31,7 +46,8 @@ export default struct newAddShelf{
   getBookList(){
     booksDao.search({
       type:this.currentIndex,
-      searchKey:this.searchValue
+      searchKey:this.searchValue,
+      bookGroup:this.bookTypeNumber
     }).then((val)=>{
       this.bookList = val
       this.allSelect = this.bookList.length === this.selectBookIdList.length
@@ -83,22 +99,34 @@ export default struct newAddShelf{
        .padding({left:20,right:20,top:12,bottom:12})
        .align(Alignment.Center)
      }
-      Scroll(){
-        Column(){
-          ForEach(this.bookList, (item: Books,index:number) => {
-            BookInfoManage({
-              bookData:item,
-              isManage:true,
-              checkGroup:this.selectBookId
+    Stack(){
+      groupTypeSearch({
+        bookTypeNumber:this.bookTypeNumber,
+        groupCoverShow:this.groupCoverShow
+      })
+        .zIndex(9)
+      Column(){
+        Scroll(){
+          Column(){
+            ForEach(this.bookList, (item: Books,index:number) => {
+              BookInfoManage({
+                bookData:item,
+                isManage:true,
+                checkGroup:this.selectBookId
+              })
             })
-          })
+          }
         }
+        .layoutWeight(1)
+        .align(Alignment.TopStart)
+        .scrollBar(BarState.Off).padding({left:15,right:15})
+        Divider().strokeWidth(0.5)
+        this.footerTitle()
       }
-      .layoutWeight(1)
-      .align(Alignment.TopStart)
-      .scrollBar(BarState.Off).padding({left:15,right:15})
-      Divider().strokeWidth(0.5)
-      this.footerTitle()
+      .margin({top:30})
+    }
+    .layoutWeight(1)
+    .alignContent(Alignment.Top)
     }
     .padding({
       top:this.topRectHeight,

@@ -370,7 +370,7 @@ export default struct newBookShelf{
                 overflow:TextOverflow.Ellipsis
               })
               .ellipsisMode(EllipsisMode.END)
-              .maxLines(1).width('70%')
+              .maxLines(1).width('65%')
 
             if (this.workBookListStatus !== 1){
               Image($r('app.media.close')).width(12).onClick(()=>{
@@ -378,7 +378,10 @@ export default struct newBookShelf{
                 this.delBookIds = book.id ?? 0
               })
             } else {
-              Image(book.isJoin?$r('app.media.unadd_book_shelf'):$r('app.media.add_book_shelf')).width(20).onClick(()=>{
+              Image(book.isJoin?$r('app.media.unadd_book_shelf'):$r('app.media.add_book_shelf'))
+                .width(20)
+                .height(20)
+                .onClick(()=>{
                 if (!book.isJoin) {
                   showMessage('已加入书架')
                 }

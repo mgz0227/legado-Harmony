@@ -140,7 +140,7 @@ export default struct WorksBookLists {
   exitDialog(){
     setTimeout(()=>{
       this.getWorkLists()
-    },500)
+    },100)
   }
   @State delCache:boolean = false
   shelfInfoDel: CustomDialogController | null = new CustomDialogController({
