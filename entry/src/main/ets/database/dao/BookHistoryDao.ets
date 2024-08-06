@@ -58,6 +58,29 @@ class BookHistoryDao {
       return []
     }
   }
+  async searchLimit() {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      let sql = `SELECT * FROM ${this.TABLE_NAME}`;
+      // 动态添加 WHERE 子句
+      let whereClause: string[] = [];
+
+      // 如果有 where 子句，添加 WHERE 关键字
+      if (whereClause.length > 0) {
+        sql += ` WHERE ${whereClause.join(' AND ')}`;
+      }
+      sql += `
+  ORDER BY
+     durChapterTime DESC
+     LIMIT 1
+`;
+      const bookHistoryDbList = await DbUtil.querySqlForList<BookHistory>(sql, column);
+      return bookHistoryDbList
+    } catch (err) {
+      console.log("TagInfo", JSON.stringify(err))
+      return []
+    }
+  }
 
   async insert(bookHistory: BookHistory) {
     try {
