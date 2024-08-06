@@ -33,6 +33,10 @@
       "value": "rgba(0, 0, 0, 0.06)"
     },
     {
+      "name": "color_black_4",
+      "value": "rgba(0, 0, 0, 0.04)"
+    },
+    {
       "name": "color_black_0",
       "value": "rgba(0, 0, 0, 0)"
     }
