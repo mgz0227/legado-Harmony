@@ -77,7 +77,7 @@ export default struct shareWorksBook {
             .textAlign(TextAlign.Center)
             .fontSize(12).fontWeight(400).lineHeight(20).fontColor($r('app.string.color_black_88'))
           Column({
-            space:PaddingConstants.PADDING_8
+            space:PaddingConstants.PADDING_15
           }){
             ForEach(this.bookList,(item:Books,index)=>{
               this.BookShelfInfo(item,index)
@@ -87,7 +87,7 @@ export default struct shareWorksBook {
         .alignItems(HorizontalAlign.Start)
       }
       .margin(40)
-      .padding({top:24,left:20,right:20})
+      .padding({ top: 24, left: 20, right: 20, bottom: 24 })
       .backgroundColor(Color.White)
       .zIndex(2)
       //用于图片保存不做显示
@@ -109,7 +109,7 @@ export default struct shareWorksBook {
             .fontColor($r('app.string.color_black_88'))
 
           Column({
-            space:PaddingConstants.PADDING_8
+            space:PaddingConstants.PADDING_15
           }){
             ForEach(this.bookList.slice(0, 4),(item:Books,index)=>{
               this.BookShelfInfo(item,index)
@@ -117,14 +117,14 @@ export default struct shareWorksBook {
           }
         }
         .alignItems(HorizontalAlign.Start)
-        .padding({ top: 24, left: 20, right: 20 })
+        .padding({ top: 24, left: 20, right: 20, bottom: 24 })
         .backgroundColor('#FFF7EC')
         this.footerSaveImage()
       }
       .id('shareBook')
       .margin(40)
       .position({y: 0})
-      .zIndex(0)
+      .visibility(Visibility.Hidden)
 
       Column() {
         Column() {
@@ -364,11 +364,23 @@ export default struct shareWorksBook {
         }
       }
 
-      if (this.works.worksBookList){
+      if (this.works.worksBookList && this.works.worksBookList[index].recommend){
         Column(){
           Text(this.works.worksBookList[index].recommend ?? '')
-            .padding(10)
+            .padding({
+              top:PaddingConstants.PADDING_8,
+              bottom:PaddingConstants.PADDING_8,
+              left:PaddingConstants.PADDING_12,
+              right:PaddingConstants.PADDING_12
+            })
         }
+        .borderRadius(8)
+        .margin({
+          top:PaddingConstants.PADDING_16
+        })
+        .alignItems(HorizontalAlign.Start)
+        .width('100%')
+        .backgroundColor($r('app.string.color_black_4'))
       }
     }
     .alignItems(HorizontalAlign.Start)
