@@ -443,7 +443,7 @@ struct BookDetailPage {
     .width(CommonConstants.FULL_WIDTH)
     .backgroundColor($r('app.color.book_detail_background'))
   }
-  @StorageLink('BOOK_IS_BOOK_HISTORY_REFRESHING') isBookHistoryRefreshing: number = 0
+  // @StorageLink('BOOK_IS_BOOK_HISTORY_REFRESHING') isBookHistoryRefreshing: number = 0
   //跳转阅读界面更新或者添加阅读历史记录方法
   async jumpReadPage(durChapterTitle:string,durChapterIndex:number) {
     let bookHistory = new BookHistory()
@@ -458,8 +458,5 @@ struct BookDetailPage {
     bookHistory.durChapterTitle = durChapterTitle
     bookHistory.durChapterIndex = durChapterIndex
     await bookHistoryUtils.addBooks(bookHistory)
-    setTimeout(()=>{
-      this.isBookHistoryRefreshing++
-    },200)
   }
 }
