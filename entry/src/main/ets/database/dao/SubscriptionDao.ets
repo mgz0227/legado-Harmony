@@ -12,6 +12,11 @@ import { ColumnInfo } from '../types/ColumnInfo';
 import { rssSourcesTypeParams } from '../types/rssSourcesType';
 import rssSourcesHistoryDao from './RssSourcesHistoryDao';
 
+interface delParams {
+  url: string,
+  id:number
+}
+
 class SubscriptionDao {
   TABLE_NAME: string = 'rssSources'
 
@@ -207,6 +212,42 @@ class SubscriptionDao {
     } catch (err) {
       console.log("TagInfo", JSON.stringify(err))
       return null
+    }
+  }
+
+  //校验是否存在收藏
+  async queryByUrl(url: string) {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.like('sourceUrl', url)
+      const rssDbList = await DbUtil.queryForList<rssSourceDb>(predicates, column);
+      const rss = rssDbList.map((item): rssSources => ToRssSources(item));
+      if (rss.length > 0) {
+        return true
+      } else {
+        return false
+      }
+    } catch (e){
+      console.log("TagInfo", JSON.stringify(e))
+      return false
+    }
+  }
+
+  //订阅源id删除或者sourceUrl进行删除
+  async deleteRssSourcesById(param?:delParams) {
+    let id = param?.id
+    let sourceUrl = param?.url
+    try {
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      if (id !== 0) {
+        predicates.equalTo('id', id)
+      } else {
+        predicates.equalTo('sourceUrl', sourceUrl)
+      }
+      await DbUtil.delete(predicates)
+    } catch (e) {
+      console.log("TagInfo", JSON.stringify(e))
     }
   }
 

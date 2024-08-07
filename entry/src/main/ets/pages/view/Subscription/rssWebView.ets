@@ -6,10 +6,16 @@ import { BookSource } from '../../../database/entities/BookSource';
 import { isNetworkUrl, sleep } from '../../../common/utils/utils';
 import axios, { AxiosResponse } from '@ohos/axios';
 import SubscriptionImport from '../../../componets/import/SubscriptionImport';
-import { rssSources } from '../../../database/entities/rssSources';
+import { rssSources, SUBSCRIPTION_GROUP_TYPE } from '../../../database/entities/rssSources';
+import CommonConstants from '../../../common/constants/CommonConstants';
+import PaddingConstants from '../../../common/constants/PaddingConstants';
+import SubscriptionDao from '../../../database/dao/SubscriptionDao';
+import subscriptionDao from '../../../database/dao/SubscriptionDao';
+import WebSetup from './components/WebSetup';
 
 interface RouteParams {
-  url: string,
+  url: string, //id不传默认用url校验是否存在订阅源有存
+  id:number //id是订阅源页面跳转用来传递的用于删除的其它页面可不传
 }
 
 @Entry
@@ -17,30 +23,63 @@ interface RouteParams {
 @Preview
 struct RssWebView {
   @State sourcesUrl:string = ''
+  @State sourcesId:number = 0
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   controller: webview.WebviewController = new webview.WebviewController();
   regex:string = `/booksource/importonline\\?src=(http[s]?://[^/]+/[^\"']+)`;
   regexRss:string = `/rsssource/importonline\\?src=(http[s]?://[^/]+/[^\"']+)`;
   legadoRegex:string = `/import/auto\\?src=(http[s]?://[^/]+/[^\"']+)`
-  aboutToAppear(): void {
+  @State isCollection:boolean = false
+  @StorageLink(CommonConstants.RSS_SOURCES_REFRESHING) refreshing: number = 0
+  async aboutToAppear(): Promise<void> {
     const params = router.getParams() as RouteParams;
     this.sourcesUrl = params.url
+    this.sourcesId = params.id??0
+    this.isCollection = await subscriptionDao.queryByUrl(this.sourcesUrl) //是否收藏
+  }
+
+  onBackPress(){
+    this.webOnBackPress()
+    return true
+  }
+
+  //是否后退网页
+  webOnBackPress(){
+    let canGoForward = this.controller.accessForward()//是否可前进
+    let canGoBackward =this.controller.accessBackward() //是否可以后退
+    if (canGoBackward) {
+      this.controller.backward() // 后退一个页面
+    }
+    if (!canGoBackward) {
+      router.back()
+      setTimeout(() => {
+        this.refreshing++
+      }, 200)
+    }
+  }
+
+
+  @State webTitle:string = ''
+  @State formModel: rssSources = {
+    sourceName: '',
+    sourceUrl: '',
+    sourceIcon: '',
+    sourceType: 0,
+    sourceIconIsUrl: false,
+    enabledCookieJar: false,
+    lastUpdateTime: new Date().getTime(),
+    customOrder: 0,
+    autoComplete: false,
+    sourceGroup: SUBSCRIPTION_GROUP_TYPE[4],
+    enabled: true,
+    singleUrl: true,
+    showRecentIcon: true,
+    customizeTitle: ''
   }
 
   build() {
     Column(){
-      Row({ space: 15 }) {
-        Image($r('app.media.return_left'))
-          .width(25)
-          .height(25)
-          .onClick(()=>{
-            router.back()
-          })
-      }
-      .height(30)
-      .margin({left:5})
-      .width("100%")
       Column(){
         Web({ src: this.sourcesUrl||'www.baidu.com', controller: this.controller })
           .onPageBegin((event) => {
@@ -50,6 +89,10 @@ struct RssWebView {
           .layoutWeight(1)
           .onPageEnd((event) => {
             this.getOnclickUrl(event?.url || '')
+            this.formModel.sourceUrl = event.url ?? ''
+            this.formModel.sourceName = this.controller.getTitle().slice(0, 19)
+            this.controller.getOriginalUrl()
+            this.webTitle = this.controller.getTitle()
           })
           .onScroll((event) => {
             showMessage("x = " + event.xOffset)
@@ -57,6 +100,7 @@ struct RssWebView {
             console.info("x = " + event.xOffset);
             console.info("y = " + event.yOffset);
           })
+        this.webFooter()
       }
       Flex()
         .bindSheet($$this.isShowImportBookSource, this.dialogImportBookFunction(), {
@@ -78,8 +122,110 @@ struct RssWebView {
           }
         })
     }
-    .padding({ top: this.topRectHeight, bottom: this.bottomRectHeight + 20 })
+    .padding({ top: this.topRectHeight, bottom: this.bottomRectHeight})
   }
+
+  @Builder
+  webFooter() {
+    Row({
+      space:PaddingConstants.PADDING_16
+    }) {
+      Image($r('app.media.return_left'))
+        .width(25)
+        .height(25)
+        .onClick(()=>{
+          router.back()
+          setTimeout(() => {
+            this.refreshing++
+          }, 10)
+        })
+      Row(){
+        Row({
+          space:PaddingConstants.PADDING_12
+        }){
+          Text(this.webTitle??'')
+            .font({
+              size:12,
+              weight:500,
+              family: CommonConstants.FAMILY_PingFANG
+            })
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+            .maxLines(1)
+            .layoutWeight(1)
+            .onClick(() => {
+
+            })
+          Row(){
+            Text('搜书')
+              .font({
+                size:10,
+                weight:400,
+                family: CommonConstants.FAMILY_PingFANG
+              })
+              .fontColor(Color.White)
+              .padding({
+                left:PaddingConstants.PADDING_12,
+                right:PaddingConstants.PADDING_12
+              })
+              .textAlign(TextAlign.Center)
+          }
+          .padding(5)
+          .backgroundColor($r('app.string.color_black_88'))
+          .borderRadius(4)
+        }
+        .padding(5)
+      }
+      .layoutWeight(1)
+      .border({
+        width:2,
+        color:$r('app.string.color_black_88')
+      })
+      .borderRadius(8)
+
+      Image(this.isCollection?$r('app.media.icon_collect_selected'):$r('app.media.icon_collect_unselected'))
+        .width(24)
+        .height(24)
+        .onClick(async ()=>{
+          if (this.isCollection) {
+            subscriptionDao.deleteRssSourcesById({
+              id:this.sourcesId,
+              url:this.sourcesUrl
+            })
+            this.isCollection = false
+          } else {
+            SubscriptionDao.insert(this.formModel)
+            this.isCollection = true
+          }
+          showMessage(this.isCollection?'收藏成功':'取消收藏')
+        })
+
+      Image($r('app.media.icon_browser_more'))
+        .width(24)
+        .height(24)
+        .onClick(()=>{
+         this.webSetupDialog?.open()
+        })
+    }
+    .padding({left:20,right:20,top:14})
+  }
+
+  webSetupDialog: CustomDialogController | null = new CustomDialogController({
+    builder: WebSetup({
+      refreshing:()=>{
+        this.controller.refresh()
+      }
+    }),
+    cancel: this.exitDialog,
+    autoCancel: true,
+    width:'100%',
+    alignment: DialogAlignment.Bottom,
+    customStyle:true
+  })
+  //退出弹框
+  exitDialog(){
+    this.webSetupDialog?.close()
+  }
+
   @State isShowImportBookSource: boolean = false
   @State sourceList: BookSource[] = []
   @Builder

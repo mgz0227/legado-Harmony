@@ -12,7 +12,6 @@ import { ColumnInfo } from '../types/ColumnInfo';
 class RssSourcesHistoryDao {
   TABLE_NAME: string = 'rss_sources_history'
 
-  // 创建book_subscription数据表
   async initRssSourcesHistoryTable() {
     try {
       const createSql = AppDatabaseUtil.getCreateSql(this.TABLE_NAME);

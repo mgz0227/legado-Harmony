@@ -12,6 +12,7 @@ import rssSourcesHistoryDao from '../../../../database/dao/RssSourcesHistoryDao'
 import { rssSourcesHistory } from '../../../../database/entities/rssSourcesHistory'
 import PreviewEffectImage from './PreviewEffectImage'
 import { router } from '@kit.ArkUI'
+import rssSourcesUtils from '../../../../common/utils/rssSourcesUtils'
 
 @Component
 export default struct RssSourcesHistory{
@@ -98,6 +99,7 @@ export default struct RssSourcesHistory{
             url: item.sourceUrl
           }
         })
+        rssSourcesUtils.pushRssSourcesHistory(item)
       })
       })
     }

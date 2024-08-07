@@ -28,6 +28,7 @@ export default struct SubscriptionIndex {
   @State isShowNewSources: boolean = false
   @Prop @Watch('currentTabIndexChange') currentTabIndex: number
   @StorageLink('topRectHeight') topRectHeight: number = 0
+  @StorageLink(CommonConstants.RSS_SOURCES_REFRESHING) @Watch('getList') refreshing: number = 0
   @State
   moreList: IconTitleVo[] = [
     new IconTitleVo($r('app.media.icon_rule_paste'), '粘贴导入'),
@@ -55,11 +56,6 @@ export default struct SubscriptionIndex {
   currentTabIndexChange() {
     this.refresh()
   }
-
-  // aboutToAppear() {
-  //   showMessage('显示了')
-  //   this.getList()
-  // }
 
   resetState() {
     this.subscriptionList = []
