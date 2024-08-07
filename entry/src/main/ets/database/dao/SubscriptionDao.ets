@@ -94,7 +94,11 @@ class SubscriptionDao {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      if (rssSource.id !== 0 && rssSource.id !== undefined) {
+        predicates.equalTo('id', rssSource.id)
+      } else {
+        predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      }
       const count = await DbUtil.queryForCount(predicates, column)
       if (count !== 0) {
         this.update(rssSource)
@@ -115,7 +119,11 @@ class SubscriptionDao {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      if (rssSource.id !== 0 && rssSource.id !== undefined) {
+        predicates.equalTo('id', rssSource.id)
+      } else {
+        predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      }
       const count = await DbUtil.queryForCount(predicates, column)
       if (count === 0 && rssSource instanceof rssSources) {
         this.insert(rssSource)
@@ -142,7 +150,11 @@ class SubscriptionDao {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      if (rssSource.id !== 0 && rssSource.id !== undefined) {
+        predicates.equalTo('id', rssSource.id)
+      } else {
+        predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      }
       const rssSourceDb = ToRssSourcesDb(rssSource)
       rssSourceDb.showRecentIcon = false
       await DbUtil.update(predicates, rssSourceDb, column)
@@ -171,7 +183,11 @@ class SubscriptionDao {
   async deleteRssSources(rssSource: rssSources) {
     try {
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      if (rssSource.id !== 0 && rssSource.id !== undefined) {
+        predicates.equalTo('id', rssSource.id)
+      } else {
+        predicates.equalTo('sourceUrl', rssSource.sourceUrl)
+      }
       rssSourcesHistoryDao.deleteRssSourcesHistory(rssSource.sourceUrl)
       await DbUtil.delete(predicates)
       return true
@@ -186,7 +202,11 @@ class SubscriptionDao {
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       const predicates = DbUtil.getPredicates(this.TABLE_NAME);
-      predicates.equalTo('sourceUrl', rssSources.sourceUrl)
+      if (rssSources.id !== 0 && rssSources.id !== undefined) {
+        predicates.equalTo('id', rssSources.id)
+      } else {
+        predicates.equalTo('sourceUrl', rssSources.sourceUrl)
+      }
       const rssSourceDb = ToRssSourcesDb(rssSources)
       rssSourceDb.lastUpdateTime = Date.now()
       rssSourceDb.customOrder = 0

@@ -91,7 +91,6 @@ struct RssWebView {
             this.getOnclickUrl(event?.url || '')
             this.formModel.sourceUrl = event.url ?? ''
             this.formModel.sourceName = this.controller.getTitle().slice(0, 19)
-            this.controller.getOriginalUrl()
             this.webTitle = this.controller.getTitle()
           })
           .onScroll((event) => {
