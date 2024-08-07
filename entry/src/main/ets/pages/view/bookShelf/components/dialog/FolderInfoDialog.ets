@@ -61,29 +61,31 @@ export default struct FolderInfoDialog{
         }
       }.padding(20)
       Divider().strokeWidth(0.5).padding({bottom:16})
-      Flex({
-        direction: FlexDirection.Row, wrap: FlexWrap.Wrap,
-        justifyContent:FlexAlign.Start
+      GridRow({
+        columns:4
       }){
         ForEach(this.buttonListInfo,(item:buttonList)=>{
-          if (item.id === 2){
-            InsideCircleIcon({
-              icon:item.icon,
-              title:this.topTitle
-            })
-              .onClick(()=>{
-                this.folderInfo(item.id)
+          GridCol(){
+            if (item.id === 2){
+              InsideCircleIcon({
+                icon:item.icon,
+                title:this.topTitle
               })
-          } else {
-            InsideCircleIcon({
-              icon:item.icon,
-              title:item.title
-            })
-              .onClick(()=>{
-                this.folderInfo(item.id)
+                .onClick(()=>{
+                  this.folderInfo(item.id)
+                })
+            } else {
+              InsideCircleIcon({
+                icon:item.icon,
+                title:item.title
               })
+                .onClick(()=>{
+                  this.folderInfo(item.id)
+                })
+            }
           }
         })
+
       }
       Divider().strokeWidth(0.5).padding({bottom:16})
       Column(){

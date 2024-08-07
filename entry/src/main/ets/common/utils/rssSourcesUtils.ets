@@ -3,7 +3,7 @@ import { rssSources } from '../../database/entities/rssSources';
 import { rssSourcesHistory } from '../../database/entities/rssSourcesHistory';
 
 export class rssSourcesUtils{
- async pushRssSourcesHistory(item:rssSources){
+ async pushRssSourcesHistory(item:rssSources|rssSourcesHistory){
   let rssSourcesHistory:rssSourcesHistory = {
    sourceType: item.sourceType,
    sourceName: item.sourceName,

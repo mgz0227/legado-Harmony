@@ -136,38 +136,45 @@ export default struct shareWorksBook {
           direction: FlexDirection.Row, wrap: FlexWrap.Wrap,
           justifyContent: FlexAlign.Start
         }) {
+
+        }
+        GridRow({
+          columns:4
+        }){
           ForEach(this.buttonListInfo, (item: buttonList) => {
-            InsideCircleIcon({
-              icon: item.icon,
-              title:item.title
-            }).onClick(() => {
-              switch (item.id) {
-                case 1:
-                  showMessage('跳转微信');
-                  break;
-                case 2:
-                  showMessage('跳转QQ');
-                  break;
-                case 3:
-                  showMessage('跳转朋友圈');
-                  break;
-                case 4:
-                  showMessage('跳转QQ空间');
-                  break;
-                case 5:
-                  showMessage('导出本地成功');
-                  break;
-                case 6:
-                  showMessage('已复制链接');
-                  break;
-                case 7:
-                  this.requestPermissionSaveImage();
-                  break;
-                case 8:
-                  showMessage('系统分享');
-                  break;
-              }
-            })
+            GridCol(){
+              InsideCircleIcon({
+                icon: item.icon,
+                title:item.title
+              }).onClick(() => {
+                switch (item.id) {
+                  case 1:
+                    showMessage('跳转微信');
+                    break;
+                  case 2:
+                    showMessage('跳转QQ');
+                    break;
+                  case 3:
+                    showMessage('跳转朋友圈');
+                    break;
+                  case 4:
+                    showMessage('跳转QQ空间');
+                    break;
+                  case 5:
+                    showMessage('导出本地成功');
+                    break;
+                  case 6:
+                    showMessage('已复制链接');
+                    break;
+                  case 7:
+                    this.requestPermissionSaveImage();
+                    break;
+                  case 8:
+                    showMessage('系统分享');
+                    break;
+                }
+              })
+            }
           })
         }
 

@@ -28,29 +28,31 @@ export default struct worksBookInfoDialog{
   build() {
     Column(){
       Divider().strokeWidth(0.5).padding({bottom:16})
-      Flex({
-        direction: FlexDirection.Row, wrap: FlexWrap.Wrap,
-        justifyContent:FlexAlign.Start
+      GridRow({
+        columns:4
       }){
         ForEach(this.buttonListInfo,(item:buttonList)=>{
-          InsideCircleIcon({
-            icon:item.icon,
-            title:item.title
-          })
-            .onClick(()=>{
-               switch (item.id){
-                 case 1:
-                   this.isShowEditBook = true
-                   break
-                 case 2:
-                   this.shareShelfBookDialog?.open()
-                   break
-                 case 3:
-                   this.delDialog?.open()
-                   break;
-               }
+          GridCol(){
+            InsideCircleIcon({
+              icon:item.icon,
+              title:item.title
             })
+              .onClick(()=>{
+                switch (item.id){
+                  case 1:
+                    this.isShowEditBook = true
+                    break
+                  case 2:
+                    this.shareShelfBookDialog?.open()
+                    break
+                  case 3:
+                    this.delDialog?.open()
+                    break;
+                }
+              })
+          }
         })
+
       }
       Divider().strokeWidth(0.5).padding({bottom:16})
       Column(){

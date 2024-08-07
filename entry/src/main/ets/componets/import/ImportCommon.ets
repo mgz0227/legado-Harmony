@@ -11,6 +11,7 @@ import Tag from '../common/Tag';
 import BookSourceDao from '../../database/dao/BookSourceDao';
 import { BookSource, GroupList, SOURCE_GROUP_MAP } from '../../database/entities/BookSource';
 import SourceGroup from '../ui/SourceGroup';
+import text from '@ohos.graphics.text';
 
 @Component
 export default struct ImportCommon {
@@ -47,6 +48,9 @@ export default struct ImportCommon {
     this.sourceList.forEach((item: BookSource) => {
       const title = item.bookSourceGroup;
       const bookSourceName = item.bookSourceName;
+      if (item.bookSourceType >= 3){
+        item.bookSourceType = 0 //SOURCE_GROUP_MAP中未有3的情况,会出现数组越界
+      }
       if (title) {
         // 如果groupMap中还没有这个group，则创建一个新的GroupList对象
         if (!groupMap[title]) {

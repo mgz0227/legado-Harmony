@@ -145,7 +145,8 @@ export default struct SubscriptionContent{
                   router.pushUrl({
                     url: 'pages/view/Subscription/rssWebView',
                     params: {
-                      url: item.sourceUrl
+                      url: item.sourceUrl,
+                      id:item.id
                     }
                   })
                   rssSourcesUtils.pushRssSourcesHistory(item)
@@ -175,7 +176,8 @@ export default struct SubscriptionContent{
                 router.pushUrl({
                   url: 'pages/view/Subscription/rssWebView',
                   params: {
-                    url: item.sourceUrl
+                    url: item.sourceUrl,
+                    id: item.id
                   }
                 })
                 rssSourcesUtils.pushRssSourcesHistory(item)

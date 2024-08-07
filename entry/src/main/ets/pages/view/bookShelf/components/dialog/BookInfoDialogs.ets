@@ -63,18 +63,19 @@ export default struct BookInfoDialogs{
         })
       }.padding(20)
       Divider().strokeWidth(0.5).padding({bottom:16})
-      Flex({
-        direction: FlexDirection.Row, wrap: FlexWrap.Wrap,
-        justifyContent:FlexAlign.Start
+      GridRow({
+        columns:4
       }){
         ForEach(this.buttonListInfo,(item:buttonList)=>{
-          InsideCircleIcon({
-            icon:item.icon,
-            title:item.title
-          })
-            .onClick(()=>{
-              this.bookInfoButton(item.id)
+          GridCol(){
+            InsideCircleIcon({
+              icon:item.icon,
+              title:item.title
             })
+              .onClick(()=>{
+                this.bookInfoButton(item.id)
+              })
+          }
         })
       }
       Divider().strokeWidth(0.5).padding({bottom:16})

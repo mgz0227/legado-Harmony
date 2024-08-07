@@ -242,6 +242,8 @@ export default class CommonConstants {
   static readonly RSS_SOURCES_GROUP_INIT:string = 'RSS_SOURCES_GROUP_INIT'
   //分组key
   static readonly RSS_SOURCES_GROUP_LIST_DATA_KEY:string = 'RSS_SOURCES_GROUP_LIST_DATA_KEY'
+  //订阅源刷新标识
+  static readonly RSS_SOURCES_REFRESHING:string = 'RSS_SOURCES_REFRESHING'
   /**
    * 数据库日志标签
    */

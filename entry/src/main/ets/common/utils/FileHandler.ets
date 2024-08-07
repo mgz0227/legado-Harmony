@@ -2,8 +2,6 @@ import { BusinessError } from '@ohos.base';
 import fs, { Options } from '@ohos.file.fs';
 import { common, Context } from '@kit.AbilityKit';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
-import { BookList } from '../../componets/dataList/bookList';
-import { addShelfBook } from '../../storage/bookListData';
 import { showMessage } from '../../componets/common/promptShow';
 import { picker } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
