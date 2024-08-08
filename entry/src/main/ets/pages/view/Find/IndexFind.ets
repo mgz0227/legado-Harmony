@@ -160,16 +160,18 @@ export default struct IndexFind {
 
   async pasteAnalyze() {
     try {
-      const url = getPasteDataSync()
+      let url = getPasteDataSync()
       if (!url) {
-        showMessage('未获取到粘贴信息，请求默认数据')
+        showMessage('未获取到粘贴信息')
         await sleep()
         // return
       }
-      // if (!isNetworkUrl(url ?? '')) {
-      //   showMessage('复制的链接不正确')
-      //   return
-      // }
+      if (!isNetworkUrl(url ?? '')) {
+        showMessage('复制的链接不正确')
+        await sleep()
+        url = undefined
+        // return
+      }
       const res: AxiosResponse = await axios
         .get(url ?? 'https://node.wisdoms.xin/static/file/20240704/sy.json');
       this.sourceList = res.data;
