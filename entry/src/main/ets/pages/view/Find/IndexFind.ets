@@ -164,12 +164,12 @@ export default struct IndexFind {
       if (!url) {
         showMessage('未获取到粘贴信息，请求默认数据')
         await sleep()
-        // return
+        return
       }
-      // if (!isNetworkUrl(url ?? '')) {
-      //   showMessage('复制的链接不正确')
-      //   return
-      // }
+      if (!isNetworkUrl(url ?? '')) {
+        showMessage('复制的链接不正确')
+        return
+      }
       const res: AxiosResponse = await axios
         .get(url ?? 'https://node.wisdoms.xin/static/file/20240704/sy.json');
       this.sourceList = res.data;
