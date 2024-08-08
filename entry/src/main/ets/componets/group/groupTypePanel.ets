@@ -292,6 +292,7 @@ export default struct groupTypePanel{
   }
 
   @State isShowBookFolderInfoDialog:boolean = false
+  @Provide searchBookList:number[] = []
   @Builder bookFolderInfoDialog(){
     Column(){
       BookManageDialog({
