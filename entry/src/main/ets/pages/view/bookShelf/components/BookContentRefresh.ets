@@ -22,7 +22,7 @@ export default struct BookContentRefresh {
   @Prop currentIndex: number = 0
   @Link EXHIBIT: string
   @Link GROUP: string
-  @Link searchValue: string
+  @Prop searchValue: string
   @Link bookTypeNumber:number
   @State checkGroup:Record<number, boolean> = {}
   changeRefreshing(){

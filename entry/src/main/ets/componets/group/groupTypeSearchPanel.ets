@@ -11,6 +11,7 @@ export default struct groupTypeSearchPanel{
   @State hideList:BookGroups[] = []
   @Prop currentIndex:number = 0
   @Prop clickGroup:BookGroups
+  @Link searchBookList:number[]
   aboutToAppear(): void {
     this.getGroupList()
   }
@@ -160,7 +161,8 @@ export default struct groupTypeSearchPanel{
         bookTypeNumber:this.clickGroup.groupId,
         isManage:true,
         isManageSearch:true,
-        searchCheck:()=>{
+        searchCheck:(val:number[])=>{
+          this.searchBookList = val
           this.isShowBookFolderInfoDialog = false
         }
       })

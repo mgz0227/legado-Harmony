@@ -47,7 +47,6 @@ export default  struct BookManageDialog {
   searchCheck:Function = (_checkListNumber?:number[])=>{
 
   }
-  @Consume searchBookList:number[] // 用于添加书籍时将选中的书籍id返回
   //判断是否全部置顶或取消置顶
   selectIsAllTop(){
     let allTopNumber = 0
@@ -385,8 +384,7 @@ export default  struct BookManageDialog {
     }
     .onClick(async () => {
       if (this.isManageSearch) {
-        this.searchBookList = this.checkListNumber
-        this.searchCheck()
+        this.searchCheck(this.checkListNumber)
       } else {
         this.isManage = !this.isManage
         setTimeout(()=>{

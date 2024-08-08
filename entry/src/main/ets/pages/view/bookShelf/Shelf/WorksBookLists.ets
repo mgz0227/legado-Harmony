@@ -18,8 +18,6 @@ export default struct WorksBookLists {
   @Prop worksLists:WorksLists[] =[]
   @Prop isShowCheck:boolean = false
   @State worksBook:WorksLists = new WorksLists()
-  @StorageLink('topRectHeight') topRectHeight: number = 0
-  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('BOOK_IS_BOOK_WORKS_BOOK_LIST') @Watch('getWorkLists')isWorksBookListRefreshing: number = 0
   aboutToAppear(): void {
     if (this.worksLists.length === 0) {
@@ -116,10 +114,6 @@ export default struct WorksBookLists {
         lastWorkBookList:this.worksBook
       })
     }
-    .padding({
-      top:this.topRectHeight,
-      bottom:this.bottomRectHeight
-    })
     .backgroundColor(Color.White)
   }
   shelfInfoDialog: CustomDialogController | null = new CustomDialogController({

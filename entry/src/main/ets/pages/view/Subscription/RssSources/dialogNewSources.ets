@@ -73,7 +73,7 @@ export default struct dialogNewSources{
 
   @Builder
   newSourcesBuilder(){
-    Flex(){
+    Column(){
       newSources({
         isEdit:false,
         hideNewSources:()=>{

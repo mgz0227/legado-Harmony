@@ -1,5 +1,5 @@
 import BooksDao from '../../database/dao/BooksDao'
-import { Books } from '../../database/entities/Books'
+import { Books, BOOK_SEARCH_TYPE } from '../../database/entities/Books'
 import bookGroupUtils from './bookGroupUtils'
 import toolsUtils from './ToolsUtils'
 
@@ -59,6 +59,11 @@ class booksUtils{
   async getBookByIds(ids:number|number[]){
     let bookId: number[] = toolsUtils.numberArrays(ids)
     return await BooksDao.getBookByIds(bookId)
+  }
+
+  //校验类型数据查询数组内容
+  getOrder(type:string){
+    return BOOK_SEARCH_TYPE.indexOf(type) ?? 0;
   }
 }
 let booksUtil = new booksUtils();

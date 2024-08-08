@@ -19,7 +19,7 @@ export default struct BookBodyContent {
   @State GROUP_NAMES: string[] = ['标签', '文件夹']
   @Link EXHIBIT: string
   @Link GROUP: string
-  @Link searchValue: string
+  @State searchValue: string = '最近阅读'
   @Link bookTypeNumber:number
   @State title: string = '最近阅读'
   @State groupCoverShow: boolean = false

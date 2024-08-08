@@ -73,7 +73,6 @@ export default struct BookFolder {
     })
   }
   @Prop clickGroup:BookGroups
-  @Provide searchBookList:number[] = []
   @Builder bookFolderInfoDialog(){
     Column(){
       BookManageDialog({

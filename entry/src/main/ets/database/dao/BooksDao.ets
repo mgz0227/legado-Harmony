@@ -1,3 +1,4 @@
+import booksUtils from '../../common/utils/booksUtils';
 import DbUtil from '../../common/utils/DbUtil';
 import toolsUtils from '../../common/utils/ToolsUtils';
 import AppDatabaseUtil from '../AppDatabaseUtil';
@@ -27,6 +28,11 @@ class BooksDao {
     let searchKey = param?.searchKey ?? '';
     let type = param?.type;
     let bookGroup = param?.bookGroup;
+    let order = param?.order;
+    let sort = 0
+    if (order !== undefined){
+      sort = booksUtils.getOrder(order)
+    }
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       let sql = `SELECT * FROM ${this.TABLE_NAME}`;
@@ -50,10 +56,23 @@ class BooksDao {
       if (whereClause.length > 0) {
         sql += ` WHERE ${whereClause.join(' AND ')}`;
       }
-      sql += `
-  ORDER BY
-     isTop DESC, createTime DESC
-`;
+      sql += ` ORDER BY`;
+      if (order !== undefined) {
+        switch (sort){
+          case 0:
+            sql += ` isTop DESC, durChapterTime DESC`;
+            break;
+          case 1:
+            sql += ` isTop DESC, latestChapterTime DESC`;
+            break;
+          case 2:
+            sql += ` isTop DESC, sort ASC`;
+            break;
+        }
+      } else {
+        sql += ` isTop DESC, createTime DESC`;
+      }
+
       const bookDbList = await DbUtil.querySqlForList<Books>(sql, column);
       console.log("TagInfo", '书籍：' + bookDbList.length)
       return bookDbList

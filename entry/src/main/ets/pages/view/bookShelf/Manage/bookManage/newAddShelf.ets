@@ -22,7 +22,7 @@ export default struct newAddShelf{
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State @Watch('getBookList')bookTypeNumber:number = 2
   @State groupCoverShow: boolean = false
-  @Provide @Watch('searchBook')searchBookList:number[] = []
+  @State @Watch('searchBook')searchBookList:number[] = []
   //用于分组弹窗添加书籍
   searchBook(){
     if (this.searchBookList.length === 0 ) return
@@ -102,7 +102,8 @@ export default struct newAddShelf{
     Stack(){
       groupTypeSearch({
         bookTypeNumber:this.bookTypeNumber,
-        groupCoverShow:this.groupCoverShow
+        groupCoverShow:this.groupCoverShow,
+        searchBookList:this.searchBookList
       })
         .zIndex(9)
       Column(){
