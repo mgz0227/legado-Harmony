@@ -8,6 +8,8 @@ import IndexSearchType from '../../../../componets/head/IndexSearchType'
 import { router } from '@kit.ArkUI'
 import confirmDialogExample from '../../../../componets/common/confirmDialog'
 import BookContentRefresh from './BookContentRefresh'
+import bookHistoryUtils from '../../../../common/utils/BookHistoryUtils'
+import { showMessage } from '../../../../componets/common/promptShow'
 
 @Component
 export default struct BookBodyContent {
@@ -18,13 +20,12 @@ export default struct BookBodyContent {
   @Link EXHIBIT: string
   @Link GROUP: string
   @Link searchValue: string
-  @Link bookType: string
   @Link bookTypeNumber:number
   @State title: string = '最近阅读'
   @State groupCoverShow: boolean = false
-  @Prop isClear: boolean = false
   @State bookBodyIndex: number = 0
   tabsBookBodyController: TabsController = new TabsController();
+  @StorageLink('BOOK_IS_BOOK_HISTORY_REFRESHING') isBookHistoryRefreshing: number = 0
   build() {
     Column() {
       Flex(
@@ -40,6 +41,7 @@ export default struct BookBodyContent {
             justifyContent: FlexAlign.SpaceBetween
           }) {
             Row({ space: 15 }) {
+              // todo 筛选暂未实现
               IndexSearchType({ title: this.title, searchValue: this.searchValue })
               IndexSearchType({ title: '浏览历史', searchValue: this.searchValue })
                 .onClick(() => {
@@ -56,8 +58,6 @@ export default struct BookBodyContent {
                       params: {
                         currentIndex: this.currentIndex,
                         EXHIBIT: this.EXHIBIT,
-                        GROUPName: this.GROUP,
-                        bookTypes: this.bookType,
                         bookTypeNumber: this.bookTypeNumber
                       }
                     })
@@ -103,9 +103,7 @@ export default struct BookBodyContent {
               EXHIBIT: this.EXHIBIT,
               GROUP: this.GROUP,
               searchValue: this.searchValue,
-              isClear: this.isClear,
               currentIndex: this.currentIndex,
-              bookType: this.bookType,
               bookTypeNumber:this.bookTypeNumber
             })
           }
@@ -126,16 +124,12 @@ export default struct BookBodyContent {
   @State delCache: boolean = false
   IndexShelf: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
-      cancel: () => {
-        this.onCancel()
-      },
       confirm: () => {
         this.onAccept()
       },
       title: '清空',
       delCache: this.delCache
     }),
-    cancel: this.exitApp,
     autoCancel: true,
     alignment: DialogAlignment.Center,
     // offset: { dx: 0, dy: '-40%' },
@@ -145,16 +139,11 @@ export default struct BookBodyContent {
   })
 
   onAccept() {
-    console.info('确定')
-    this.isClear = true
-  }
-
-  onCancel() {
-    console.info('取消')
-  }
-
-  exitApp() {
-    console.info('点外围取消')
+    bookHistoryUtils.deleteAllBookHistory()
+    setTimeout(() => {
+      this.isBookHistoryRefreshing++
+      showMessage('清空成功!')
+    },200)
   }
 
 

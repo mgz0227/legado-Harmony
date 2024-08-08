@@ -11,8 +11,7 @@ export default struct groupTypeComponent {
   @Link GROUP:string
   @State groupList:BookGroups[] = []
   @Link bookTypeNumber:number
-  // initGroup:string[] = ['分组','全部','未分组','本地','书单']
-
+  @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') @Watch('changeRefresh')BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
   aboutToAppear(): void {
     this.getGroupList()
   }
@@ -58,11 +57,13 @@ export default struct groupTypeComponent {
                   index:item.groupId,
                   bookTypeNumber:this.bookTypeNumber
                 }).onClick(() => {
-                  this.bookTypeNumber = item?.groupId||0
                   if (item.groupName === '分组') {
                     this.GROUP = '文件夹'
                   } else {
                     this.GROUP = '标签'
+                  }
+                  if (item.groupId){
+                    this.bookTypeNumber = item.groupId
                   }
                 })
               }

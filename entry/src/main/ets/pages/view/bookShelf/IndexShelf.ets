@@ -1,7 +1,6 @@
 import BookMark from '../../../componets/head/BookMark'
 import { router } from '@kit.ArkUI'
 import BookBodyContent from './components/BookBodyContent'
-import { picker } from '@kit.CoreFileKit'
 import { FileHandler } from '../../../common/utils/FileHandler'
 import Dialog from '../../../componets/common/Dialog'
 
@@ -11,18 +10,37 @@ export default struct IndexShelf {
   THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单', '批量管理']
   titleArray: Array<string> = ['小说', '漫画', '有声书']
 
-  @State bookType:string = '全部'
-  @State bookTypeNumber:number = 1
+  @State bookTypeNumber:number = 2
   @State EXHIBIT: string = '列表'
-  @State GROUP: string = '标签'
+  @State @Watch('changeGroup')GROUP: string = '标签'
+  changeGroup(){
+    if (this.GROUP === '文件夹') {
+      this.bookTypeNumber = 1
+    } else {
+      this.bookTypeNumber = 2
+    }
+  }
   @State searchValue: string = '最近阅读'
-  @State isClear: boolean = false
 
   @State isShowImport: boolean = false
   @State isShowCloudImport: boolean = false
   @State isShowImportBookList: boolean = false
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
+  @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
+  // 网址导入dialog
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: Dialog({
+      title: '网址导入',
+      child: () => {
+        this.DialogInput("请输入书籍目录或详情页", 10)
+      }
+    }),
+    cornerRadius: 8,
+    offset: { dx: 0, dy: 0 }
+  })
+  tabsController: TabsController = new TabsController();
+  private scrollController: Scroller = new Scroller();
   build() {
     Column() {
       Flex({
@@ -157,8 +175,6 @@ export default struct IndexShelf {
                EXHIBIT: this.EXHIBIT,
                GROUP: this.GROUP,
                searchValue: this.searchValue,
-               isClear: this.isClear,
-               bookType: this.bookType,
                bookTypeNumber:this.bookTypeNumber
              })
            }
@@ -184,14 +200,6 @@ export default struct IndexShelf {
     .borderRadius({ bottomRight: 5, bottomLeft: 5 })
   }
 
-
-  @Builder
-  TabBuilderImage(index: number, name: string) {
-    Column() {
-      Image($r('app.media.SUB_theme'))
-    }.width('100%')
-  }
-  @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   @Builder
   // 书籍导入UI盒子
   ImportClickBox(index: number, image: string, text: string) {
@@ -228,13 +236,8 @@ export default struct IndexShelf {
         //   router.pushUrl({
         //     url: 'pages/view/bookShelf/LocalImportPage'
         //   });
-          let documentSelectOptions = new picker.DocumentSelectOptions();
-          let documentPicker = new picker.DocumentViewPicker();
-          let filePath: string = ""
-          await documentPicker.select(documentSelectOptions).then((documentSelectResult: Array<string>) => {
-            filePath = documentSelectResult[0];
-          })
-          FileHandler.CopyFile(filePath,this.currentIndex)
+          let FileResult = await FileHandler.documentPickerFile(1, ['.txt', '.epub'])
+          FileHandler.CopyFile(FileResult[0], this.currentIndex)
           this.isShowImport = false
           setTimeout(()=>{
             this.isBookRefreshing++
@@ -297,20 +300,6 @@ export default struct IndexShelf {
       })
     }
   }
-
-  // 网址导入dialog
-  dialogController: CustomDialogController = new CustomDialogController({
-    builder: Dialog({
-      title: '网址导入',
-      child: () => {
-        this.DialogInput("请输入书籍目录或详情页", 10)
-      }
-    }),
-    cornerRadius: 8,
-    offset: { dx: 0, dy: 0 }
-  })
-  tabsController: TabsController = new TabsController();
-  private scrollController: Scroller = new Scroller();
 
   @Builder
   DialogInput(placeholder: string, maxlength: number) {
@@ -494,6 +483,14 @@ export default struct IndexShelf {
         this.isShowImportBookList = true
         break
       case 3:
+        router.pushUrl({
+          url: 'pages/view/bookShelf/Manage/BookManagePage',
+          params: {
+            currentIndex: this.currentIndex,
+            EXHIBIT: this.EXHIBIT,
+            bookTypeNumber: this.bookTypeNumber
+          }
+        })
         break
     }
   }

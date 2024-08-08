@@ -3,49 +3,76 @@
  * @datetime 2024/7/23 12:18
  * @className: BookContentRefresh
  */
+import { showMessage } from '../../../../componets/common/promptShow'
 import RefreshComponent from '../../../../componets/common/RefreshComponent'
 import BookFolder from '../BookFolder'
-import ShelfBookList from '../Shelf/ShelfBookList'
+import WorksBookLists from '../Shelf/WorksBookLists'
 import BookContent from './BookContent'
+import BookHistoryContent from './BookHistoryContent'
 
 @Component
 export default struct BookContentRefresh {
   @State @Watch('changeRefreshing')isRefreshing: boolean = false
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
+  @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') isGroupRefreshing: number = 0
+  @StorageLink('BOOK_IS_BOOK_WORKS_BOOK_LIST') isWorksBookListRefreshing: number = 0
+  @StorageLink('BOOK_IS_BOOK_HISTORY_REFRESHING') isBookHistoryRefreshing: number = 0
   @State counter: number = 0
   @State RefreshingTitle: string = '松开刷新'
-  @Link bookType:string
   @Prop currentIndex: number = 0
   @Link EXHIBIT: string
   @Link GROUP: string
   @Link searchValue: string
-  @Prop isClear: boolean = false
   @Link bookTypeNumber:number
-
+  @State checkGroup:Record<number, boolean> = {}
   changeRefreshing(){
     if (this.isRefreshing) {
-      this.isBookRefreshing++
+      switch (this.bookTypeNumber){
+        case 1:
+          this.isGroupRefreshing++
+          break;
+        case 5:
+          this.isWorksBookListRefreshing++
+          break;
+        default:
+          this.isBookRefreshing++
+          break
+      }
+      if (this.searchValue === '浏览历史') {
+        this.isBookHistoryRefreshing++
+      }
     }
   }
   build() {
     Refresh({ refreshing: $$this.isRefreshing, builder: this.refreshComponent }) {
       Scroll() {
         Column() {
-          if (this.bookType === '书单' && this.searchValue !== '浏览历史') {
-            ShelfBookList({
+          if (this.bookTypeNumber === 5 && this.searchValue !== '浏览历史') {
+            WorksBookLists({
+              checkGroup: this.checkGroup,
               EXHIBIT: this.EXHIBIT,
-              isClear: this.isClear
+              currentIndex:this.currentIndex,
+              isShowCheck:false
             })
           } else {
             if (this.GROUP === '标签') {
-              BookContent({
-                currentIndex:this.currentIndex,
-                bookTypeNumber:this.bookTypeNumber,
-                EXHIBIT: this.EXHIBIT
-              })
+              if (this.searchValue === '浏览历史') {
+                BookHistoryContent({
+                  currentIndex:this.currentIndex,
+                  searchValue: this.searchValue
+                })
+              } else {
+                BookContent({
+                  currentIndex:this.currentIndex,
+                  bookTypeNumber:this.bookTypeNumber,
+                  EXHIBIT: this.EXHIBIT,
+                  searchValue: this.searchValue
+                })
+              }
             } else {
               BookFolder({
-                EXHIBIT: this.EXHIBIT
+                EXHIBIT: this.EXHIBIT,
+                currentIndex:this.currentIndex
               })
             }
           }
@@ -68,7 +95,7 @@ export default struct BookContentRefresh {
         this.counter++
         this.isRefreshing = false
       }, 1000)
-
+      showMessage('刷新成功!')
     })
   }
   @Builder

@@ -10,6 +10,7 @@ import { rssWebViewRule } from './rule/rssWebViewRule'
 
 @Observed
 export class rssSources{
+  id?:number
   //订阅源类型0.常规网站 1.订阅源
   sourceType:number = 0
   //名称
@@ -135,6 +136,7 @@ export const ToRssSources = (rssSourceDb: rssSourceDb) => {
   const rssListRule = GSON.toJson<rssListRule>(rssSourceDb.rssListRule);
   const rssWebViewRule = GSON.toJson<rssWebViewRule>(rssSourceDb.rssWebViewRule);
   const rssSources: rssSources = {
+    id: rssSourceDb.id,
     sourceType: rssSourceDb.sourceType,
     sourceName: rssSourceDb.sourceName,
     sourceUrl: rssSourceDb.sourceUrl,
@@ -172,6 +174,7 @@ export const ToRssSourcesDb = (rssSource: rssSources) => {
   const rssListRule = GSON.toString(rssSource.rssListRule);
   const rssWebViewRule = GSON.toString(rssSource.rssWebViewRule);
   const rssSourcesDb: rssSourceDb = {
+    id: rssSource.id,
     sourceType: rssSource.sourceType,
     sourceName: rssSource.sourceName,
     sourceUrl: rssSource.sourceUrl,

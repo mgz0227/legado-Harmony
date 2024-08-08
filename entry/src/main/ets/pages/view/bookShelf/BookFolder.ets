@@ -2,9 +2,10 @@ import { it } from '@ohos/hypium'
 import BookOverlay from '../../../componets/bookDetail/BookOverlay'
 import { showMessage } from '../../../componets/common/promptShow'
 import { folderList } from '../../../componets/dataList/folderList'
-import { updateDateGroup } from '../../../storage/groupData'
-import FolderInfoDialog from '../dialog/FolderInfoDialog'
-import FolderManageDialog from '../dialog/FolderManageDialog'
+import BookGroupsDao from '../../../database/dao/BookGroupsDao'
+import { BookGroups } from '../../../database/entities/BookGroups'
+import BookManageDialog from './components/dialog/BookManageDialog'
+import FolderInfoDialog from './components/dialog/FolderInfoDialog'
 
 /**
  * 文件夹
@@ -12,27 +13,30 @@ import FolderManageDialog from '../dialog/FolderManageDialog'
 @Component
 export default struct BookFolder {
   @Prop EXHIBIT:string
-  @State groupCheckList:folderList[] = []
-  @State isShow:boolean = false
-  @State @Watch('watchFolder')group:folderList = new folderList(0,'',0,$r('app.media.folder_test'),'')
-  @StorageProp('GROUP_LIST_DATA') groupData:folderList[] = []
+  currentIndex:number = 0
   @State changeNumber:number = 0
-
-  watchFolder(){
-    if (this.changeNumber === 1) {
-      updateDateGroup(this.group)
-    }
-  }
-
   @State isShowBookFolderInfoDialog:boolean = false
+  @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') @Watch('getGroupList')BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
 
+  aboutToAppear(): void {
+    this.getGroupList()
+  }
+  @State groupList:BookGroups[] = []
+  getGroupList(){
+    BookGroupsDao.search({
+      type:this.currentIndex
+    }).then((val)=>{
+      this.groupList = val
+    })
+  }
+  @State isShow:boolean = false
 
 
   build() {
     Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
-      ForEach(this.groupData, (item: folderList,index:number) => {
+      ForEach(this.groupList, (item: BookGroups) => {
         Column(){
-          if(!item.isShow){
+          if(item.show && !item.isSystem){
             if (this.EXHIBIT === '宫格'){
               this.bookInfoGrid(item)
             } else {
@@ -40,10 +44,21 @@ export default struct BookFolder {
             }
           }
         }
+        .gesture(
+          LongPressGesture({ repeat: true,duration:500 })
+            .onAction((event: GestureEvent) => {
+              if (event.repeat) {
+                if (!this.isShow) {
+                  this.dialogGroupData = item
+                  this.isShow = true
+                  this.changeNumber = 1
+                  this.groupInfoDialog?.open()
+                }
+              }
+            }))
         .onClick(()=>{
           this.isShowBookFolderInfoDialog = true
-          this.folderType = item.title
-          showMessage(item.title)
+          this.clickGroup = item
         })
       })
     }
@@ -57,44 +72,42 @@ export default struct BookFolder {
       }
     })
   }
-  @State folderType:string = ''
+  @Prop clickGroup:BookGroups
+  @Provide searchBookList:number[] = []
   @Builder bookFolderInfoDialog(){
     Column(){
-      FolderManageDialog({
-        folderType:this.folderType
+      BookManageDialog({
+        title:this.clickGroup.groupName,
+        currentIndex:this.currentIndex,
+        bookTypeNumber:this.clickGroup.groupId,
       })
-    }.padding(15)
+    }
   }
 
-  @Builder bookInfoGrid(item: folderList){
+  @Builder bookInfoGrid(item: BookGroups){
     Column({
       space:5
     }) {
       Column(){
         Column(){
           Stack(){
-            Column(){
-
+            Stack(){
+              Stack(){
+                if (item.isTop){
+                  Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
+                    .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
+                }
+                Image(item.coverUrl)
+                  .draggable(false)
+                  .alt($r('app.media.icon_book_default_cover_one'))
+                  .width(88)
+                  .height(120)
+              }.alignContent(Alignment.BottomStart)
             }
-            .gesture(
-              LongPressGesture({ repeat: true,duration:500 })
-                .onAction((event: GestureEvent) => {
-                  if (event.repeat) {
-                    if (!this.isShow) {
-                      this.group = item
-                      this.isShow = true
-                      this.changeNumber = 1
-                      this.groupInfoDialog?.open()
-                    }
-                  }
-                }))
-            .width(88).height(120)
-            .backgroundImage(item.bookImage)
-            .backgroundImageSize({width:88,height:120})
             .zIndex(2)
 
             Row(){
-              Image($r('app.media.occlusion1'))
+              Image($r('app.media.occlusion1')).draggable(false)
             }
             .zIndex(1)
             .width(95).height(110)
@@ -109,7 +122,7 @@ export default struct BookFolder {
 
         Row().width(100).height(20).backgroundColor('rgba(255, 255, 255, 0.6)').borderRadius(10)
       }
-      Text(item.title)
+      Text(item.groupName)
         .fontSize(15)
         .fontWeight(700)
         .textOverflow({
@@ -117,7 +130,7 @@ export default struct BookFolder {
         })
         .ellipsisMode(EllipsisMode.END)
         .maxLines(2)
-      Text(`共${item.countNumber}本`).fontSize(12).fontColor('rgb(174,174,174)')
+      Text(`共${item.bookIds?.length||0}本`).fontSize(12).fontColor('rgb(174,174,174)')
         .textOverflow({
           overflow:TextOverflow.Ellipsis
         })
@@ -131,7 +144,7 @@ export default struct BookFolder {
     .backgroundColor('rgba(244,244,244,0.8)')
   }
 
-  @Builder bookFolderInfo(group:folderList){
+  @Builder bookFolderInfo(group:BookGroups){
     Flex(
       {
         alignItems:ItemAlign.Center,
@@ -142,30 +155,17 @@ export default struct BookFolder {
         space:20
       }){
         BookOverlay({
-          bookImage:group.bookImage,
+          bookImage:group.coverUrl,
           isTop:group.isTop
         })
-          .gesture(
-          LongPressGesture({ repeat: true,duration:500 })
-            .onAction((event: GestureEvent) => {
-              if (event.repeat) {
-
-                if (!this.isShow) {
-                  this.group = group
-                  this.isShow = true
-                  this.changeNumber = 1
-                  this.groupInfoDialog?.open()
-                }
-              }
-            }))
         Column({
           space:24
         })
         {
-          Text(group.title)
+          Text(group.groupName)
             .fontWeight(700)
           Column(){
-            Text(`共${group.countNumber}本`).fontSize(12).fontColor('rgb(174,174,174)')
+            Text(`共${group.bookIds?.length||0}本`).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
               })
@@ -173,15 +173,15 @@ export default struct BookFolder {
               .fontWeight(400)
               .maxLines(1)
               .lineHeight(20)
-            Text(group.newUpdateBook?group.newUpdateBook:'暂无更新')
-              .fontSize(12)
-              .fontWeight(400)
-              .textOverflow({
-                overflow:TextOverflow.Ellipsis
-              })
-              .ellipsisMode(EllipsisMode.END)
-              .maxLines(1)
-              .lineHeight(20)
+            // Text(group.newUpdateBook?group.newUpdateBook:'暂无更新')
+            //   .fontSize(12)
+            //   .fontWeight(400)
+            //   .textOverflow({
+            //     overflow:TextOverflow.Ellipsis
+            //   })
+            //   .ellipsisMode(EllipsisMode.END)
+            //   .maxLines(1)
+            //   .lineHeight(20)
           }
           .width('60%')
           .alignItems(HorizontalAlign.Start)
@@ -193,10 +193,10 @@ export default struct BookFolder {
     .borderRadius(10)
   }
 
-
+  @State dialogGroupData:BookGroups = new BookGroups()
   groupInfoDialog: CustomDialogController | null = new CustomDialogController({
     builder: FolderInfoDialog({
-      itemData:this.group,
+      itemData:this.dialogGroupData,
       cancel: () => {
         this.exitDialog()
       }
@@ -213,7 +213,6 @@ export default struct BookFolder {
     this.isShow = false
     this.changeNumber = 0
     this.groupInfoDialog?.close()
-    showMessage('退出了')
   }
 
 }
