@@ -1,12 +1,16 @@
+import CommonConstants from '../../common/constants/CommonConstants'
+import FontConstants from '../../common/constants/FontConstants'
+import PaddingConstants from '../../common/constants/PaddingConstants'
+import { BOOK_SEARCH_TYPE } from '../../database/entities/Books'
+
 @Component
 export default struct IndexSearchType {
   @Prop title:string
   @Link searchValue:string
   @State isShown: boolean = false
-  @State THEME_NAME: string[] = ['最近阅读', '阅读排序', '更新排序', '手动排序']
 
   build() {
-    if (this.THEME_NAME.includes(this.title)){
+    if (BOOK_SEARCH_TYPE.includes(this.title)){
       Row(
         {
           space:3
@@ -24,12 +28,23 @@ export default struct IndexSearchType {
         this.searchValue = this.title
         this.isShown = !this.isShown
       })
-      .bindMenu(this.isShown, this.MenuBuilder,
-        {
-          onDisappear: ()=>{
+      .bindPopup(this.isShown,{
+        builder: this.MenuBuilder(),
+        placement: Placement.Bottom,
+        enableArrow:true,
+        radius:12,
+        onStateChange: (e) => {
+          if (!e.isVisible) {
             this.isShown = false;
           }
-        })
+        }
+      })
+      // .bindMenu(this.isShown, this.MenuBuilder,
+      //   {
+      //     onDisappear: ()=>{
+      //       this.isShown = false;
+      //     }
+      //   })
     } else {
       Row(
         {
@@ -46,31 +61,41 @@ export default struct IndexSearchType {
   }
 
   @Builder MenuBuilder() {
-    Flex({ direction: FlexDirection.Column, justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
-      ForEach(this.THEME_NAME, (item:string, index) => {
-        if (item !== this.searchValue){
-          Column() {
-            Row() {
-              Text(item).fontSize(15)
-            }
-            .width('100%')
-            .height(30)
-            .justifyContent(FlexAlign.Center)
-            .align(Alignment.Center)
-            .onClick(() => {
-              this.title = item
-              this.searchValue = item
-              // this.THEME_NAMES = this.THEME_NAME.filter((value) => {
-              //   return value !== item;
-              // })
-            })
-            if (index != this.THEME_NAME.length - 1) {
-              Divider().height(10).width('80%').color('#ccc')
-            }
+    Column(){
+      ForEach(BOOK_SEARCH_TYPE, (item:string, index) => {
+        Column() {
+          Row() {
+            Text(item)
+              .font({
+                size: FontConstants.FONT_SIZE_14,
+                weight: FontConstants.FONT_WEIGHT_400,
+                family: CommonConstants.FAMILY_PingFANG
+              })
+              .fontColor(this.searchValue === item ? $r('app.color.theme_color') : $r('app.string.color_black_88'))
+            Image(item ===  this.searchValue?$r('app.media.hook'):'').width(20).height(20)
+          }
+          .padding({
+            top: PaddingConstants.PADDING_12,
+            bottom: PaddingConstants.PADDING_12,
+            left:PaddingConstants.PADDING_20,
+            right:PaddingConstants.PADDING_20
+          })
+          .width('100%')
+          .height(40)
+          .justifyContent(FlexAlign.SpaceBetween)
+          .align(Alignment.Center)
+          .onClick(() => {
+            this.title = item
+            this.searchValue = item
+            this.isShown = false
+          })
+          if (index != BOOK_SEARCH_TYPE.length - 1) {
+            Divider().height(10).width('80%').color('#ccc')
           }
         }
-
       })
-    }.width(150)
+    }
+    .padding(PaddingConstants.PADDING_4)
+    .width(150)
   }
 }

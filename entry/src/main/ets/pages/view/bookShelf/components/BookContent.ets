@@ -11,7 +11,7 @@ export default struct BookContent {
     this.getBookList()
   }
   @Prop EXHIBIT:string
-  @Prop searchValue:string
+  @Prop @Watch('getBookList')searchValue:string
   @Prop @Watch('changeBookType')currentIndex: number
   @Prop @Watch('changeBookType')bookTypeNumber:number
   //更新数据累加刷新数据页面
@@ -29,7 +29,8 @@ export default struct BookContent {
   getBookList(){
     booksDao.search({
       type:this.currentIndex,
-      bookGroup:this.bookTypeNumber
+      bookGroup:this.bookTypeNumber,
+      order:this.searchValue
     }).then((val)=>{
       this.bookList = val
     })

@@ -9,6 +9,7 @@ export default struct groupTypeSearch {
   @Link groupCoverShow:boolean
   @State groupList:BookGroups[] = []
   @Link bookTypeNumber:number
+  @Link searchBookList:number[]
   aboutToAppear(): void {
     this.getGroupList()
   }
@@ -30,6 +31,7 @@ export default struct groupTypeSearch {
           groupCoverShow:this.groupCoverShow,
           showGroupList:this.groupList,
           currentIndex:this.currentIndex,
+          searchBookList:this.searchBookList
         })
           .zIndex(9999)
         Rect()

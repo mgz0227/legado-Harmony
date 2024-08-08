@@ -15,6 +15,8 @@ import newAddShelf from './newAddShelf'
 
 @Component
 export default struct newBookShelf{
+  @StorageLink('topRectHeight') topRectHeight: number = 0
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @Prop currentIndex:number
   @State TextRecommend:Record<number, string> = {}
   @State delCache:boolean = false
@@ -272,6 +274,10 @@ export default struct newBookShelf{
           }
         })
     }
+    .padding({
+      top:this.topRectHeight,
+      bottom:this.bottomRectHeight
+    })
   }
 
   @Builder newAddBook(){
@@ -281,7 +287,7 @@ export default struct newBookShelf{
         addBookList:(selectBookId:number[])=>{
           this.newBookIds = selectBookId
           this.isShowAddBook = false;
-          showMessage('加入书单成功,提交生效!', 1000)
+          showMessage('加入书单成功,提交生效!')
         },
         close:() => {
           this.isShowAddBook = false;

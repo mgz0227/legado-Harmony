@@ -76,3 +76,5 @@ export class Books {
   //是否加入书架
   isJoin:boolean = false
 }
+
+export const BOOK_SEARCH_TYPE: string[] = ['最近阅读', '更新排序', '手动排序']

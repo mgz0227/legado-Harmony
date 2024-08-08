@@ -9,5 +9,7 @@ export interface BooksTypeSearchParams {
   // 源类型 0 小说；1 漫画；2 有声书；
   type?: number,
   //分组
-  bookGroup?: number
+  bookGroup?: number,
+  //排序方式
+  order?: string
 }

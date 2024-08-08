@@ -263,7 +263,7 @@ export default struct SubscriptionContent{
 
   @Builder
   newSourcesBuilder(){
-    Flex(){
+    Column(){
       newSources({
         isEdit:true,
         hideNewSources:()=>{

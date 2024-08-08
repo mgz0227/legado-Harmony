@@ -14,8 +14,6 @@ export default struct worksBookInfoDialog{
   controller?: CustomDialogController
   //推送提醒
   @Prop works:WorksLists
-  @StorageLink('topRectHeight') topRectHeight: number = 0
-  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State buttonListInfo:buttonList[] = [
     new buttonList(1,'编辑',$r('app.media.edit')),
     new buttonList(2,'分享',$r('app.media.icon_share')),
@@ -98,10 +96,6 @@ export default struct worksBookInfoDialog{
         lastWorkBookList:this.works
       })
     }
-    .padding({
-      top:this.topRectHeight,
-      bottom:this.bottomRectHeight
-    })
     .backgroundColor(Color.White)
   }
 
