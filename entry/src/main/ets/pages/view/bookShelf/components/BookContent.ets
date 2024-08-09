@@ -51,12 +51,16 @@ export default struct BookContent {
       Column(
         {space:10}
       ){
-        if (this.EXHIBIT === '宫格' && this.searchValue !== '浏览历史') {
-          Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
-            ForEach(this.bookList, (item: Books,index:number) => {
-              BookInfoGrids({
-                book:item
-              }).width('33%')
+        if (this.EXHIBIT === '宫格') {
+          GridRow({
+            columns:3
+          }){
+            ForEach(this.bookList,(item:Books)=>{
+              GridCol(){
+                BookInfoGrids({
+                  book:item
+                })
+              }
             })
           }
         } else {
@@ -73,6 +77,7 @@ export default struct BookContent {
           .backgroundColor('rgba(255,250,247,0.8)')
         }
       }
+      .alignItems(HorizontalAlign.Start)
     }
   }
 }

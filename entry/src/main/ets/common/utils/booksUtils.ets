@@ -16,7 +16,18 @@ class booksUtils{
     }
   }
   async addBooks(books: Books){
+    books.isJoin = true
+    books.bookGroup = 3 //默认未分组
     BooksDao.insert(books)
+  }
+  //校验当前书籍是否存在书架中
+  async isExistBooks(bookUrl?:string,bookName?:string): Promise<boolean>{
+    let books: Books[] = await BooksDao.isExistBooks(bookUrl, bookName)
+    return books.length > 0
+  }
+  //更新部分书籍信息
+  async partialUpdate(books: Books){
+    BooksDao.partialUpdate(books)
   }
   /**
    * @author 2008

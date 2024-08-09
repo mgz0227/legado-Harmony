@@ -103,6 +103,11 @@ class bookGroupUtils{
     let Ids:number[] = toolsUtils.numberArrays(groupId)
     return await BookGroupsDao.queryBookByGroup(Ids)
   }
+
+  //更新分组部分数据
+  async updatePartialGroup(data:BookGroups){
+    BookGroupsDao.updatePartialGroup(data)
+  }
 }
 let bookGroupUtil = new bookGroupUtils();
 export default bookGroupUtil as bookGroupUtils;

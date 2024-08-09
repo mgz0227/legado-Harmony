@@ -41,7 +41,6 @@ export default struct BookBodyContent {
             justifyContent: FlexAlign.SpaceBetween
           }) {
             Row({ space: 15 }) {
-              // todo 筛选暂未实现
               IndexSearchType({ title: this.title, searchValue: this.searchValue })
               IndexSearchType({ title: '浏览历史', searchValue: this.searchValue })
                 .onClick(() => {

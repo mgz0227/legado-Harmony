@@ -11,7 +11,7 @@ import { IconTitleVo } from '../../../componetsmodel/IconTitleVo'
 import { router } from '@kit.ArkUI'
 import SubscriptionContent from './components/SubscriptionContent'
 import { showMessage } from '../../../componets/common/promptShow'
-import { getPasteDataSync, sleep } from '../../../common/utils/utils'
+import { getPasteDataSync, isNetworkUrl, sleep } from '../../../common/utils/utils'
 import axios, { AxiosResponse } from '@ohos/axios'
 import { rssGroupList, rssSources } from '../../../database/entities/rssSources'
 import SubscriptionImport from '../../../componets/import/SubscriptionImport'
@@ -371,17 +371,18 @@ export default struct SubscriptionIndex {
 
   async pasteAnalyze() {
     try {
-      const url = getPasteDataSync()
+      let url = getPasteDataSync()
       if (!url) {
         showMessage('未获取到粘贴信息，请求默认数据')
         await sleep()
         // return
       }
-      showMessage('订阅加载中')
-      // if (!isNetworkUrl(url ?? '')) {
-      //   showMessage('复制的链接不正确')
-      //   return
-      // }
+      if (!isNetworkUrl(url ?? '')) {
+        showMessage('复制的链接不正确')
+        await sleep()
+        url = undefined
+        // return
+      }
       const res: AxiosResponse = await axios
         .get(url ?? 'http://yuedu.miaogongzi.net/shuyuan/miaogongziDY.json');
       console.log('res', JSON.stringify(res))

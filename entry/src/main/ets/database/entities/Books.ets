@@ -36,7 +36,7 @@ export class Books {
   //自定义字符集名称(仅适用于本地书籍)
   charset?:string
   //在导入的情况下或则未分组默认为2 未分组
-  bookGroup:number = 2;
+  bookGroup:number = 3;
   // 最新章节标题
   latestChapterTitle?:string
   // 最新章节标题更新时间

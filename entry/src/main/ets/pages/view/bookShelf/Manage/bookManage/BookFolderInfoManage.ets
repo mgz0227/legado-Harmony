@@ -21,7 +21,8 @@ export default struct BookFolderInfoManage {
       }){
         BookOverlay({
           bookImage:this.group.coverUrl,
-          isTop:this.group.isTop
+          isTop:this.group.isTop,
+          coverType:this.group.coverType
         })
         Column({
           space:24
