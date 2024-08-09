@@ -160,7 +160,6 @@ export default struct BookSelectGroupDialog{
       let bookGroups = new BookGroups()
       bookGroups.groupName = this.bookType
       bookGroups.groupType = this.currentIndex
-      bookGroups.coverUrl = 'app.media.cover_list'
       BookGroupsDao.insert(bookGroups)
       this.bookType= ''
       showMessage(`已添加${this.bookType}分组`)

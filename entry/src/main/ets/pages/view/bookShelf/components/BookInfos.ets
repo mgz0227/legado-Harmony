@@ -60,7 +60,6 @@ export default struct BookInfos{
               .fontWeight(500)
               .maxLines(1)
           }
-          .width('40%')
           .alignItems(HorizontalAlign.Start)
         }
         .alignItems(HorizontalAlign.Start)

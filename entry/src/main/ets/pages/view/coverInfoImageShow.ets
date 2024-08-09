@@ -11,6 +11,8 @@ export default struct coverInfoImageShow {
   @Prop coverCount:number
   @Prop image:Resource|string
   @Prop imageString:string
+  @Prop selectImage:number = 0
+  onSelectImageNumber:Function = (_selectImage:number)=>{}
   build() {
     if (this.coverCount === 1){
       this.coverImageOne(this.image)
@@ -24,25 +26,32 @@ export default struct coverInfoImageShow {
   @Builder coverImageOne(bookImage:Resource|string){
     Column(){
       BookOverlay({
-        bookImage:bookImage,
-        // isTop:this.folderList.isTop
+        bookImage:bookImage
       })
-      Row().width(86).height(20).backgroundColor(Color.White).borderRadius(2)
+      Row().width(86)
+        .height(20)
+        .backgroundColor(Color.White)
+        .borderRadius(2)
         .shadow({ radius: 5, color: 'rgba(0, 0, 0, 0.10)' })
-      // .border({width:1,color:'rgba(255, 255, 255, 0.10)'})
       Row({
         space:12
       }){
         Text('默认样式')
-          .fontWeight(400).fontSize(14).fontColor($r('app.string.color_black_45')).lineHeight(22)
-        Radio({value:'default',group:'radioGroup'})
+          .fontWeight(400)
+          .fontSize(14)
+          .fontColor($r('app.string.color_black_45'))
+          .lineHeight(22)
+        Radio({value:JSON.stringify('0'),group:'radioGroup'})
+          .checked(this.selectImage === 0)
           .radioStyle({
             checkedBackgroundColor: $r('app.color.theme_color')
           })
           .border({width:2,color:'rgba(255, 255, 255, 0.10)'})
           .width(20).height(20)
+          .onChange((val)=>{
+            val? this.onSelectImageNumber(0):''
+          })
       }
-
       .padding({top:8})
     }
   }
@@ -88,12 +97,16 @@ export default struct coverInfoImageShow {
       }){
         Text('自定义')
           .fontWeight(400).fontSize(14).fontColor($r('app.string.color_black_45')).lineHeight(22)
-        Radio({value:'customize',group:'radioGroup'})
+        Radio({value:JSON.stringify('1'),group:'radioGroup'})
+          .checked(this.selectImage === 1)
           .radioStyle({
             checkedBackgroundColor: $r('app.color.theme_color')
           })
           .border({width:2,color:'rgba(255, 255, 255, 0.10)'})
           .width(20).height(20)
+          .onChange((val)=>{
+            val? this.onSelectImageNumber(1):''
+          })
       }
       .padding({top:8})
     }
@@ -122,12 +135,16 @@ export default struct coverInfoImageShow {
       }){
         Text('全图样式')
           .fontWeight(400).fontSize(14).fontColor($r('app.string.color_black_45')).lineHeight(22)
-        Radio({value:'allStyle',group:'radioGroup'})
+        Radio({value:JSON.stringify('2'),group:'radioGroup'})
+          .checked(this.selectImage === 2)
           .radioStyle({
             checkedBackgroundColor: $r('app.color.theme_color')
           })
           .border({width:2,color:'rgba(255, 255, 255, 0.10)'})
           .width(20).height(20)
+          .onChange((val)=>{
+            val? this.onSelectImageNumber(2):''
+          })
       }
       .padding({top:8})
     }

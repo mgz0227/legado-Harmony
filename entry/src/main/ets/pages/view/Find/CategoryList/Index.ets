@@ -11,7 +11,8 @@ import { CardItem } from '../components/CardItem';
 interface RouteParams {
   bookSourceUrl: string,
   exploreItem: ExploreItem,
-  exploreRule: ExploreRule
+  exploreRule: ExploreRule,
+  currentIndex: number
 }
 
 @Entry
@@ -30,10 +31,11 @@ struct CateGoryListPage {
   @State loading: boolean = false
   @State isRefreshing: boolean = false
   @State RefreshingTitle: string = '松开刷新'
-
+  @State currentIndex:number = 0
   async aboutToAppear() {
     this.startLoading = true
     const params = router.getParams() as RouteParams;
+    this.currentIndex = params.currentIndex
     console.log('TagInfo', JSON.stringify(params))
     this.bookSourceUrl = params.bookSourceUrl
     this.exploreItem = params.exploreItem

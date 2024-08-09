@@ -4,7 +4,7 @@ import { router } from '@kit.ArkUI';
 @Component
 export  struct CardItem {
   @Prop item: ExploreRule = {};
-
+  currentIndex:number = 0
   build() {
     Row() {
       Image(this.item.coverUrl ?? $r('app.media.no_record'))
@@ -79,13 +79,19 @@ export  struct CardItem {
     .width('100%')
     .padding({ top: 20 })
     .onClick(() => {
+      if (this.currentIndex > 0) {
+        this.currentIndex = this.currentIndex === 1 ? 2:1
+      }
       router.pushUrl({
         url: 'pages/view/BookDetailPage',
         params: {
-          title: this.item.name,
-          bookImage: this.item.coverUrl,
+          bookName: this.item.name,
+          coverUrl: this.item.coverUrl,
           author: this.item.author,
-          describe: this.item.intro
+          intro: this.item.intro,
+          bookUrl:this.item.bookUrl,
+          wordCount:this.item.wordCount,
+          bookType:this.currentIndex
         }
       })
     })

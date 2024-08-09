@@ -53,10 +53,15 @@ export default struct FolderInfoDialog{
         }
         Row(){
           Text('更新提醒')
-          Toggle({ type: ToggleType.Switch, isOn: this.itemData.canDelete})
+          Toggle({ type: ToggleType.Switch, isOn: this.itemData.canUpdate})
             .selectedColor("#F60").hoverEffect(HoverEffect.None)
             .onChange((val)=>{
-              this.itemData.canDelete = val
+              this.itemData.canUpdate = val
+              bookGroupUtil.updatePartialGroup(this.itemData)
+              setTimeout(()=>{
+                this.BOOK_IS_BOOK_GROUPS_REFRESHING++
+                showMessage('修改成功!')
+              },100)
             })
         }
       }.padding(20)
@@ -137,7 +142,6 @@ export default struct FolderInfoDialog{
       case 4 :
         this.isCatalogAddShelf = true;break;
       case 5 :
-        showMessage('封面样式');
         this.coverDialog?.open();
         break;
       case 6 :

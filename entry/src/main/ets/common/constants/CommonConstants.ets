@@ -215,6 +215,7 @@ export default class CommonConstants {
   /**
    * space间距
    */
+  static readonly SPACE_2: number = 2;
   static readonly SPACE_6: number = 6;
   static readonly SPACE_10: number = 10;
   static readonly SPACE_12: number = 12;

@@ -7,6 +7,8 @@ import confirmDialogExample from '../../../../../componets/common/confirmDialog'
 import booksUtil from '../../../../../common/utils/booksUtils'
 import BookSelectGroupDialog from './BookSelectGroupDialog'
 import catalogAddShelf from '../../Manage/components/catalogAddShelf'
+import PaddingConstants from '../../../../../common/constants/PaddingConstants'
+import CommonConstants from '../../../../../common/constants/CommonConstants'
 
 @CustomDialog
 /**
@@ -32,23 +34,26 @@ export default struct BookInfoDialogs{
 
   build() {
     Column(){
-      Flex({
-        justifyContent:FlexAlign.SpaceBetween,
-        alignItems:ItemAlign.Center
-      }){
+      Row(){
         Row({
-          space:20
+          space:CommonConstants.SPACE_12
         }){
           Image(this.bookData.coverUrl)
             .alt($r('app.media.icon_book_default_cover_one'))
             .width(45).height(65)
           Column({
-            space:4
+            space:PaddingConstants.PADDING_20
           }){
             Text(this.bookData.bookName).fontSize(16).fontWeight(500).fontColor($r('app.string.color_black_88'))
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .width('75%')
             Text(this.bookData.author).fontSize(12).fontWeight(400).fontColor($r('app.string.color_black_45'))
-          }.alignItems(HorizontalAlign.Start)
+          }
+          .alignItems(HorizontalAlign.Start)
         }
+        .width('80%')
+
         Row({
           space:8
         }){
@@ -61,7 +66,9 @@ export default struct BookInfoDialogs{
           })
           this.controller?.close()
         })
-      }.padding(20)
+      }
+      .justifyContent(FlexAlign.SpaceBetween)
+      .margin(20)
       Divider().strokeWidth(0.5).padding({bottom:16})
       GridRow({
         columns:4

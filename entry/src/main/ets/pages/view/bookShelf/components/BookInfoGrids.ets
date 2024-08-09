@@ -2,6 +2,7 @@ import confirmDialogExample from '../../../../componets/common/confirmDialog'
 import { Books } from '../../../../database/entities/Books'
 import { router } from '@kit.ArkUI'
 import BookInfoDialogs from './dialog/BookInfoDialogs'
+import CommonConstants from '../../../../common/constants/CommonConstants'
 
 @Component
 /**
@@ -46,7 +47,9 @@ export default struct BookInfoGrids{
 
 
   build() {
-    Column() {
+    Column({
+      space:8
+    }) {
       Stack(){
         Stack(){
           if (this.book.isTop){
@@ -58,34 +61,41 @@ export default struct BookInfoGrids{
             .alt($r('app.media.icon_book_default_cover_one'))
             .width(100)
             .height(120)
-        }.alignContent(Alignment.BottomStart)
+        }
+        .alignContent(Alignment.BottomStart)
       }
       .backgroundColor($r('app.string.color_black_45'))
       .borderRadius(10)
-      Text(this.book.bookName)
-        .fontSize(15)
-        .fontWeight(700)
-        .textOverflow({
-          overflow:TextOverflow.Ellipsis
-        })
-        .ellipsisMode(EllipsisMode.END)
-        .maxLines(2)
-      //描述
-      Text(this.book.customIntro).fontSize(12).fontColor('rgb(174,174,174)')
-        .textOverflow({
-          overflow:TextOverflow.Ellipsis
-        })
-        .ellipsisMode(EllipsisMode.END)
-        .fontWeight(500)
-        .maxLines(1)
-      Text(this.book.latestChapterTitle).fontSize(12).fontColor('rgb(174,174,174)')
-        .textOverflow({
-          overflow:TextOverflow.Ellipsis
-        })
-        .ellipsisMode(EllipsisMode.END)
-        .fontWeight(500)
-        .maxLines(1)
+      Column({
+        space:CommonConstants.SPACE_2
+      }){
+        Text(this.book.bookName)
+          .fontSize(15)
+          .fontWeight(700)
+          .textOverflow({
+            overflow:TextOverflow.Ellipsis
+          })
+          .maxLines(2)
+        //描述
+        Text(this.book.customIntro).fontSize(12).fontColor('rgb(174,174,174)')
+          .textOverflow({
+            overflow:TextOverflow.Ellipsis
+          })
+          .ellipsisMode(EllipsisMode.END)
+          .fontWeight(500)
+          .maxLines(1)
+        Text(this.book.latestChapterTitle).fontSize(12).fontColor('rgb(174,174,174)')
+          .textOverflow({
+            overflow:TextOverflow.Ellipsis
+          })
+          .ellipsisMode(EllipsisMode.END)
+          .fontWeight(500)
+          .maxLines(1)
+      }
+      .width(100)
+      .alignItems(HorizontalAlign.Start)
     }
+    .alignItems(HorizontalAlign.Start)
     .padding({ left:8,right:8,bottom:5,top:5 })
     .onClick(()=>{
       router.pushUrl({

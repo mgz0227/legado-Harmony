@@ -97,7 +97,7 @@ export default struct BookFindContent {
         } else {
           Column() {
             ForEach(this.bookList, (item: ExploreRule, index) => {
-              CardItem({ item: item })
+              CardItem({ item: item ,currentIndex:this.currentIndex})
             })
             if (this.bookList.length === 3) {
               Column() {
@@ -116,7 +116,8 @@ export default struct BookFindContent {
                   params: {
                     bookSourceUrl: this.bookSourceUrl,
                     exploreItem: this.exploreItem,
-                    exploreRule: this.exploreRule
+                    exploreRule: this.exploreRule,
+                    currentIndex: this.currentIndex
                   }
                 })
               })

@@ -6,6 +6,8 @@
  */
 import bookHistoryDao from '../../database/dao/BookHistoryDao';
 import { BookHistory } from '../../database/entities/BookHistory';
+import { Books } from '../../database/entities/Books';
+import booksUtils from './booksUtils';
 
 export class BookHistoryUtils {
   async deleteBookHistory(id: number) {
@@ -16,6 +18,13 @@ export class BookHistoryUtils {
   }
   async addBooks(books: BookHistory){
     bookHistoryDao.insert(books)
+    let book = new Books()
+    book.id = books.id
+    book.latestChapterTitle = books.durChapterTitle
+    book.lastCheckTime = books.durChapterTime
+    book.durChapterIndex = books.durChapterIndex
+    book.durChapterTime = Date.now()
+    booksUtils.partialUpdate(book)
   }
 }
 
