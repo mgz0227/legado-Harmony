@@ -20,7 +20,7 @@ export class BookHistoryUtils {
     bookHistoryDao.insert(books)
     let book = new Books()
     book.id = books.id
-    book.latestChapterTitle = books.durChapterTitle
+    book.durChapterTitle = books.durChapterTitle
     book.lastCheckTime = books.durChapterTime
     book.durChapterIndex = books.durChapterIndex
     book.durChapterTime = Date.now()

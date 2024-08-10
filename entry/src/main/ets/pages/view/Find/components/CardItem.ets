@@ -79,9 +79,6 @@ export  struct CardItem {
     .width('100%')
     .padding({ top: 20 })
     .onClick(() => {
-      if (this.currentIndex > 0) {
-        this.currentIndex = this.currentIndex === 1 ? 2:1
-      }
       router.pushUrl({
         url: 'pages/view/BookDetailPage',
         params: {
