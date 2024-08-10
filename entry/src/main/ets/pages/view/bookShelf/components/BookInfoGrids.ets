@@ -84,7 +84,7 @@ export default struct BookInfoGrids{
           .ellipsisMode(EllipsisMode.END)
           .fontWeight(500)
           .maxLines(1)
-        Text(this.book.latestChapterTitle).fontSize(12).fontColor('rgb(174,174,174)')
+        Text(this.book.durChapterTitle).fontSize(12).fontColor('rgb(174,174,174)')
           .textOverflow({
             overflow:TextOverflow.Ellipsis
           })

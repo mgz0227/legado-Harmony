@@ -17,7 +17,7 @@ export default struct BodyContent {
   @State sourceList: BookSource[] = []
   @State currentSourceIndex: number = 0
   @State isShowDialog: boolean = false
-  @Prop currentIndex: number
+  @Prop @Watch('getList')currentIndex: number
   @StorageLink(CommonConstants.HAS_EXPLORE_URL) @Watch('getList') hasExploreUrl?: boolean = undefined
   tabsBodyController: TabsController = new TabsController();
   @StorageLink('refreshCount') @Watch('getList') refreshCount: number = 0
