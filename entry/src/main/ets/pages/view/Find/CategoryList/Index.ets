@@ -113,7 +113,7 @@ struct CateGoryListPage {
                 })
               } else {
                 ForEach(this.bookList, (item: ExploreRule, index) => {
-                  CardItem({ item: item })
+                  CardItem({ item: item , currentIndex:this.currentIndex })
                 })
               }
             }

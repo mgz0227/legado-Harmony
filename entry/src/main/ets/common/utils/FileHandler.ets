@@ -49,12 +49,19 @@ export class FileHandler {
     });
   }
 
+  //动态获取文件大小
   static async ReadJSONFile(srcUrl: string) {
-    let file = fs.openSync(srcUrl, fs.OpenMode.READ_WRITE);
-    let arrayBuffer = new ArrayBuffer(40960);
-    let readLen: number = await fs.read(file.fd, arrayBuffer)
-    let JSONString = buffer.from(arrayBuffer, 0, readLen).toString();
-    return JSONString
+    try {
+      let file = fs.openSync(srcUrl, fs.OpenMode.READ_WRITE);
+      let stat = fs.statSync(file.path)
+      let arrayBuffer = new ArrayBuffer(stat.size);
+      let readLen: number = await fs.read(file.fd, arrayBuffer)
+      let JSONString = buffer.from(arrayBuffer, 0, readLen).toString();
+      return JSONString
+    } catch (e){
+      console.error(`读取失败：${e}`);
+      return ''
+    }
   }
 
   static async readFile(readFileUrl: string) {

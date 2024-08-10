@@ -77,4 +77,18 @@ export class Books {
   isJoin:boolean = false
 }
 
+export class bookShelfImport{
+  name: string = ""
+  author: string = ""
+  intro: string = ""
+  bookUrl:string = ""
+
+  constructor(bookShelf:bookShelfImport) {
+    this.name = bookShelf.name
+    this.author = bookShelf.author
+    this.intro = bookShelf.intro
+    this.bookUrl = bookShelf.bookUrl
+  }
+}
+
 export const BOOK_SEARCH_TYPE: string[] = ['最近阅读', '更新排序', '手动排序']
