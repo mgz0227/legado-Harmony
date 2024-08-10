@@ -3,6 +3,11 @@ import { router } from '@kit.ArkUI'
 import BookBodyContent from './components/BookBodyContent'
 import { FileHandler } from '../../../common/utils/FileHandler'
 import Dialog from '../../../componets/common/Dialog'
+import { showMessage } from '../../../componets/common/promptShow'
+import { bookShelfImport } from '../../../database/entities/Books'
+import { getPasteDataSync, isNetworkUrl, sleep } from '../../../common/utils/utils'
+import booksUtil from '../../../common/utils/booksUtils'
+import axios, { AxiosResponse } from '@ohos/axios'
 
 @Component
 export default struct IndexShelf {
@@ -26,6 +31,7 @@ export default struct IndexShelf {
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
+  @State bookImport:bookShelfImport[] = []
   // 网址导入dialog
   dialogController: CustomDialogController = new CustomDialogController({
     builder: Dialog({
@@ -248,6 +254,21 @@ export default struct IndexShelf {
           // 网址导入
           this.dialogController.open();
           break
+        case 3:
+          // 书单粘贴导入
+          this.pasteBookImport()
+          break
+        case 4:
+          //书单本地导入
+          let res = await FileHandler.documentPickerFile(1, ['.json'])
+          FileHandler.ReadJSONFile(res[0]).then(result => {
+            if (result.length > 0) {
+              this.bookImport = JSON.parse(result) as bookShelfImport[]
+              this.bookImport.length>0?booksUtil.batchAdd(this.bookImport,this.currentIndex):''
+              showMessage(this.bookImport.length > 0?`相关书单书籍内容导入${this.bookImport.length}本`:'未找到相关书单书籍内容')
+            }
+          })
+          break
       }
     })
   }
@@ -256,32 +277,20 @@ export default struct IndexShelf {
   // 书籍导入弹窗
   ImportDialog() {
     Column() {
-      Flex({
-        direction: FlexDirection.Row,
-        wrap: FlexWrap.Wrap,
-        alignContent: FlexAlign.Center,
-        justifyContent: FlexAlign.Start
-      }) {
-        Grid() {
-          GridItem() {
-            this.ImportClickBox(0, "app.media.my_center_file_icon", "本地导入")
-          }
-
-          GridItem() {
-            this.ImportClickBox(1, "app.media.my_center_cloud_icon", "网盘导入")
-          }
-
-          GridItem() {
-            this.ImportClickBox(2, "app.media.official_website", "网址导入")
-          }
+      GridRow({
+        columns: 3
+      }){
+        GridCol(){
+          this.ImportClickBox(0, "app.media.my_center_file_icon", "本地导入")
         }
-        .columnsTemplate("1fr 1fr 1fr 1fr")
-        .padding({
-          top: 12
-        })
+        GridCol(){
+          this.ImportClickBox(1, "app.media.my_center_cloud_icon", "网盘导入")
+        }
+        GridCol(){
+          this.ImportClickBox(2, "app.media.official_website", "网址导入")
+        }
       }
       .height("60%")
-
       Divider()
 
       Column() {
@@ -489,6 +498,31 @@ export default struct IndexShelf {
           }
         })
         break
+    }
+  }
+
+  //书单粘贴导入
+  async pasteBookImport() {
+    try {
+      let url = getPasteDataSync()
+      if (!url) {
+        showMessage('未获取到粘贴信息，请求默认数据')
+        await sleep()
+        return
+      }
+      if (!isNetworkUrl(url ?? '')) {
+        showMessage('复制的链接不正确')
+        await sleep()
+        url = undefined
+        return
+      }
+      const res: AxiosResponse = await axios
+        .get(url);
+      this.bookImport = res.data as bookShelfImport[]
+      showMessage(this.bookImport.length > 0?`相关书单书籍内容导入${this.bookImport.length}本`:'未找到相关书单书籍内容')
+      this.bookImport.length>0?booksUtil.batchAdd(this.bookImport,this.currentIndex):''
+    } catch (err) {
+      console.error('错误 ' + err);
     }
   }
 }

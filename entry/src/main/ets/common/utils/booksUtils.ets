@@ -1,5 +1,5 @@
 import BooksDao from '../../database/dao/BooksDao'
-import { Books, BOOK_SEARCH_TYPE } from '../../database/entities/Books'
+import { Books, bookShelfImport, BOOK_SEARCH_TYPE } from '../../database/entities/Books'
 import bookGroupUtils from './bookGroupUtils'
 import toolsUtils from './ToolsUtils'
 
@@ -28,6 +28,31 @@ class booksUtils{
   //更新部分书籍信息
   async partialUpdate(books: Books){
     BooksDao.partialUpdate(books)
+  }
+  //批量添加
+  async batchAdd(books: bookShelfImport[], bookType:number){
+    books.forEach((item:bookShelfImport)=>{
+      let book:Books = {
+        bookName: item.name,
+        bookUrl: item.bookUrl,
+        author: item.author,
+        intro:item.intro,
+        bookGroup: 3,
+        latestChapterTime: 0,
+        totalChapterNum: 0,
+        durChapterIndex: 0,
+        durChapterPos: 0,
+        durChapterTime: 0,
+        canUpdate: false,
+        sort: 0,
+        originOrder: 0,
+        syncTime: 0,
+        bookType: bookType,
+        isTop: false,
+        isJoin: true
+      }
+      BooksDao.insert(book)
+    })
   }
   /**
    * @author 2008

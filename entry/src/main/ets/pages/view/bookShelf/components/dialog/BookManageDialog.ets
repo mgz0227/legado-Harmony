@@ -57,7 +57,6 @@ export default  struct BookManageDialog {
     this.checkListNumber.forEach((index)=>{
       //从bookList更具id查询是否都isTop
       if (this.bookTypeNumber === 5){
-        //todo 书单
         this.worksLists.filter((item)=>{
           if (item.isTop && Number(index) === item.worksId){
             allTopNumber++

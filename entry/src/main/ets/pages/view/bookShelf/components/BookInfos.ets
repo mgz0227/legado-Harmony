@@ -47,11 +47,11 @@ export default struct BookInfos{
           Column(){
             Text(this.book.intro).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
-                overflow:TextOverflow.Ellipsis
+                overflow: TextOverflow.Ellipsis
               })
-              .ellipsisMode(EllipsisMode.END)
+              .maxLines(2)
               .fontWeight(500)
-              .maxLines(1)
+              .width('80%')
             Text(this.book.durChapterTitle).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
