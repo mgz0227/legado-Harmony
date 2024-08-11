@@ -4,7 +4,7 @@
 export const HAR_VERSION = '1.0.0';
 export const BUILD_MODE_NAME = 'debug';
 export const DEBUG = true;
-export const TARGET_NAME = 'default';
+export const TARGET_NAME = 'Legado';
 
 /**
  * BuildProfile Class is used only for compatibility purposes.
