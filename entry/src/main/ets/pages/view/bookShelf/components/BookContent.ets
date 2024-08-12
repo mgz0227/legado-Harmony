@@ -11,13 +11,17 @@ export default struct BookContent {
   @Provide('booksDataSource') booksDataSource: BasicDataSource<Books> = new BasicDataSource<Books>()
 
   async aboutToAppear(): Promise<void> {
+    this.getBookCount()
+    if (this.booksDataSource.totalCount() === 0) {
+      this.getBookList()
+    }
+  }
+
+  async getBookCount(){
     this.bookCount =  await booksDao.getBookCount({
       type:this.currentIndex,
       bookGroup:this.bookTypeNumber,
     })
-    if (this.booksDataSource.totalCount() === 0) {
-      this.getBookList()
-    }
   }
   @State bookCount:number = 0
   @Prop EXHIBIT:string
@@ -39,6 +43,9 @@ export default struct BookContent {
   changeBookType(){
     this.currentPage = 1
     if (this.bookTypeNumber !== 1 && this.bookTypeNumber !== 5) {
+      if (this.bookCount === 0){
+        this.getBookCount()
+      }
       if (this.booksDataSource.totalCount() > 0) {
         this.booksDataSource.clear()
       }
@@ -112,6 +119,7 @@ export default struct BookContent {
           }
         })
       }
+      .alignListItem(ListItemAlign.Center)
       .layoutWeight(1)
       .lanes(this.EXHIBIT === '宫格' ? 3 : 1)
       .scrollBar(BarState.Off)
