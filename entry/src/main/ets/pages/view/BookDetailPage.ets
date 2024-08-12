@@ -175,6 +175,8 @@ struct BookDetailPage {
                 })
 
               }
+              .chainAnimation(true)
+              .edgeEffect(EdgeEffect.Fade)
               .divider({
                 strokeWidth: 0.8,
                 color: '#cccccc',

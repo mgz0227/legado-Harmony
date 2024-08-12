@@ -9,6 +9,7 @@ import BookSelectGroupDialog from './BookSelectGroupDialog'
 import catalogAddShelf from '../../Manage/components/catalogAddShelf'
 import PaddingConstants from '../../../../../common/constants/PaddingConstants'
 import CommonConstants from '../../../../../common/constants/CommonConstants'
+import BasicDataSource from '../../../../../common/LazyIDataSource/BasicDataSource'
 
 @CustomDialog
 /**
@@ -25,7 +26,7 @@ export default struct BookInfoDialogs{
     new buttonList(3,'加入书单',$r('app.media.shelf')),
     new buttonList(4,'删除',$r('app.media.ic_public_delete'))
   ]
-
+  @Consume('booksDataSource')  booksDataSource: BasicDataSource<Books>
   cancel: () => void = () => {
   }
   @StorageLink('topRectHeight') topRectHeight: number = 0
@@ -166,22 +167,36 @@ export default struct BookInfoDialogs{
     if (this.bookData.id){
       booksUtil.delBooksById(this.bookData.id)
     }
-    setTimeout(()=>{
-      this.isBookRefreshing++
-    },500)
+    let index = this.booksDataSource.getIndex(this.bookData)
+    this.booksDataSource.deleteData(index)
     showMessage('删除成功')
   }
 
   async isTopBook(){
     if (this.bookData.id){
       booksUtil.isTopBook(this.bookData.id, !this.bookData.isTop).then((val)=>{
-        val?showMessage(this.bookData.isTop?'取消置顶成功':'置顶成功'):showMessage('数据更新失败')
+        val?showMessage(!this.bookData.isTop?'取消置顶成功':'置顶成功'):showMessage('数据更新失败')
       })
     }
-    setTimeout(()=>{
-      this.controller?.close()
-      this.isBookRefreshing++
-    },500)
+    let index = this.booksDataSource.getIndex(this.bookData)
+    this.bookData.isTop = !this.bookData.isTop
+    if (this.bookData.isTop){
+      this.booksDataSource.deleteData(index)
+      this.booksDataSource.unshiftData(this.bookData)
+    } else {
+      let newIndex = this.getIndexByIsTopFalse()
+      if (newIndex > 1) {
+        this.booksDataSource.moveDataUpdate(index, newIndex-1,this.bookData)
+      }
+      this.booksDataSource.changeData(newIndex > 1?newIndex - 1:index,this.bookData)
+    }
+    this.controller?.close()
+  }
+  //从booksDataSource数据中查询从第一位查询最先出现isTop为false下标返回
+  getIndexByIsTopFalse() {
+    const dataArray = this.booksDataSource.getOriginDataArray();
+    const index = dataArray.findIndex(item => !item.isTop);
+    return index;
   }
 
   //移动分组
@@ -190,7 +205,7 @@ export default struct BookInfoDialogs{
     builder: BookSelectGroupDialog({
       moveGroup: ()=> {
         setTimeout(()=>{
-          this.isBookRefreshing++
+          // this.booksDataSource.deleteData(this.bookData)
           this.bookMoveGroup?.close()
         },500)
       },
@@ -206,5 +221,10 @@ export default struct BookInfoDialogs{
     customStyle: false,
     cornerRadius: 25,
   })
+
+  //刷新懒加载数据
+  async refreshLazyData(){
+    // this.booksDataSource.reloadNewData([this.bookData])
+  }
 
 }

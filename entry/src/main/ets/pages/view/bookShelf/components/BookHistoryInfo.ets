@@ -128,30 +128,30 @@ export default struct BookHistoryInfo{
       LongPressGesture({ repeat: true,duration:500 })
         .onAction((event: GestureEvent) => {
           if (event.repeat) {
-            this.bookInfoDialog?.open()
+            // this.bookInfoDialog?.open()
           }
         }))
     .padding(10)
     .borderRadius(10)
   }
 
-  bookInfoDialog: CustomDialogController | null = new CustomDialogController({
-    builder: BookInfoDialogs({
-      bookData:this.book,
-      cancel: () => {
-        this.exitDialog()
-      }
-    }),
-    cancel: this.exitDialog,
-    autoCancel: true,
-    width:'100%',
-    alignment: DialogAlignment.Bottom,
-    customStyle:true
-  })
+  // bookInfoDialog: CustomDialogController | null = new CustomDialogController({
+  //   builder: BookInfoDialogs({
+  //     bookData:this.book,
+  //     cancel: () => {
+  //       this.exitDialog()
+  //     }
+  //   }),
+  //   cancel: this.exitDialog,
+  //   autoCancel: true,
+  //   width:'100%',
+  //   alignment: DialogAlignment.Bottom,
+  //   customStyle:true
+  // })
   //退出弹框
-  exitDialog(){
-    this.bookInfoDialog?.close()
-  }
+  // exitDialog(){
+  //   this.bookInfoDialog?.close()
+  // }
 
   //弹窗
   bookInfoDel: CustomDialogController | null = new CustomDialogController({

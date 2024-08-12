@@ -12,7 +12,7 @@ export default struct BookInfoGridManage{
   @Prop bookData:Books
 
   @Link checkGroup:Record<number, boolean>
-
+  onSelect:Function = () => {}
   build() {
     Column({
       space:CommonConstants.SPACE_6
@@ -23,6 +23,9 @@ export default struct BookInfoGridManage{
             name: JSON.stringify(this.bookData.id),
             group: 'checkboxGroup'
           })
+            .onClick(()=>{
+              this.onSelect()
+            })
             .select(this.bookData.id?this.checkGroup[this.bookData.id] ?? false:false)
             .selectedColor($r('app.color.theme_color'))
             .unselectedColor('rgba(0, 0, 0, 0.35)')

@@ -9,7 +9,7 @@ export default struct bookListManage{
   @Prop isManage:boolean = true
   @Link checkGroup:Record<number, boolean>
   @State delCache:boolean = false
-
+  onSelect:Function = () => {}
   build() {
     if (this.bookList === null || this.bookList.length === 0) {
       Column() {
@@ -31,7 +31,10 @@ export default struct bookListManage{
                BookInfoGridManage({
                  bookData:item,
                  isManage:this.isManage,
-                 checkGroup:this.checkGroup
+                 checkGroup:this.checkGroup,
+                 onSelect: ()=>{
+                   this.onSelect()
+                 }
                })
              }
            })
@@ -44,7 +47,10 @@ export default struct bookListManage{
               BookInfoManage({
                 bookData:item,
                 isManage:this.isManage,
-                checkGroup:this.checkGroup
+                checkGroup:this.checkGroup,
+                onSelect: ()=>{
+                  this.onSelect()
+                }
               })
             })
           }
