@@ -37,7 +37,7 @@ export default struct IndexShelf {
     builder: Dialog({
       title: '网址导入',
       child: () => {
-        this.DialogInput("请输入书籍目录或详情页", 10)
+        this.DialogInput("请输入书籍目录或详情页")
       }
     }),
     cornerRadius: 8,
@@ -268,6 +268,9 @@ export default struct IndexShelf {
               showMessage(this.bookImport.length > 0?`相关书单书籍内容导入${this.bookImport.length}本`:'未找到相关书单书籍内容')
             }
           })
+          setTimeout(()=>{
+            this.isBookRefreshing++
+          },500)
           break
       }
     })
@@ -308,11 +311,11 @@ export default struct IndexShelf {
   }
 
   @Builder
-  DialogInput(placeholder: string, maxlength: number) {
+  DialogInput(placeholder: string, maxlength?: number) {
     Row() {
       TextInput({ placeholder: placeholder })
-        .maxLength(maxlength)
-        .showCounter(true)
+        // .maxLength(maxlength)
+        // .showCounter(true)
         .cancelButton({
           icon: {
             src: $r('app.media.close')

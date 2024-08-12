@@ -85,10 +85,11 @@ export default  struct BookManageDialog {
   }
   //书籍
   getBookList(){
-    booksDao.search({
+    booksDao.searchPage({
       type:this.currentIndex,
-      bookGroup:this.bookTypeNumber
-    }).then((val)=>{
+      bookGroup:this.bookTypeNumber,
+      order:this.searchValue
+    },1,100).then((val)=>{
       this.bookList = val
     })
   }
@@ -207,7 +208,10 @@ export default  struct BookManageDialog {
                 checkGroup:this.checkLists,
                 EXHIBIT:this.EXHIBIT,
                 bookList:this.bookList,
-                isManage:this.isManage
+                isManage:this.isManage,
+                onSelect:()=>{
+                  this.listenCheckList()
+                }
               })
             }
           }
@@ -323,7 +327,7 @@ export default  struct BookManageDialog {
           this.allCheck = !this.allCheck
           this.dataMoveCheckList(this.allCheck)
         })
-      Text(!this.allCheck?'全选':'取消全选')
+      // Text(!this.allCheck?'全选':'取消全选')
     }
     .alignItems(VerticalAlign.Center)
   }

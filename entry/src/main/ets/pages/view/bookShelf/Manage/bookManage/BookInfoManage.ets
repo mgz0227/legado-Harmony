@@ -1,13 +1,13 @@
 import { Books } from '../../../../../database/entities/Books'
 
 @Component
-/**
- * 书签
- */
+
+
 export default struct BookInfoManage{
   @Prop isManage:boolean
   @Prop bookData:Books
   @Link checkGroup:Record<number, boolean>
+  onSelect:Function = () => {}
   build() {
     Flex(
       {
@@ -61,6 +61,9 @@ export default struct BookInfoManage{
           Checkbox({
             name: JSON.stringify(this.bookData.id)
           })
+            .onClick(()=>{
+              this.onSelect()
+            })
             .select(this.bookData.id?this.checkGroup[this.bookData.id] ?? false:false)
             .onChange((val:boolean)=>{
               if (this.bookData.id) {

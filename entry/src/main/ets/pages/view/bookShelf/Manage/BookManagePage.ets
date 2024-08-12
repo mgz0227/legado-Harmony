@@ -43,7 +43,7 @@ struct BookManagePage {
   @State isAddShelfShow:boolean = false
   @State topTitle:string = '置顶'
   @State bookList:Books[] = []
-  @State @Watch('listenCheckList')checkLists: Record<number, boolean> = {}
+  @State checkLists: Record<number, boolean> = {}
   @State checkListNumber:number[] = []
   @State bookGroups:BookGroups[] = [] // 分组
   @State worksLists:WorksLists[] =[] //书单
@@ -96,10 +96,10 @@ struct BookManagePage {
   }
   //书籍
   getBookList(){
-    booksDao.search({
+    booksDao.searchPage({
       type:this.currentIndex,
       bookGroup:this.bookTypeNumber
-    }).then((val)=>{
+    },1,100).then((val)=>{
       this.bookList = val
     })
   }
@@ -187,13 +187,16 @@ struct BookManagePage {
               BookFolderManages({
                 checkGroup:this.checkLists,
                 EXHIBIT:this.EXHIBIT,
-                bookGroups:this.bookGroups
+                bookGroups:this.bookGroups,
               })
             } else {
               bookListManage({
                 checkGroup:this.checkLists,
                 EXHIBIT:this.EXHIBIT,
-                bookList:this.bookList
+                bookList:this.bookList,
+                onSelect:()=>{
+                  this.listenCheckList()
+                }
               })
             }
           }
@@ -241,8 +244,9 @@ struct BookManagePage {
           }
           this.allCheck = !this.allCheck
           this.dataMoveCheckList(this.allCheck)
+          this.listenCheckList()
         })
-      Text(!this.allCheck?'全选':'取消全选')
+      // Text(!this.allCheck?'全选':'取消全选')
     }
 
     .alignItems(VerticalAlign.Center)
@@ -392,7 +396,6 @@ struct BookManagePage {
         } else {
           this.bookOrFolder = 0
         }
-        this.dataCheckList();
         break;
       case 4 :
         this.clickHideDialog?.open()
@@ -403,9 +406,7 @@ struct BookManagePage {
   }
   //置顶功能
   manageTop(){
-    if (this.bookTypeNumber === 5) {
-
-    } else if(this.bookTypeNumber === 1){
+    if(this.bookTypeNumber === 1){
       bookGroupUtil.isTopGroup(this.checkListNumber, this.topTitle==='置顶'?true:false)
     } else {
       booksUtil.isTopBook(this.checkListNumber, this.topTitle==='置顶'?true:false)
@@ -415,8 +416,8 @@ struct BookManagePage {
       this.checkListNumber = []
       this.checkLists = {}
       this.topTitle = '置顶'
+      showMessage('操作成功')
     },500)
-    showMessage('操作成功')
   }
   //删除确认弹窗
   @State delCache:boolean = false
@@ -509,6 +510,7 @@ struct BookManagePage {
          break;
    }
    this.dataMoveCheckList(false)
+   this.dataCheckList()
   }
 
   //将checkLists取key值转换为string[]

@@ -82,6 +82,87 @@ class BooksDao {
     }
   }
 
+  //获取书籍总数量
+  async getBookCount(param?: BooksTypeSearchParams) {
+    let type = param?.type;
+    let bookGroup = param?.bookGroup;
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('bookType', type)
+      if (bookGroup !== undefined && bookGroup !== 2) {
+        predicates.equalTo('bookGroup', bookGroup)
+      }
+      const count = await DbUtil.queryForCount(predicates, column)
+      return count
+    } catch (e){
+      console.log("TagInfo", JSON.stringify(e))
+      return 0
+    }
+  }
+
+  async searchPage(param?: BooksTypeSearchParams, pageNumber: number = 1, pageSize: number = 21) {
+    let searchKey = param?.searchKey ?? '';
+    let type = param?.type;
+    let bookGroup = param?.bookGroup;
+    let order = param?.order;
+    let sort = 0;
+    if (order !== undefined) {
+      sort = booksUtils.getOrder(order);
+    }
+
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      let sql = `SELECT * FROM ${this.TABLE_NAME}`;
+      let whereClause: string[] = [];
+
+      if (type !== undefined) {
+        whereClause.push(`bookType = ${type}`);
+      }
+      if (bookGroup !== undefined && bookGroup !== 2) {
+        whereClause.push(`bookGroup = ${bookGroup}`);
+      }
+      if (searchKey) {
+        whereClause.push(`(
+                bookName LIKE '%${searchKey}%'
+                OR author LIKE '%${searchKey}%'
+                OR originName LIKE '%${searchKey}%'
+            )`);
+      }
+
+      if (whereClause.length > 0) {
+        sql += ` WHERE ${whereClause.join(' AND ')}`;
+      }
+
+      sql += ` ORDER BY`;
+      if (order !== undefined) {
+        switch (sort) {
+          case 0:
+            sql += ` isTop DESC, durChapterTime DESC`;
+            break;
+          case 1:
+            sql += ` isTop DESC, latestChapterTime DESC`;
+            break;
+          case 2:
+            sql += ` isTop DESC, sort ASC`;
+            break;
+        }
+      } else {
+        sql += ` isTop DESC, createTime DESC`;
+      }
+
+      const offset = (pageNumber - 1) * pageSize;
+      sql += ` LIMIT ${pageSize} OFFSET ${offset}`;
+
+      const bookDbList = await DbUtil.querySqlForList<Books>(sql, column);
+      console.log("TagInfo", '书籍：' + bookDbList.length)
+      return bookDbList;
+    } catch (err) {
+      console.log("TagInfo", JSON.stringify(err))
+      return [];
+    }
+  }
+
   async batchInsert(books: Books[]) {
     try {
       for (let index = 0; index < books.length; index++) {

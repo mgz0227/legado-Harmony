@@ -45,41 +45,41 @@ export default struct BookContentRefresh {
   }
   build() {
     Refresh({ refreshing: $$this.isRefreshing, builder: this.refreshComponent }) {
-      Scroll() {
-        Column() {
-          if (this.bookTypeNumber === 5 && this.searchValue !== '浏览历史') {
-            WorksBookLists({
-              checkGroup: this.checkGroup,
-              EXHIBIT: this.EXHIBIT,
-              currentIndex:this.currentIndex,
-              isShowCheck:false
-            })
-          } else {
-            if (this.GROUP === '标签') {
+      if (this.bookTypeNumber !== 5 && this.bookTypeNumber !== 1 && this.searchValue !== '浏览历史' ){
+        BookContent({
+          currentIndex:this.currentIndex,
+          bookTypeNumber:this.bookTypeNumber,
+          EXHIBIT: this.EXHIBIT,
+          searchValue: this.searchValue
+        })
+      } else {
+        Scroll() {
+          Column() {
+            if (this.bookTypeNumber === 5 && this.searchValue !== '浏览历史') {
+              WorksBookLists({
+                checkGroup: this.checkGroup,
+                EXHIBIT: this.EXHIBIT,
+                currentIndex:this.currentIndex,
+                isShowCheck:false
+              })
+            } else {
               if (this.searchValue === '浏览历史') {
                 BookHistoryContent({
                   currentIndex:this.currentIndex,
                   searchValue: this.searchValue
                 })
               } else {
-                BookContent({
-                  currentIndex:this.currentIndex,
-                  bookTypeNumber:this.bookTypeNumber,
+                BookFolder({
                   EXHIBIT: this.EXHIBIT,
-                  searchValue: this.searchValue
+                  currentIndex:this.currentIndex
                 })
               }
-            } else {
-              BookFolder({
-                EXHIBIT: this.EXHIBIT,
-                currentIndex:this.currentIndex
-              })
             }
           }
+          .padding({ left: 10, right: 10, bottom: 30 })
         }
-        .padding({ left: 10, right: 10, bottom: 30 })
+        .scrollBar(BarState.Off)
       }
-      .scrollBar(BarState.Off)
     }
     .height('100%')
     .margin({ top: this.searchValue === '浏览历史' ? 0 : 30 })
