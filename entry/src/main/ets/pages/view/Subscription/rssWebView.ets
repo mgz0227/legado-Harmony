@@ -6,13 +6,16 @@ import { BookSource } from '../../../database/entities/BookSource';
 import { isNetworkUrl, sleep } from '../../../common/utils/utils';
 import axios, { AxiosResponse } from '@ohos/axios';
 import SubscriptionImport from '../../../componets/import/SubscriptionImport';
-import { rssSources, SUBSCRIPTION_GROUP_TYPE } from '../../../database/entities/rssSources';
+import { rssSources, SUBSCRIPTION_GROUP_TYPE, WEB_USER_AGENT } from '../../../database/entities/rssSources';
 import CommonConstants from '../../../common/constants/CommonConstants';
 import PaddingConstants from '../../../common/constants/PaddingConstants';
 import SubscriptionDao from '../../../database/dao/SubscriptionDao';
 import subscriptionDao from '../../../database/dao/SubscriptionDao';
 import WebSetup from './components/WebSetup';
 import FontConstants from '../../../common/constants/FontConstants';
+import { pasteboard } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+import systemUtil from '../../../common/utils/SystemUtils';
 
 interface RouteParams {
   url: string, //id不传默认用url校验是否存在订阅源有存
@@ -72,11 +75,17 @@ struct RssWebView {
   legadoRegex:string = `/import/auto\\?src=(http[s]?://[^/]+/[^\"']+)`
   @State isCollection:boolean = false
   @StorageLink(CommonConstants.RSS_SOURCES_REFRESHING) refreshing: number = 0
+  @StorageLink(CommonConstants.SYSTEM_UA) @Watch('upUserUA')SYSTEM_UA: number = 0
   async aboutToAppear(): Promise<void> {
     const params = router.getParams() as RouteParams;
     this.sourcesUrl = params.url
     this.sourcesId = params.id??0
     this.isCollection = await subscriptionDao.queryByUrl(this.sourcesUrl) //是否收藏
+    this.controller.setCustomUserAgent(WEB_USER_AGENT[this.SYSTEM_UA])
+  }
+
+  upUserUA(){
+    this.controller.setCustomUserAgent(WEB_USER_AGENT[this.SYSTEM_UA])
   }
 
   onBackPress(){
@@ -124,21 +133,22 @@ struct RssWebView {
         Web({ src: this.sourcesUrl||'www.baidu.com', controller: this.controller })
           .onPageBegin((event) => {
             //设置setCustomUserAgent为手机
-            this.controller.setCustomUserAgent('Mozilla/5.0 (Linux; Android 13; M2007J3SC Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.101 Mobile Safari/537.36')
+
           })
           .layoutWeight(1)
           .onPageEnd((event) => {
+            // this.controller.setCustomUserAgent(WEB_USER_AGENT[this.SYSTEM_UA])
             this.getOnclickUrl(event?.url || '')
             this.formModel.sourceUrl = event.url ?? ''
             this.formModel.sourceName = this.controller.getTitle().slice(0, 19)
             this.webTitle = this.controller.getTitle()
           })
-          .onScroll((event) => {
-            showMessage("x = " + event.xOffset)
-            showMessage("y = " + event.yOffset)
-            console.info("x = " + event.xOffset);
-            console.info("y = " + event.yOffset);
-          })
+          // .onScroll((event) => {
+          //   showMessage("x = " + event.xOffset)
+          //   showMessage("y = " + event.yOffset)
+          //   console.info("x = " + event.xOffset);
+          //   console.info("y = " + event.yOffset);
+          // })
         this.webFooter()
       }
       Flex()
@@ -282,6 +292,13 @@ struct RssWebView {
     builder: WebSetup({
       refreshing:()=>{
         this.controller.refresh()
+      },
+      copyUrl:()=>{
+       this.copyText(this.controller.getUrl())
+      },
+      startBrowsable:()=>{
+        const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+        systemUtil.startBrowsableAbility(context,this.controller.getUrl())
       }
     }),
     cancel: this.exitDialog,
@@ -290,6 +307,21 @@ struct RssWebView {
     alignment: DialogAlignment.Bottom,
     customStyle:true
   })
+  //网站链接复制到剪切板
+  copyText(text: string) {
+    const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, text);
+    const systemPasteboard = pasteboard.getSystemPasteboard();
+    systemPasteboard.setData(pasteboardData); // 将数据放入剪切板
+    systemPasteboard.getData().then((data) => {
+      if (data) {
+        showMessage('链接已经复制在剪切板中.')
+      } else {
+        showMessage('复制失败')
+      }
+    })
+  }
+
+
   //退出弹框
   exitDialog(){
     this.webSetupDialog?.close()

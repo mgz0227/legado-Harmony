@@ -6,7 +6,7 @@ export default struct WorksBookListGrid {
   @Prop work:WorksLists
   @Prop isShowCheck:boolean
   @Link checkGroup:Record<number, boolean>
-
+  onSelect:Function = () => {}
   build() {
     Column() {
       Stack() {
@@ -25,6 +25,9 @@ export default struct WorksBookListGrid {
                 if (this.work.worksId) {
                   this.checkGroup[this.work.worksId] = val
                 }
+              })
+              .onClick(() => {
+                this.onSelect()
               })
           }
           .zIndex(3)

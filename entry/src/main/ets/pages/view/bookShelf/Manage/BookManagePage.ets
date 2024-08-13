@@ -180,7 +180,10 @@ struct BookManagePage {
               worksLists:this.worksLists,
               checkGroup:this.checkLists,
               EXHIBIT:this.EXHIBIT,
-              isShowCheck:true
+              isShowCheck:true,
+              onSelect:()=>{
+                this.listenCheckList()
+              }
             })
           } else {
             if (this.bookTypeNumber === 1){
@@ -188,6 +191,9 @@ struct BookManagePage {
                 checkGroup:this.checkLists,
                 EXHIBIT:this.EXHIBIT,
                 bookGroups:this.bookGroups,
+                onSelect:()=>{
+                  this.listenCheckList()
+                }
               })
             } else {
               bookListManage({
@@ -309,6 +315,7 @@ struct BookManagePage {
       router.back()
       setTimeout(()=>{
         this.refreshData()
+        this.isBookRefreshing++
       },100)
     })
   }
@@ -506,7 +513,7 @@ struct BookManagePage {
        break;
        default:
          this.getBookList();
-         this.isBookRefreshing++
+         // this.isBookRefreshing++
          break;
    }
    this.dataMoveCheckList(false)

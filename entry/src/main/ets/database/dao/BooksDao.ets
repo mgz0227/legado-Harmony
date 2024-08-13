@@ -138,10 +138,10 @@ class BooksDao {
       if (order !== undefined) {
         switch (sort) {
           case 0:
-            sql += ` isTop DESC, durChapterTime DESC`;
+            sql += ` isTop DESC, durChapterTime DESC, createTime DESC`;
             break;
           case 1:
-            sql += ` isTop DESC, latestChapterTime DESC`;
+            sql += ` isTop DESC, latestChapterTime DESC,updateTime DESC`;
             break;
           case 2:
             sql += ` isTop DESC, sort ASC`;

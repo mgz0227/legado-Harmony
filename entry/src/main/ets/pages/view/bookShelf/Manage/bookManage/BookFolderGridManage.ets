@@ -8,6 +8,7 @@ export default struct BookFolderGridManage {
   @Prop group:BookGroups
   @Link checkGroup:Record<number, boolean>
   @Prop isManage:boolean
+  onSelect:Function = () => {}
   build() {
     Column() {
       Stack() {
@@ -22,6 +23,9 @@ export default struct BookFolderGridManage {
                   this.checkGroup[this.group.groupId] = val
                 }
               })
+              .onClick(()=>{
+                this.onSelect()
+              })
           }
           Stack(){
             if (this.group.isTop){
@@ -35,6 +39,7 @@ export default struct BookFolderGridManage {
               .height(120)
           }.alignContent(Alignment.BottomStart)
         }
+        .alignContent(Alignment.BottomEnd)
         .zIndex(2)
 
 

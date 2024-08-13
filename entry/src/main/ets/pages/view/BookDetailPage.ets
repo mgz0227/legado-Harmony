@@ -10,7 +10,6 @@ import { Books } from '../../database/entities/Books'
 import { BookHistory } from '../../database/entities/BookHistory'
 import bookHistoryUtils from '../../common/utils/BookHistoryUtils'
 import booksUtil from '../../common/utils/booksUtils'
-import { showMessage } from '../../componets/common/promptShow'
 
 /**
  * 标题图片样式
@@ -101,11 +100,12 @@ struct BookDetailPage {
        this.bookData.isJoin = await booksUtil.isExistBooks(this.bookData.bookUrl, this.bookData.bookName)
       }
       let temp = await FileHandler.readFile(this.bookData?.bookUrl||'') //txt小说
+      // FileHandler.readerEpubFile(this.bookData?.bookUrl||'')
       this.txtFile.pushAllData(temp)
       this.txtFiles = this.txtFile.getListData()
     }
   }
-
+  @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   // 加入书架函数
   addBookShelf() {
     booksUtil.addBooks(this.bookData)
@@ -113,6 +113,7 @@ struct BookDetailPage {
     this.isAddBookShelf = true;
     // 1s后关闭dialog
     setTimeout(() => {
+      this.isBookRefreshing++
       this.dialogController.close();
     }, 1000);
   }
