@@ -18,6 +18,7 @@ export class programDataPreferences {
   initRssSourcesListData = () =>{
     bookDataPreferences.shared.set(CommonConstants.RSS_SOURCES_GROUP_INIT, true)
   }
+
   updateRssSourcesListData = (data:string[] ) =>{
     bookDataPreferences.shared.set(CommonConstants.RSS_SOURCES_GROUP_LIST_DATA_KEY,data)
   }
@@ -31,6 +32,19 @@ export class programDataPreferences {
 
   getRssSourcesListData = () => {
     return bookDataPreferences.shared.get(CommonConstants.RSS_SOURCES_GROUP_LIST_DATA_KEY) as string[]
+  }
+
+  //WEB UA设置
+  initWebUADataPreferences = () => {
+    bookDataPreferences.shared.set(CommonConstants.SYSTEM_UA, 0)
+  }
+  //更新WEB UA
+  updateWebUAData = (UAIndex:number ) =>{
+    bookDataPreferences.shared.set(CommonConstants.SYSTEM_UA,UAIndex)
+  }
+  //获取WEB UA
+  getWebUAData = () => {
+    return bookDataPreferences.shared.get(CommonConstants.SYSTEM_UA) as number
   }
 }
 

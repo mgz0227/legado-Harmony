@@ -261,10 +261,10 @@ export default struct IndexShelf {
         case 4:
           //书单本地导入
           let res = await FileHandler.documentPickerFile(1, ['.json'])
-          FileHandler.ReadJSONFile(res[0]).then(result => {
+          FileHandler.ReadJSONFile(res[0]).then(async result => {
             if (result.length > 0) {
               this.bookImport = JSON.parse(result) as bookShelfImport[]
-              this.bookImport.length>0?booksUtil.batchAdd(this.bookImport,this.currentIndex):''
+              this.bookImport.length>0?await booksUtil.batchAdd(this.bookImport,this.currentIndex):''
               showMessage(this.bookImport.length > 0?`相关书单书籍内容导入${this.bookImport.length}本`:'未找到相关书单书籍内容')
             }
           })

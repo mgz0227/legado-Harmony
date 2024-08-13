@@ -353,9 +353,9 @@ export default struct SubscriptionIndex {
         this.isShowNewSources = true
         break;
       case 3:
+        showMessage('批量功能开发中,暂未开放') //TODO 新增批量操作界面
+        return
         this.batchEdit = true
-        break
-      case 4:
         break
     }
   }

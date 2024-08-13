@@ -5,7 +5,6 @@
  */
 import PaddingConstants from '../../../../common/constants/PaddingConstants'
 import InsideCircleIcon from '../../../../componets/common/InsideCircleIcon'
-import { showMessage } from '../../../../componets/common/promptShow'
 import { IconTitleVo } from '../../../../componetsmodel/IconTitleVo'
 import WebSetupUA from './WebSetupUA'
 
@@ -14,7 +13,9 @@ import WebSetupUA from './WebSetupUA'
 export default struct WebSetup {
   controller?: CustomDialogController
   refreshing:Function = ()=>{}
+  copyUrl:Function = ()=>{}
   uaSetUp:Function = ()=>{}
+  startBrowsable:Function = ()=>{}
   moreList: IconTitleVo[] = [
     new IconTitleVo($r('app.media.icon_web_refresh'), '刷新'),
     new IconTitleVo($r('app.media.ic_public_share'), '分享'),
@@ -63,14 +64,13 @@ export default struct WebSetup {
       case 0:
         this.refreshing()
         this.controller?.close()
-        showMessage('刷新....')
         break
       case 1:
-        showMessage('分享');break
+        this.copyUrl();this.controller?.close();break
       case 2:
-        showMessage('浏览器打开');break
+        this.startBrowsable();this.controller?.close();break
       case 3:
-        this.webSetupUADialog?.open();showMessage('UA设置');break;
+        this.webSetupUADialog?.open();break;
 
     }
   }

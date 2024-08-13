@@ -12,7 +12,7 @@ export default struct BookContent {
 
   async aboutToAppear(): Promise<void> {
     this.getBookCount()
-    if (this.booksDataSource.totalCount() === 0) {
+    if (this.bookList.length === 0) {
       this.getBookList()
     }
   }
@@ -32,9 +32,9 @@ export default struct BookContent {
   @StorageLink('BOOK_IS_BOOK_REFRESHING') @Watch("isRefresh")isBookRefreshing: number = 0
   isRefresh(){
     this.currentPage = 1
-    if (this.booksDataSource.totalCount() > 0){
-      this.booksDataSource.clear()
-    }
+    // if (this.booksDataSource.totalCount() > 0){
+    //   this.booksDataSource.clear()
+    // }
     if (this.isBookRefreshing >= 0) {
       this.getBookList()
     }
@@ -46,9 +46,9 @@ export default struct BookContent {
       if (this.bookCount === 0){
         this.getBookCount()
       }
-      if (this.booksDataSource.totalCount() > 0) {
-        this.booksDataSource.clear()
-      }
+      // if (this.booksDataSource.totalCount() > 0) {
+      //   this.booksDataSource.clear()
+      // }
       this.getBookList()
     }
   }
@@ -60,7 +60,7 @@ export default struct BookContent {
       order:this.searchValue
     }, this.currentPage)
     if (this.booksDataSource.totalCount() < this.bookCount) {
-      this.booksDataSource.pushAllData(this.bookList)
+      // this.booksDataSource.pushAllData(this.bookList)
     }
   }
 
@@ -77,12 +77,12 @@ export default struct BookContent {
         order:this.searchValue,
       }, this.currentPage);
       if (moreBooks.length > 0) {
-        this.booksDataSource.pushAllData(moreBooks);
+        this.bookList.push(...moreBooks);
       }
       this.isLoading = false;
     }
   }
-
+  scroller: Scroller = new Scroller()
   build() {
     if (this.isLoading) {
       Row(){
@@ -103,9 +103,10 @@ export default struct BookContent {
       .margin({ top: 120 })
     } else {
       List({
-        space:10
+        space:10,
+        scroller:this.scroller
       }){
-        LazyForEach(this.booksDataSource, (item: Books,index:number) => {
+       ForEach(this.bookList, (item: Books,index:number) => {
           ListItem(){
             if (this.EXHIBIT === '宫格') {
               BookInfoGrids({
@@ -124,7 +125,7 @@ export default struct BookContent {
       .lanes(this.EXHIBIT === '宫格' ? 3 : 1)
       .scrollBar(BarState.Off)
       .onReachEnd(() => {
-        if (this.booksDataSource.totalCount() < this.bookCount) {
+        if (this.bookList.length < this.bookCount) {
           this.loadMoreBooks()
         }
       })

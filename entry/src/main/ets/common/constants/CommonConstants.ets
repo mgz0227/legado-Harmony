@@ -245,6 +245,8 @@ export default class CommonConstants {
   static readonly RSS_SOURCES_GROUP_LIST_DATA_KEY:string = 'RSS_SOURCES_GROUP_LIST_DATA_KEY'
   //订阅源刷新标识
   static readonly RSS_SOURCES_REFRESHING:string = 'RSS_SOURCES_REFRESHING'
+  //系统UA'0-Android', '1-Phone', '2-电脑', '3-自定义'
+  static readonly SYSTEM_UA:string = 'SYSTEM_UA'
   /**
    * 数据库日志标签
    */

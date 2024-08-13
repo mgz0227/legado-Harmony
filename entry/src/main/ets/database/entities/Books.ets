@@ -75,6 +75,8 @@ export class Books {
   updateTime?:number = 0
   //是否加入书架
   isJoin:boolean = false
+  //是否本地导入
+  isLocalBook:boolean = false
 }
 
 export class bookShelfImport{

@@ -167,8 +167,12 @@ export default struct BookInfoDialogs{
     if (this.bookData.id){
       booksUtil.delBooksById(this.bookData.id)
     }
-    let index = this.booksDataSource.getIndex(this.bookData)
-    this.booksDataSource.deleteData(index)
+    // let index = this.booksDataSource.getIndex(this.bookData)
+    // this.booksDataSource.deleteData(index)
+    setTimeout(()=>{
+      this.isBookRefreshing++
+      this.controller?.close()
+    },200)
     showMessage('删除成功')
   }
 
@@ -178,19 +182,23 @@ export default struct BookInfoDialogs{
         val?showMessage(!this.bookData.isTop?'取消置顶成功':'置顶成功'):showMessage('数据更新失败')
       })
     }
-    let index = this.booksDataSource.getIndex(this.bookData)
-    this.bookData.isTop = !this.bookData.isTop
-    if (this.bookData.isTop){
-      this.booksDataSource.deleteData(index)
-      this.booksDataSource.unshiftData(this.bookData)
-    } else {
-      let newIndex = this.getIndexByIsTopFalse()
-      if (newIndex > 1) {
-        this.booksDataSource.moveDataUpdate(index, newIndex-1,this.bookData)
-      }
-      this.booksDataSource.changeData(newIndex > 1?newIndex - 1:index,this.bookData)
-    }
-    this.controller?.close()
+    // let index = this.booksDataSource.getIndex(this.bookData)
+    // this.bookData.isTop = !this.bookData.isTop
+    // if (this.bookData.isTop){
+    //   this.booksDataSource.deleteData(index)
+    //   this.booksDataSource.unshiftData(this.bookData)
+    // } else {
+    //   let newIndex = this.getIndexByIsTopFalse()
+    //   if (newIndex > 1) {
+    //     this.booksDataSource.moveDataUpdate(index, newIndex-1,this.bookData)
+    //   }
+    //   this.booksDataSource.changeData(newIndex > 1?newIndex - 1:index,this.bookData)
+    // }
+    setTimeout(()=>{
+      this.isBookRefreshing++
+      this.controller?.close()
+    },200)
+
   }
   //从booksDataSource数据中查询从第一位查询最先出现isTop为false下标返回
   getIndexByIsTopFalse() {
@@ -204,10 +212,14 @@ export default struct BookInfoDialogs{
   bookMoveGroup: CustomDialogController | null = new CustomDialogController({
     builder: BookSelectGroupDialog({
       moveGroup: ()=> {
+        // setTimeout(()=>{
+        //   // this.booksDataSource.deleteData(this.bookData)
+        // },500)
         setTimeout(()=>{
-          // this.booksDataSource.deleteData(this.bookData)
           this.bookMoveGroup?.close()
-        },500)
+          this.controller?.close()
+          this.isBookRefreshing++
+        },200)
       },
       oldGroupId:this.bookData.bookGroup,
       currentIndex:this.bookData.bookType,

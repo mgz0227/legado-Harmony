@@ -11,6 +11,7 @@ export default struct BookFolderManages {
   @Prop EXHIBIT:string
   @State delCache:boolean = false
   @Prop isManage:boolean = true
+  onSelect:Function = () => {}
   bookInfoDel: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
       cancel: ()=> { this.onCancel() },
@@ -56,7 +57,10 @@ export default struct BookFolderManages {
              BookFolderInfoManage({
                group:item,
                checkGroup:this.checkGroup,
-               isManage:this.isManage
+               isManage:this.isManage,
+               onSelect:()=>{
+                 this.onSelect()
+               }
              })
            }
          })
@@ -70,7 +74,10 @@ export default struct BookFolderManages {
                  BookFolderGridManage({
                    group:item,
                    checkGroup:this.checkGroup,
-                   isManage:this.isManage
+                   isManage:this.isManage,
+                   onSelect:()=>{
+                     this.onSelect()
+                   }
                  })
                }
              }
