@@ -1,6 +1,6 @@
 import { promptAction } from '@kit.ArkUI';
 import { Constants } from '../common/constants/Constants';
-import { ReaderChapterItem } from '../common/constants/ReaderChaptersItem';
+import { ReaderChapterItem } from '../common/entity/ReaderChaptersItem';
 import { Reader } from './Reader';
 
 @Component

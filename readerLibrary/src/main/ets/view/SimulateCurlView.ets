@@ -1,7 +1,7 @@
 import { common2D, drawing } from '@kit.ArkGraphics2D';
 import animator, { AnimatorOptions, AnimatorResult } from '@ohos.animator';
 import { Constants } from '../common/constants/Constants';
-import { ReaderChapterItem } from '../common/constants/ReaderChaptersItem';
+import { ReaderChapterItem } from '../common/entity/ReaderChaptersItem';
 import { Reader, ReaderForCurlView, SimulateDrawManager } from './Reader';
 import { image } from '@kit.ImageKit';
 
