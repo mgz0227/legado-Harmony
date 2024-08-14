@@ -36,7 +36,7 @@ class booksUtils{
         bookName: item.name,
         bookUrl: item.bookUrl,
         author: item.author,
-        intro:item.intro,
+        intro: item.intro,
         bookGroup: 3,
         latestChapterTime: 0,
         totalChapterNum: 0,
@@ -49,7 +49,8 @@ class booksUtils{
         syncTime: 0,
         bookType: bookType,
         isTop: false,
-        isJoin: true
+        isJoin: true,
+        isLocalBook: false
       }
       BooksDao.insert(book)
     })

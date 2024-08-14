@@ -25,6 +25,10 @@ export class ToolsUtils {
     }
     return Ids
   }
+  //判断是否是24内
+  is24Hour(lastTime:number){
+    return (new Date().getTime() - lastTime)/(1000 * 60 * 60) <= 24
+  }
 }
 
 const toolsUtils = new ToolsUtils();

@@ -3,6 +3,7 @@ import { Books } from '../../../../database/entities/Books'
 import { router } from '@kit.ArkUI'
 import BookInfoDialogs from './dialog/BookInfoDialogs'
 import CommonConstants from '../../../../common/constants/CommonConstants'
+import FontConstants from '../../../../common/constants/FontConstants'
 
 @Component
 /**
@@ -51,10 +52,29 @@ export default struct BookInfoGrids{
       space:8
     }) {
       Stack(){
+        if (this.book.isLocalBook){
+          Text('本地')
+            .fontColor('#FFEDD4')
+            .fontWeight(FontConstants.FONT_WEIGHT_400)
+            .fontSize(9)
+            .padding(3)
+            .backgroundColor('#523000')
+            .zIndex(1)
+            .borderRadius({
+              topRight: 6,
+              bottomLeft: 6,
+            })
+        }
         Stack(){
           if (this.book.isTop){
-            Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
-              .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
+            Text('置顶')
+              .fontColor(Color.White)
+              .fontWeight(FontConstants.FONT_WEIGHT_400)
+              .fontSize(9)
+              .padding(3)
+              .borderRadius(5)
+              .backgroundColor('rgba(0, 0, 0, 0.45)')
+              .zIndex(1)
           }
           Image(this.book.coverUrl)
             .draggable(false)
@@ -64,6 +84,7 @@ export default struct BookInfoGrids{
         }
         .alignContent(Alignment.BottomStart)
       }
+      .alignContent(Alignment.TopEnd)
       .backgroundColor($r('app.string.color_black_45'))
       .borderRadius(10)
       Column({

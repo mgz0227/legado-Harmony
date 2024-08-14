@@ -123,6 +123,13 @@ export const SUBSCRIPTION_TYPE: Record<number, string> ={
   1: '订阅源'
 }
 
+export const WEB_USER_AGENT: string[] = [
+  'Mozilla/5.0 (Linux; Android 13; Pixel 5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Mobile Safari/537.36',
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.2 Mobile/15E148 Safari/604.1',
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36',
+  'Mozilla/5.0 (Custom Device; Custom OS 1.0; Custom Build) AppleWebKit/537.36 (KHTML, like Gecko) CustomBrowser/1.0 CustomSafari/537.36'
+]
+
 
 export interface rssSourceDb extends Omit<rssSources, 'rssListRule' | 'rssWebViewRule'> {
   //列表

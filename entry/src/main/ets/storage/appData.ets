@@ -15,6 +15,13 @@ export const initAppData = ()=>{
     programDataPreferences.initProgramDataPreferences()
     programDataPreferences.initRssSourcesListData()
   }
+  let SystemUA = programDataPreferences.getWebUAData();
+  if (SystemUA) {
+    AppStorage.setOrCreate(CommonConstants.SYSTEM_UA,SystemUA)
+  } else  {
+    programDataPreferences.updateWebUAData(0)
+    AppStorage.setOrCreate(CommonConstants.SYSTEM_UA,0)
+  }
   initBookListData()
   initFindData()
 }

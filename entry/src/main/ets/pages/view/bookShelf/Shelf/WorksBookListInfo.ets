@@ -10,7 +10,7 @@ export default struct WorksBookListInfo{
   @Link checkGroup:Record<number, boolean>
   @Prop work:WorksLists
   @Prop isShowCheck:boolean
-
+  onSelect:Function = () => {}
   build() {
     Flex(
       {
@@ -68,6 +68,9 @@ export default struct WorksBookListInfo{
               if (this.work.worksId) {
                 this.checkGroup[this.work.worksId] = val
               }
+            })
+            .onClick(() => {
+              this.onSelect()
             })
         }
         .padding({ left: 15, right: 15, bottom: 5, top: 5 })
