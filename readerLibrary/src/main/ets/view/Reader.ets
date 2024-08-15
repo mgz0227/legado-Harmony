@@ -1,7 +1,7 @@
 import { Constants, FlipPageType } from '../common/constants/Constants'
 import battery from './battery';
 import { common2D, drawing } from '@kit.ArkGraphics2D';
-import { ReaderChapterItem } from '../common/constants/ReaderChaptersItem';
+import { ReaderChapterItem } from '../common/entity/ReaderChaptersItem';
 import { componentSnapshot, MeasureText } from '@kit.ArkUI';
 import { image } from '@kit.ImageKit';
 
