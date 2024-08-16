@@ -45,12 +45,12 @@ struct ReaderPage2 {
     }) //txt小说
 
     if (this.chapterList.length != 0) {
-      this.chapterList[0].chapterList = this.chapterList[0].content.split('\n').map((value) => value + '\n');
+      this.chapterList[0].paragraphList = this.chapterList[0].content.split('\n').map((value) => value + '\n');
     }
 
     if (this.chapterList.length >= 2) {
       for (let index = 1; index < this.chapterList.length; index++) {
-        this.chapterList[index].chapterList = this.chapterList[index].content.split('\n').map((value) => value + '\n');
+        this.chapterList[index].paragraphList = this.chapterList[index].content.split('\n').map((value) => value + '\n');
       }
     }
     this.currentChapters = temp.clickBookChapter
@@ -498,8 +498,8 @@ struct ReaderPageContent {
           }
           if (this.turnStyle === FlipPageType.SIMULATE_FLIP_PAGE) {
             SimulateCurlView({
-              currentChapterNum: this.currentChapterIndex,
-              currentPageNum: this.currentPageIndex,
+              currentChapterIndex: this.currentChapterIndex,
+              currentPageIndex: this.currentPageIndex,
             })
           }
           if (this.turnStyle === FlipPageType.SLIDE_FLIP_PAGE) {
