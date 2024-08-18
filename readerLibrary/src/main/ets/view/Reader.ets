@@ -4,6 +4,7 @@ import { common2D, drawing } from '@kit.ArkGraphics2D';
 import { ReaderChapterItem } from '../common/entity/ReaderChaptersItem';
 import { componentSnapshot, MeasureText } from '@kit.ArkUI';
 import { image } from '@kit.ImageKit';
+import { NovelChapterOperateHelper } from '../common/helper/NovelChapterOperateHelper';
 
 @Component
 export struct Reader {
@@ -32,10 +33,10 @@ export struct Reader {
         .layoutWeight(1)
         .onSizeChange((oldSize, newSize) => {
           if (typeof newSize.width === 'number' && typeof newSize.height === 'number') {
-            let width = newSize.width as number
-            let height = newSize.height as number
+            let width = vp2px(newSize.width as number)
+            let height = vp2px(newSize.height as number)
             if (this.displaySize[0] !== width || this.displaySize[1] !== height) {
-              this.displaySize = [vp2px(width), vp2px(height)];
+              this.displaySize = [width, height];
             }
           }
           console.info(`display size, width : ${vp2px(newSize.width as number)} , height : ${vp2px(newSize.height as number)}`)
@@ -112,10 +113,10 @@ export struct ReaderForCurlView {
         .layoutWeight(1)
         .onSizeChange((oldSize, newSize) => {
           if (typeof newSize.width === 'number' && typeof newSize.height === 'number') {
-            let width = newSize.width as number
-            let height = newSize.height as number
+            let width = vp2px(newSize.width as number)
+            let height = vp2px(newSize.height as number)
             if (this.displaySize[0] !== width || this.displaySize[1] !== height) {
-              this.displaySize = [vp2px(width), vp2px(height)];
+              this.displaySize = [width, height];
             }
           }
           console.info(`display size, width : ${vp2px(newSize.width as number)} , height : ${vp2px(newSize.height as number)}`)
@@ -205,8 +206,9 @@ export class SimulateDrawManager {
     this.canvasSize = size;
   }
 
-  updatePageIndex(index: number) {
-    this.currentPageIndex = index;
+  updatePageIndex(pageIndex: number, chapterIndex: number) {
+    this.currentPageIndex = pageIndex;
+    this.currentChapterIndex = chapterIndex;
   }
 
   updateChapterIndex(index: number) {
@@ -275,25 +277,32 @@ export class SimulateDrawManager {
 
       this.isTurnNext = isTurnNextByHorizontal || isTurnNextByVertical
 
+      let nextPageIndex =
+        NovelChapterOperateHelper.nextPageIndex(this.chapterList, this.currentChapterIndex, this.currentPageIndex);
+      let prePageIndex =
+        NovelChapterOperateHelper.prePageIndex(this.chapterList, this.currentChapterIndex, this.currentPageIndex);
+
       // todo: 这部分的限制逻辑不该放在这里，需要等到章节缓存处理模块做完再移走
       if (this.isTurnNext &&
-        this.currentPageIndex === this.chapterList[this.currentChapterIndex].chapterPageList.length - 1) {
+        nextPageIndex === null) {
         return null;
       }
 
-      if ((!this.isTurnNext) && this.currentPageIndex === 0) {
+      if ((!this.isTurnNext) && prePageIndex === null) {
         return null;
       }
       if (this.startTouch.y <= this.canvasSize.height / 3 || this.startTouch.y >= this.canvasSize.height / 3 * 2) {
         this.currentDrawHelper =
           new SimulationCornerTurnDrawHelper(this, this.context, this.fontSize, this.lineHeight, this.chapterList,
-            this.currentChapterIndex, this.isTurnNext ? this.currentPageIndex : this.currentPageIndex - 1,
+            this.isTurnNext ? this.currentChapterIndex : prePageIndex![0],
+            this.isTurnNext ? this.currentPageIndex : prePageIndex![1],
             this.bgColor);
       } else {
         this.currentDrawHelper =
           new SimulationPageTurnDrawHelper(this, this.context, this.fontSize, this.lineHeight, this.chapterList,
-            this.currentChapterIndex,
-            this.isTurnNext ? this.currentPageIndex : this.currentPageIndex - 1, this.bgColor);
+            this.isTurnNext ? this.currentChapterIndex : prePageIndex![0],
+            this.isTurnNext ? this.currentPageIndex : prePageIndex![1],
+            this.bgColor);
       }
 
     }
@@ -495,9 +504,16 @@ abstract class SimulationDrawHelper {
 
       let currentY = startY;
 
-      // if(maskFilter!=null){
-      //   pen.setMaskFilter(maskFilter)
+      // let nextPageIndex =
+      //   NovelChapterOperateHelper.nextPageIndex(this.chapterList, this.currentChapterIndex, this.currentPageIndex);
+      //
+      // if (nextPageIndex == null) {
+      //   return
       // }
+      //
+      // let currentPageLineList =
+      //   this.chapterList[nextPageIndex[0]].chapterPageList[nextPageIndex[1]].lineContentList;
+
       let currentPageLineList =
         this.chapterList[this.currentChapterIndex].chapterPageList[this.currentPageIndex+1].lineContentList;
       for (let index = 0; index < currentPageLineList.length; index++) {
@@ -960,7 +976,7 @@ class SimulationPageTurnDrawHelper extends SimulationDrawHelper {
     if (canIUse('SystemCapability.Graphics.Drawing')) {
 
       let shadowWidth = (this.canvasSize.width - this.touch.dx) / 4
-      if(shadowWidth<=0){
+      if (shadowWidth <= 0) {
         return
       }
       let maskFilter = drawing.MaskFilter.createBlurMaskFilter(drawing.BlurType.NORMAL, shadowWidth / 2);
@@ -985,7 +1001,7 @@ class SimulationPageTurnDrawHelper extends SimulationDrawHelper {
       let splitLineX = (this.canvasSize.width - this.touch.dx) / 2 + this.touch.dx;
 
       let shadowWidth = (Math.max(0, Math.min(this.canvasSize.width - splitLineX, splitLineX))) / 2
-      if(shadowWidth<=0){
+      if (shadowWidth <= 0) {
         return
       }
       let shadowMaskFilter = drawing.MaskFilter.createBlurMaskFilter(drawing.BlurType.NORMAL, shadowWidth)

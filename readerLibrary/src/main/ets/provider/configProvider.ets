@@ -2,6 +2,7 @@ import { BGColorType, BG_COLOR_ARRAY, Constants, FlipPageType } from '../common/
 import { ReaderChapterItem, ReaderChapterPageItem } from '../common/entity/ReaderChaptersItem';
 import { NovelContentParseHelper } from '../common/helper/NovelContentParseHelper';
 import { display } from '@kit.ArkUI';
+import taskPool from '@ohos.taskpool';
 
 @Component
 export struct ReaderProvider {
@@ -31,18 +32,63 @@ export struct ReaderProvider {
   }
 }
 
+@Concurrent
+async function calChapterContent(width: number, height: number, targetParagraphList: string[], fontSize: number,
+  lineHeightRatio: number): Promise<string[][]> {
+  try {
+    return await NovelContentParseHelper.calculateChapterContent(targetParagraphList,
+      fontSize,
+      fontSize * lineHeightRatio, width, height)
+  } catch (e) {
+    console.info('loadNovel 出错 ' + e)
+    return [];
+  }
+
+}
+
 @Component
 struct ReaderSourceProvider {
   @BuilderParam child: () => void // 通用组件
   @Provide('chapterList') chapterList: ReaderChapterItem[] = [];
-  @Consume('lineHeightRatio') @Watch('onFontSizeChange') lineHeightRatio: number
-  @Consume('fontSize') @Watch('onFontSizeChange') fontSize: number
-  @Consume('displaySize') @Watch('calChapterContent') displaySize: number[]
-  @Consume('currentChapterIndex') currentChapterIndex: number
-  @Consume('paragraphSpacing') paragraphSpacing: number
+  @Consume('lineHeightRatio') @Watch('onConfigSizeChange') lineHeightRatio: number
+  @Consume('fontSize') @Watch('onConfigSizeChange') fontSize: number
+  @Consume('displaySize') @Watch('onDisplaySizeChange') displaySize: number[]
+  @Consume('currentChapterIndex') @Watch('calChapterContent') currentChapterIndex: number
+  @Consume('paragraphSpacing') @Watch('onConfigSizeChange') paragraphSpacing: number
 
-  onFontSizeChange() {
-    this.calChapterContent()
+  onConfigSizeChange() {
+    this.forceCalChapterContent()
+  }
+
+  onDisplaySizeChange() {
+    this.forceCalChapterContent()
+  }
+
+  private calContentOfTargetChapter(width: number, height: number, chapterIndex: number, fontSize: number,
+    lineHeightRatio: number, forceUpdate: boolean) {
+    if (!forceUpdate) {
+      if (this.chapterList[chapterIndex].chapterPageList.length !== 0) {
+        return
+      }
+    }
+    taskPool.execute(calChapterContent, width, height, this.chapterList[chapterIndex].paragraphList, fontSize,
+      lineHeightRatio).then((chapterList) => {
+      if (Array.isArray(chapterList)) {
+        let startIndex = 0
+        let result: string[][] = chapterList as string[][]
+        if (result.length !== 0) {
+          this.chapterList[chapterIndex].chapterPageList = result.map((item) => {
+            let contentLength = item.reduce((accumulator, currentString) => {
+              return accumulator + currentString.length;
+            }, 0)
+            let result = new ReaderChapterPageItem(startIndex, startIndex + contentLength, item);
+            startIndex += contentLength;
+            return result
+          })
+          this.chapterList = Array.from(this.chapterList)
+        }
+      }
+    })
   }
 
   calChapterContent() {
@@ -50,22 +96,35 @@ struct ReaderSourceProvider {
     let height = this.displaySize[1];
 
     if (width !== 0 && height !== 0 && this.chapterList.length !== 0) {
-      NovelContentParseHelper.calculateChapterContent(this.chapterList[this.currentChapterIndex].chapterList,
-        this.fontSize,
-        this.fontSize * this.lineHeightRatio, width, height).then((chapterList) => {
-        let startIndex = 0
-        this.chapterList[this.currentChapterIndex].chapterPageList = chapterList.map((item) => {
-          let contentLength = item.reduce((accumulator, currentString) => {
-            return accumulator + currentString.length;
-          }, 0)
-          let result = new ReaderChapterPageItem(startIndex, startIndex + contentLength, item);
-          startIndex += contentLength;
-          return result
-        })
-        this.chapterList = Array.from(this.chapterList)
-      }).catch((reason: string) => {
-        console.log(reason);
-      });
+      this.calContentOfTargetChapter(width, height, this.currentChapterIndex,
+        this.fontSize, this.lineHeightRatio, false);
+      if (this.currentChapterIndex > 0) {
+        this.calContentOfTargetChapter(width, height, this.currentChapterIndex - 1,
+          this.fontSize, this.lineHeightRatio, false);
+      }
+      if (this.currentChapterIndex < this.chapterList.length - 1) {
+        this.calContentOfTargetChapter(width, height, this.currentChapterIndex + 1,
+          this.fontSize, this.lineHeightRatio, false);
+      }
+    }
+
+  }
+
+  forceCalChapterContent() {
+    let width = this.displaySize[0];
+    let height = this.displaySize[1];
+
+    if (width !== 0 && height !== 0 && this.chapterList.length !== 0) {
+      this.calContentOfTargetChapter(width, height, this.currentChapterIndex,
+        this.fontSize, this.lineHeightRatio, true);
+      if (this.currentChapterIndex > 0) {
+        this.calContentOfTargetChapter(width, height, this.currentChapterIndex - 1,
+          this.fontSize, this.lineHeightRatio, true);
+      }
+      if (this.currentChapterIndex < this.chapterList.length - 1) {
+        this.calContentOfTargetChapter(width, height, this.currentChapterIndex + 1,
+          this.fontSize, this.lineHeightRatio, true);
+      }
     }
 
   }
