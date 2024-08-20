@@ -16,9 +16,9 @@ class taskSearchBook{
   MAX_THREADS:number = 5;
   tasks:taskPool.Task[] = [];
   taskSearchBook:SearchBook[] = []
-
+  dataStart:number = 0;
   async search(searchKey: string, returnBook: (newUrls: SearchBook[]) => void, cancel: () => void): Promise<void> {
-    let dataStart = Date.now();
+    this.dataStart = Date.now();
     this.tasks = [];
     this.taskSearchBook = []
     this.bookSourceParts = []
@@ -69,7 +69,9 @@ class taskSearchBook{
         }));
         const searchBooks = results.flat();
         let dataEnd = Date.now();
-        showMessage(`搜索中止,共搜索到${this.taskSearchBook.length}个结果` + `用时${(dataEnd - dataStart) / 1000}秒`);
+        if(this.tasks.length > 0){
+          showMessage(`搜索中止,共搜索到${this.taskSearchBook.length}个结果` + `用时${(dataEnd - this.dataStart) / 1000}秒`);
+        }
         cancel()
       }
     } catch (error) {
@@ -90,6 +92,8 @@ class taskSearchBook{
         console.log(`任务已取消 ${task.name} ${task.isDone()}`)
       })
     }
+    let dataEnd = Date.now();
+    showMessage(`搜索中止,共搜索到${this.taskSearchBook.length}个结果` + `用时${(dataEnd - this.dataStart) / 1000}秒`);
     this.tasks = [];
     this.taskSearchBook = []
     this.bookSourceParts = []

@@ -1,11 +1,16 @@
 
 import { common } from '@kit.AbilityKit'
 import { util } from '@kit.ArkTS'
+import CommonConstants from '../../common/constants/CommonConstants'
+import PaddingConstants from '../../common/constants/PaddingConstants'
+import taskSearchBooks from '../../common/model/taskSearchBook'
 import { SearchBook } from '../../database/entities/SearchBook'
+import { showMessage } from '../common/promptShow'
 import { SearchBookItem } from './SearchBookItem'
 
 @Component
 export struct SearchBookList {
+  @Link isSearch:boolean
   @State cachedCountNumber: number = 5; // 懒加载缓存数
   @State firstIndex: number = 0; // 当前显示在屏幕上的子组件索引值，用来控制下方按钮跳转
   @Prop SearchValue:string
@@ -19,6 +24,8 @@ export struct SearchBookList {
   readonly DEFAULT_OFFSET: number = 0; // 默认跳转位置，用于第一次进入页面的跳转位置
   readonly ANIMATION_DURATION: number = 500; // 动画持续时间
   readonly SWITCH_BUTTON: number = 5; // 当前显示在屏幕上的子组件Index到达该阈值时，将跳转到历史记录按钮切换成跳转到顶部
+  @State listOffsetY:number=0
+  @State listScrollerY:number = 0
   build() {
     Column(){
       List({space:8,scroller:this.listScroller}){
@@ -30,6 +37,9 @@ export struct SearchBookList {
           }
         })
       }
+      .onAreaChange((oldNumber,newNumber)=>{
+        this.listOffsetY = newNumber.height as number
+      })
       .cachedCount(this.cachedCountNumber)
       .layoutWeight(1)
       .chainAnimation(true)
@@ -37,36 +47,89 @@ export struct SearchBookList {
       .onScrollIndex((first: number) => {
         this.firstIndex = first;
       })
-
-      Button(this.firstIndex < this.SWITCH_BUTTON ? '跳转到上次浏览历史': '跳转到顶部', {
-        type: ButtonType.Normal,
-        stateEffect: true
+      .onWillScroll(()=>{
+        this.listScrollerY = this.listScroller.currentOffset().yOffset
       })
-        .fontColor('#000')
-        .height(40)
-        .borderRadius(20)
-        .backgroundColor('#FFAEAEAE')
-        .opacity(0.8)
-        .width(200)
-        .position({ x: '90%', y: '90%'})
-        .markAnchor({ x:'90%'})
-        .onClick(() => {
-          // 当前显示的index值小于设定的SWITCH_BUTTON时，按钮为跳转到上次浏览记录，否则为跳转到顶部
-          if (this.firstIndex < this.SWITCH_BUTTON) {
-            this.listScroller.scrollTo({
-              xOffset: 0,
-              yOffset: this.historyOffset === 0 ? this.DEFAULT_OFFSET : this.historyOffset,
-              animation: { duration: this.ANIMATION_DURATION, curve: Curve.LinearOutSlowIn }
-            });
-          } else {
-            this.historyOffset = this.listScroller.currentOffset().yOffset;
-            this.listScroller.scrollTo({
-              xOffset: 0,
-              yOffset: 0,
-              animation: { duration: this.ANIMATION_DURATION, curve: Curve.LinearOutSlowIn }
-            });
-          }
-        })
+
+      Row(){
+        LoadingProgress()
+          .color($r('app.color.theme_color'))
+          .width(30)
+          .height(30)
+        Text('搜索中...')
+          .font({
+            size:14,
+            weight:500
+          })
+          .fontColor($r('app.color.theme_color'))
+      }
+      .visibility(this.isSearch?Visibility.Visible:Visibility.None)
+      .position({ x: '95%', y: '0%'})
+      .markAnchor({ x:'95%'})
+
+      Column({
+        space:5
+      }){
+        Image($r('app.media.icon_search_stop'))
+          .width(24).height(24)
+          .fillColor($r('app.color.theme_color'))
+        Text('停止')
+          .font({
+            size:14,
+            weight:500
+          })
+          .fontColor($r('app.color.theme_color'))
+      }
+      .onClick(()=>{
+        this.isSearch = false
+        taskSearchBooks.cancelAllTasks()
+      })
+      .visibility(this.isSearch?Visibility.Visible:Visibility.None)
+      .padding(10)
+      .position({ x: '95%', y: '80%'})
+      .markAnchor({ x:'90%'})
+      .opacity(0.8)
+      .borderRadius(8)
+
+
+      Column({
+        space:CommonConstants.SPACE_6
+      }){
+        Image(this.firstIndex < this.SWITCH_BUTTON ?$r('app.media.icon_back') :$r('app.media.pip_to_top'))
+          .width(12)
+          .height(12)
+          .fillColor('#FFF')
+        Text(this.firstIndex < this.SWITCH_BUTTON ? '返回浏览处': '顶部')
+          .font({
+            size:14,
+            weight:500
+          })
+          .fontColor('#fff')
+      }
+      .visibility(this.listScrollerY  > this.listOffsetY || this.historyOffset > 0 ?Visibility.Visible:Visibility.None)
+      .padding(10)
+      .position({ x: '95%', y: '90%'})
+      .markAnchor({ x:'90%'})
+      .opacity(0.8)
+      .backgroundColor($r('app.color.theme_color'))
+      .borderRadius(8)
+      .onClick(() => {
+        // 当前显示的index值小于设定的SWITCH_BUTTON时，按钮为跳转到上次浏览记录，否则为跳转到顶部
+        if (this.firstIndex < this.SWITCH_BUTTON) {
+          this.listScroller.scrollTo({
+            xOffset: 0,
+            yOffset: this.historyOffset === 0 ? this.DEFAULT_OFFSET : this.historyOffset,
+            animation: { duration: this.ANIMATION_DURATION, curve: Curve.LinearOutSlowIn }
+          });
+        } else {
+          this.historyOffset = this.listScroller.currentOffset().yOffset;
+          this.listScroller.scrollTo({
+            xOffset: 0,
+            yOffset: 0,
+            animation: { duration: this.ANIMATION_DURATION, curve: Curve.LinearOutSlowIn }
+          });
+        }
+      })
     }
   }
 
