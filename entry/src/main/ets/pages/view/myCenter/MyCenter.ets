@@ -34,7 +34,7 @@ export default struct MyCenter {
   Column = new ColumnModifier()
   build() {
     Column(){
-      Blank(this.topRectHeight-20)
+      // Blank(this.topRectHeight-20)
       //右上角模式图标
       Row({space:10}){
         //设置图标
@@ -117,23 +117,29 @@ export default struct MyCenter {
 
       //帮助 关于 清理缓存 设置
       Column(){
-        ForEach(this.end_list,(item:dataItem)=>{
-          Row({space:10}){
-            Image(item.icon).size({width:20,height:20}).interpolation(ImageInterpolation.High)
-            Text(item.title).fontSize(14).width("75%" ).layoutWeight(1)
-            Image($r("app.media.right")).size({width:24,height:24})
-          }.width("100%")
-          .height(48)
-          .justifyContent(FlexAlign.SpaceBetween)
-          .padding({top:12,bottom:12,left:20,right:20})
-          .onClick(()=>this.endOnclick(item.value))
-        })
-      }.padding({top:5,bottom:5})
+        Scroll(){
+          Column(){
+            ForEach(this.end_list,(item:dataItem)=>{
+              Row({space:10}){
+                Image(item.icon).size({width:20,height:20}).interpolation(ImageInterpolation.High)
+                Text(item.title).fontSize(14).width("75%" ).layoutWeight(1)
+                Image($r("app.media.right")).size({width:24,height:24})
+              }
+              .width("100%")
+              .height(45)
+              .justifyContent(FlexAlign.SpaceBetween)
+              .padding({top:12,bottom:12,left:20,right:20})
+              .onClick(()=>this.endOnclick(item.value))
+            })
+          }
+        }
+        .scrollBar(BarState.Off)
+      }
+      .layoutWeight(1)
+      .padding({top:5,bottom:5})
       .backgroundColor(PublicConstants.THEME_COLOR_WHITE)
       .borderRadius(10)
       .justifyContent(FlexAlign.SpaceBetween)
-      .size({width:"100%",height:210})
-      Blank(200)
     }
     .attributeModifier(this.Column)
     .linearGradient({

@@ -26,7 +26,8 @@ struct MySetPage{
   private fruits: string[] = getRandomStringArray()
 
   @State languageList: string[] = ['跟随系统','简体中文','繁体中文','英文']
-
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageLink('topRectHeight') topRectHeight: number = 0
 
 
   @State bookSetList: SetList[]=[
@@ -77,9 +78,6 @@ struct MySetPage{
 
   build() {
     Column(){
-
-      Blank(40)
-
       SetHead({titleName:'我的设置'}).height(48).padding({left:20})
 
       List(){
@@ -113,7 +111,12 @@ struct MySetPage{
       .height('100%')
       .layoutWeight(1)
       .scrollBar(BarState.Off)
-    }.backgroundColor('#F5F5F5')
+    }
+    .padding({
+      top:this.topRectHeight,
+      bottom: this.bottomRectHeight,
+    })
+    .backgroundColor('#F5F5F5')
     .bindSheet($$this.isShowLanguage, this.languageSheet(), {
       height: 288,
       dragBar: false,
