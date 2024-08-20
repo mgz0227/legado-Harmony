@@ -48,7 +48,7 @@ export struct SearchDetails{
       }.size({width:"100%",height:40}).padding({left:20,right:20}).margin(10)
       //书籍列表
       Refresh({ refreshing: $$this.isRefreshing, offset: 120, friction: 100 ,builder:this.RefreshComponent}) {
-        SearchBookList({SearchValue:this.SearchValue,booksList:this.books,typeIndex:this.typeIndex}).backgroundColor("#ffffff")
+        SearchBookList({SearchValue:this.SearchValue,booksList:this.books,typeIndex:this.typeIndex,isSearch:this.isSearch}).backgroundColor("#ffffff")
       }
       //给border添加加载动画
       .border({

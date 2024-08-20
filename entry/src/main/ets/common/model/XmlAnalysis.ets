@@ -52,7 +52,7 @@ export class XmlAnalysis {
       rule: this.source,
       searchUrl: this.searchUrl
     }
-    let response: AxiosResponse<object> = await axios.post('http://legado.wisdoms.xin/analysisBook', data)
+    let response: AxiosResponse<object> = await axios.post('http://192.168.0.121:3333/analysisBook', data)
     if (response.data){
      bookList = (response.data as SearchBook[]).map(item => {
         item.bookType = this.xmlDate.bookSource?.bookSourceType ?? 0
