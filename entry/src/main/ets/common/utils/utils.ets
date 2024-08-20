@@ -35,6 +35,24 @@ export const deduplicateObjects = <T>(list: T[]): T[] => {
   return Array.from(uniqueSet).map(strItem => JSON.parse(strItem) as T);
 };
 
+// 判断是否是json
+export const isJson = (json: string): boolean => {
+  try {
+    JSON.parse(json);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+// 判断是否为空
+export const isNullOrBlank = (value: string | null | undefined): boolean => {
+  return value == null || value.trim().length === 0;
+}
+// 判断是否为网页链接
+export const isAbsUrl = (url:string): boolean => {
+  return url.startsWith('http://') || url.startsWith('https://');
+}
+
 class Gson {
   toString<T>(info?: T): string | undefined {
     if (!info) {

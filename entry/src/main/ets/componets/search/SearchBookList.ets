@@ -1,43 +1,73 @@
-import { SearchBook } from '../dataList/SearchBook'
+
 import { common } from '@kit.AbilityKit'
 import { util } from '@kit.ArkTS'
+import { SearchBook } from '../../database/entities/SearchBook'
 import { SearchBookItem } from './SearchBookItem'
 
 @Component
 export struct SearchBookList {
-
+  @State cachedCountNumber: number = 5; // 懒加载缓存数
+  @State firstIndex: number = 0; // 当前显示在屏幕上的子组件索引值，用来控制下方按钮跳转
   @Prop SearchValue:string
   @State titleLists:string[]=[]
   @State isRefreshing: boolean = false
   @State counter: number = 0
-
-  @State bookList:SearchBook[]=[
-    new SearchBook("轮回乐园",
-      "机遇与危险共存，只要豁出性命，在轮回乐园中就能得到一切。　　被轮回乐园选中成为‘猎杀者’的那一刻，苏晓就明白，他将与所有人为敌。　　乐园虽然残酷，但无所不能……。\n",
-      "",
-      "那一只蚊子",
-      ["玄幻"],
-      15,
-      2731594,
-      false
-    ),
-    new SearchBook("轮回乐园",
-      " 机遇与危险共存，只要豁出性命，在轮回乐园中就能得到一切。被轮回乐园选中成为‘猎杀者’的那一刻，苏晓就明白，他将与所有人为敌。　　乐园虽然残酷，但无所不能……。\n",
-      "",
-      "那一只蚊子",
-      [],
-      8,
-      1567932,
-      true
-    )
-  ]
-
+  @Prop typeIndex:number
+  @Prop booksList:SearchBook[]
+  listScroller: ListScroller = new ListScroller(); // scroller控制器
+  historyOffset: number = 0; // 上次浏览到列表距离顶端的偏移量offset
+  readonly DEFAULT_OFFSET: number = 0; // 默认跳转位置，用于第一次进入页面的跳转位置
+  readonly ANIMATION_DURATION: number = 500; // 动画持续时间
+  readonly SWITCH_BUTTON: number = 5; // 当前显示在屏幕上的子组件Index到达该阈值时，将跳转到历史记录按钮切换成跳转到顶部
   build() {
-    Column({space:10}){
-      ForEach(this.bookList,(item:SearchBook)=>{
-        SearchBookItem({book:item,SearchValue:this.SearchValue,list:this.subKeyword(this.SearchValue,item.title)})
+    Column(){
+      List({space:8,scroller:this.listScroller}){
+        ForEach(this.booksList,(item:SearchBook,index)=>{
+          if (item.bookType === this.typeIndex){
+            ListItem(){
+              SearchBookItem({book:item,SearchValue:this.SearchValue,index:index})
+            }
+          }
+        })
+      }
+      .cachedCount(this.cachedCountNumber)
+      .layoutWeight(1)
+      .chainAnimation(true)
+      .scrollBar(BarState.Off)
+      .onScrollIndex((first: number) => {
+        this.firstIndex = first;
       })
-    }.width("100%").padding({left:20,right:20}).height("100%")
+
+      Button(this.firstIndex < this.SWITCH_BUTTON ? '跳转到上次浏览历史': '跳转到顶部', {
+        type: ButtonType.Normal,
+        stateEffect: true
+      })
+        .fontColor('#000')
+        .height(40)
+        .borderRadius(20)
+        .backgroundColor('#FFAEAEAE')
+        .opacity(0.8)
+        .width(200)
+        .position({ x: '90%', y: '90%'})
+        .markAnchor({ x:'90%'})
+        .onClick(() => {
+          // 当前显示的index值小于设定的SWITCH_BUTTON时，按钮为跳转到上次浏览记录，否则为跳转到顶部
+          if (this.firstIndex < this.SWITCH_BUTTON) {
+            this.listScroller.scrollTo({
+              xOffset: 0,
+              yOffset: this.historyOffset === 0 ? this.DEFAULT_OFFSET : this.historyOffset,
+              animation: { duration: this.ANIMATION_DURATION, curve: Curve.LinearOutSlowIn }
+            });
+          } else {
+            this.historyOffset = this.listScroller.currentOffset().yOffset;
+            this.listScroller.scrollTo({
+              xOffset: 0,
+              yOffset: 0,
+              animation: { duration: this.ANIMATION_DURATION, curve: Curve.LinearOutSlowIn }
+            });
+          }
+        })
+    }
   }
 
 
@@ -66,7 +96,7 @@ export struct SearchBookList {
       } else {
         let decoder = util.TextDecoder.create('utf-8',{ignoreBOM : true })
         values = decoder.decodeWithStream(value,{stream:false});
-        this.bookList=JSON.parse(values)
+        // this.bookList=JSON.parse(values)
       }
     });
   }
