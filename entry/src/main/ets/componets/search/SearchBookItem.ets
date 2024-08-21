@@ -1,5 +1,6 @@
 import { SearchBook } from '../../database/entities/SearchBook'
 import { router } from '@kit.ArkUI'
+import clickUtil from '../../common/utils/ClickUtils'
 
 @Component
 export struct SearchBookItem {
@@ -58,19 +59,21 @@ export struct SearchBookItem {
       }.alignItems(HorizontalAlign.Start)
     }
     .onClick(()=>{
-      router.pushUrl({
-        url: 'pages/view/BookDetailPage',
-        params: {
-          bookName: this.book.name,
-          coverUrl: this.book.coverUrl,
-          author: this.book.author,
-          intro: this.book.intro,
-          bookUrl:this.book.bookUrl,
-          wordCount:this.book.wordCount,
-          bookType:this.book.bookType,
-          origin:this.book.source?.bookSourceUrl,
-          originName:this.book.source?.bookSourceName
-        }
+      clickUtil.preventClick(()=>{
+        router.pushUrl({
+          url: 'pages/view/BookDetailPage',
+          params: {
+            bookName: this.book.name,
+            coverUrl: this.book.coverUrl,
+            author: this.book.author,
+            intro: this.book.intro,
+            bookUrl:this.book.bookUrl,
+            wordCount:this.book.wordCount,
+            bookType:this.book.bookType,
+            origin:this.book.source?.bookSourceUrl,
+            originName:this.book.source?.bookSourceName
+          }
+        })
       })
     })
 

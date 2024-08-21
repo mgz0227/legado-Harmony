@@ -6,6 +6,7 @@ import bookHistoryDao from '../../database/dao/BookHistoryDao'
 import { BookHistory } from '../../database/entities/BookHistory'
 import { Books } from '../../database/entities/Books'
 import { router } from '@kit.ArkUI'
+import clickUtil from '../../common/utils/ClickUtils'
 
 @Component
 export default struct ReadShow {
@@ -68,9 +69,11 @@ export default struct ReadShow {
           }
           .padding({left:55,right:30})
           .onClick(()=>{
-            router.pushUrl({
-              url: 'pages/view/BookDetailPage',
-              params: this.book
+            clickUtil.preventClick(()=>{
+              router.pushUrl({
+                url: 'pages/view/BookDetailPage',
+                params: this.book
+              })
             })
           })
 
