@@ -6,6 +6,7 @@ import BookInfoDialogs from './dialog/BookInfoDialogs'
 import booksUtil from '../../../../common/utils/booksUtils'
 import { BookHistory } from '../../../../database/entities/BookHistory'
 import bookHistoryUtils from '../../../../common/utils/BookHistoryUtils'
+import clickUtil from '../../../../common/utils/ClickUtils'
 
 @Component
 /**
@@ -78,9 +79,11 @@ export default struct BookHistoryInfo{
         }
         .alignItems(HorizontalAlign.Start)
         .onClick(()=>{
-          router.pushUrl({
-            url: 'pages/view/BookDetailPage',
-            params: this.book
+          clickUtil.preventClick(()=>{
+            router.pushUrl({
+              url: 'pages/view/BookDetailPage',
+              params: this.book
+            })
           })
         })
       }

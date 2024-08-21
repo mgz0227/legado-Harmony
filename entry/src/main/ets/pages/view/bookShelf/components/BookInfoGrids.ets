@@ -4,6 +4,7 @@ import { router } from '@kit.ArkUI'
 import BookInfoDialogs from './dialog/BookInfoDialogs'
 import CommonConstants from '../../../../common/constants/CommonConstants'
 import FontConstants from '../../../../common/constants/FontConstants'
+import clickUtil from '../../../../common/utils/ClickUtils'
 
 @Component
 /**
@@ -119,9 +120,11 @@ export default struct BookInfoGrids{
     .alignItems(HorizontalAlign.Start)
     .padding({ left:8,right:8,bottom:5,top:5 })
     .onClick(()=>{
-      router.pushUrl({
-        url: 'pages/view/BookDetailPage',
-        params: this.book
+      clickUtil.preventClick(()=>{
+        router.pushUrl({
+          url: 'pages/view/BookDetailPage',
+          params: this.book
+        })
       })
     })
     .gesture(

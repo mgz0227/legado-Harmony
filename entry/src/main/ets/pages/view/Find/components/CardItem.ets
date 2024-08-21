@@ -1,5 +1,6 @@
 import { ExploreRule } from '../../../../database/entities/rule';
 import { router } from '@kit.ArkUI';
+import clickUtil from '../../../../common/utils/ClickUtils';
 
 @Component
 export  struct CardItem {
@@ -79,17 +80,19 @@ export  struct CardItem {
     .width('100%')
     .padding({ top: 20 })
     .onClick(() => {
-      router.pushUrl({
-        url: 'pages/view/BookDetailPage',
-        params: {
-          bookName: this.item.name,
-          coverUrl: this.item.coverUrl,
-          author: this.item.author,
-          intro: this.item.intro,
-          bookUrl:this.item.bookUrl,
-          wordCount:this.item.wordCount,
-          bookType:this.currentIndex
-        }
+      clickUtil.preventClick(()=>{
+        router.pushUrl({
+          url: 'pages/view/BookDetailPage',
+          params: {
+            bookName: this.item.name,
+            coverUrl: this.item.coverUrl,
+            author: this.item.author,
+            intro: this.item.intro,
+            bookUrl:this.item.bookUrl,
+            wordCount:this.item.wordCount,
+            bookType:this.currentIndex
+          }
+        })
       })
     })
   }
