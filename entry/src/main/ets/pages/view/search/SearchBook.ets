@@ -4,19 +4,31 @@ import { SearchHistory } from '../../../componets/search/SearchHistory'
 import { SearchDetails } from '../../../componets/search/SearchDetails'
 import { SearchRefresh } from '../../../componets/search/SearchRefresh'
 import taskSearchBooks from '../../../common/model/taskSearchBook'
+import { router } from '@kit.ArkUI'
 import { showMessage } from '../../../componets/common/promptShow'
 
+interface routeParams {
+  searchValue: string,
+
+}
 @Entry
 @Component
 struct SearchBook {
-  @Provide SearchValue: string ="遮天"
+  @Provide SearchValue: string =""
   @Provide  SearchStatus: number=0;
   @Provide('searchBookList') books:SearchBook[] = []
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @Provide('isSearch') isSearch:boolean = false
-
+  aboutToAppear(): void {
+    let search = router.getParams() as routeParams
+    if (search) {
+      this.SearchValue = search.searchValue??''
+    }
+  }
   onBackPress(): boolean | void {
-    taskSearchBooks.cancelAllTasks()
+    if (this.isSearch) {
+      taskSearchBooks.cancelAllTasks()
+    }
     return false
   }
   build() {

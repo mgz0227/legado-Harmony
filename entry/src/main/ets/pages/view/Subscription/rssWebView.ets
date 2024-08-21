@@ -222,7 +222,10 @@ struct RssWebView {
               .textAlign(TextAlign.Center)
               .onClick(()=>{
                 router.pushUrl({
-                  url: 'pages/view/search/SearchBook'
+                  url: 'pages/view/search/SearchBook',
+                  params:{
+                    searchValue:this.webTitle
+                  }
                 });
               })
           }

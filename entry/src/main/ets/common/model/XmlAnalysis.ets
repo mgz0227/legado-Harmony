@@ -52,6 +52,7 @@ export class XmlAnalysis {
       rule: this.source,
       searchUrl: this.searchUrl
     }
+    axios.defaults.timeout = 5000
     let response: AxiosResponse<object> = await axios.post('http://legado.wisdoms.xin/analysisBook', data)
     if (response.data){
      bookList = (response.data as SearchBook[]).map(item => {

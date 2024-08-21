@@ -26,7 +26,9 @@ export struct SearchHead{
           .height(25)
           .onClick(()=>{
             router.back()
-            taskSearchBooks.cancelAllTasks()
+            if (this.isSearch) {
+              taskSearchBooks.cancelAllTasks()
+            }
           })
         Search({ value: this.SearchValue, placeholder: '搜索书名或作者', icon: "/common/images/search.svg" })
           .width("70%")
