@@ -92,159 +92,174 @@ export default struct SubscriptionIndex {
 
   build() {
     Column() {
-      //搜索Start
-      Flex(
-        {
-          direction: FlexDirection.Row,
-          alignItems: ItemAlign.Center,
-          justifyContent: FlexAlign.SpaceBetween
+      Column() {
+        //搜索Start
+        Flex(
+          {
+            direction: FlexDirection.Row,
+            alignItems: ItemAlign.Center,
+            justifyContent: FlexAlign.SpaceBetween
+          }
+        ) {
+          Row({
+            space: CommonConstants.SPACE_16
+          }) {
+            if (this.batchEdit === false) {
+              Image($r('app.media.icon_subscription_index'))
+                .width(CommonConstants.COMMON_WIDTH_45_36)
+                .height(CommonConstants.COMMON_HEIGHT_21_6)
+              Search({ placeholder: '搜索订阅', icon: "/common/images/search.svg" })
+                .layoutWeight(1)
+                .height(CommonConstants.COMMON_HEIGHT_40)
+                .backgroundColor(Color.White)
+                .onClick(() => {
+                  router.pushUrl({
+                    url: 'pages/view/Subscription/components/SubscriptionSearch'
+                  })
+                })
+                .focusOnTouch(false) //不可获取焦点
+
+              Image($r('app.media.addSubscription'))
+                .width(ImageConstants.IMG_WIDTH_24)
+                .height(ImageConstants.IMG_HEIGHT_24)
+                .bindMenu(this.MenuBuilder)
+            } else {
+              Text('全选')
+              Blank(1)
+              Text(`已选2项`)
+              Blank(1)
+              Text('完成').onClick(() => {
+                this.batchEdit = false
+                getContext(this).eventHub.emit('SubscriptionBatchEdit', true);
+              })
+            }
+          }
+          .width('100%')
         }
-      ) {
-        Row({
-          space: CommonConstants.SPACE_16
-        }) {
-          if (this.batchEdit === false) {
-            Image($r('app.media.icon_subscription_index'))
-              .width(CommonConstants.COMMON_WIDTH_45_36)
-              .height(CommonConstants.COMMON_HEIGHT_21_6)
-            Search({ placeholder: '搜索订阅', icon: "/common/images/search.svg" })
-              .layoutWeight(1)
-              .height(CommonConstants.COMMON_HEIGHT_40)
-              .backgroundColor(Color.White)
-              .onClick(() => {
-                router.pushUrl({
-                  url: 'pages/view/Subscription/components/SubscriptionSearch'
+        .height('8%')
+
+        //搜索End
+        //最近使用Start
+        if (this.batchEdit === false) {
+          RssSourcesHistory({
+            RecentlyUsed: this.RecentlyUsed
+          })
+        }
+
+        if (this.loading) {
+          Column() {
+            LoadingProgress()
+              .color(0xff6600)
+              .width('50%')
+            Text('加载中...')
+          }
+          .justifyContent(FlexAlign.Center)
+          .layoutWeight(1)
+        } else if (!this.groupList.length) {
+          SubscriptionContent({
+            subscriptionTitle: '收藏',
+            showAddDialog: () => {
+              this.isShowNewSources = true
+            }
+          })
+        } else {
+          Scroll() {
+            Column() {
+              ForEach(this.groupList, (item: rssGroupList) => {
+                SubscriptionContent({
+                  subscriptionTitle: item.title,
+                  contentList: item.list,
+                  refresh: this.refresh
                 })
               })
-              .focusOnTouch(false) //不可获取焦点
-
-            Image($r('app.media.addSubscription'))
-              .width(ImageConstants.IMG_WIDTH_24)
-              .height(ImageConstants.IMG_HEIGHT_24)
-              .bindMenu(this.MenuBuilder)
-          } else {
-            Text('全选')
-            Blank(1)
-            Text(`已选2项`)
-            Blank(1)
-            Text('完成').onClick(() => {
-              this.batchEdit = false
-            })
+            }
           }
+          .align(Alignment.Top)
+          .padding({ bottom: 20 })
+          .layoutWeight(1)
+          .scrollBar(BarState.Off)
+          .scrollable(ScrollDirection.Vertical)
         }
-        .width('100%')
+        Blank(1)
       }
-      .height('8%')
-
-      //搜索End
-      //最近使用Start
-      if (this.batchEdit === false) {
-        RssSourcesHistory({
-          RecentlyUsed: this.RecentlyUsed
-        })
-      }
-
-      if (this.loading) {
-        Column() {
-          LoadingProgress()
-            .color(0xff6600)
-            .width('50%')
-          Text('加载中...')
-        }
-        .justifyContent(FlexAlign.Center)
-        .layoutWeight(1)
-      } else if (!this.groupList.length) {
-        SubscriptionContent({
-          subscriptionTitle: '收藏',
-          showAddDialog: () => {
-            this.isShowNewSources = true
-          }
-        })
-      } else {
-        Scroll() {
-          Column() {
-            ForEach(this.groupList, (item: rssGroupList) => {
-              SubscriptionContent({
-                subscriptionTitle: item.title,
-                contentList: item.list,
-                refresh: this.refresh
-              })
-            })
-          }
-        }
-        .align(Alignment.Top)
-        .padding({ bottom: 20 })
-        .layoutWeight(1)
-        .scrollBar(BarState.Off)
-        .scrollable(ScrollDirection.Vertical)
-      }
-      Blank(1)
+      .padding({
+        top: this.topRectHeight,
+        left: PaddingConstants.PADDING_20,
+        right: PaddingConstants.PADDING_20
+      })
+      .layoutWeight(1)
 
       if (this.batchEdit) {
         Grid() {
           GridItem() {
-            Button() {
+            Column({ space: 4 }) {
+              Image($r('app.media.folder'))
+                .height(24)
+                .fillColor(Color.Black) // 黑色好像渲染不上去
+
               Text("移动至")
-                .lineHeight(24)
-                .fontColor($r('app.string.ThemeColor'))
-                .font({
-                  size: 16,
-                  weight: 500
-                })
+                .fontSize(10)
+                .lineHeight(18)
+                .fontColor('rgba(0, 0, 0, 0.88)')
             }
-            .width("100%")
-            .height(40)
-            .backgroundColor($r('app.string.BackgroundThemeColor'))
+            .onClick(() => {
+              showMessage('功能开发中,暂未开放')
+            })
           }
 
           GridItem() {
-            Button() {
+            Column({ space: 4 }) {
+              Image($r('app.media.edit_share'))
+                .height(24)
+
               Text("分享")
-                .lineHeight(24)
-                .fontColor($r('app.string.ThemeColor'))
-                .font({
-                  size: 16,
-                  weight: 500
-                })
+                .fontSize(10)
+                .lineHeight(18)
+                .fontColor('rgba(0, 0, 0, 0.88)')
             }
-            .width("100%")
-            .height(40)
-            .backgroundColor($r('app.string.BackgroundThemeColor'))
+            .onClick(() => {
+              showMessage('功能开发中,暂未开放')
+            })
           }
 
           GridItem() {
-            Button() {
+            Column({ space: 4 }) {
+              Image($r('app.media.export_1'))
+                .height(24)
+
               Text("导出")
-                .lineHeight(24)
-                .fontColor($r('app.string.ThemeColor'))
-                .font({
-                  size: 16,
-                  weight: 500
-                })
+                .fontSize(10)
+                .lineHeight(18)
+                .fontColor('rgba(0, 0, 0, 0.88)')
             }
-            .width("100%")
-            .height(40)
-            .backgroundColor($r('app.string.BackgroundThemeColor'))
+            .onClick(() => {
+              showMessage('功能开发中,暂未开放')
+            })
           }
 
           GridItem() {
-            Button() {
+            Column({ space: 4 }) {
+              Image($r('app.media.delete'))
+                .height(24)
+
               Text("删除")
-                .lineHeight(24)
-                .fontColor($r('app.string.ThemeColor'))
-                .font({
-                  size: 16,
-                  weight: 500
-                })
+                .fontSize(10)
+                .lineHeight(18)
+                .fontColor('rgba(0, 0, 0, 0.88)')
             }
-            .width("100%")
-            .height(40)
-            .backgroundColor($r('app.string.BackgroundThemeColor'))
+            .onClick(() => {
+              showMessage('功能开发中,暂未开放')
+            })
           }
         }
-        .height(40)
-        .borderWidth(1)
+        .height(68)
+        .width("100%")
         .columnsTemplate("1fr 1fr 1fr 1fr")
+        .backgroundColor('white')
+        .padding({
+          top: 12,
+          bottom: 10
+        })
       }
 
       Flex()
@@ -270,11 +285,6 @@ export default struct SubscriptionIndex {
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
       colors: [["rgb(254, 203, 169)", 0], ["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
-    })
-    .padding({
-      top: this.topRectHeight,
-      left: PaddingConstants.PADDING_20,
-      right: PaddingConstants.PADDING_20
     })
     .height('100%')
   }
@@ -353,9 +363,8 @@ export default struct SubscriptionIndex {
         this.isShowNewSources = true
         break;
       case 3:
-        showMessage('批量功能开发中,暂未开放') //TODO 新增批量操作界面
-        return
         this.batchEdit = true
+        getContext(this).eventHub.emit('SubscriptionBatchEdit', false);
         break
     }
   }
