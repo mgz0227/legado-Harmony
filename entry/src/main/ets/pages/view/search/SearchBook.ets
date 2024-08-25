@@ -5,7 +5,6 @@ import { SearchDetails } from '../../../componets/search/SearchDetails'
 import { SearchRefresh } from '../../../componets/search/SearchRefresh'
 import taskSearchBooks from '../../../common/model/taskSearchBook'
 import { router } from '@kit.ArkUI'
-import { showMessage } from '../../../componets/common/promptShow'
 
 interface routeParams {
   searchValue: string,

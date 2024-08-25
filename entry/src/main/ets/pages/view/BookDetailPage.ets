@@ -103,8 +103,15 @@ struct BookDetailPage {
       // FileHandler.readerEpubFile(this.bookData?.bookUrl||'')
       this.txtFile.pushAllData(temp)
       this.txtFiles = this.txtFile.getListData()
+      this.initUrlBook()
     }
   }
+  initUrlBook(){
+    let book = this.bookData.bookUrl
+    console.log(book)
+  }
+
+
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   // 加入书架函数
   addBookShelf() {
