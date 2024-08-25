@@ -14,7 +14,7 @@ struct  WebDav{
   @State password: string = ''
   @State inputs : Input_items[]=[
     new Input_items("","服务器地址",InputType.Normal),
-    new Input_items("","账号",InputType.Number),
+    new Input_items("","账号",InputType.Email||InputType.PhoneNumber),
     new Input_items("","密码",InputType.Password)
   ]
   @State helper_status:boolean=false
