@@ -50,7 +50,7 @@ class searchUtils{
 
   async searchBook(bookSource:BookSource): Promise<SearchBook[]>{
     if (!bookSource.searchUrl || bookSource.searchUrl === undefined) {
-      return []
+      throw new Error('搜索url为空');
     }
     let books:SearchBook[] = []
     let urls = ''

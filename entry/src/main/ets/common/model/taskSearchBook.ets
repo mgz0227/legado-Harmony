@@ -15,18 +15,23 @@ class taskSearchBook{
   private bookSourceParts:BookSource[] = []
   MAX_THREADS:number = 5;
   tasks:taskPool.Task[] = [];
-  taskSearchBook:SearchBook[] = []
+  taskSearchBookNumber:number = 0
   dataStart:number = 0;
-  async search(searchKey: string, returnBook: (newUrls: SearchBook[]) => void, cancel: () => void): Promise<void> {
+  async search(searchKey: string, returnBook: (newUrls: SearchBook[]) => void, cancel: () => void,source?:BookSource[]): Promise<void> {
     this.dataStart = Date.now();
     this.tasks = [];
-    this.taskSearchBook = []
+    this.taskSearchBookNumber = 0
     this.bookSourceParts = []
     if (!searchKey) {
       return;
     }
 
-    this.bookSourceParts = await bookSourceDao.getEnabledPartByGroup();
+    if (!source) {
+      this.bookSourceParts = await bookSourceDao.getEnabledPartByGroup();
+    } else {
+      this.bookSourceParts.push(...source)
+    }
+
     if (!this.bookSourceParts || this.bookSourceParts.length === 0) {
       showMessage('启用书源为空');
       cancel()
@@ -37,9 +42,11 @@ class taskSearchBook{
     const numThreads = Math.min(Math.ceil(numBookSources / 20), this.MAX_THREADS);
     // 创建一个回调函数
     const callback = (newUrls: SearchBook[]) => {
-      this.taskSearchBook.push(...newUrls)
+      this.taskSearchBookNumber += newUrls.length
       returnBook(newUrls)
     };
+
+    console.log(`${this.bookSourceParts}`)
 
     for (let i = 0; i < numThreads; i++) {
       const sourcesSlice = this.bookSourceParts.slice(
@@ -70,7 +77,7 @@ class taskSearchBook{
         const searchBooks = results.flat();
         let dataEnd = Date.now();
         if(this.tasks.length > 0){
-          showMessage(`搜索中止,共搜索到${this.taskSearchBook.length}个结果` + `用时${(dataEnd - this.dataStart) / 1000}秒`);
+          showMessage(`搜索中止,共搜索到${this.taskSearchBookNumber}个结果` + `用时${(dataEnd - this.dataStart) / 1000}秒`);
         }
         cancel()
       }
@@ -93,9 +100,9 @@ class taskSearchBook{
       })
     }
     let dataEnd = Date.now();
-    showMessage(`搜索中止,共搜索到${this.taskSearchBook.length}个结果` + `用时${(dataEnd - this.dataStart) / 1000}秒`);
+    showMessage(`搜索中止,共搜索到${this.taskSearchBookNumber}个结果` + `用时${(dataEnd - this.dataStart) / 1000}秒`);
     this.tasks = [];
-    this.taskSearchBook = []
+    this.taskSearchBookNumber = 0
     this.bookSourceParts = []
   }
 

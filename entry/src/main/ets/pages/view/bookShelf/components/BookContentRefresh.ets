@@ -95,7 +95,7 @@ export default struct BookContentRefresh {
         this.counter++
         this.isRefreshing = false
       }, 1000)
-      showMessage('刷新成功!')
+      showMessage('刷新成功')
     })
   }
   @Builder

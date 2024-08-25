@@ -58,6 +58,9 @@ export class XmlAnalysis {
      bookList = (response.data as SearchBook[]).map(item => {
         item.bookType = this.xmlDate.bookSource?.bookSourceType ?? 0
         item.source = this.xmlDate.bookSource
+        if (item.bookUrl && !isNetworkUrl(item.bookUrl)){
+          item.tocUrl = this.xmlDate.bookSource?.bookSourceUrl + item.bookUrl
+        }
         if (item.coverUrl && !isNetworkUrl(item.coverUrl)) {
           item.coverUrl = this.xmlDate.bookSource?.bookSourceUrl + item.coverUrl
         }

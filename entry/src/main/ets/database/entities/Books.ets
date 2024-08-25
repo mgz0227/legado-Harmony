@@ -4,6 +4,7 @@
  * @className: Books
  * 书籍
  */
+import { BookSource } from './BookSource';
 
 @Observed
 export class Books {
@@ -77,6 +78,8 @@ export class Books {
   isJoin:boolean = false
   //是否本地导入
   isLocalBook:boolean = false
+  source?:BookSource
+  sourceList?:BookSource[] = []
 }
 
 export class bookShelfImport{

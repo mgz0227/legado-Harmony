@@ -27,7 +27,7 @@ export struct SearchBookItem {
         //书名
         Row(){
           Text(this.book.name)
-            .fontColor(this.index<=3?"rgba(255, 102, 0, 1)":"#000000")
+            .fontColor(this.SearchValue=== this.book.name?"rgba(255, 102, 0, 1)":"#000000")
         }
         //作者及书源数量
         Row({space:2}){
@@ -67,9 +67,13 @@ export struct SearchBookItem {
             coverUrl: this.book.coverUrl,
             author: this.book.author,
             intro: this.book.intro,
+            kind:this.book.kind,
             bookUrl:this.book.bookUrl,
             wordCount:this.book.wordCount,
             bookType:this.book.bookType,
+            toUrl:this.book.tocUrl,
+            source:this.book.source,
+            sourceList:this.book.sourceList,
             origin:this.book.source?.bookSourceUrl,
             originName:this.book.source?.bookSourceName
           }

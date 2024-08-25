@@ -11,10 +11,7 @@ export struct SearchHead{
   @Consume('searchBookList') books:SearchBook[]
   @State lastSearch:string = ''
   @Consume('isSearch') isSearch:boolean
-  testBook(){
-    console.log(this.books.length.toString())
-    console.log(this.books.toString())
-  }
+  // @State bookIndex:number = 0
   build() {
     Flex({
       alignItems:ItemAlign.End,
@@ -77,14 +74,19 @@ export struct SearchHead{
   }
 
   setBookList(books: SearchBook[]) {
+    if (books.length === 0) return
     books.forEach((book: SearchBook) => {
       let found = false;
-
+      if(!book.name) return
       for (let item of this.books) {
         if (item.name === book.name && item.author === book.author) {
           item.belongCount++;
           //源来的books的source源 id和 books的source源 id相同不添加
           if (item.source?.bookSourceUrl !== book.source?.bookSourceUrl && book.source) {
+            // 确保 sourceList 已经存在并且是一个数组
+            if (!item.sourceList) {
+              item.sourceList = [];
+            }
             item.sourceList.push(book.source)
           }
           found = true;
@@ -101,10 +103,14 @@ export struct SearchHead{
     this.sortBooksBySearchValue()
   }
 
-  sortBooksBySearchValue(){
+  sortBooksBySearchValue() {
     this.books.sort((a: SearchBook, b: SearchBook) => {
-      const aNameSimilarity = this.getSimilarity(a.name.toLowerCase(), this.SearchValue.toLowerCase());
-      const bNameSimilarity = this.getSimilarity(b.name.toLowerCase(), this.SearchValue.toLowerCase());
+      const aName = a.name || '';
+      const bName = b.name || '';
+      const searchValue = this.SearchValue || '';
+
+      const aNameSimilarity = this.getSimilarity(aName.toLowerCase(), searchValue.toLowerCase());
+      const bNameSimilarity = this.getSimilarity(bName.toLowerCase(), searchValue.toLowerCase());
 
       if (aNameSimilarity !== bNameSimilarity) {
         return bNameSimilarity - aNameSimilarity;

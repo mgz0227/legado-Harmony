@@ -2,10 +2,8 @@
 import { common } from '@kit.AbilityKit'
 import { util } from '@kit.ArkTS'
 import CommonConstants from '../../common/constants/CommonConstants'
-import PaddingConstants from '../../common/constants/PaddingConstants'
 import taskSearchBooks from '../../common/model/taskSearchBook'
 import { SearchBook } from '../../database/entities/SearchBook'
-import { showMessage } from '../common/promptShow'
 import { SearchBookItem } from './SearchBookItem'
 
 @Component
