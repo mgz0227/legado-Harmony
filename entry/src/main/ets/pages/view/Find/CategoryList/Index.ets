@@ -7,6 +7,7 @@ import { isNetworkUrl } from '../../../../common/utils/utils';
 import axios, { AxiosResponse } from '@ohos/axios';
 import noFind from '../../../../componets/common/noFind';
 import { CardItem } from '../components/CardItem';
+import CommonConstants from '../../../../common/constants/CommonConstants';
 
 interface RouteParams {
   bookSourceUrl: string,
@@ -67,7 +68,7 @@ struct CateGoryListPage {
     }
     this.loading = true
     try {
-      const res: AxiosResponse = await axios.post('http://legado.wisdoms.xin/analysisRules', exploreQuery)
+      const res: AxiosResponse = await axios.post(CommonConstants.BASE_URL + '/common/analysisRules', exploreQuery)
       console.info('TagInfo, 解析内容：', JSON.stringify(res.data))
       const bookList = (res.data as ExploreRule[]).map(item => {
         if (item.coverUrl && !isNetworkUrl(item.coverUrl)) {

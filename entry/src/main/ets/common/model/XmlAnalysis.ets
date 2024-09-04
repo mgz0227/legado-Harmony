@@ -4,6 +4,7 @@ import { BookSource } from '../../database/entities/BookSource';
 import { ExploreQuery } from '../../database/types/BookSourceType';
 import axios, { AxiosError, AxiosResponse } from '@ohos/axios';
 import { isNetworkUrl } from '../utils/utils';
+import CommonConstants from '../constants/CommonConstants';
 
 
 export interface IXmlAnalysis {
@@ -53,7 +54,7 @@ export class XmlAnalysis {
       searchUrl: this.searchUrl
     }
     axios.defaults.timeout = 5000
-    let response: AxiosResponse<object> = await axios.post('http://legado.wisdoms.xin/analysisBook', data)
+    let response: AxiosResponse<object> = await axios.post(CommonConstants.BASE_URL + '/search/analysisBook', data)
     if (response.data){
      bookList = (response.data as SearchBook[]).map(item => {
         item.bookType = this.xmlDate.bookSource?.bookSourceType ?? 0

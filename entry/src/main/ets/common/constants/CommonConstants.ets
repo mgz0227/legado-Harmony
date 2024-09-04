@@ -274,4 +274,9 @@ export default class CommonConstants {
   static readonly COMMON_HEIGHT_21_6: number = 21.6;
   static readonly COMMON_WIDTH_40: number = 40;
   static readonly COMMON_HEIGHT_40: number = 40;
+
+  /*
+   * 接口请求域名
+   * */
+  static readonly BASE_URL: string = 'https://legado.miaogongzi.cc/api/LegadoServer';
 }
