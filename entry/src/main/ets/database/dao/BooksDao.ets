@@ -120,7 +120,11 @@ class BooksDao {
         whereClause.push(`bookType = ${type}`);
       }
       if (bookGroup !== undefined && bookGroup !== 2) {
-        whereClause.push(`bookGroup = ${bookGroup}`);
+        if (bookGroup === 4) {
+          whereClause.push(`bookGroup = ${bookGroup} or isLocalBook = ${true}`);
+        } else {
+          whereClause.push(`bookGroup = ${bookGroup}`);
+        }
       }
       if (searchKey) {
         whereClause.push(`(

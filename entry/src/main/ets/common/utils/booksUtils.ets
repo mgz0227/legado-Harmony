@@ -17,7 +17,7 @@ class booksUtils{
   }
   async addBooks(books: Books){
     books.isJoin = true
-    books.bookGroup = 3 //默认未分组
+    books.bookGroup = books.bookGroup??3 //默认未分组
     BooksDao.insert(books)
   }
   //校验当前书籍是否存在书架中
