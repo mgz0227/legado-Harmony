@@ -6,11 +6,8 @@ struct VersionLogPage {
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @State List: Array<string> = [
-    '更新了书架1',
-    '更新了书架2',
-    '更新了书架3',
-    '更新了书架4',
-    '更新了书架5',
+    '更新icon图标',
+    '关于我们-QQ群增加Beta群',
   ]
 
   build() {
@@ -45,8 +42,8 @@ struct VersionLogPage {
       .height(48)
       .width("100%")
 
-      this.versionCard("V5.1.223", "2024/5/10", this.List)
-      this.versionCard("V5.1.1", "2024/5/9", this.List)
+      this.versionCard("V1.0.0.1", "2024/9/8", this.List)
+      //this.versionCard("V5.1.1", "2024/5/9", this.List)
     }
     .height("100%")
     .padding({

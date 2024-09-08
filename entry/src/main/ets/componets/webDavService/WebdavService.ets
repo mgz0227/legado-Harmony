@@ -13,7 +13,7 @@ export struct WebdavService {
     new serviceList("电脑阅读","1",$r("app.media.computer"),["#FF9500","#FFEDD4","#FFDDAD"]),
     new serviceList("电脑写源","1",$r("app.media.writing"),["#24B277","#DAF2E8","#B9E6D3"]),
   ]
-  @State address:string="http://192.168.41.12.1122"
+  @State address:string="http://192.168.41.12:1122"
 
   private settings: RenderingContextSettings = new RenderingContextSettings(true)
   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings)
