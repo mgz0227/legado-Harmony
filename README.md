@@ -4,7 +4,7 @@
 </a>
 
 <div align="center">
-<img width="125" height="125" src="https://github.com/mgz0227/legado-Harmony/blob/main/svg/icon.svg" alt="legado"/>  
+<img width="125" height="125" src="./svg/icon.svg" alt="legado"/>  
   
 Legado / 开源阅读
 
