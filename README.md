@@ -69,10 +69,8 @@ https://gedoor.github.io/Disclaimer
 [![Star History Chart](https://api.star-history.com/svg?repos=mgz0227/legado-Harmony&type=Date)](https://star-history.com/#mgz0227/legado-Harmony&Date)
 
 # Interface-界面 [![](https://img.shields.io/badge/-Interface-F5F5F5.svg)](#Interface-界面-)
-<img src="png/start.png" width="270">
-<img src="png/bookshelf.png" width="270">
-<img src="png/find.png" width="270">
-<img src="png/rss.png" width="270">
+<img src="png/start.png" width="270"><img src="png/bookshelf.png" width="270">
+<img src="png/find.png" width="270"><img src="png/rss.png" width="270">
 <img src="png/main.png" width="270">
 
 <a href="#readme">
