@@ -51,14 +51,16 @@ jobs:
       - name: Build and move files
         working-directory: entry/web
         run: |
-          pnpm i
-          pnpm build
-          version="v$(date -u +3.%y.%m%d%H)"
-          echo "APP_VER=$version" >> $GITHUB_ENV
-          rm -rf /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/rawfile/vue
-          mkdir -p /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/rawfile/vue
-          mv dist/* /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/rawfile/vue/
-
+         pnpm i
+         pnpm build
+         version="v$(date -u +3.%y.%m%d%H)"
+         echo "APP_VER=$version" >> $GITHUB_ENV
+    
+         rm -rf /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/rawfile/vue
+         mkdir -p /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/rawfile/vue
+         
+         echo "Moving built files to /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/rawfile/vue/"
+         mv dist/* /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/rawfile/vue/ || true
 
       - name: push changes
         if: ${{ github.event_name != 'pull_request' && github.repository == env.UPSTREAM_REPOSITORY }}

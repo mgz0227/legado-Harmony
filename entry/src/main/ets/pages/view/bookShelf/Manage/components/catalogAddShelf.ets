@@ -23,8 +23,6 @@ export default struct catalogAddShelf{
   @Prop showNumber:number = 0
   @State worksBook:WorksLists = new WorksLists()
   @State worksLists:WorksLists[] =[]
-  @StorageLink('topRectHeight') topRectHeight: number = 0
-  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @State newBookIds:number[] = []
   getWorkLists() {
     worksListsDao.search({
@@ -128,10 +126,6 @@ export default struct catalogAddShelf{
         bookIds: this.newBookIds
       })
     }
-    .padding({
-      top:this.topRectHeight,
-      bottom:this.bottomRectHeight
-    })
     .backgroundColor(Color.White)
   }
 

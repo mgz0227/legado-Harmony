@@ -7,11 +7,13 @@ import { isNetworkUrl } from '../../../../common/utils/utils';
 import axios, { AxiosResponse } from '@ohos/axios';
 import noFind from '../../../../componets/common/noFind';
 import { CardItem } from '../components/CardItem';
+import CommonConstants from '../../../../common/constants/CommonConstants';
 
 interface RouteParams {
   bookSourceUrl: string,
   exploreItem: ExploreItem,
-  exploreRule: ExploreRule
+  exploreRule: ExploreRule,
+  currentIndex: number
 }
 
 @Entry
@@ -30,10 +32,11 @@ struct CateGoryListPage {
   @State loading: boolean = false
   @State isRefreshing: boolean = false
   @State RefreshingTitle: string = '松开刷新'
-
+  @State currentIndex:number = 0
   async aboutToAppear() {
     this.startLoading = true
     const params = router.getParams() as RouteParams;
+    this.currentIndex = params.currentIndex
     console.log('TagInfo', JSON.stringify(params))
     this.bookSourceUrl = params.bookSourceUrl
     this.exploreItem = params.exploreItem
@@ -65,7 +68,7 @@ struct CateGoryListPage {
     }
     this.loading = true
     try {
-      const res: AxiosResponse = await axios.post('http://legado.wisdoms.xin/analysisRules', exploreQuery)
+      const res: AxiosResponse = await axios.post(CommonConstants.BASE_URL + '/common/analysisRules', exploreQuery)
       console.info('TagInfo, 解析内容：', JSON.stringify(res.data))
       const bookList = (res.data as ExploreRule[]).map(item => {
         if (item.coverUrl && !isNetworkUrl(item.coverUrl)) {
@@ -111,7 +114,7 @@ struct CateGoryListPage {
                 })
               } else {
                 ForEach(this.bookList, (item: ExploreRule, index) => {
-                  CardItem({ item: item })
+                  CardItem({ item: item , currentIndex:this.currentIndex })
                 })
               }
             }

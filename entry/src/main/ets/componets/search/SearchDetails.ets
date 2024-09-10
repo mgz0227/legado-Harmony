@@ -1,7 +1,6 @@
-import { SearchBook } from '../dataList/SearchBook'
+
 import { SearchBookList } from './SearchBookList'
-import { common } from '@kit.AbilityKit'
-import { util } from '@kit.ArkTS'
+import { SearchBook } from '../../database/entities/SearchBook'
 
 @Component
 export struct SearchDetails{
@@ -11,7 +10,9 @@ export struct SearchDetails{
   @State typeList: string[] = ["小说","漫画","有声书"]
   @State typeIndex:number=0
   @Consume @Watch("refresh") SearchStatus:number
-  @State color:string="rgba(0, 0, 0, 0.45)"
+  @Consume('searchBookList') books:SearchBook[]
+  @Consume('isSearch') isSearch:boolean
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   refresh(){
     if(this.SearchStatus>2){
       this.isRefreshing=true
@@ -21,7 +22,7 @@ export struct SearchDetails{
     Stack(){
       Row(){
         LoadingProgress().color("#FF6600").height(26)
-        Text("共搜索到"+this.counter+"个相关结果").fontSize(14).margin({left:20}).fontColor(this.color)
+        Text("共搜索到"+this.books.length+"个相关结果").fontSize(14).margin({left:20}).fontColor($r('app.string.color_black_45'))
       }.alignItems(VerticalAlign.Center)
     }.width("100%").align(Alignment.Center)
   }
@@ -33,7 +34,7 @@ export struct SearchDetails{
           ForEach(this.typeList,(item:string,index:number)=>{
               Text(item)
                 .fontSize(16)
-                .fontColor(this.typeIndex==index?"#000000":this.color)
+                .fontColor(this.typeIndex==index?"#000000":$r('app.string.color_black_45'))
                 .onClick(()=>{
                   this.typeIndex=index
                 })
@@ -41,24 +42,32 @@ export struct SearchDetails{
         }.width("60%").height("100%")
         //筛选
         Row({space:5}){
-          Image($r("app.media.screen")).width(20).height(20).fillColor(this.color)
-          Text("筛选").fontColor(this.color)
+          Image($r("app.media.screen")).width(20).height(20).fillColor($r('app.string.color_black_45'))
+          Text("筛选").fontColor($r('app.string.color_black_45'))
         }.width("40%").height("100%").justifyContent(FlexAlign.End)
       }.size({width:"100%",height:40}).padding({left:20,right:20}).margin(10)
       //书籍列表
       Refresh({ refreshing: $$this.isRefreshing, offset: 120, friction: 100 ,builder:this.RefreshComponent}) {
-        SearchBookList({SearchValue:this.SearchValue}).backgroundColor("#ffffff")
-      }.onStateChange((refreshStatus: RefreshStatus) => {
-        if(refreshStatus=RefreshStatus.Refresh){
-          this.counter++
-        }
+        SearchBookList({SearchValue:this.SearchValue,booksList:this.books,typeIndex:this.typeIndex,isSearch:this.isSearch}).backgroundColor("#ffffff")
+      }
+      //给border添加加载动画
+      .border({
+        width: { top:this.isSearch?2:0 },color:$r('app.color.theme_color')
+      })
+      .borderStyle({
+        top:BorderStyle.Solid,
+      })
+      .onStateChange((refreshStatus: RefreshStatus) => {
       }).onRefreshing(() => {
         setTimeout(() => {
           this.isRefreshing = false
-          this.counter=0
         }, 5000)
       }).backgroundColor("rgba(0, 0, 0, 0.06)")
     }
+    .padding({
+      bottom:this.bottomRectHeight
+    })
+    .layoutWeight(1)
   }
   //初始化
   aboutToAppear(): void {

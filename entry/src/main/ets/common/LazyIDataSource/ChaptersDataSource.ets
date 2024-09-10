@@ -6,7 +6,7 @@
 import { chaptersItem } from '../../componets/dataList/ReaderChaptersItem';
 import BasicDataSource from './BasicDataSource';
 
-export default class ChaptersDataSource extends BasicDataSource{
+export default class ChaptersDataSource extends BasicDataSource<chaptersItem>{
     private dataArray: chaptersItem[] =[]
 
     public totalCount(): number {

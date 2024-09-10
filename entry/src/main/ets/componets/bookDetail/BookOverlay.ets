@@ -5,6 +5,7 @@ export default struct BookOverlay {
   @Prop bookImage:Resource|string
   @Prop isTop:boolean
   @Prop isShow:boolean = false
+  @Prop coverType:number = 0
   build() {
 
     Stack(){
@@ -30,17 +31,18 @@ export default struct BookOverlay {
       }
       .zIndex(2)
       .alignContent(Alignment.BottomStart)
+      if (this.coverType !== 2){
+        Row(){
+          Image($r('app.media.occlusion1')).draggable(false)
+        }
+        .zIndex(1)
+        .width(CommonConstants.NOVEL_IMG_WIDTH + 5).height(CommonConstants.NOVEL_IMG_HEIGHT - 5)
 
-      Row(){
-        Image($r('app.media.occlusion1')).draggable(false)
+        Row(){
+          Image($r('app.media.occlusion2')).draggable(false)
+        }.zIndex(0)
+        .width(CommonConstants.NOVEL_IMG_WIDTH + 10).height(CommonConstants.NOVEL_IMG_HEIGHT - 10)
       }
-      .zIndex(1)
-      .width(CommonConstants.NOVEL_IMG_WIDTH + 5).height(CommonConstants.NOVEL_IMG_HEIGHT - 5)
-
-      Row(){
-        Image($r('app.media.occlusion2')).draggable(false)
-      }.zIndex(0)
-      .width(CommonConstants.NOVEL_IMG_WIDTH + 10).height(CommonConstants.NOVEL_IMG_HEIGHT - 10)
     }
     .align(Alignment.BottomStart)
   }

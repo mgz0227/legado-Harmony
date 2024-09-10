@@ -57,6 +57,19 @@ class BookSourceDao {
     }
   }
 
+  async getEnabledPartByGroup() {
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const sql = `SELECT * FROM book_sources WHERE enabled = 1 AND enabledExplore = 1 ORDER BY customOrder ASC`
+      const bookSourceDbList = await DbUtil.querySqlForList<BookSourceDb>(sql, column);
+      const bookSourceList = bookSourceDbList.map((item): BookSource => ToBookSource(item));
+      return bookSourceList
+    } catch (e){
+      console.log("TagInfo", JSON.stringify(e))
+      return []
+    }
+  }
+
   async flowSearch(searchParams?: BookSourceSearchParams): Promise<BookSourcePart[]> {
     const searchKey = searchParams?.searchKey ?? '';
     const type = searchParams?.type;

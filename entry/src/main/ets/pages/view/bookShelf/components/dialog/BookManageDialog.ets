@@ -47,7 +47,6 @@ export default  struct BookManageDialog {
   searchCheck:Function = (_checkListNumber?:number[])=>{
 
   }
-  @Consume searchBookList:number[] // 用于添加书籍时将选中的书籍id返回
   //判断是否全部置顶或取消置顶
   selectIsAllTop(){
     let allTopNumber = 0
@@ -58,7 +57,6 @@ export default  struct BookManageDialog {
     this.checkListNumber.forEach((index)=>{
       //从bookList更具id查询是否都isTop
       if (this.bookTypeNumber === 5){
-        //todo 书单
         this.worksLists.filter((item)=>{
           if (item.isTop && Number(index) === item.worksId){
             allTopNumber++
@@ -87,10 +85,11 @@ export default  struct BookManageDialog {
   }
   //书籍
   getBookList(){
-    booksDao.search({
+    booksDao.searchPage({
       type:this.currentIndex,
-      bookGroup:this.bookTypeNumber
-    }).then((val)=>{
+      bookGroup:this.bookTypeNumber,
+      order:this.searchValue
+    },1,100).then((val)=>{
       this.bookList = val
     })
   }
@@ -209,7 +208,10 @@ export default  struct BookManageDialog {
                 checkGroup:this.checkLists,
                 EXHIBIT:this.EXHIBIT,
                 bookList:this.bookList,
-                isManage:this.isManage
+                isManage:this.isManage,
+                onSelect:()=>{
+                  this.listenCheckList()
+                }
               })
             }
           }
@@ -325,7 +327,7 @@ export default  struct BookManageDialog {
           this.allCheck = !this.allCheck
           this.dataMoveCheckList(this.allCheck)
         })
-      Text(!this.allCheck?'全选':'取消全选')
+      // Text(!this.allCheck?'全选':'取消全选')
     }
     .alignItems(VerticalAlign.Center)
   }
@@ -385,8 +387,7 @@ export default  struct BookManageDialog {
     }
     .onClick(async () => {
       if (this.isManageSearch) {
-        this.searchBookList = this.checkListNumber
-        this.searchCheck()
+        this.searchCheck(this.checkListNumber)
       } else {
         this.isManage = !this.isManage
         setTimeout(()=>{

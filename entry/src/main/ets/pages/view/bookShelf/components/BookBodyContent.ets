@@ -19,7 +19,7 @@ export default struct BookBodyContent {
   @State GROUP_NAMES: string[] = ['标签', '文件夹']
   @Link EXHIBIT: string
   @Link GROUP: string
-  @Link searchValue: string
+  @State searchValue: string = '最近阅读'
   @Link bookTypeNumber:number
   @State title: string = '最近阅读'
   @State groupCoverShow: boolean = false
@@ -41,7 +41,6 @@ export default struct BookBodyContent {
             justifyContent: FlexAlign.SpaceBetween
           }) {
             Row({ space: 15 }) {
-              // todo 筛选暂未实现
               IndexSearchType({ title: this.title, searchValue: this.searchValue })
               IndexSearchType({ title: '浏览历史', searchValue: this.searchValue })
                 .onClick(() => {

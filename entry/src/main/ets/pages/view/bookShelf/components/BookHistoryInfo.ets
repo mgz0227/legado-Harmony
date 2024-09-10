@@ -6,6 +6,7 @@ import BookInfoDialogs from './dialog/BookInfoDialogs'
 import booksUtil from '../../../../common/utils/booksUtils'
 import { BookHistory } from '../../../../database/entities/BookHistory'
 import bookHistoryUtils from '../../../../common/utils/BookHistoryUtils'
+import clickUtil from '../../../../common/utils/ClickUtils'
 
 @Component
 /**
@@ -22,9 +23,17 @@ export default struct BookHistoryInfo{
      let bookInfo = await booksUtil.getBookByIds(this.bookHistory.id)
       if (bookInfo && bookInfo[0]) {
         this.book = bookInfo[0]
+      } else {
+       this.book = this.mergeBookHistoryToBooks(this.bookHistory)
+       this.book.isJoin = false
       }
     }
   }
+  mergeBookHistoryToBooks(history: BookHistory): Books {
+    // 将 `BookHistory` 和 `Books` 对象转换为 JSON
+    return JSON.parse(JSON.stringify(history)) as Books;
+  }
+
   build() {
 
     Flex(
@@ -57,7 +66,7 @@ export default struct BookHistoryInfo{
               .ellipsisMode(EllipsisMode.END)
               .fontWeight(500)
               .maxLines(1)
-            Text(`最近阅读章节:${this.bookHistory.durChapterTitle}`).fontSize(12).fontColor('rgb(174,174,174)')
+            Text(`最近阅读章节:${this.book.durChapterTitle}`).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
               })
@@ -70,9 +79,11 @@ export default struct BookHistoryInfo{
         }
         .alignItems(HorizontalAlign.Start)
         .onClick(()=>{
-          router.pushUrl({
-            url: 'pages/view/BookDetailPage',
-            params: this.book
+          clickUtil.preventClick(()=>{
+            router.pushUrl({
+              url: 'pages/view/BookDetailPage',
+              params: this.book
+            })
           })
         })
       }
@@ -101,7 +112,16 @@ export default struct BookHistoryInfo{
         .borderWidth(this.book.isJoin?0:1)
         .borderRadius(50)
         .onClick(()=>{
-          showMessage(this.book.isJoin?'已加入书架':'已移出书架',)
+          if (!this.book.isJoin) {
+            this.book.id = undefined
+            booksUtil.addBooks(this.book)
+            showMessage('加入书架成功')
+            this.book.isJoin = true
+            return
+          }
+          this.bookHistory.originBookId?booksUtil.delBooksById(this.bookHistory.originBookId):''
+          this.book.isJoin = false
+          showMessage('移出书架成功')
         })
       }
       .justifyContent(FlexAlign.Start)
@@ -111,30 +131,30 @@ export default struct BookHistoryInfo{
       LongPressGesture({ repeat: true,duration:500 })
         .onAction((event: GestureEvent) => {
           if (event.repeat) {
-            this.bookInfoDialog?.open()
+            // this.bookInfoDialog?.open()
           }
         }))
     .padding(10)
     .borderRadius(10)
   }
 
-  bookInfoDialog: CustomDialogController | null = new CustomDialogController({
-    builder: BookInfoDialogs({
-      bookData:this.book,
-      cancel: () => {
-        this.exitDialog()
-      }
-    }),
-    cancel: this.exitDialog,
-    autoCancel: true,
-    width:'100%',
-    alignment: DialogAlignment.Bottom,
-    customStyle:true
-  })
+  // bookInfoDialog: CustomDialogController | null = new CustomDialogController({
+  //   builder: BookInfoDialogs({
+  //     bookData:this.book,
+  //     cancel: () => {
+  //       this.exitDialog()
+  //     }
+  //   }),
+  //   cancel: this.exitDialog,
+  //   autoCancel: true,
+  //   width:'100%',
+  //   alignment: DialogAlignment.Bottom,
+  //   customStyle:true
+  // })
   //退出弹框
-  exitDialog(){
-    this.bookInfoDialog?.close()
-  }
+  // exitDialog(){
+  //   this.bookInfoDialog?.close()
+  // }
 
   //弹窗
   bookInfoDel: CustomDialogController | null = new CustomDialogController({

@@ -1,11 +1,11 @@
 # [English](English.md) [中文](README.md)
 
-[![icon_android](https://github.com/gedoor/gedoor.github.io/blob/master/static/img/legado/icon_android.png)](https://play.google.com/store/apps/details?id=io.legado.play.release)
+
 <a href="https://jb.gg/OpenSourceSupport" target="_blank">
 <img width="24" height="24" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg?_gl=1*135yekd*_ga*OTY4Mjg4NDYzLjE2Mzk0NTE3MzQ.*_ga_9J976DJZ68*MTY2OTE2MzM5Ny4xMy4wLjE2NjkxNjMzOTcuNjAuMC4w&_ga=2.257292110.451256242.1669085120-968288463.1639451734" alt="idea"/>
 </a>
 <div align="center">
-<img width="125" height="125" src="https://github.com/gedoor/legado/raw/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="legado"/>  
+<img width="125" height="125" src="svg/icon.svg" alt="legado"/>  
   
 Legado / 开源阅读
 
@@ -81,9 +81,11 @@ You can customize the book source, set your own rules, and capture web page data
 </a>
 
 # Interface [![](https://img.shields.io/badge/-Interface-F5F5F5.svg)](#Interface-)
-
-<img src="https://github.com/gedoor/gedoor.github.io/blob/master/static/img/legado/%E9%98%85%E8%AF%BB%E7%AE%80%E4%BB%8B1.jpg" width="270"><img src="https://github.com/gedoor/gedoor.github.io/blob/master/static/img/legado/%E9%98%85%E8%AF%BB%E7%AE%80%E4%BB%8B2.jpg" width="270"><img src="https://github.com/gedoor/gedoor.github.io/blob/master/static/img/legado/%E9%98%85%E8%AF%BB%E7%AE%80%E4%BB%8B3.jpg" width="270">
-<img src="https://github.com/gedoor/gedoor.github.io/blob/master/static/img/legado/%E9%98%85%E8%AF%BB%E7%AE%80%E4%BB%8B4.jpg" width="270"><img src="https://github.com/gedoor/gedoor.github.io/blob/master/static/img/legado/%E9%98%85%E8%AF%BB%E7%AE%80%E4%BB%8B5.jpg" width="270"><img src="https://github.com/gedoor/gedoor.github.io/blob/master/static/img/legado/%E9%98%85%E8%AF%BB%E7%AE%80%E4%BB%8B6.jpg" width="270">
+<img src="png/start.png" width="270">
+<img src="png/bookshelf.png" width="270">
+<img src="png/find.png" width="270">
+<img src="png/rss.png" width="270">
+<img src="png/main.png" width="270">
 
 <a href="#readme">
     <img src="https://img.shields.io/badge/-Top-orange.svg" alt="#" align="right">

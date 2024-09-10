@@ -363,6 +363,35 @@ class BookGroupsDao{
     }
   }
 
+  async updatePartialGroup(group: BookGroups) {
+    // if (!(group instanceof BookGroups)) {
+    //   console.warn('Invalid group instance.');
+    //   return;
+    // }
+
+    const column = this.getPartialColumn();
+    const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+    predicates.equalTo('groupId', group.groupId);
+
+    try {
+      const count = await DbUtil.queryForCount(predicates, column);
+      if (count > 0) {
+        await DbUtil.update(predicates, ToBookGroupsDb(group), column);
+      } else {
+        console.warn('No records found for update.');
+      }
+    } catch (err) {
+      console.error('Error in partialUpdate:', err);
+    }
+  }
+
+  getPartialColumn(): ColumnInfo[] {
+    return AppDatabaseUtil.getAssignColumn(this.TABLE_NAME, ['groupId',
+      'groupName', 'coverOnly', 'coverType','coverUrl','groupDescribe',
+      'enableRefresh','canUpdate'
+    ]);
+  }
+
 }
 
 const bookGroupsDao = new BookGroupsDao()

@@ -22,7 +22,7 @@
   ],
   "targets": [
     {
-      "name": "default"
+      "name": "Legado"
     },
     {
       "name": "ohosTest"

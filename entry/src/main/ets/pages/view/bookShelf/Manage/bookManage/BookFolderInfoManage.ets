@@ -9,6 +9,7 @@ export default struct BookFolderInfoManage {
   @Prop group:BookGroups
   @Link checkGroup:Record<number, boolean>
   @Prop isManage:boolean
+  onSelect:Function = () => {}
   build() {
     Flex(
       {
@@ -21,7 +22,8 @@ export default struct BookFolderInfoManage {
       }){
         BookOverlay({
           bookImage:this.group.coverUrl,
-          isTop:this.group.isTop
+          isTop:this.group.isTop,
+          coverType:this.group.coverType
         })
         Column({
           space:24
@@ -63,6 +65,9 @@ export default struct BookFolderInfoManage {
               if (this.group.groupId) {
                 this.checkGroup[this.group.groupId] = val
               }
+            })
+            .onClick(()=>{
+              this.onSelect()
             })
         }
         .padding({ left: 15, right: 15, bottom: 5, top: 5 })

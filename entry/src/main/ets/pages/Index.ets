@@ -17,12 +17,20 @@ struct Main {
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = true
+  @State ShowBar: boolean = true
+
   onPageShow(): void {
     // initBookListData()
     setTimeout(()=>{
       this.showReadShow = false
       this.isShow = false
-    },5000)
+    }, 5000)
+
+    getContext(this).eventHub.on('SubscriptionBatchEdit', (params: boolean) => {
+      this.ShowBar = params
+      this.APP_INDEX_SCROLLABLE = !this.APP_INDEX_SCROLLABLE
+      console.log('SubscriptionBatchEdit:' + params)
+    })
   }
 
   aboutToAppear(): void {
@@ -86,6 +94,7 @@ struct Main {
           )
         })
       }
+      .barHeight(this.ShowBar?null:0)
       .scrollable(!this.APP_INDEX_SCROLLABLE)
       .padding({bottom:this.bottomRectHeight})
       .onChange((index) => {

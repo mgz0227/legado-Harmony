@@ -8,7 +8,7 @@ export default {
     "entities": [
       {
         "tableName": "books",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` ( `id` INTEGER NOT NULL, `bookUrl` TEXT, `toUrl` TEXT, `origin` TEXT, `originName` TEXT, `bookName` TEXT NOT NULL, `author` TEXT, `cover` TEXT, `customTag` TEXT, `coverUrl` TEXT, `customCoverUrl` TEXT, `intro` TEXT, `customIntro` TEXT, `charset` TEXT, `bookGroup` INTEGER NOT NULL DEFAULT 0, `latestChapterTitle` TEXT, `latestChapterTime` INTEGER NOT NULL DEFAULT 0, `lastCheckTime` INTEGER NOT NULL DEFAULT 0, `lastCheckCount` INTEGER NOT NULL DEFAULT 0, `totalChapterNum` INTEGER NOT NULL DEFAULT 0, `durChapterTitle` TEXT, `durChapterIndex` INTEGER NOT NULL DEFAULT 0, `durChapterPos` INTEGER NOT NULL DEFAULT 0, `durChapterTime` INTEGER NOT NULL DEFAULT 0, `wordCount` TEXT, `canUpdate` INTEGER NOT NULL DEFAULT 1, `sort` INTEGER NOT NULL DEFAULT 0, `originOrder` INTEGER NOT NULL DEFAULT 0, `syncTime` INTEGER NOT NULL DEFAULT 0, `bookType` INTEGER NOT NULL DEFAULT 0, `isTop` INTEGER NOT NULL DEFAULT 0, `createTime` INTEGER NOT NULL DEFAULT 0,`updateTime` INTEGER NOT NULL DEFAULT 0,`isJoin` INTEGER NOT NULL DEFAULT 1,isSystem  INTEGER NOT NULL DEFAULT 0,bookIds TEXT,PRIMARY KEY ( `id` ))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` ( `id` INTEGER NOT NULL, `bookUrl` TEXT, `toUrl` TEXT, `origin` TEXT, `originName` TEXT, `bookName` TEXT NOT NULL, `author` TEXT, `cover` TEXT, `customTag` TEXT, `coverUrl` TEXT, `customCoverUrl` TEXT, `intro` TEXT, `customIntro` TEXT, `charset` TEXT, `bookGroup` INTEGER NOT NULL DEFAULT 3, `latestChapterTitle` TEXT, `latestChapterTime` INTEGER NOT NULL DEFAULT 0, `lastCheckTime` INTEGER NOT NULL DEFAULT 0, `lastCheckCount` INTEGER NOT NULL DEFAULT 0, `totalChapterNum` INTEGER NOT NULL DEFAULT 0, `durChapterTitle` TEXT, `durChapterIndex` INTEGER NOT NULL DEFAULT 0, `durChapterPos` INTEGER NOT NULL DEFAULT 0, `durChapterTime` INTEGER NOT NULL DEFAULT 0, `wordCount` TEXT, `canUpdate` INTEGER NOT NULL DEFAULT 1, `sort` INTEGER NOT NULL DEFAULT 0, `originOrder` INTEGER NOT NULL DEFAULT 0, `syncTime` INTEGER NOT NULL DEFAULT 0, `bookType` INTEGER NOT NULL DEFAULT 0, `isTop` INTEGER NOT NULL DEFAULT 0, `createTime` INTEGER NOT NULL DEFAULT 0,`updateTime` INTEGER NOT NULL DEFAULT 0,`isJoin` INTEGER NOT NULL DEFAULT 1, `isLocalBook` INTEGER NOT NULL DEFAULT 0,PRIMARY KEY ( `id` ))",
         "fields": [
           {
             "fieldPath": "id",
@@ -101,7 +101,7 @@ export default {
             "columnName": "bookGroup",
             "affinity": "INTEGER",
             "notNull": true,
-            "defaultValue": "0"
+            "defaultValue": "3"
           },
           {
             "fieldPath": "latestChapterTitle",
@@ -233,6 +233,14 @@ export default {
             "boolean": true,
             "notNull": true,
             "defaultValue": "1"
+          },
+          {
+            "fieldPath": "isLocalBook",
+            "columnName": "isLocalBook",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "0"
           }
         ],
         "primaryKey": {
@@ -257,7 +265,7 @@ export default {
       },
       {
         "tableName": "book_groups",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`groupId` INTEGER NOT NULL, `groupName` TEXT NOT NULL, `coverUrl` TEXT, `groupDescribe` TEXT, `sort` INTEGER NOT NULL, `enableRefresh` INTEGER NOT NULL DEFAULT 1, `show` INTEGER NOT NULL DEFAULT 1, `groupType` INTEGER NOT NULL DEFAULT 0, `createTime` INTEGER NOT NULL DEFAULT 0, `updateTime` INTEGER NOT NULL DEFAULT 0, `bookSort` INTEGER NOT NULL DEFAULT -1, `canUpdate` INTEGER NOT NULL DEFAULT 0, `coverOnly` INTEGER NOT NULL DEFAULT 0, `coverType` INTEGER NOT NULL DEFAULT 0, `canDelete` INTEGER NOT NULL DEFAULT 1, `isTop` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`groupId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`groupId` INTEGER NOT NULL, `groupName` TEXT NOT NULL, `coverUrl` TEXT, `groupDescribe` TEXT, `sort` INTEGER NOT NULL, `enableRefresh` INTEGER NOT NULL DEFAULT 1, `show` INTEGER NOT NULL DEFAULT 1, `groupType` INTEGER NOT NULL DEFAULT 0, `createTime` INTEGER NOT NULL DEFAULT 0, `updateTime` INTEGER NOT NULL DEFAULT 0, `bookSort` INTEGER NOT NULL DEFAULT -1, `canUpdate` INTEGER NOT NULL DEFAULT 0, `coverOnly` INTEGER NOT NULL DEFAULT 0, `coverType` INTEGER NOT NULL DEFAULT 0, `canDelete` INTEGER NOT NULL DEFAULT 1, `isTop` INTEGER NOT NULL DEFAULT 0,`isSystem` INTEGER NOT NULL DEFAULT 0,`bookIds` TEXT,PRIMARY KEY(`groupId`))",
         "fields": [
           {
             "fieldPath": "groupId",
@@ -397,7 +405,7 @@ export default {
       },
       {
         "tableName": "book_sources",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bookSourceUrl` TEXT NOT NULL, `bookSourceName` TEXT NOT NULL, `bookSourceGroup` TEXT, `bookSourceType` INTEGER NOT NULL, `bookUrlPattern` TEXT, `bookSourceGrade` INTEGER NOT NULL DEFAULT 2, `isTop` INTEGER NOT NULL DEFAULT 0, `showExplore` INTEGER NOT NULL DEFAULT 0, `showRecentIcon` INTEGER NOT NULL DEFAULT 1, `bookSourceScore` TEXT NOT NULL DEFAULT `5.0分`, `customOrder` INTEGER NOT NULL DEFAULT 0, `enabled` INTEGER NOT NULL DEFAULT 1, `enabledExplore` INTEGER NOT NULL DEFAULT 1, `jsLib` TEXT, `enabledCookieJar` INTEGER DEFAULT 0, `concurrentRate` TEXT, `header` TEXT, `loginUrl` TEXT, `loginUi` TEXT, `loginCheckJs` TEXT, `coverDecodeJs` TEXT, `bookSourceComment` TEXT, `variableComment` TEXT, `lastUpdateTime` INTEGER NOT NULL, `respondTime` INTEGER NOT NULL, `weight` INTEGER NOT NULL, `exploreUrl` TEXT, `exploreScreen` TEXT, `ruleExplore` TEXT, `searchUrl` TEXT, `ruleSearch` TEXT, `ruleBookInfo` TEXT, `ruleToc` TEXT, `ruleContent` TEXT, `ruleReview` TEXT, PRIMARY KEY(`bookSourceUrl`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`bookSourceUrl` TEXT NOT NULL, `bookSourceName` TEXT NOT NULL, `bookSourceGroup` TEXT, `bookSourceType` INTEGER NOT NULL, `bookUrlPattern` TEXT, `bookSourceGrade` INTEGER NOT NULL DEFAULT 2, `isTop` INTEGER NOT NULL DEFAULT 0, `showExplore` INTEGER NOT NULL DEFAULT 1, `showRecentIcon` INTEGER NOT NULL DEFAULT 1, `bookSourceScore` TEXT NOT NULL DEFAULT `5.0分`, `customOrder` INTEGER NOT NULL DEFAULT 0, `enabled` INTEGER NOT NULL DEFAULT 1, `enabledExplore` INTEGER NOT NULL DEFAULT 1, `jsLib` TEXT, `enabledCookieJar` INTEGER DEFAULT 0, `concurrentRate` TEXT, `header` TEXT, `loginUrl` TEXT, `loginUi` TEXT, `loginCheckJs` TEXT, `coverDecodeJs` TEXT, `bookSourceComment` TEXT, `variableComment` TEXT, `lastUpdateTime` INTEGER NOT NULL, `respondTime` INTEGER NOT NULL, `weight` INTEGER NOT NULL, `exploreUrl` TEXT, `exploreScreen` TEXT, `ruleExplore` TEXT, `searchUrl` TEXT, `ruleSearch` TEXT, `ruleBookInfo` TEXT, `ruleToc` TEXT, `ruleContent` TEXT, `ruleReview` TEXT, PRIMARY KEY(`bookSourceUrl`))",
         "fields": [
           {
             "fieldPath": "bookSourceUrl",

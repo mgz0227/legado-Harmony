@@ -1,13 +1,14 @@
+import FontConstants from '../../../../../common/constants/FontConstants'
 import { Books } from '../../../../../database/entities/Books'
 
 @Component
-/**
- * 书签
- */
+
+
 export default struct BookInfoManage{
   @Prop isManage:boolean
   @Prop bookData:Books
   @Link checkGroup:Record<number, boolean>
+  onSelect:Function = () => {}
   build() {
     Flex(
       {
@@ -19,15 +20,33 @@ export default struct BookInfoManage{
         space:20
       }){
         Stack(){
-          if (this.bookData.isTop){
-            Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
-              .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
+          if (this.bookData.isLocalBook){
+            Text('本地')
+              .fontColor('#FFEDD4')
+              .fontWeight(FontConstants.FONT_WEIGHT_400)
+              .fontSize(9)
+              .padding(3)
+              .backgroundColor('#523000')
+              .zIndex(1)
+              .borderRadius({
+                topRight: 6,
+                bottomLeft: 6,
+              })
           }
-          Image(this.bookData.coverUrl)
-            .alt($r('app.media.icon_book_default_cover_one'))
-            .width(60)
-            .height(80)
-        }.alignContent(Alignment.BottomStart)
+          Stack(){
+            if (this.bookData.isTop){
+              Text('置顶').fontColor(Color.White).fontWeight(FontConstants.FONT_WEIGHT_400).fontSize(9).padding(3).borderRadius(5)
+                .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
+            }
+            Image(this.bookData.coverUrl)
+              .draggable(false)
+              .alt($r('app.media.icon_book_default_cover_one'))
+              .width(60)
+              .height(80)
+          }
+          .alignContent(Alignment.BottomStart)
+        }
+        .alignContent(Alignment.TopEnd)
 
         Column({
           space:24
@@ -43,7 +62,7 @@ export default struct BookInfoManage{
               .ellipsisMode(EllipsisMode.END)
               .fontWeight(500)
               .maxLines(1)
-            Text(this.bookData.latestChapterTitle).fontSize(12).fontColor('rgb(174,174,174)')
+            Text(this.bookData.durChapterTitle).fontSize(12).fontColor('rgb(174,174,174)')
               .textOverflow({
                 overflow:TextOverflow.Ellipsis
               })
@@ -61,6 +80,9 @@ export default struct BookInfoManage{
           Checkbox({
             name: JSON.stringify(this.bookData.id)
           })
+            .onClick(()=>{
+              this.onSelect()
+            })
             .select(this.bookData.id?this.checkGroup[this.bookData.id] ?? false:false)
             .onChange((val:boolean)=>{
               if (this.bookData.id) {

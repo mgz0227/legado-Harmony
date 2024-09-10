@@ -18,9 +18,8 @@ export default struct WorksBookLists {
   @Prop worksLists:WorksLists[] =[]
   @Prop isShowCheck:boolean = false
   @State worksBook:WorksLists = new WorksLists()
-  @StorageLink('topRectHeight') topRectHeight: number = 0
-  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('BOOK_IS_BOOK_WORKS_BOOK_LIST') @Watch('getWorkLists')isWorksBookListRefreshing: number = 0
+  onSelect:Function = () => {}
   aboutToAppear(): void {
     if (this.worksLists.length === 0) {
       this.getWorkLists()
@@ -38,54 +37,63 @@ export default struct WorksBookLists {
 
   build() {
     Column(){
-      Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap, alignContent: FlexAlign.Center }) {
+      GridRow({
+        columns:this.EXHIBIT === '宫格'?3:1
+      }){
         ForEach(this.worksLists, (item: WorksLists, index: number) => {
-
-          if (this.EXHIBIT === '宫格') {
-            WorksBookListGrid({
-              work:item,
-              isShowCheck:this.isShowCheck,
-              checkGroup:this.checkGroup
-            }).width('33%')
-              .gesture(
-                LongPressGesture({ repeat: true,duration:500 })
-                  .onAction((event: GestureEvent) => {
-                    if (event.repeat) {
-                      if (!this.isShowCheck) {
-                        this.worksBook = item
-                        this.shelfInfoDialog?.open()
+          GridCol(){
+            if (this.EXHIBIT === '宫格') {
+              WorksBookListGrid({
+                work:item,
+                isShowCheck:this.isShowCheck,
+                checkGroup:this.checkGroup,
+                onSelect:()=>{
+                  this.onSelect()
+                }
+              }).width('33%')
+                .gesture(
+                  LongPressGesture({ repeat: true,duration:500 })
+                    .onAction((event: GestureEvent) => {
+                      if (event.repeat) {
+                        if (!this.isShowCheck) {
+                          this.worksBook = item
+                          this.shelfInfoDialog?.open()
+                        }
                       }
-                    }
-                  }))
-              .onClick(()=>{
-                if (!this.isShowCheck) {
-                  this.worksBook = item
-                  this.isShowEditBook = true
+                    }))
+                .onClick(()=>{
+                  if (!this.isShowCheck) {
+                    this.worksBook = item
+                    this.isShowEditBook = true
+                  }
+                })
+
+            } else {
+              WorksBookListInfo({
+                work:item,
+                isShowCheck:this.isShowCheck,
+                checkGroup:this.checkGroup,
+                onSelect:()=>{
+                  this.onSelect()
                 }
               })
-
-          } else {
-            WorksBookListInfo({
-              work:item,
-              isShowCheck:this.isShowCheck,
-              checkGroup:this.checkGroup
-            })
-              .gesture(
-                LongPressGesture({ repeat: true,duration:500 })
-                  .onAction((event: GestureEvent) => {
-                    if (event.repeat) {
-                      if (!this.isShowCheck) {
-                        this.worksBook = item
-                        this.shelfInfoDialog?.open()
+                .gesture(
+                  LongPressGesture({ repeat: true,duration:500 })
+                    .onAction((event: GestureEvent) => {
+                      if (event.repeat) {
+                        if (!this.isShowCheck) {
+                          this.worksBook = item
+                          this.shelfInfoDialog?.open()
+                        }
                       }
-                    }
-                  }))
-              .onClick(()=>{
-                if (!this.isShowCheck) {
-                  this.worksBook = item
-                  this.isShowEditBook = true
-                }
-              })
+                    }))
+                .onClick(()=>{
+                  if (!this.isShowCheck) {
+                    this.worksBook = item
+                    this.isShowEditBook = true
+                  }
+                })
+            }
           }
         })
       }
@@ -116,10 +124,6 @@ export default struct WorksBookLists {
         lastWorkBookList:this.worksBook
       })
     }
-    .padding({
-      top:this.topRectHeight,
-      bottom:this.bottomRectHeight
-    })
     .backgroundColor(Color.White)
   }
   shelfInfoDialog: CustomDialogController | null = new CustomDialogController({

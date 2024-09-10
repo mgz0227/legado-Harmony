@@ -6,16 +6,59 @@ import { BookSource } from '../../../database/entities/BookSource';
 import { isNetworkUrl, sleep } from '../../../common/utils/utils';
 import axios, { AxiosResponse } from '@ohos/axios';
 import SubscriptionImport from '../../../componets/import/SubscriptionImport';
-import { rssSources, SUBSCRIPTION_GROUP_TYPE } from '../../../database/entities/rssSources';
+import { rssSources, SUBSCRIPTION_GROUP_TYPE, WEB_USER_AGENT } from '../../../database/entities/rssSources';
 import CommonConstants from '../../../common/constants/CommonConstants';
 import PaddingConstants from '../../../common/constants/PaddingConstants';
 import SubscriptionDao from '../../../database/dao/SubscriptionDao';
 import subscriptionDao from '../../../database/dao/SubscriptionDao';
 import WebSetup from './components/WebSetup';
+import FontConstants from '../../../common/constants/FontConstants';
+import { pasteboard } from '@kit.BasicServicesKit';
+import { common } from '@kit.AbilityKit';
+import systemUtil from '../../../common/utils/SystemUtils';
 
 interface RouteParams {
   url: string, //id不传默认用url校验是否存在订阅源有存
   id:number //id是订阅源页面跳转用来传递的用于删除的其它页面可不传
+}
+
+
+/**
+ * 收藏弹窗
+ */
+@CustomDialog
+struct addCollectionDialog {
+  controller?: CustomDialogController;
+  isCollection:boolean = false
+  build() {
+    Row() {
+      Image($r('app.media.ic_public_confirm'))
+        .width(24)
+        .height(24)
+        .fillColor('#FFFFFF')
+      Text(this.isCollection?'收藏成功':'取消收藏')
+        .fontSize(14)
+        .fontWeight(400)
+        .lineHeight(22)
+        .fontColor('#FFFFFF')
+      Blank()
+      Text('移入分组')
+        .fontSize(14)
+        .fontWeight(400)
+        .lineHeight(22)
+        .fontColor('#FF9500')
+        .visibility(this.isCollection?Visibility.Visible:Visibility.None)
+    }
+    .height(56)
+    .width(CommonConstants.FULL_WIDTH)
+    .padding({
+      left: 20,
+      right: 20,
+      top: 16,
+      bottom: 16
+    })
+    .backgroundColor('#333333')
+  }
 }
 
 @Entry
@@ -32,11 +75,17 @@ struct RssWebView {
   legadoRegex:string = `/import/auto\\?src=(http[s]?://[^/]+/[^\"']+)`
   @State isCollection:boolean = false
   @StorageLink(CommonConstants.RSS_SOURCES_REFRESHING) refreshing: number = 0
+  @StorageLink(CommonConstants.SYSTEM_UA) @Watch('upUserUA')SYSTEM_UA: number = 0
   async aboutToAppear(): Promise<void> {
     const params = router.getParams() as RouteParams;
     this.sourcesUrl = params.url
     this.sourcesId = params.id??0
     this.isCollection = await subscriptionDao.queryByUrl(this.sourcesUrl) //是否收藏
+    this.controller.setCustomUserAgent(WEB_USER_AGENT[this.SYSTEM_UA])
+  }
+
+  upUserUA(){
+    this.controller.setCustomUserAgent(WEB_USER_AGENT[this.SYSTEM_UA])
   }
 
   onBackPress(){
@@ -84,21 +133,22 @@ struct RssWebView {
         Web({ src: this.sourcesUrl||'www.baidu.com', controller: this.controller })
           .onPageBegin((event) => {
             //设置setCustomUserAgent为手机
-            this.controller.setCustomUserAgent('Mozilla/5.0 (Linux; Android 13; M2007J3SC Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.101 Mobile Safari/537.36')
+
           })
           .layoutWeight(1)
           .onPageEnd((event) => {
+            // this.controller.setCustomUserAgent(WEB_USER_AGENT[this.SYSTEM_UA])
             this.getOnclickUrl(event?.url || '')
             this.formModel.sourceUrl = event.url ?? ''
             this.formModel.sourceName = this.controller.getTitle().slice(0, 19)
             this.webTitle = this.controller.getTitle()
           })
-          .onScroll((event) => {
-            showMessage("x = " + event.xOffset)
-            showMessage("y = " + event.yOffset)
-            console.info("x = " + event.xOffset);
-            console.info("y = " + event.yOffset);
-          })
+          // .onScroll((event) => {
+          //   showMessage("x = " + event.xOffset)
+          //   showMessage("y = " + event.yOffset)
+          //   console.info("x = " + event.xOffset);
+          //   console.info("y = " + event.yOffset);
+          // })
         this.webFooter()
       }
       Flex()
@@ -142,22 +192,25 @@ struct RssWebView {
         Row({
           space:PaddingConstants.PADDING_12
         }){
-          Text(this.webTitle??'')
-            .font({
-              size:12,
-              weight:500,
-              family: CommonConstants.FAMILY_PingFANG
-            })
-            .textOverflow({ overflow: TextOverflow.Ellipsis })
-            .maxLines(1)
+          TextInput({text:this.webTitle??''})
+            .height(30)
+            .backgroundColor(Color.Transparent)
             .layoutWeight(1)
-            .onClick(() => {
-
+            .maxLines(1)
+            .textOverflow(TextOverflow.Ellipsis)
+            .fontSize(14)
+            .fontWeight(FontConstants.FONT_WEIGHT_500)
+            .fontFamily(CommonConstants.FAMILY_PingFANG)
+            .onChange((val)=>{
+              this.webTitle = val
+            })
+            .onBlur(() => {
+              this.webTitle = this.controller.getTitle()
             })
           Row(){
             Text('搜书')
               .font({
-                size:10,
+                size:12,
                 weight:400,
                 family: CommonConstants.FAMILY_PingFANG
               })
@@ -167,6 +220,14 @@ struct RssWebView {
                 right:PaddingConstants.PADDING_12
               })
               .textAlign(TextAlign.Center)
+              .onClick(()=>{
+                router.pushUrl({
+                  url: 'pages/view/search/SearchBook',
+                  params:{
+                    searchValue:this.webTitle
+                  }
+                });
+              })
           }
           .padding(5)
           .backgroundColor($r('app.string.color_black_88'))
@@ -195,7 +256,8 @@ struct RssWebView {
             SubscriptionDao.insert(this.formModel)
             this.isCollection = true
           }
-          showMessage(this.isCollection?'收藏成功':'取消收藏')
+          this.addCollection()
+          // showMessage(this.isCollection?'收藏成功':'取消收藏')
         })
 
       Image($r('app.media.icon_browser_more'))
@@ -208,10 +270,38 @@ struct RssWebView {
     .padding({left:20,right:20,top:14})
   }
 
+  addCollection() {
+    this.addCollectionController.open();
+    // 1s后关闭dialog
+    setTimeout(() => {
+      this.addCollectionController.close();
+    }, 1000);
+  }
+
+  addCollectionController: CustomDialogController = new CustomDialogController({
+    builder: addCollectionDialog({
+      isCollection:this.isCollection
+    }),
+    backgroundColor: Color.Transparent,
+    autoCancel: true,
+    alignment: DialogAlignment.Bottom,
+    offset: { dx: 0, dy: -100 },
+    gridCount: 4,
+    customStyle: false,
+    cornerRadius: 8
+  })
+
   webSetupDialog: CustomDialogController | null = new CustomDialogController({
     builder: WebSetup({
       refreshing:()=>{
         this.controller.refresh()
+      },
+      copyUrl:()=>{
+       this.copyText(this.controller.getUrl())
+      },
+      startBrowsable:()=>{
+        const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+        systemUtil.startBrowsableAbility(context,this.controller.getUrl())
       }
     }),
     cancel: this.exitDialog,
@@ -220,6 +310,21 @@ struct RssWebView {
     alignment: DialogAlignment.Bottom,
     customStyle:true
   })
+  //网站链接复制到剪切板
+  copyText(text: string) {
+    const pasteboardData = pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, text);
+    const systemPasteboard = pasteboard.getSystemPasteboard();
+    systemPasteboard.setData(pasteboardData); // 将数据放入剪切板
+    systemPasteboard.getData().then((data) => {
+      if (data) {
+        showMessage('链接已经复制在剪切板中.')
+      } else {
+        showMessage('复制失败')
+      }
+    })
+  }
+
+
   //退出弹框
   exitDialog(){
     this.webSetupDialog?.close()

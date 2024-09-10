@@ -3,16 +3,16 @@ export class ReaderChapterItem {
   content: string
   chapterTitleNumber: string
   title: string
-  chapterList: string[]
+  paragraphList: string[]
   chapterPageList: ReaderChapterPageItem[]
 
-  constructor(number: number, title = '', chapterTitleNumber = '', content = '', chapterList = [],
+  constructor(number: number, title = '', chapterTitleNumber = '', content = '', paragraphList = [],
     chapterPageList = []) {
     this.number = number
     this.content = content
     this.chapterTitleNumber = chapterTitleNumber
     this.title = title
-    this.chapterList = chapterList
+    this.paragraphList = paragraphList
     this.chapterPageList = chapterPageList
   }
 }

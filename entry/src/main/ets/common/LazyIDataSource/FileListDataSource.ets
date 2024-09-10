@@ -8,7 +8,7 @@ import FolderAndFileItem from '../../componets/dataList/FolderAndFileItem';
 /**
  * 文件夹 文件列表 数据懒加载对象
  * */
-export default class FolderFileDataSource extends BasicDataSource {
+export default class FolderFileDataSource extends BasicDataSource<FolderAndFileItem> {
     private dataArray: FolderAndFileItem[] = [];
 
     public totalCount(): number {

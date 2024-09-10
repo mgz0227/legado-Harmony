@@ -3,6 +3,9 @@
  * @datetime 2024/8/7 16:48
  * @className: WebSetupUA
  */
+import CommonConstants from '../../../../common/constants/CommonConstants'
+import programPreferences from '../../../../preferences/programDataPreferences'
+
 @CustomDialog
 @Component
 export default struct WebSetupUA {
@@ -10,6 +13,7 @@ export default struct WebSetupUA {
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   ua:string[] = ['Android', 'Phone', '电脑', '自定义']
   @State uaSet:string = 'Android'
+  @StorageLink(CommonConstants.SYSTEM_UA) SYSTEM_UA: number = 0
   build() {
     Column(){
       Column(){
@@ -21,7 +25,7 @@ export default struct WebSetupUA {
           .fontWeight(500)
       }
       Column(){
-        ForEach(this.ua,(title:string)=>{
+        ForEach(this.ua,(title:string,index)=>{
          Flex({
            justifyContent:FlexAlign.SpaceBetween
          }){
@@ -31,10 +35,11 @@ export default struct WebSetupUA {
              .padding({top:12,bottom:12})
              .lineHeight(24)
              .fontWeight(500)
-           Image(this.uaSet ===  title?$r('app.media.hook'):'').width(24).height(24)
+           Image(this.SYSTEM_UA ===  index?$r('app.media.hook'):'').width(24).height(24)
          }
          .onClick(()=>{
-           this.uaSet = title
+           this.SYSTEM_UA = index
+           programPreferences.updateWebUAData(index)
            this.controller?.close()
          })
         })

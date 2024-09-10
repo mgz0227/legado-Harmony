@@ -10,13 +10,6 @@
         "usedScene": {
           "when":"inuse"
         }
-      },
-      {
-        "name" : "ohos.permission.WRITE_IMAGEVIDEO",
-        "reason": "$string:app_name",
-        "usedScene": {
-          "when":"always"
-        }
       }
     ],
     "deviceTypes": [

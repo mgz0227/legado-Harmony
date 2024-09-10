@@ -1,3 +1,4 @@
+import booksUtils from '../../common/utils/booksUtils';
 import DbUtil from '../../common/utils/DbUtil';
 import toolsUtils from '../../common/utils/ToolsUtils';
 import AppDatabaseUtil from '../AppDatabaseUtil';
@@ -27,6 +28,11 @@ class BooksDao {
     let searchKey = param?.searchKey ?? '';
     let type = param?.type;
     let bookGroup = param?.bookGroup;
+    let order = param?.order;
+    let sort = 0
+    if (order !== undefined){
+      sort = booksUtils.getOrder(order)
+    }
     try {
       const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
       let sql = `SELECT * FROM ${this.TABLE_NAME}`;
@@ -50,16 +56,114 @@ class BooksDao {
       if (whereClause.length > 0) {
         sql += ` WHERE ${whereClause.join(' AND ')}`;
       }
-      sql += `
-  ORDER BY
-     isTop DESC, createTime DESC
-`;
+      sql += ` ORDER BY`;
+      if (order !== undefined) {
+        switch (sort){
+          case 0:
+            sql += ` isTop DESC, durChapterTime DESC`;
+            break;
+          case 1:
+            sql += ` isTop DESC, latestChapterTime DESC`;
+            break;
+          case 2:
+            sql += ` isTop DESC, sort ASC`;
+            break;
+        }
+      } else {
+        sql += ` isTop DESC, createTime DESC`;
+      }
+
       const bookDbList = await DbUtil.querySqlForList<Books>(sql, column);
       console.log("TagInfo", '书籍：' + bookDbList.length)
       return bookDbList
     } catch (err) {
       console.log("TagInfo", JSON.stringify(err))
       return []
+    }
+  }
+
+  //获取书籍总数量
+  async getBookCount(param?: BooksTypeSearchParams) {
+    let type = param?.type;
+    let bookGroup = param?.bookGroup;
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+      predicates.equalTo('bookType', type)
+      if (bookGroup !== undefined && bookGroup !== 2) {
+        predicates.equalTo('bookGroup', bookGroup)
+      }
+      const count = await DbUtil.queryForCount(predicates, column)
+      return count
+    } catch (e){
+      console.log("TagInfo", JSON.stringify(e))
+      return 0
+    }
+  }
+
+  async searchPage(param?: BooksTypeSearchParams, pageNumber: number = 1, pageSize: number = 21) {
+    let searchKey = param?.searchKey ?? '';
+    let type = param?.type;
+    let bookGroup = param?.bookGroup;
+    let order = param?.order;
+    let sort = 0;
+    if (order !== undefined) {
+      sort = booksUtils.getOrder(order);
+    }
+
+    try {
+      const column: ColumnInfo[] = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+      let sql = `SELECT * FROM ${this.TABLE_NAME}`;
+      let whereClause: string[] = [];
+
+      if (type !== undefined) {
+        whereClause.push(`bookType = ${type}`);
+      }
+      if (bookGroup !== undefined && bookGroup !== 2) {
+        if (bookGroup === 4) {
+          whereClause.push(`bookGroup = ${bookGroup} or isLocalBook = ${true}`);
+        } else {
+          whereClause.push(`bookGroup = ${bookGroup}`);
+        }
+      }
+      if (searchKey) {
+        whereClause.push(`(
+                bookName LIKE '%${searchKey}%'
+                OR author LIKE '%${searchKey}%'
+                OR originName LIKE '%${searchKey}%'
+            )`);
+      }
+
+      if (whereClause.length > 0) {
+        sql += ` WHERE ${whereClause.join(' AND ')}`;
+      }
+
+      sql += ` ORDER BY`;
+      if (order !== undefined) {
+        switch (sort) {
+          case 0:
+            sql += ` isTop DESC, durChapterTime DESC, createTime DESC`;
+            break;
+          case 1:
+            sql += ` isTop DESC, latestChapterTime DESC,updateTime DESC`;
+            break;
+          case 2:
+            sql += ` isTop DESC, sort ASC`;
+            break;
+        }
+      } else {
+        sql += ` isTop DESC, createTime DESC`;
+      }
+
+      const offset = (pageNumber - 1) * pageSize;
+      sql += ` LIMIT ${pageSize} OFFSET ${offset}`;
+
+      const bookDbList = await DbUtil.querySqlForList<Books>(sql, column);
+      console.log("TagInfo", '书籍：' + bookDbList.length)
+      return bookDbList;
+    } catch (err) {
+      console.log("TagInfo", JSON.stringify(err))
+      return [];
     }
   }
 
@@ -275,6 +379,28 @@ class BooksDao {
     }
   }
 
+  // 校验当前书籍是否存在书架中
+  async isExistBooks(bookUrl?: string, bookName?: string): Promise<Books[]> {
+    if (!bookUrl || !bookName) {
+      console.warn('bookUrl or bookName is missing.');
+      return [];
+    }
+
+    const column = AppDatabaseUtil.getColumn(this.TABLE_NAME);
+    const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+    predicates.equalTo('bookUrl', bookUrl);
+    predicates.equalTo('bookName', bookName);
+
+    try {
+      const books = await DbUtil.queryForList<Books>(predicates, column);
+      return books || [];
+    } catch (err) {
+      console.error('isExistBooks, Error:', err);
+      return [];
+    }
+  }
+
+
   //根据书籍Id获取书籍
   async getBookByIds(ids: number[]) {
 
@@ -296,6 +422,38 @@ class BooksDao {
       console.log('getBookIds, Error, ', JSON.stringify(e));
       return [];
     }
+  }
+  //部分更新
+  async partialUpdate(books: Books) {
+    if (!(books instanceof Books)) {
+      console.warn('Invalid Books instance.');
+      return;
+    }
+
+    const column = this.getPartialColumn();
+    const predicates = DbUtil.getPredicates(this.TABLE_NAME);
+    predicates.equalTo('id', books.id);
+
+    try {
+      const count = await DbUtil.queryForCount(predicates, column);
+
+      if (count > 0) {
+        await DbUtil.update(predicates, books, column);
+      } else {
+        console.warn('No records found for update.');
+      }
+    } catch (err) {
+      console.error('Error in partialUpdate:', err);
+    }
+  }
+
+  getPartialColumn(): ColumnInfo[] {
+    return AppDatabaseUtil.getAssignColumn(this.TABLE_NAME, ['id',
+      'latestChapterTitle', 'latestChapterTime', 'lastCheckTime',
+      'lastCheckCount', 'totalChapterNum', 'durChapterTitle',
+      'durChapterIndex', 'durChapterPos', 'durChapterTime',
+      'wordCount', 'syncTime', 'updateTime'
+    ]);
   }
 }
 

@@ -1,11 +1,13 @@
-import { SearchBook } from '../dataList/SearchBook'
+import { SearchBook } from '../../database/entities/SearchBook'
+import { router } from '@kit.ArkUI'
+import clickUtil from '../../common/utils/ClickUtils'
 
 @Component
 export struct SearchBookItem {
   @Prop SearchValue:string
-  @Prop list:String[]=[]
   @Prop book:SearchBook
   @State fontColor:string="rgba(0, 0, 0, 0.45)"
+  @Prop index:number
   @Builder label(item:string){
     Text(item)
       .fontSize(10)
@@ -16,17 +18,16 @@ export struct SearchBookItem {
   }
   build() {
     Row({space:20}){
-      Image($r('app.media.cover_list')).size({
+      Image(this.book.coverUrl).size({
         width:70,
         height:100
       })
+        .alt($r('app.media.icon_book_default_cover_five'))
       Column({space:5}){
         //书名
         Row(){
-          ForEach(this.list,(item:string,index:number)=>{
-            Text(item)
-              .fontColor(index==1?"rgba(255, 102, 0, 1)":"#000000")
-          })
+          Text(this.book.name)
+            .fontColor(this.SearchValue=== this.book.name?"rgba(255, 102, 0, 1)":"#000000")
         }
         //作者及书源数量
         Row({space:2}){
@@ -36,38 +37,54 @@ export struct SearchBookItem {
           Text("·")
             .fontSize(14)
             .fontColor(this.fontColor)
-          Text("共"+this.book.sourceNumber.toString()+"个源")
+          Text("共"+this.book.belongCount+"个源")
             .fontSize(14)
             .fontColor(this.fontColor)
         }
 
         //书籍描述
-        Text(this.book.describe)
+        Text(this.book.intro)
           .size({width:200,height:40})
           .fontSize(14)
           .maxLines(2)
           .fontColor(this.fontColor)
           .textOverflow({overflow:TextOverflow.Ellipsis})
         Row({space:5}){
-          ForEach(this.book.label,(item:string)=>{
-            this.label(item)
-          })
-          this.label(this.book.status?"完本":"连载中")
-          this.label(this.wordStatistics())
+          // ForEach(this.book.label,(item:string)=>{
+          //   this.label(item)
+          // })
+          this.label(this.book.kind??'')
+          this.label(this.book.wordCount??'')
         }.width("100%").height(20)
       }.alignItems(HorizontalAlign.Start)
-    }.size({
+    }
+    .onClick(()=>{
+      clickUtil.preventClick(()=>{
+        router.pushUrl({
+          url: 'pages/view/BookDetailPage',
+          params: {
+            bookName: this.book.name,
+            coverUrl: this.book.coverUrl,
+            author: this.book.author,
+            intro: this.book.intro,
+            kind:this.book.kind,
+            bookUrl:this.book.bookUrl,
+            wordCount:this.book.wordCount,
+            bookType:this.book.bookType,
+            toUrl:this.book.tocUrl,
+            source:this.book.source,
+            sourceList:this.book.sourceList,
+            origin:this.book.source?.bookSourceUrl,
+            originName:this.book.source?.bookSourceName
+          }
+        })
+      })
+    })
+
+    .size({
       width:"100%",
       height:120
     }).margin({left:20,right:20})
   }
-  wordStatistics(){
-    let wordCount=this.book.wordCount.toString()
-    let wordCountLength=wordCount.length
-    if(wordCountLength>4){
-      return wordCount.substring(0,wordCountLength-4)+"万字"
-    }else{
-      return wordCount+"字"
-    }
-  }
+
 }

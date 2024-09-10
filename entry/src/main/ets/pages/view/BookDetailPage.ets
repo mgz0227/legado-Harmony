@@ -9,6 +9,7 @@ import ChaptersDataSource from '../../common/LazyIDataSource/ChaptersDataSource'
 import { Books } from '../../database/entities/Books'
 import { BookHistory } from '../../database/entities/BookHistory'
 import bookHistoryUtils from '../../common/utils/BookHistoryUtils'
+import booksUtil from '../../common/utils/booksUtils'
 
 /**
  * 标题图片样式
@@ -80,7 +81,9 @@ struct BookDetailPage {
   dialogController: CustomDialogController = new CustomDialogController({
     builder: AddBookShelfDialog(),
     cornerRadius: 8,
-    offset: { dx: 0, dy: -100 }
+    offset: { dx: 0, dy: -100 },
+    gridCount: 4,
+    customStyle: false,
   })
   @State txtFiles: chaptersItem[] = [];
   @State txtFile: ChaptersDataSource = new ChaptersDataSource()
@@ -92,21 +95,34 @@ struct BookDetailPage {
     console.log('router BookDetailPage:' + JSON.stringify(router.getParams()))
     if (router.getParams() as Books) {
       this.bookData = router.getParams() as Books
+      //校验是否加入书架
+      if (!this.bookData.isJoin) {
+       this.bookData.isJoin = await booksUtil.isExistBooks(this.bookData.bookUrl, this.bookData.bookName)
+      }
       let temp = await FileHandler.readFile(this.bookData?.bookUrl||'') //txt小说
+      // FileHandler.readerEpubFile(this.bookData?.bookUrl||'')
       this.txtFile.pushAllData(temp)
       this.txtFiles = this.txtFile.getListData()
+      this.initUrlBook()
     }
   }
+  initUrlBook(){
+    let book = this.bookData.bookUrl
+    console.log(book)
+  }
 
+
+  @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   // 加入书架函数
   addBookShelf() {
+    booksUtil.addBooks(this.bookData)
     this.dialogController.open();
     this.isAddBookShelf = true;
     // 1s后关闭dialog
-    let timeoutID = setTimeout(() => {
+    setTimeout(() => {
+      this.isBookRefreshing++
       this.dialogController.close();
     }, 1000);
-    clearTimeout(timeoutID);
   }
 
   /**
@@ -167,6 +183,8 @@ struct BookDetailPage {
                 })
 
               }
+              .chainAnimation(true)
+              .edgeEffect(EdgeEffect.Fade)
               .divider({
                 strokeWidth: 0.8,
                 color: '#cccccc',
@@ -199,7 +217,7 @@ struct BookDetailPage {
       })
 
       Row({ space: 20 }) {
-        Button(this.isAddBookShelf ? '已加书架' : '加入书架')
+        Button(this.bookData.isJoin ? '已加书架' : '加入书架')
           .padding({
             left: 32,
             right: 32,
@@ -212,7 +230,7 @@ struct BookDetailPage {
           .backgroundColor('#1fff6600')
           .fontColor('#FF6600')
           .onClick(() => {
-            this.addBookShelf();
+            !this.bookData.isJoin?this.addBookShelf():''
           })
         Button('立即阅读')
           .padding({
@@ -337,12 +355,16 @@ struct BookDetailPage {
 
       // 小说标题
       Row({ space: CommonConstants.SPACE_20 }) {
-        Image(this.bookData.coverUrl ?? $r('app.media.cover_list'))
+        Image(this.bookData.coverUrl)
+          .alt($r('app.media.icon_book_default_cover_ten'))
           .width(CommonConstants.NOVEL_IMG_WIDTH)
           .height(CommonConstants.NOVEL_IMG_HEIGHT)
           .borderRadius(5)
         Column({ space: 8 }) {
           Text(this.bookData.bookName.replace(new RegExp('\\..*', 'g'), ''))
+            .width('75%')
+            .maxLines(2)
+            .textOverflow({overflow:TextOverflow.Ellipsis})
             .fontColor(Color.White)
             .fontSize(20)
           Blank()
@@ -457,6 +479,6 @@ struct BookDetailPage {
     bookHistory.originBookId = this.bookData.id
     bookHistory.durChapterTitle = durChapterTitle
     bookHistory.durChapterIndex = durChapterIndex
-    await bookHistoryUtils.addBooks(bookHistory)
+    bookHistoryUtils.addBooks(bookHistory)
   }
 }

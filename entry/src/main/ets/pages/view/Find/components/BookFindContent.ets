@@ -12,6 +12,7 @@ import { ExploreItem, ExploreQuery } from '../../../../database/types/BookSource
 import mayAlsoLike from '../mayAlsoLike'
 import { CardItem } from './CardItem'
 import { router } from '@kit.ArkUI'
+import CommonConstants from '../../../../common/constants/CommonConstants';
 
 @Component
 export default struct BookFindContent {
@@ -49,7 +50,7 @@ export default struct BookFindContent {
       coverUrl: this.exploreRule.coverUrl,
       wordCount: this.exploreRule.wordCount
     }
-    axios.post('http://legado.wisdoms.xin/analysisRules', exploreQuery).then((res: AxiosResponse) => {
+    axios.post(CommonConstants.BASE_URL + '/common/analysisRules', exploreQuery).then((res: AxiosResponse) => {
       console.info('TagInfo, 解析内容：', JSON.stringify(res.data))
       this.bookList = (res.data as ExploreRule[]).map(item => {
         if (item.coverUrl && !isNetworkUrl(item.coverUrl)) {
@@ -97,7 +98,7 @@ export default struct BookFindContent {
         } else {
           Column() {
             ForEach(this.bookList, (item: ExploreRule, index) => {
-              CardItem({ item: item })
+              CardItem({ item: item ,currentIndex:this.currentIndex})
             })
             if (this.bookList.length === 3) {
               Column() {
@@ -116,7 +117,8 @@ export default struct BookFindContent {
                   params: {
                     bookSourceUrl: this.bookSourceUrl,
                     exploreItem: this.exploreItem,
-                    exploreRule: this.exploreRule
+                    exploreRule: this.exploreRule,
+                    currentIndex: this.currentIndex
                   }
                 })
               })

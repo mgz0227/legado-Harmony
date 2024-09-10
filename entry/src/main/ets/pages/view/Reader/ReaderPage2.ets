@@ -1,16 +1,14 @@
-import battery from 'ets/componets/common/battery';
-import Dialog from 'ets/componets/common/Dialog';
+
 import { display, promptAction, router, window } from '@kit.ArkUI';
 import sourceView from './sourceView';
 import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
 import DownloadSettingDialog from '../../../componets/Reader/DownloadSettingDialog';
 import LayoutMoreDialog from '../../../componets/Reader/LayoutMoreDialog';
-import { TxtContentHandler } from '../../../componets/Reader/TxtContentHandler';
 import { MusicPlayer } from 'ets/componets/Reader/MusicPlayer';
 import purificationView from './purificationView';
 import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
 import { BookList } from 'ets/componets/dataList/bookList';
-import { CoverFlipView } from '@ohos/readerLibrary';
+import { CoverFlipView, } from '@ohos/readerLibrary';
 import {
   BGColorType,
   BG_COLOR_ARRAY,
@@ -21,11 +19,10 @@ import { SlideFlipView } from '@ohos/readerLibrary/src/main/ets/view/SlideFlipVi
 import { UpDownFlipView } from '@ohos/readerLibrary/src/main/ets/view/UpDownFlipView';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { SimulateCurlView } from '@ohos/readerLibrary/src/main/ets/view/SimulateCurlView';
-import { NovelContentParseHelper } from '@ohos/readerLibrary/src/main/ets/common/helper/NovelContentParseHelper';
 import {
   ReaderChapterItem,
-  ReaderChapterPageItem
-} from '@ohos/readerLibrary/src/main/ets/common/constants/ReaderChaptersItem';
+} from '@ohos/readerLibrary/src/main/ets/common/entity/ReaderChaptersItem';
+import { ReaderProvider } from '@ohos/readerLibrary/src/main/ets/provider/configProvider';
 
 
 interface ParamsObj {
@@ -37,62 +34,8 @@ interface ParamsObj {
 @Entry
 @Component
 struct ReaderPage2 {
-  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
-  @StorageLink('topRectHeight') topRectHeight: number = 0
-  @State ReaderPadding: number = 24 // 边距
-  @State isShowSetting: boolean = true
-  @State isShowDownload: boolean = false
-  @State isShowListen: boolean = false
-  @State isShowContentSetting: boolean = false
-  @State isShowMoreLayout: boolean = false
-  @State CurrentChapters: number = 0
-  @State CurrentPage: number = 0
-  @State TotalChapters: number = 0
-  @State CurrentLuminance: number = 0 // 亮度
-  @State CurrentFontSize: number = 20 // 字号
-  @State LineHeight: number = 1.8
-  @State ParagraphSpacing: number = -2
-  @State isShowSource: boolean = false
-  @State isShowPurification: boolean = false
-  @Provide('chapterList') chapterList: ReaderChapterItem[] = [];
-  @Provide('turnStyle') turnStyle: FlipPageType = FlipPageType.COVER_FLIP_PAGE;
-  @Provide('fontSize') @Watch('onFontSizeChange') fontSize: number = Constants.INIT_FONT_SIZE;
-  @Provide('lineHeightRatio') @Watch('onFontSizeChange') lineHeightRatio: number = Constants.INIT_LINE_HEIGHT_RATIO;
-  @Provide('bgColorIndex') @Watch('onBgColorChanged') bgColorIndex: BGColorType = BGColorType.WHITE;
-  @Provide('bgColor') bgColor: string = BG_COLOR_ARRAY[BGColorType.WHITE];
-  // @Provide('offsetX') offsetX: number = 0
-  @Provide('offsetY') offsetY: number = 0;
-  @Provide('screenH') screenH: number = 0;
-  @Provide('screenW') screenW: number = 0;
-  @Provide('sumRow') sumRow: number = 0;
-  @Provide('rowWord') rowWord: number = 0;
-  @Provide('rotateAngleOne') rotateAngleOne: number = Constants.INIT_ROTATE_ANGLE_ONE;
-  @Provide('rotateAngleTwo') rotateAngleTwo: number = 0.0;
-  @Provide('curPosition') curPosition: number = 0;
-  @Provide('currentPageNum') @Watch('onFlush') currentPageNum: number = 0;
-  @Provide('pageWordSum') pageWordSum: number = 0;
-  @Provide('light') light: number = Constants.INIT_SCREEN_LIGHT;
-  @Provide('isSystemLight') isSystemLight: boolean = false;
-  @Provide('rowGap') rowGap: number = Constants.INIT_ROW_GAP;
-  @Provide('displaySize') @Watch('calChapterContent') displaySize: number[] = [0, 0];
-  @State currentChapterNum: number = 0;
-  @State isFontChanged: boolean = false;
-  // @State txtFile: chaptersItem[] = [];
-  // 网址导入Dialog
-  dialogController: CustomDialogController = new CustomDialogController({
-    builder: Dialog({
-      title: '加入书架',
-      CancelString: "暂不加入",
-      ConfirmString: "加入书架",
-      child: () => {
-        this.DialogString()
-      },
-    }),
-    cornerRadius: 16,
-    gridCount: 4,
-    offset: { dx: 0, dy: -300 }
-  })
-
+  currentChapters: number = 0
+  chapterList: ReaderChapterItem[] = [];
   async aboutToAppear() {
     //详情页加了个目录序号参数，所以修改了一下params的类型，不影响之前的bookData，但需要多‘.’一次。看看大佬们可以怎么优化一下，上个页面BookDetailPage
     let temp = router.getParams() as ParamsObj
@@ -102,64 +45,19 @@ struct ReaderPage2 {
     }) //txt小说
 
     if (this.chapterList.length != 0) {
-      this.chapterList[0].chapterList = this.chapterList[0].content.split('\n').map((value) => value + '\n');
+      this.chapterList[0].paragraphList = this.chapterList[0].content.split('\n').map((value) => value + '\n');
     }
 
     if (this.chapterList.length >= 2) {
       for (let index = 1; index < this.chapterList.length; index++) {
-        this.chapterList[index].chapterList = this.chapterList[index].content.split('\n').map((value) => value + '\n');
+        this.chapterList[index].paragraphList = this.chapterList[index].content.split('\n').map((value) => value + '\n');
       }
     }
-    this.TotalChapters = this.chapterList.length
-    this.CurrentChapters = temp.clickBookChapter
-    this.screenW = px2vp(display.getDefaultDisplaySync().width);
-    this.screenH = px2vp(display.getDefaultDisplaySync().height - (AppStorage.get('avoidHeight') as number));
-    this.sumRow = Math.floor((this.screenH) / (this.fontSize + this.rowGap));
-    this.rowWord = Math.floor((this.screenW - Constants.SCREEN_MARGIN_LEFT * 2) / this.fontSize);
-    this.simulatePageContent();
+    this.currentChapters = temp.clickBookChapter
+
     this.changeSystemBarStatue();
   }
 
-  calChapterContent() {
-    let width = this.displaySize[0];
-    let height = this.displaySize[1];
-
-    if (width !== 0 && height !== 0) {
-      NovelContentParseHelper.calculateChapterContent(this.chapterList[this.CurrentChapters].chapterList, this.fontSize,
-        this.fontSize * this.lineHeightRatio, width, height).then((chapterList) => {
-        let startIndex = 0
-        this.chapterList[this.CurrentChapters].chapterPageList = chapterList.map((item) => {
-          let contentLength = item.reduce((accumulator, currentString) => {
-            return accumulator + currentString.length;
-          }, 0)
-          let result = new ReaderChapterPageItem(startIndex, startIndex + contentLength, item);
-          startIndex += contentLength;
-          return result
-        })
-        this.chapterList = Array.from(this.chapterList)
-      }).catch((reason: string) => {
-        console.log(reason);
-      });
-    }
-
-  }
-
-  onFontSizeChange() {
-    this.sumRow = Math.floor((this.screenH) / (this.fontSize + this.rowGap));
-    this.rowWord = Math.floor((this.screenW - Constants.SCREEN_MARGIN_LEFT * 2) / this.fontSize);
-    let pageWordSum = this.sumRow * this.rowWord;
-
-    if (this.currentChapterNum > pageWordSum) {
-      this.currentPageNum = Math.floor(this.currentChapterNum / (pageWordSum)) +
-        (this.currentChapterNum > 1 && this.currentChapterNum % pageWordSum > 0 ? 2 : 1);
-    } else if (this.currentChapterNum > 0) {
-      this.currentPageNum = 2;
-    } else {
-      console.info('currentStartIndex = ' + this.currentChapterNum);
-    }
-    this.isFontChanged = true;
-    this.simulatePageContent();
-  }
 
   changeSystemBarStatue(): void {
     window.getLastWindow(getContext(this), (err, data) => {
@@ -168,8 +66,8 @@ struct ReaderPage2 {
         return;
       }
       let SystemBarProperties: window.SystemBarProperties = {
-        statusBarColor: BG_COLOR_ARRAY[this.bgColorIndex],
-        navigationBarColor: BG_COLOR_ARRAY[this.bgColorIndex],
+        statusBarColor: BG_COLOR_ARRAY[BGColorType.WHITE],
+        navigationBarColor: BG_COLOR_ARRAY[BGColorType.WHITE],
         navigationBarContentColor: Constants.TRANSPARENT
       };
       try {
@@ -179,7 +77,7 @@ struct ReaderPage2 {
             console.error('Failed to set the system bar properties. Cause: ' + JSON.stringify(err));
             return;
           }
-          data.setWindowBackgroundColor(BG_COLOR_ARRAY[this.bgColorIndex]);
+          data.setWindowBackgroundColor(BG_COLOR_ARRAY[BGColorType.WHITE]);
         });
       } catch (exception) {
         console.error('Failed to set the system bar properties. Cause: ' + JSON.stringify(exception));
@@ -191,89 +89,68 @@ struct ReaderPage2 {
     this.changeSystemBarStatue();
   }
 
-  onFlush() {
-    console.info('currentPageNum=' + this.currentPageNum + ', isFontChanged=' + this.isFontChanged);
-    if (this.isFontChanged && this.currentPageNum === 1) {
-      this.isFontChanged = false;
-      this.currentChapterNum = 0;
+  build() {
+    Row() {
+      ReaderProvider({
+        chapterList: this.chapterList,
+        child: this.contentBuilder
+      })
+    }
+    .height('100%')
+    .width('100%')
+  }
+
+  @Builder
+  contentBuilder() {
+    Row() {
+      ContentContainer()
     }
   }
+}
 
-  simulatePageContent() {
-    this.offsetY = 0;
-    this.rotateAngleTwo = 0.0;
-    this.rotateAngleOne = Constants.INIT_ROTATE_ANGLE_ONE;
+// 好像因为层级结构的关系，这块需要包裹一个控件，ReaderPageContent才可以获取到Provider提供的部分。
+// todo：研究确认一下
+@Component
+struct ContentContainer {
+  build() {
+    Row() {
+      ReaderPageContent()
+    }
+  }
+}
+
+@Component
+struct ReaderPageContent {
+  @State isShowSetting: boolean = true
+  @State isShowContentSetting: boolean = false
+  @State isShowDownload: boolean = false
+  @State isShowListen: boolean = false
+  @State isShowMoreLayout: boolean = false
+  @State isFontChanged: boolean = false
+  @State isShowSource: boolean = false
+  @State isShowPurification: boolean = false
+  @State screenH: number = 0
+  @State screenW: number = 0
+  @State readerPadding: number = 24 // 边距
+  @Consume('fontSize') fontSize: number
+  @Consume('lineHeightRatio') lineHeightRatio: number
+  @Consume('bgColor') bgColor: string
+  @Consume('chapterList') chapterList: ReaderChapterItem[]
+  @Consume('turnStyle') turnStyle: FlipPageType
+  @Consume('currentPageIndex') @Watch('onFlush') currentPageIndex: number
+  @Consume('paragraphSpacing') paragraphSpacing: number
+  @Consume('currentChapterIndex') currentChapterIndex: number
+  @Consume('currentLuminance') currentLuminance: number
+  @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  @StorageLink('topRectHeight') topRectHeight: number = 0
+
+  aboutToAppear(): void {
+    this.screenW = px2vp(display.getDefaultDisplaySync().width);
+    this.screenH = px2vp(display.getDefaultDisplaySync().height - (AppStorage.get('avoidHeight') as number));
   }
 
-  private clickAnimateTo(isLeft: Boolean) {
-    // if (this.turnStyle === FlipPageType.COVER_FLIP_PAGE) {
-    //   animateTo({
-    //     duration: Constants.COVER_DURATION,
-    //     curve: Curve.EaseOut,
-    //     onFinish: () => {
-    //       if (this.offsetX > 0) {
-    //         this.currentPageNum > 0 ? this.currentPageNum - 1 : this.currentPageNum;
-    //         this.currentChapterNum -= this.sumRow * this.rowWord;
-    //       } else if (this.offsetX < 0) {
-    //         this.currentPageNum += 1;
-    //         this.currentChapterNum += this.sumRow * this.rowWord;
-    //       }
-    //       this.offsetX = 0;
-    //       this.simulatePageContent();
-    //     }
-    //   }, () => {
-    //     if (isLeft) {
-    //       this.offsetX = this.screenW;
-    //     } else {
-    //       this.offsetX = -this.screenW;
-    //     }
-    //   });
-    // } else if (this.turnStyle === FlipPageType.SIMULATE_FLIP_PAGE) {
-    //   animateTo({
-    //     duration: Constants.SIMULATE_DURATION,
-    //     curve: Curve.EaseOut,
-    //     onFinish: () => {
-    //       this.simulatePageContent();
-    //       if (isLeft) {
-    //         this.currentChapterNum -= this.sumRow * this.rowWord;
-    //       } else {
-    //         this.currentChapterNum += this.sumRow * this.rowWord;
-    //       }
-    //     }
-    //   }, () => {
-    //     if (isLeft) {
-    //       this.rotateAngleOne = 0;
-    //       this.currentPageNum > 0 ? this.currentPageNum - 1 : this.currentPageNum;
-    //     } else {
-    //       this.rotateAngleTwo = Constants.INIT_ROTATE_ANGLE_ONE;
-    //       this.currentPageNum += 1;
-    //     }
-    //   })
-    // } else if (this.turnStyle === FlipPageType.SLIDE_FLIP_PAGE) {
-    //   animateTo({
-    //     duration: Constants.SLIDE_DURATION,
-    //     curve: Curve.EaseOut,
-    //     onFinish: () => {
-    //       if (this.offsetX > 0) {
-    //         this.currentPageNum > 0 ? this.currentPageNum - 1 : this.currentPageNum;
-    //         this.currentChapterNum -= this.sumRow * this.rowWord;
-    //       }
-    //       if (this.offsetX < 0) {
-    //         this.currentPageNum += 1;
-    //         this.currentChapterNum += this.sumRow * this.rowWord;
-    //       }
-    //       console.info(this.currentChapterNum.toString());
-    //       this.offsetX = 0;
-    //       this.simulatePageContent();
-    //     }
-    //   }, () => {
-    //     if (isLeft) {
-    //       this.offsetX = this.screenW;
-    //     } else {
-    //       this.offsetX = -this.screenW;
-    //     }
-    //   })
-    // }
+  get totalChapter(): number {
+    return this.chapterList.length;
   }
 
   build() {
@@ -288,7 +165,7 @@ struct ReaderPage2 {
                 .onClick(() => {
                   router.back()
                 })
-              Text(`${this.chapterList[this.CurrentChapters]?.chapterTitleNumber} ${this.chapterList[this.CurrentChapters]?.title}`
+              Text(`${this.chapterList[this.currentChapterIndex]?.chapterTitleNumber} ${this.chapterList[this.currentChapterIndex]?.title}`
                 .replace(new RegExp('\\s{1,}', 'g'), ' ')
                 .replaceAll('=', ''))
                 .layoutWeight(1)
@@ -423,14 +300,14 @@ struct ReaderPage2 {
 
               Row({ space: 16 }) {
                 Text("上一章").onClick(() => {
-                  if (this.CurrentChapters > 0) {
-                    this.CurrentChapters--
+                  if (this.currentChapterIndex > 0) {
+                    this.currentChapterIndex--
                   }
                 })
 
                 Slider({
-                  value: this.CurrentChapters,
-                  max: this.TotalChapters - 1,
+                  value: this.currentChapterIndex,
+                  max: this.totalChapter - 1,
                   min: 0,
                   step: 1,
                   style: SliderStyle.InSet
@@ -439,12 +316,12 @@ struct ReaderPage2 {
                   .blockSize({ width: 30, height: 30 })
                   .layoutWeight(1)
                   .onChange((value) => {
-                    this.CurrentChapters = Number(value.toFixed(0))
+                    this.currentChapterIndex = Number(value.toFixed(0))
                   })
 
                 Text("下一章").onClick(() => {
-                  if (this.CurrentChapters < this.TotalChapters - 1) {
-                    this.CurrentChapters++
+                  if (this.currentChapterIndex < this.totalChapter - 1) {
+                    this.currentChapterIndex++
                   }
                 })
               }
@@ -459,7 +336,7 @@ struct ReaderPage2 {
                 Row({ space: 16 }) {
                   Text('亮度')
                   Slider({
-                    value: this.CurrentLuminance,
+                    value: this.currentLuminance,
                     max: 100,
                     min: 0,
                     step: 1,
@@ -469,7 +346,7 @@ struct ReaderPage2 {
                     .blockSize({ width: 30, height: 30 })
                     .layoutWeight(1)
                     .onChange((value) => {
-                      this.CurrentLuminance = value
+                      this.currentLuminance = value
                     })
                   Row() {
                     Text('跟随系统')
@@ -479,7 +356,7 @@ struct ReaderPage2 {
                 Row({ space: 16 }) {
                   Text('字号')
                   Slider({
-                    value: this.CurrentFontSize,
+                    value: this.fontSize,
                     max: 48,
                     min: 12,
                     step: 1,
@@ -489,7 +366,7 @@ struct ReaderPage2 {
                     .blockSize({ width: 30, height: 30 })
                     .layoutWeight(1)
                     .onChange((value) => {
-                      this.CurrentFontSize = value
+                      this.fontSize = value
                     })
                   Row() {
                     Button('字体')
@@ -500,18 +377,18 @@ struct ReaderPage2 {
                   Text('排版')
                   Button('紧凑')
                     .onClick(() => {
-                      this.LineHeight = 1.6
-                      this.ParagraphSpacing = -4
+                      this.lineHeightRatio = 1.6
+                      this.paragraphSpacing = 0
                     })
                   Button('适中')
                     .onClick(() => {
-                      this.LineHeight = 1.8
-                      this.ParagraphSpacing = -2
+                      this.lineHeightRatio = 1.8
+                      this.paragraphSpacing = 2
                     })
                   Button('宽松')
                     .onClick(() => {
-                      this.LineHeight = 2
-                      this.ParagraphSpacing = 0
+                      this.lineHeightRatio = 2
+                      this.paragraphSpacing = 4
                     })
                   Row() {
                     Button('更多')
@@ -615,26 +492,26 @@ struct ReaderPage2 {
         Row() {
           if (this.turnStyle === FlipPageType.COVER_FLIP_PAGE) {
             CoverFlipView({
-              currentChapterNum: this.currentChapterNum,
-              currentPageNum: this.currentPageNum,
+              currentChapterIndex: this.currentChapterIndex,
+              currentPageIndex: this.currentPageIndex,
             })
           }
           if (this.turnStyle === FlipPageType.SIMULATE_FLIP_PAGE) {
             SimulateCurlView({
-              currentChapterNum: this.currentChapterNum,
-              currentPageNum: this.currentPageNum,
+              currentChapterIndex: this.currentChapterIndex,
+              currentPageIndex: this.currentPageIndex,
             })
           }
           if (this.turnStyle === FlipPageType.SLIDE_FLIP_PAGE) {
             SlideFlipView({
-              currentChapterNum: this.currentChapterNum,
-              currentPageNum: this.currentPageNum,
+              currentChapterNum: this.currentChapterIndex,
+              currentPageNum: this.currentPageIndex,
             })
           }
           if (this.turnStyle === FlipPageType.UP_DOWN_FLIP_PAGE) {
             UpDownFlipView({
-              currentChapterNum: this.currentChapterNum,
-              currentPageNum: this.currentPageNum,
+              currentChapterNum: this.currentChapterIndex,
+              currentPageNum: this.currentPageIndex,
             })
           }
         }.width(Constants.FULL_PERCENT)
@@ -659,7 +536,7 @@ struct ReaderPage2 {
             }
           } else if (event.x < this.screenW / 3) {
             if (this.turnStyle != FlipPageType.UP_DOWN_FLIP_PAGE) {
-              if (this.CurrentChapters == 0 && this.CurrentPage == 0) {
+              if (this.currentChapterIndex == 0 && this.currentPageIndex == 0) {
                 promptAction.showToast({
                   message: Constants.MSG_FLIP_OVER,
                   duration: Constants.PROMPT_DURATION
@@ -685,6 +562,86 @@ struct ReaderPage2 {
     })
     .height('100%')
     .width('100%')
+
+  }
+
+  private clickAnimateTo(isLeft: Boolean) {
+    // if (this.turnStyle === FlipPageType.COVER_FLIP_PAGE) {
+    //   animateTo({
+    //     duration: Constants.COVER_DURATION,
+    //     curve: Curve.EaseOut,
+    //     onFinish: () => {
+    //       if (this.offsetX > 0) {
+    //         this.currentPageNum > 0 ? this.currentPageNum - 1 : this.currentPageNum;
+    //         this.currentChapterIndex -= this.sumRow * this.rowWord;
+    //       } else if (this.offsetX < 0) {
+    //         this.currentPageNum += 1;
+    //         this.currentChapterIndex += this.sumRow * this.rowWord;
+    //       }
+    //       this.offsetX = 0;
+    //       this.simulatePageContent();
+    //     }
+    //   }, () => {
+    //     if (isLeft) {
+    //       this.offsetX = this.screenW;
+    //     } else {
+    //       this.offsetX = -this.screenW;
+    //     }
+    //   });
+    // } else if (this.turnStyle === FlipPageType.SIMULATE_FLIP_PAGE) {
+    //   animateTo({
+    //     duration: Constants.SIMULATE_DURATION,
+    //     curve: Curve.EaseOut,
+    //     onFinish: () => {
+    //       this.simulatePageContent();
+    //       if (isLeft) {
+    //         this.currentChapterIndex -= this.sumRow * this.rowWord;
+    //       } else {
+    //         this.currentChapterIndex += this.sumRow * this.rowWord;
+    //       }
+    //     }
+    //   }, () => {
+    //     if (isLeft) {
+    //       this.rotateAngleOne = 0;
+    //       this.currentPageNum > 0 ? this.currentPageNum - 1 : this.currentPageNum;
+    //     } else {
+    //       this.rotateAngleTwo = Constants.INIT_ROTATE_ANGLE_ONE;
+    //       this.currentPageNum += 1;
+    //     }
+    //   })
+    // } else if (this.turnStyle === FlipPageType.SLIDE_FLIP_PAGE) {
+    //   animateTo({
+    //     duration: Constants.SLIDE_DURATION,
+    //     curve: Curve.EaseOut,
+    //     onFinish: () => {
+    //       if (this.offsetX > 0) {
+    //         this.currentPageNum > 0 ? this.currentPageNum - 1 : this.currentPageNum;
+    //         this.currentChapterIndex -= this.sumRow * this.rowWord;
+    //       }
+    //       if (this.offsetX < 0) {
+    //         this.currentPageNum += 1;
+    //         this.currentChapterIndex += this.sumRow * this.rowWord;
+    //       }
+    //       console.info(this.currentChapterIndex.toString());
+    //       this.offsetX = 0;
+    //       this.simulatePageContent();
+    //     }
+    //   }, () => {
+    //     if (isLeft) {
+    //       this.offsetX = this.screenW;
+    //     } else {
+    //       this.offsetX = -this.screenW;
+    //     }
+    //   })
+    // }
+  }
+
+  onFlush() {
+    console.info('currentPageNum=' + this.currentPageIndex + ', isFontChanged=' + this.isFontChanged);
+    if (this.isFontChanged && this.currentPageIndex === 0) {
+      this.isFontChanged = false;
+      this.currentPageIndex = 0;
+    }
   }
 
   @Builder
@@ -749,7 +706,7 @@ struct ReaderPage2 {
 
   @Builder
   LayoutMoreDialog() {
-    LayoutMoreDialog({ ReaderPadding: this.ReaderPadding })
+    LayoutMoreDialog({ ReaderPadding: this.readerPadding })
       .height(500)
       .width("100%")
   }

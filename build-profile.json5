@@ -1,10 +1,24 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "legado",
+        "type": "HarmonyOS",
+        "material": {
+          "storePassword": "0000001F39FAED2651D657099281BA9C199E92A7F8A9374824243F2A27430B35E7BB1A780D80A066340476F21DBD2C",
+          "certpath": "D:/喵公子Studio/Harmony签名/Legado发布.cer",
+          "keyAlias": "legado",
+          "keyPassword": "0000001F0589FA894DAA48A3E911B15A38059B6798F9C8B3EFD3D7279D80C9628B1AE59CB9EA616C14F26AA12F1E6B",
+          "profile": "D:/喵公子Studio/Harmony签名/legadoRelease.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "D:/喵公子Studio/Harmony签名/legado.p12"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",
-        "signingConfig": "default",
+        "signingConfig": "legado",
         "compatibleSdkVersion": "5.0.0(12)",
         "runtimeOS": "HarmonyOS",
       }

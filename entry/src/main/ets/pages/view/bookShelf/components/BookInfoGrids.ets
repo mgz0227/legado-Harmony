@@ -2,6 +2,9 @@ import confirmDialogExample from '../../../../componets/common/confirmDialog'
 import { Books } from '../../../../database/entities/Books'
 import { router } from '@kit.ArkUI'
 import BookInfoDialogs from './dialog/BookInfoDialogs'
+import CommonConstants from '../../../../common/constants/CommonConstants'
+import FontConstants from '../../../../common/constants/FontConstants'
+import clickUtil from '../../../../common/utils/ClickUtils'
 
 @Component
 /**
@@ -46,51 +49,82 @@ export default struct BookInfoGrids{
 
 
   build() {
-    Column() {
+    Column({
+      space:8
+    }) {
       Stack(){
+        if (this.book.isLocalBook){
+          Text('本地')
+            .fontColor('#FFEDD4')
+            .fontWeight(FontConstants.FONT_WEIGHT_400)
+            .fontSize(9)
+            .padding(3)
+            .backgroundColor('#523000')
+            .zIndex(1)
+            .borderRadius({
+              topRight: 6,
+              bottomLeft: 6,
+            })
+        }
         Stack(){
           if (this.book.isTop){
-            Text('置顶').fontColor(Color.White).fontWeight(300).fontSize(8).padding(3).borderRadius(5)
-              .backgroundColor('rgba(0, 0, 0, 0.45)').zIndex(1)
+            Text('置顶')
+              .fontColor(Color.White)
+              .fontWeight(FontConstants.FONT_WEIGHT_400)
+              .fontSize(9)
+              .padding(3)
+              .borderRadius(5)
+              .backgroundColor('rgba(0, 0, 0, 0.45)')
+              .zIndex(1)
           }
           Image(this.book.coverUrl)
             .draggable(false)
             .alt($r('app.media.icon_book_default_cover_one'))
             .width(100)
             .height(120)
-        }.alignContent(Alignment.BottomStart)
+        }
+        .alignContent(Alignment.BottomStart)
       }
+      .alignContent(Alignment.TopEnd)
       .backgroundColor($r('app.string.color_black_45'))
       .borderRadius(10)
-      Text(this.book.bookName)
-        .fontSize(15)
-        .fontWeight(700)
-        .textOverflow({
-          overflow:TextOverflow.Ellipsis
-        })
-        .ellipsisMode(EllipsisMode.END)
-        .maxLines(2)
-      //描述
-      Text(this.book.customIntro).fontSize(12).fontColor('rgb(174,174,174)')
-        .textOverflow({
-          overflow:TextOverflow.Ellipsis
-        })
-        .ellipsisMode(EllipsisMode.END)
-        .fontWeight(500)
-        .maxLines(1)
-      Text(this.book.latestChapterTitle).fontSize(12).fontColor('rgb(174,174,174)')
-        .textOverflow({
-          overflow:TextOverflow.Ellipsis
-        })
-        .ellipsisMode(EllipsisMode.END)
-        .fontWeight(500)
-        .maxLines(1)
+      Column({
+        space:CommonConstants.SPACE_2
+      }){
+        Text(this.book.bookName)
+          .fontSize(15)
+          .fontWeight(700)
+          .textOverflow({
+            overflow:TextOverflow.Ellipsis
+          })
+          .maxLines(2)
+        //描述
+        Text(this.book.customIntro).fontSize(12).fontColor('rgb(174,174,174)')
+          .textOverflow({
+            overflow:TextOverflow.Ellipsis
+          })
+          .ellipsisMode(EllipsisMode.END)
+          .fontWeight(500)
+          .maxLines(1)
+        Text(this.book.durChapterTitle).fontSize(12).fontColor('rgb(174,174,174)')
+          .textOverflow({
+            overflow:TextOverflow.Ellipsis
+          })
+          .ellipsisMode(EllipsisMode.END)
+          .fontWeight(500)
+          .maxLines(1)
+      }
+      .width(100)
+      .alignItems(HorizontalAlign.Start)
     }
+    .alignItems(HorizontalAlign.Start)
     .padding({ left:8,right:8,bottom:5,top:5 })
     .onClick(()=>{
-      router.pushUrl({
-        url: 'pages/view/BookDetailPage',
-        params: this.book
+      clickUtil.preventClick(()=>{
+        router.pushUrl({
+          url: 'pages/view/BookDetailPage',
+          params: this.book
+        })
       })
     })
     .gesture(

@@ -12,7 +12,7 @@ struct AboutUsPage {
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @State isShowQQ: boolean = false
-  @State version: string = "V4.1.13"
+  @State version: string = "V1.0.0.1"
   @State first_list: dataItem[] = [
     new dataItem("检查更新", 1),
     new dataItem("更新日志", 2),
@@ -32,11 +32,8 @@ struct AboutUsPage {
     alignment: DialogAlignment.Center,
   })
   @State qqList: Array<string> = [
-    'QQ群1:2031546254',
-    'QQ群2:2031546254',
-    'QQ群3:2031546254',
-    'QQ群4:2031546254',
-    'QQ群5:2031546254',
+    'Beta群:887615035'
+
   ]
 
   firstUrl_list(value: number | string) {
@@ -48,7 +45,7 @@ struct AboutUsPage {
         try {
           const request: Want = {
             parameters: {
-              bundleName: 'io.legado.app'
+              bundleName: 'com.legado.app'
             }
           };
           productViewManager.loadProduct(getContext(this) as common.UIAbilityContext, request, {
@@ -334,7 +331,7 @@ struct AboutUsPage {
           .lineHeight(24)
       }
       .onClick(() => {
-        this.isShowQQ = false
+        this.isShowQQ = true
       })
       .alignItems(HorizontalAlign.Center)
       .padding({

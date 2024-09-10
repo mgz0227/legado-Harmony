@@ -33,33 +33,37 @@ export default struct BookFolder {
 
 
   build() {
-    Flex({ direction: FlexDirection.Row, wrap: FlexWrap.Wrap,alignContent:FlexAlign.Center}){
-      ForEach(this.groupList, (item: BookGroups) => {
-        Column(){
-          if(item.show && !item.isSystem){
-            if (this.EXHIBIT === '宫格'){
-              this.bookInfoGrid(item)
-            } else {
-              this.bookFolderInfo(item)
+    GridRow({
+      columns:this.EXHIBIT === '宫格'?3:1
+    }){
+      ForEach(this.groupList,(item:BookGroups)=>{
+        if(item.show && !item.isSystem){
+          GridCol(){
+            Column(){
+              if (this.EXHIBIT === '宫格'){
+                this.bookInfoGrid(item)
+              } else {
+                this.bookFolderInfo(item)
+              }
             }
           }
-        }
-        .gesture(
-          LongPressGesture({ repeat: true,duration:500 })
-            .onAction((event: GestureEvent) => {
-              if (event.repeat) {
-                if (!this.isShow) {
-                  this.dialogGroupData = item
-                  this.isShow = true
-                  this.changeNumber = 1
-                  this.groupInfoDialog?.open()
+          .gesture(
+            LongPressGesture({ repeat: true,duration:500 })
+              .onAction((event: GestureEvent) => {
+                if (event.repeat) {
+                  if (!this.isShow) {
+                    this.dialogGroupData = item
+                    this.isShow = true
+                    this.changeNumber = 1
+                    this.groupInfoDialog?.open()
+                  }
                 }
-              }
-            }))
-        .onClick(()=>{
-          this.isShowBookFolderInfoDialog = true
-          this.clickGroup = item
-        })
+              }))
+          .onClick(()=>{
+            this.isShowBookFolderInfoDialog = true
+            this.clickGroup = item
+          })
+        }
       })
     }
     .bindSheet($$this.isShowBookFolderInfoDialog, this.bookFolderInfoDialog(), {
@@ -73,7 +77,6 @@ export default struct BookFolder {
     })
   }
   @Prop clickGroup:BookGroups
-  @Provide searchBookList:number[] = []
   @Builder bookFolderInfoDialog(){
     Column(){
       BookManageDialog({
@@ -106,16 +109,18 @@ export default struct BookFolder {
             }
             .zIndex(2)
 
-            Row(){
-              Image($r('app.media.occlusion1')).draggable(false)
-            }
-            .zIndex(1)
-            .width(95).height(110)
+            if (item.coverType !== 2){
+              Row(){
+                Image($r('app.media.occlusion1')).draggable(false)
+              }
+              .zIndex(1)
+              .width(95).height(110)
 
-            Row(){
-              Image($r('app.media.occlusion2'))
-            }.zIndex(0)
-            .width(100).height(100)
+              Row(){
+                Image($r('app.media.occlusion2'))
+              }.zIndex(0)
+              .width(100).height(100)
+            }
           }
           .align(Alignment.BottomStart)
         }
@@ -138,10 +143,9 @@ export default struct BookFolder {
         .fontWeight(500)
         .maxLines(1)
     }
+    .borderRadius(8)
     .alignItems(HorizontalAlign.Start)
-    .width('33%')
     .padding({ left:8,right:8,bottom:5,top:5 })
-    .backgroundColor('rgba(244,244,244,0.8)')
   }
 
   @Builder bookFolderInfo(group:BookGroups){
@@ -156,7 +160,8 @@ export default struct BookFolder {
       }){
         BookOverlay({
           bookImage:group.coverUrl,
-          isTop:group.isTop
+          isTop:group.isTop,
+          coverType:group.coverType
         })
         Column({
           space:24

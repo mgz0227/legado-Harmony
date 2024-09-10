@@ -215,6 +215,7 @@ export default class CommonConstants {
   /**
    * space间距
    */
+  static readonly SPACE_2: number = 2;
   static readonly SPACE_6: number = 6;
   static readonly SPACE_10: number = 10;
   static readonly SPACE_12: number = 12;
@@ -244,6 +245,8 @@ export default class CommonConstants {
   static readonly RSS_SOURCES_GROUP_LIST_DATA_KEY:string = 'RSS_SOURCES_GROUP_LIST_DATA_KEY'
   //订阅源刷新标识
   static readonly RSS_SOURCES_REFRESHING:string = 'RSS_SOURCES_REFRESHING'
+  //系统UA'0-Android', '1-Phone', '2-电脑', '3-自定义'
+  static readonly SYSTEM_UA:string = 'SYSTEM_UA'
   /**
    * 数据库日志标签
    */
@@ -271,4 +274,9 @@ export default class CommonConstants {
   static readonly COMMON_HEIGHT_21_6: number = 21.6;
   static readonly COMMON_WIDTH_40: number = 40;
   static readonly COMMON_HEIGHT_40: number = 40;
+
+  /*
+   * 接口请求域名
+   * */
+  static readonly BASE_URL: string = 'https://legado.miaogongzi.cc/api/LegadoServer';
 }

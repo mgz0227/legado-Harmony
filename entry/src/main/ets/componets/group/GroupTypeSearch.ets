@@ -9,6 +9,8 @@ export default struct groupTypeSearch {
   @Link groupCoverShow:boolean
   @State groupList:BookGroups[] = []
   @Link bookTypeNumber:number
+  @Link searchBookList:number[]
+  @Prop isShowMore:boolean = false
   aboutToAppear(): void {
     this.getGroupList()
   }
@@ -30,6 +32,7 @@ export default struct groupTypeSearch {
           groupCoverShow:this.groupCoverShow,
           showGroupList:this.groupList,
           currentIndex:this.currentIndex,
+          searchBookList:this.searchBookList
         })
           .zIndex(9999)
         Rect()
@@ -71,6 +74,7 @@ export default struct groupTypeSearch {
         ).onClick(()=>{
           this.groupCoverShow = true
         })
+        .visibility(!this.isShowMore?Visibility.Visible:Visibility.Hidden)
       }.margin({ left: 15,bottom:10})
     }
 

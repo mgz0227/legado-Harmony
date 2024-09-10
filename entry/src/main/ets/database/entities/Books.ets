@@ -4,6 +4,7 @@
  * @className: Books
  * 书籍
  */
+import { BookSource } from './BookSource';
 
 @Observed
 export class Books {
@@ -36,7 +37,7 @@ export class Books {
   //自定义字符集名称(仅适用于本地书籍)
   charset?:string
   //在导入的情况下或则未分组默认为2 未分组
-  bookGroup:number = 2;
+  bookGroup:number = 3;
   // 最新章节标题
   latestChapterTitle?:string
   // 最新章节标题更新时间
@@ -75,4 +76,24 @@ export class Books {
   updateTime?:number = 0
   //是否加入书架
   isJoin:boolean = false
+  //是否本地导入
+  isLocalBook:boolean = false
+  source?:BookSource
+  sourceList?:BookSource[] = []
 }
+
+export class bookShelfImport{
+  name: string = ""
+  author: string = ""
+  intro: string = ""
+  bookUrl:string = ""
+
+  constructor(bookShelf:bookShelfImport) {
+    this.name = bookShelf.name
+    this.author = bookShelf.author
+    this.intro = bookShelf.intro
+    this.bookUrl = bookShelf.bookUrl
+  }
+}
+
+export const BOOK_SEARCH_TYPE: string[] = ['最近阅读', '更新排序', '手动排序']
