@@ -1,6 +1,6 @@
 import { ExploreItem } from '../../../../database/types/BookSourceType'
 import { router } from '@kit.ArkUI'
-import { ExploreRule } from '../../../../database/entities/rule'
+import { BookSource } from '../../../../database/entities/BookSource'
 
 export interface GroupExploreList {
   title: string,
@@ -14,8 +14,7 @@ export default struct AllCategory {
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @Prop list: GroupExploreList[] = []
   @Link showSheet: boolean
-  @Prop bookSourceUrl: string = ''
-  @Prop exploreRule: ExploreRule = {}
+  @Prop bookSource?: BookSource
 
   build() {
     Column() {
@@ -106,15 +105,14 @@ export default struct AllCategory {
     .backgroundColor('#0F000000')
     .borderRadius(4)
     .onClick(() => {
-      if (!item.url) {
+      if (!item.url || !this.bookSource) {
         return
       }
       router.pushUrl({
         url: 'pages/view/Find/CategoryList/Index',
         params: {
-          bookSourceUrl: this.bookSourceUrl,
-          exploreItem: item,
-          exploreRule: this.exploreRule
+          bookSource: this.bookSource,
+          exploreItem: item
         }
       })
     })
