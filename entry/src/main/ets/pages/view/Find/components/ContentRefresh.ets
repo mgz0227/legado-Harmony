@@ -4,7 +4,6 @@ import RefreshComponent from '../../../../componets/common/RefreshComponent'
 import { BookSource } from '../../../../database/entities/BookSource'
 import BookFindContent from './BookFindContent'
 import { JSON } from '@kit.ArkTS'
-import { ExploreRule } from '../../../../database/entities/rule'
 import { ExploreItem } from '../../../../database/types/BookSourceType'
 import AllCategory, { GroupExploreList } from './AllCategory'
 
@@ -36,7 +35,6 @@ export default struct ContentRefresh {
   @State groupExploreList: GroupExploreList[] = []
   @State exploreList: ExploreItem[] = []
   @State showExploreList: ExploreItem[] = []
-  @State exploreRule?: ExploreRule = {}
   @State showSheet: boolean = false
 
   aboutToAppear() {
@@ -49,7 +47,6 @@ export default struct ContentRefresh {
 
   getList () {
     try {
-      this.exploreRule = this.bookSource.ruleExplore
       console.info('TagInfo: 书源地址：', this.bookSource.bookSourceUrl)
       console.info('TagInfo: 发现地址：', JSON.stringify(JSON.parse(this.bookSource.exploreUrl ?? '[]')))
       const exploreList = JSON.parse(this.bookSource.exploreUrl ?? '[]') as ExploreItem[]
@@ -122,9 +119,8 @@ export default struct ContentRefresh {
             ForEach(this.showExploreList, (item: ExploreItem) => {
               BookFindContent({
                 currentIndex: this.currentIndex,
-                bookSourceUrl: this.bookSource.bookSourceUrl,
                 exploreItem: item,
-                exploreRule: this.exploreRule,
+                bookSource: this.bookSource,
                 counter: this.counter,
                 handleClick: () => {
                   this.showSheet = true
@@ -180,8 +176,7 @@ export default struct ContentRefresh {
     Column() {
       AllCategory({
         showSheet: this.showSheet,
-        bookSourceUrl: this.bookSource.bookSourceUrl,
-        exploreRule: this.exploreRule,
+        bookSource: this.bookSource,
         list: this.groupExploreList
       })
     }
