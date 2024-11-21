@@ -414,7 +414,7 @@ export default struct newBookShelf{
             Row(){
               Text('卖报小郎君').fontSize(10).fontWeight(400).fontColor(this.themeColor.mainColor)
             }
-            .padding({left:6,right:6,top:5,bottom:5}).backgroundColor('rgba(255, 102, 0, 0.12)').borderRadius(10)
+            .padding({left:6,right:6,top:5,bottom:5}).backgroundColor(this.themeColor.secondColor).borderRadius(10)
             Row(){
               Text('玄幻').fontSize(10).fontWeight(400).fontColor('rgba(0, 0, 0, 0.45)')
             }

@@ -4,6 +4,8 @@
  * @className: BodyContent
  */
 import CommonConstants from '../../../../common/constants/CommonConstants'
+import { ThemeStorageKey } from '../../../../common/constants/Theme'
+import { ThemeColorItem } from '../../../../common/model/Theme'
 import sourceType from '../../../../componets/common/sourceType'
 import SourceCommon from '../../../../componets/source/SourceCommon'
 import BookSourceDao from '../../../../database/dao/BookSourceDao'
@@ -21,7 +23,8 @@ export default struct BodyContent {
   @StorageLink(CommonConstants.HAS_EXPLORE_URL) @Watch('getList') hasExploreUrl?: boolean = undefined
   tabsBodyController: TabsController = new TabsController();
   @StorageLink('refreshCount') @Watch('getList') refreshCount: number = 0
-
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
   aboutToAppear() {
     this.getList()
   }
@@ -58,7 +61,7 @@ export default struct BodyContent {
         if (this.loading) {
           Row() {
             LoadingProgress()
-              .color(0xff6600)
+              .color(this.themeColor.mainColor)
               .width(30)
             Text('加载中...')
           }

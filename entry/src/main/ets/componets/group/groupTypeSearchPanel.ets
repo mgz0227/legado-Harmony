@@ -136,7 +136,7 @@ export default struct groupTypeSearchPanel{
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
       .width(68)
-      .backgroundColor('rgba(252, 121, 0, 0.12)')
+      .backgroundColor(this.themeColor.secondColor)
       .padding({left:16,right:16,top:6,bottom:6})
     }
   }

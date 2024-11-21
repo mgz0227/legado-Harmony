@@ -95,7 +95,7 @@ export default struct coverInfoDialog{
           .width('49%')
           .borderRadius(20)
           .alignItems(HorizontalAlign.Center)
-          .backgroundColor('rgba(255, 102, 0, 0.12)')
+          .backgroundColor(this.themeColor.secondColor)
           Column(){
             Text('确定')
               .fontSize(16)

@@ -20,9 +20,9 @@ export default struct BookMark {
           .fontWeight(this.currentIndex === this.index ? 700 : 500)
           .lineHeight(30)
           .zIndex(999)
-          .backgroundImage(this.currentIndex === this.index ? $r('app.media.underline') : '')
-          .backgroundImageSize(this.currentIndex === this.index ? { width: '100%', height: 15 } : {})
-          .backgroundImagePosition(Alignment.Center)
+          // .backgroundImage(this.currentIndex === this.index ? $r('app.media.underline') : '')
+          // .backgroundImageSize(this.currentIndex === this.index ? { width: '100%', height: 15 } : {})
+          // .backgroundImagePosition(Alignment.Center)
           .animation({
             duration: 200,
           })

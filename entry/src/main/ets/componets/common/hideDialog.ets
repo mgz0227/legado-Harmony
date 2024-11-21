@@ -33,7 +33,7 @@ export default struct hideDialogExample {
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
           .fontColor(this.themeColor.mainColor)
-          .backgroundColor('rgba(255,120,0,0.12)')
+          .backgroundColor(this.themeColor.secondColor)
         Text('确认')
           .onClick(() => {
             if (this.controller != undefined) {

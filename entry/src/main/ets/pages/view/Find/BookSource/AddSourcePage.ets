@@ -10,6 +10,8 @@ import { JSON } from '@kit.ArkTS';
 import BookSourceDao from '../../../../database/dao/BookSourceDao';
 import { BookSource, BOOK_SOURCE_TYPE, GRADE_TYPE, SOURCE_GROUP_MAP,
   SOURCE_SCORE_ARR } from '../../../../database/entities/BookSource';
+import { ThemeColorItem } from '../../../../common/model/Theme';
+import { ThemeStorageKey } from '../../../../common/constants/Theme';
 
 interface RouteParams {
   id: string,
@@ -52,6 +54,8 @@ struct AddSourcePage {
     showRecentIcon: false,
     showExplore: true
   }
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
 
   async aboutToAppear() {
     const params = router.getParams() as RouteParams;
@@ -152,8 +156,8 @@ struct AddSourcePage {
       Row({ space: 20 }) {
         Button('取消')
           .height(40)
-          .fontColor(0xff6600)
-          .backgroundColor('rgba(255, 102, 0, 0.12)')
+          .fontColor(this.themeColor.mainColor)
+          .backgroundColor(this.themeColor.secondColor)
           .layoutWeight(1)
           .onClick(() => {
             router.back()

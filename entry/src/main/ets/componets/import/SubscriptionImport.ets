@@ -173,7 +173,7 @@ export default struct SubscriptionImport {
           Text() {
             Span('全选（')
             Span(Object.values(this.insertMap).filter(o => o).length + '')
-              .fontColor(0xff6600)
+              .fontColor(this.themeColor.mainColor)
             Span(`/${this.subscriptionList.length})`)
           }
           .margin({ left: 8 })
@@ -213,8 +213,8 @@ export default struct SubscriptionImport {
       Row({ space: 20 }) {
         Button('取消')
           .height(40)
-          .fontColor(0xff6600)
-          .backgroundColor('rgba(255, 102, 0, 0.12)')
+          .fontColor(this.themeColor.mainColor)
+          .backgroundColor(this.themeColor.secondColor)
           .layoutWeight(1)
           .onClick(() => {
             this.show = false;
@@ -223,7 +223,7 @@ export default struct SubscriptionImport {
         Button('确认')
           .height(40)
           .fontColor(Color.White)
-          .backgroundColor(0xff6600)
+          .backgroundColor(this.themeColor.mainColor)
           .layoutWeight(1)
           .onClick(async  () => {
             if (this.sourceGroup.length === 0) {
