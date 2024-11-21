@@ -1,0 +1,92 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "Legado"
+    },
+    {
+      "name": "select_all",
+      "value": "select all"
+    },
+    {
+      "name": "deselect_all",
+      "value": "deselect all"
+    },
+    {
+      "name": "new_replacement_rule",
+      "value": "new Replacement Rule"
+    },
+    {
+      "name": "edit_replacement_rule",
+      "value": "edit replacement Rule"
+    },
+    {
+      "name": "new_directory_purification",
+      "value": "new Directory Purification"
+    },
+    {
+      "name": "edit_directory_purification",
+      "value": "edit Directory Purification"
+    },
+    {
+      "name": "regular_expressions",
+      "value": "Regular Expressions"
+    },
+    {
+      "name": "please_enter_regular_expression",
+      "value": "Please Enter Regular Expression"
+    },
+    {
+      "name": "please_enter_example",
+      "value": "Please Enter Example"
+    },
+    {
+      "name": "example",
+      "value": "Example"
+    },
+    {
+      "name": "copy",
+      "value": "Copy"
+    },
+    {
+      "name": "paste",
+      "value": "Paste"
+    },
+    {
+      "name": "appellation",
+      "value": "Appellation"
+    },
+    {
+      "name": "please_enter_name",
+      "value": "Please enter a name"
+    },
+    {
+      "name": "grouping",
+      "value": "Grouping"
+    },
+    {
+      "name": "unclassified",
+      "value": "Unclassified"
+    },
+    {
+      "name": "retry",
+      "value": "retry"
+    },
+    {
+      "name": "i_know",
+      "value": "I know"
+    },
+    {
+      "name": "export_help",
+      "value": "export help"
+    }
+  ]
+}

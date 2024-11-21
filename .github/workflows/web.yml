@@ -1,0 +1,70 @@
+name: Build Web
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '**/entry/web/**'
+  pull_request:
+    paths:
+      - '**/entry/web/**'
+  workflow_dispatch:
+
+env:
+  UPSTREAM_REPOSITORY: mgz0227/legado-Harmony
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 16
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/web/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Build and move files
+        working-directory: entry/web
+        run: |
+         pnpm i
+         pnpm build
+         version="v$(date -u +3.%y.%m%d%H)"
+         echo "APP_VER=$version" >> $GITHUB_ENV
+    
+         rm -rf /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/rawfile/vue
+         mkdir -p /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/rawfile/vue
+         
+         echo "Moving built files to /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/rawfile/vue/"
+         mv dist/* /home/runner/work/legado-Harmony/legado-Harmony/entry/src/main/resources/rawfile/vue/ || true
+
+      - name: push changes
+        if: ${{ github.event_name != 'pull_request' && github.repository == env.UPSTREAM_REPOSITORY }}
+        uses: stefanzweifel/git-auto-commit-action@v5.0.1
+        with:
+          commit_message: Bump web ${{ env.APP_VER}}
+          file_pattern: entry/src/main/resources/vue

@@ -1,0 +1,33 @@
+{
+  "src": [
+    "pages/Index",
+    "pages/welcomePage",
+    "pages/view/search/SearchBook",
+    "pages/view/myCenter/WebDav",
+    "pages/view/myCenter/MySetPage",
+    "pages/view/BookDetailPage",
+    "pages/view/bookShelf/Manage/BookManagePage",
+    "pages/view/myCenter/clearCache",
+    "pages/view/myCenter/cloudDisk",
+    "pages/view/myCenter/diskSet",
+    "pages/view/myCenter/aboutUs/aboutUsPage",
+    "pages/view/myCenter/aboutUs/versionLogPage",
+    "pages/view/myCenter/aboutUs/PrivacyAgreementPage",
+    "pages/view/myCenter/aboutUs/OpenSourceLicensePage",
+    "pages/view/myCenter/aboutUs/DisclaimerPage",
+    "pages/view/myCenter/helpCenterPage",
+    "pages/view/myCenter/readStatistics",
+    "pages/view/myCenter/FileManagement",
+    "pages/view/bookShelf/LocalImportPage",
+    "pages/view/bookShelf/DownloadManagementPage",
+    "pages/view/Reader/ReaderPage",
+    "pages/view/Reader/ReaderPage2",
+    "pages/view/Find/BookSource/Index",
+    "pages/view/Find/BookSource/AddSourcePage",
+    "pages/view/Subscription/components/SubscriptionSearch",
+    "pages/view/Subscription/rssWebView",
+    "pages/view/Find/CategoryList/Index",
+    "pages/view/myCenter/MyThemeConfig",
+    "pages/view/myCenter/CreateCustomTheme"
+  ]
+}

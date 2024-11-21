@@ -1,0 +1,44 @@
+{
+  "string": [
+    {
+      "name": "page_show",
+      "value": "page from package"
+    },
+    {
+      "name": "color_black_15",
+      "value": "rgba(0, 0, 0, 0.15)"
+    },
+    {
+      "name": "color_black_45",
+      "value": "rgba(0, 0, 0, 0.45)"
+    },
+    {
+      "name": "color_black_65",
+      "value": "rgba(0, 0, 0, 0.65)"
+    },
+    {
+      "name": "color_black_88",
+      "value": "rgba(0, 0, 0, 0.88)"
+    },
+    {
+      "name": "ThemeColor",
+      "value": "#FF6600"
+    },
+    {
+      "name": "BackgroundThemeColor",
+      "value": "rgba(255, 102, 0, 0.12)"
+    },
+    {
+      "name": "color_black_6",
+      "value": "rgba(0, 0, 0, 0.06)"
+    },
+    {
+      "name": "color_black_4",
+      "value": "rgba(0, 0, 0, 0.04)"
+    },
+    {
+      "name": "color_black_0",
+      "value": "rgba(0, 0, 0, 0)"
+    }
+  ]
+}

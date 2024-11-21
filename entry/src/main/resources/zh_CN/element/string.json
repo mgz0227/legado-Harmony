@@ -1,0 +1,92 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "模块描述"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "阅读"
+    },
+    {
+      "name": "select_all",
+      "value": "全选"
+    },
+    {
+      "name": "deselect_all",
+      "value": "取消全选"
+    },
+    {
+      "name": "new_replacement_rule",
+      "value": "新建替换规则"
+    },
+    {
+      "name": "edit_replacement_rule",
+      "value": "编辑替换规则"
+    },
+    {
+      "name": "new_directory_purification",
+      "value": "新建目录规则"
+    },
+    {
+      "name": "edit_directory_purification",
+      "value": "编辑目录规则"
+    },
+    {
+      "name": "example",
+      "value": "示例"
+    },
+    {
+      "name": "please_enter_example",
+      "value": "请输入示例"
+    },
+    {
+      "name": "please_enter_regular_expression",
+      "value": "请输入正则表达式"
+    },
+    {
+      "name": "regular_expressions",
+      "value": "正则表达式"
+    },
+    {
+      "name": "copy",
+      "value": "复制"
+    },
+    {
+      "name": "paste",
+      "value": "粘贴"
+    },
+    {
+      "name": "appellation",
+      "value": "名称"
+    },
+    {
+      "name": "please_enter_name",
+      "value": "请输入名称"
+    },
+    {
+      "name": "grouping",
+      "value": "分组"
+    },
+    {
+      "name": "unclassified",
+      "value": "未分组"
+    },
+    {
+      "name": "retry",
+      "value": "重试"
+    },
+    {
+      "name": "i_know",
+      "value": "知道了"
+    },
+    {
+      "name": "export_help",
+      "value": "导入帮助"
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebDav备份教程</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+  }
+  .container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px 40px;
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .container:hover {
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+  }
+  h1 {
+    color: #007bff;
+    font-size: 36px;
+    margin-bottom: 20px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    letter-spacing: 2px;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+  }
+  h3 {
+    color: #007bff;
+    font-size: 24px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    border-left: 4px solid #007bff;
+    padding-left: 10px;
+    transition: color 0.3s ease;
+  }
+  h3:hover {
+    color: #0056b3;
+  }
+  ol, ul {
+    padding-left: 20px;
+    margin-bottom: 20px;
+  }
+  li {
+    margin-bottom: 15px;
+    font-size: 18px;
+    line-height: 1.8;
+    position: relative;
+    padding-left: 25px;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+  li:hover {
+    color: #007bff;
+    transform: translateX(10px);
+  }
+  li::before {
+    content: '✔';
+    color: #007bff;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 18px;
+    line-height: 1.8;
+    transform: scale(0);
+    transition: transform 0.3s ease;
+  }
+  li:hover::before {
+    transform: scale(1);
+  }
+  a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    cursor: pointer;
+  }
+  a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .header img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+  }
+  .hidden {
+    position: absolute;
+    left: -9999px;
+  }
+</style>
+<script>
+  function copyToClipboard(text) {
+    const textarea = document.createElement('textarea');
+    textarea.className = 'hidden';
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+      document.execCommand('copy');
+      alert('链接已复制到剪贴板!');
+    } catch (err) {
+      alert('复制失败，请手动复制链接.');
+    }
+    document.body.removeChild(textarea);
+  }
+</script>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1 id="webdav备份教程">WebDav备份教程</h1>
+  </div>
+  <h3 id="阅读支持云备份采用webdav协议所有支持webdav的云盘都可以建议采用坚果云每月免费1g流量用来备份阅读足够了下面就采用坚果云来讲解配置步骤">
+    阅读支持云备份, 采用WebDav协议, 所有支持WebDav的云盘都可以. 建议采用坚果云, 每月免费1G流量, 用来备份阅读足够了. 下面就采用坚果云来讲解配置步骤.
+  </h3>
+  <ol type="1">
+    <li>打开坚果云网站 <a href="javascript:void(0);" onclick="copyToClipboard('https://www.jianguoyun.com/d/home#/')">https://www.jianguoyun.com/d/home#/</a></li>
+    <li>如果没有注册过坚果云先注册一下</li>
+    <li>登录坚果云</li>
+    <li>右上角用户名点开点账户信息</li>
+    <li>点击安全选项</li>
+    <li>在第三方管理里添加应用</li>
+    <li>将应用示例里的服务器地址, 用户名, 和密码填到阅读的WebDav设置里</li>
+    <li>阅读的WebDav配置在我的 - 备份与恢复, 创建子文件夹选项保持默认即可</li>
+    <li>设置完成后手动执行一下备份, 看看是否成功</li>
+    <li>恢复时选择想要恢复的备份文件</li>
+  </ol>
+  <h3 id="自动备份说明">自动备份说明</h3>
+  <ul>
+    <li>设置好备份之后每次退出App会自动进行备份</li>
+    <li>WebDav同一天的备份会覆盖, 不同日期的备份不会覆盖</li>
+  </ul>
+</div>
+
+</body>
+</html>

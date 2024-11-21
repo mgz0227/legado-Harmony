@@ -1,0 +1,31 @@
+name: Backup Main Branch
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout main branch
+      uses: actions/checkout@v4
+      with:
+        ref: main
+
+    - name: Archive main branch as tar.gz
+      run: |
+        tar -czf main_backup_$(date +"%Y%m%d").tar.gz *
+      working-directory: ${{ github.workspace }}
+
+    - name: Upload backup to Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: backup
+        path:  ${{ github.workspace }}/*.tar.gz
+        
+    - name: Set up Git
+      run: |
+        git config --local user.email "miaogongzi0227@gmail.com"
+        git config --local user.name "mgz0227"

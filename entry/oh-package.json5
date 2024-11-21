@@ -1,0 +1,14 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "Please describe the basic information.",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {
+    '@ohos/colorLibrary': 'file:../commons/colorLibrary',
+//    '@ohos/reader': 'file:../reader',
+    '@ohos/readerLibrary': 'file:../readerLibrary'
+  }
+}
+

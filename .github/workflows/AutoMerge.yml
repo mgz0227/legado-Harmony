@@ -1,0 +1,69 @@
+name: Auto Merge PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    permissions:                    # Global permissions configuration starts here
+      contents: write                # 'read' access to repository contents
+      pull-requests: write          # 'write' access to pull requests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 必须获取所有分支和提交记录才能进行合并操作
+      - uses: de-vri-es/setup-git-credentials@v2
+        with:
+          credentials: https://mgz0227:${{ secrets.AUTOMERGE }}@github.com/
+    
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+          
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://github.com/cli/cli/releases/download/v2.49.2/gh_2.49.2_linux_amd64.tar.gz -o ghcli.tar.gz
+          tar -xzf ghcli.tar.gz
+          sudo mv gh_2.49.2_linux_amd64/bin/gh /usr/local/bin/
+          gh --version
+
+      - name: Determine if PR should be merged
+        id: determine-merge
+        run: |
+          ALLOWED_USERS=("yindushenwen" "linxunxr" "c386522459" "Sunny-316" "thfgjy" "stupchen" "MaoXiaoone" "ouzechang" "polo3584" "YiQingZi" "yi-boide")
+          PR_AUTHOR=$(jq -r .pull_request.user.login < "$GITHUB_EVENT_PATH")
+          if printf '%s\n' "${ALLOWED_USERS[@]}" | grep -qx "${PR_AUTHOR}"; then
+            echo "PR author ${PR_AUTHOR} is allowed. Proceeding to merge."
+            echo "MERGE=true" >> $GITHUB_ENV
+          else
+            echo "PR author ${PR_AUTHOR} is not allowed to auto-merge."
+            echo "MERGE=false" >> $GITHUB_ENV
+          fi
+
+      - name: Configure git
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          sudo timedatectl set-timezone "Asia/Shanghai"
+
+      - name: Merge PR
+        if: env.MERGE == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.AUTOMERGE }}
+        run: |
+          PR_NUMBER=${{ github.event.pull_request.number }}
+          PR_BRANCH=refs/pull/$PR_NUMBER/head
+          BASE_BRANCH=${{ github.event.pull_request.base.ref }}
+          # Fetch the PR branch and the base branch
+          git fetch origin $PR_BRANCH:$PR_BRANCH
+          git fetch origin $BASE_BRANCH
+          # Checkout the base branch
+          git checkout $BASE_BRANCH
+          # Merge the PR branch
+          git merge --no-ff $PR_BRANCH -m "Merge pull request #$PR_NUMBER from $PR_BRANCH"
+          # Push the changes
+          git push origin $BASE_BRANCH

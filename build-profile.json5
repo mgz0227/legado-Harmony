@@ -1,0 +1,49 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "legado",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\lingwu\\.ohos\\config\\legado_legado-Harmony-main_cr33P28rq1ixZSnwSrFz9IY32MMFza5UJdkje0d3wvA=.cer",
+          "storePassword": "0000001A73A20DF725929F5DCF90ADBE76907724A214D3B6F0A010EC313EF5E5EAA9D993CF607CEC388F",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001AE6885B5BE80AD4CAD42C5BED037508E26AC7833C735AE5886F3F215207B16E930743116463E3",
+          "profile": "C:\\Users\\lingwu\\.ohos\\config\\legado_legado-Harmony-main_cr33P28rq1ixZSnwSrFz9IY32MMFza5UJdkje0d3wvA=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\lingwu\\.ohos\\config\\legado_legado-Harmony-main_cr33P28rq1ixZSnwSrFz9IY32MMFza5UJdkje0d3wvA=.p12"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "legado",
+        "compatibleSdkVersion": "5.0.0(12)",
+        "runtimeOS": "HarmonyOS",
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "colorLibrary",
+      "srcPath": "./commons/colorLibrary",
+    },
+    {
+      "name": "readerLibrary",
+      "srcPath": "./readerLibrary",
+    }
+  ]
+}

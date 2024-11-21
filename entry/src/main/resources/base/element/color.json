@@ -1,0 +1,33 @@
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "search_launch",
+      "value": "#ADADAD"
+    },
+    {
+      "name": "search_history",
+      "value": "#F5F5F5"
+    }
+  ,
+    {
+      "name": "test",
+      "value": "#FFFF0000"
+    },
+    {
+      "name": "book_detail_background",
+      "value": "#2a5d5d"
+    },
+    {
+      "name": "search_book_fontColor",
+      "value": "#00000073"
+    },
+    {
+      "name": "share_shelf_book_background",
+      "value": "#F5F5F5"
+    }
+  ]
+}
