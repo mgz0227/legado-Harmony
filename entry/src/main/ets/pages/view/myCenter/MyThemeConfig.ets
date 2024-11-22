@@ -131,6 +131,7 @@ struct MyThemeConfig {
       .onTabBarClick((index) => {
         this.activeNavIndex = index
       })
+      .scrollable(false)
       .width('100%')
       .barHeight(98)
       .backgroundColor('#f5f5f5')
