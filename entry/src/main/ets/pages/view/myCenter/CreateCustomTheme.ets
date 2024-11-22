@@ -26,7 +26,7 @@ struct CreateCustomTheme {
   originTheme: ThemeItem = {} as ThemeItem
   selectTheme: ThemeItem = {} as ThemeItem
   @State themeName: string = '新建主题'
-
+ //
   aboutToAppear(): void {
     this.originTheme = this.theme // 暂存原主题配置信息
     this.selectTheme = this.theme
