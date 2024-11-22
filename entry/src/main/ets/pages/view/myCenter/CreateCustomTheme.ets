@@ -30,8 +30,10 @@ struct CreateCustomTheme {
   aboutToAppear(): void {
     this.originTheme = this.theme // 暂存原主题配置信息
     this.selectTheme = this.theme
-    emitter.emit('screen_shot'); // 触发首页截图
-    this.previewIndexPage = AppStorage.get('screen_shot') as PixelMap
+  }
+
+  aboutToDisappear() {
+    themeManager.setTheme(this.originTheme, AppStorage.get(ThemeStorageKey.THEMEINDEX) as number)
   }
 
   build() {
