@@ -6,7 +6,7 @@
  */
 import CommonConstants from '../../../common/constants/CommonConstants'
 import { ThemeStorageKey } from '../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../common/model/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
 import buttonCommon from '../../../componets/common/buttonCommon'
 import { showMessage } from '../../../componets/common/promptShow'
 
@@ -17,7 +17,7 @@ export default struct directoryPurification{
   cancel: () => void = () => {
   }
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Flex({
       direction:FlexDirection.Column,
@@ -58,7 +58,7 @@ export default struct directoryPurification{
                 family:CommonConstants.FAMILY_PingFANG
               })
                 .lineHeight(24)
-              Text('*').fontColor(this.themeColor.mainColor).font({
+              Text('*').fontColor(this.theme.color.mainColor).font({
                 size:16,
                 weight:500,
                 family:CommonConstants.FAMILY_PingFANG
@@ -86,7 +86,7 @@ export default struct directoryPurification{
                   family:CommonConstants.FAMILY_PingFANG
                 })
                   .lineHeight(24)
-                Text('*').fontColor(this.themeColor.mainColor).font({
+                Text('*').fontColor(this.theme.color.mainColor).font({
                   size:16,
                   weight:500,
                   family:CommonConstants.FAMILY_PingFANG

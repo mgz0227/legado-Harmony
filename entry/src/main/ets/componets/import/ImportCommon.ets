@@ -12,7 +12,7 @@ import BookSourceDao from '../../database/dao/BookSourceDao';
 import { BookSource, GroupList, SOURCE_GROUP_MAP } from '../../database/entities/BookSource';
 import SourceGroup from '../ui/SourceGroup';
 import text from '@ohos.graphics.text';
-import { ThemeColorItem } from '../../common/model/Theme';
+import { ThemeItem } from '../../common/model/Theme';
 import { ThemeStorageKey } from '../../common/constants/Theme';
 
 @Component
@@ -35,7 +35,7 @@ export default struct ImportCommon {
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   aboutToAppear() {
     BookSourceDao.search().then(data => {
       const bookSource = data ?? []
@@ -140,7 +140,7 @@ export default struct ImportCommon {
       Row() {
         Checkbox()
           .select(this.fullActive)
-          .selectedColor(0xff6600)
+          .selectedColor(this.theme.color.mainColor)
           .onChange((val: boolean) => {
             this.fullActive = val
             this.sourceList.forEach((item: BookSource) => {
@@ -151,7 +151,7 @@ export default struct ImportCommon {
         Text() {
           Span('全选（')
           Span(Object.values(this.insertMap).filter(o => o).length + '')
-            .fontColor(this.themeColor.mainColor)
+            .fontColor(this.theme.color.mainColor)
           Span(`/${this.sourceList.length})`)
         }
         .margin({ left: 8 })
@@ -164,7 +164,7 @@ export default struct ImportCommon {
       Row() {
         Image($r('app.media.warning'))
           .width(20)
-          .fillColor(0xff6600)
+          .fillColor(this.theme.color.mainColor)
 
         Text('允许对书架中正在使用的书源进行更新')
           .fontSize(14)
@@ -175,7 +175,7 @@ export default struct ImportCommon {
 
         Checkbox()
           .select(this.waringActive)
-          .selectedColor(0xff6600)
+          .selectedColor(this.theme.color.mainColor)
           .onChange((val: boolean) => {
             this.waringActive = val
           })
@@ -183,13 +183,13 @@ export default struct ImportCommon {
       .width('100%')
       .height(48)
       .padding({ left: 20, right: 20 })
-      .backgroundColor('rgba(239, 68, 68, 0.12)')
+      .backgroundColor(this.theme.color.secondColor)
 
       Row({ space: 20 }) {
         Button('取消')
           .height(40)
-          .fontColor(this.themeColor.mainColor)
-          .backgroundColor(this.themeColor.secondColor)
+          .fontColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.color.secondColor)
           .layoutWeight(1)
           .onClick(() => {
             this.show = false;
@@ -198,7 +198,7 @@ export default struct ImportCommon {
         Button('确认')
           .height(40)
           .fontColor(Color.White)
-          .backgroundColor(this.themeColor.mainColor)
+          .backgroundColor(this.theme.color.mainColor)
           .layoutWeight(1)
           .onClick(async  () => {
             const insertBookSources = this.sourceList.filter(item => this.insertMap[item.bookSourceUrl] ?? false)
@@ -252,7 +252,7 @@ export default struct ImportCommon {
           Text(SOURCE_GROUP_MAP[groupIndex][0])
             .fontSize(14)
             .lineHeight(22)
-            .fontColor(this.themeColor.mainColor)
+            .fontColor(this.theme.color.mainColor)
           Image($r('app.media.f60_right'))
             .width(16)
         }
@@ -267,7 +267,7 @@ export default struct ImportCommon {
 
       CheckboxGroup({ group: 'checkboxGroup' + index })
         .checkboxShape(CheckBoxShape.CIRCLE)
-        .selectedColor(0xff6600)
+        .selectedColor(this.theme.color.mainColor)
     }
     .alignItems(VerticalAlign.Center)
     .padding({ right: 16 })
@@ -291,7 +291,7 @@ export default struct ImportCommon {
 
         Checkbox({ name: 'checkbox' + j, group: 'checkboxGroup' + i })
           .select(this.insertMap[item.bookSourceUrl] ?? false)
-          .selectedColor(0xff6600)
+          .selectedColor(this.theme.color.mainColor)
           .onChange((val: boolean) => {
             this.insertMap[item.bookSourceUrl] = val
           })

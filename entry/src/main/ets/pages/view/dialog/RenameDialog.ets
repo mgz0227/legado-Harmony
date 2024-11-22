@@ -1,5 +1,5 @@
 import { ThemeStorageKey } from "../../../common/constants/Theme"
-import { ThemeColorItem } from "../../../common/model/Theme"
+import { ThemeItem } from "../../../common/model/Theme"
 
 /**
  * @author 惟草木之零落兮
@@ -21,7 +21,7 @@ export default struct RenameDialog{
     confirm?: (value: string)=>void
 
     // 主题颜色
-    @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+    @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
     @Styles buttonStyles(){
         .height(38)
@@ -47,7 +47,7 @@ export default struct RenameDialog{
                         .padding({left: 20, right:20, top: 8, bottom: 8})
                         .height(38)
                         .maxLength(4)
-                        .caretColor("rgba(255, 102, 0, 1)")
+                        .caretColor(this.theme.color.mainColor)
                         .onChange((value: string)=>{
                             if (value.length > 4){
                                 // value 截取前四个
@@ -79,8 +79,8 @@ export default struct RenameDialog{
                     Button("取消")
                         .buttonStyles()
                         .margin({left: 24})
-                        .fontWeight(500).fontSize(14).fontColor(this.themeColor.mainColor)
-                        .backgroundColor("rgba(255, 102, 0, 0.12)")
+                        .fontWeight(500).fontSize(14).fontColor(this.theme.color.mainColor)
+                        .backgroundColor(this.theme.color.secondColor)
                         .onClick(()=>{
                             this.controller?.close()
                         })
@@ -91,7 +91,7 @@ export default struct RenameDialog{
                         .buttonStyles()
                         .margin({right: 24})
                         .fontWeight(500).fontSize(14).fontColor("rgba(255, 255, 255, 1)")
-                        .backgroundColor("rgba(255, 102, 0, 1)")
+                        .backgroundColor(this.theme.color.mainColor)
                         .onClick(()=>{
                             if (this.confirm) this.confirm(this.newName)
                             this.controller?.close()

@@ -2,7 +2,7 @@
  * 书单信息
  */
 import { ThemeStorageKey } from '../../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../../common/model/Theme'
+import { ThemeItem } from '../../../../common/model/Theme'
 import BookOverlay from '../../../../componets/bookDetail/BookOverlay'
 import { WorksLists } from '../../../../database/entities/WorksLists'
 
@@ -14,7 +14,7 @@ export default struct WorksBookListInfo{
   @Prop isShowCheck:boolean
   onSelect:Function = () => {}
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Flex(
       {
@@ -66,7 +66,7 @@ export default struct WorksBookListInfo{
       if (this.isShowCheck){
         Row() {
           Checkbox()
-            .selectedColor(this.themeColor.mainColor)
+            .selectedColor(this.theme.color.mainColor)
             .select(this.work.worksId?this.checkGroup[this.work.worksId] ?? false:false)
             .onChange((val: boolean) => {
               if (this.work.worksId) {

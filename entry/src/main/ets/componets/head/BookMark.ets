@@ -1,5 +1,5 @@
 import { ThemeStorageKey } from "../../common/constants/Theme"
-import { ThemeColorItem } from "../../common/model/Theme"
+import { ThemeItem } from "../../common/model/Theme"
 
 @Component
 export default struct BookMark {
@@ -9,13 +9,13 @@ export default struct BookMark {
   @Prop index:number
 
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column() {
       if (this.isBackground) {
         Text(this.title)
-          .fontColor(this.currentIndex === this.index ? this.themeColor.mainColor : this.themeColor.secondColor)
+          .fontColor(this.currentIndex === this.index ? this.theme.color.mainColor : this.theme.color.secondColor)
           .fontSize(this.currentIndex === this.index ? 25 : 16)
           .fontWeight(this.currentIndex === this.index ? 700 : 500)
           .lineHeight(30)

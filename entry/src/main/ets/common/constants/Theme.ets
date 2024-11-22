@@ -11,7 +11,5 @@ export class ThemeColor {
 
 // AppStorage key 标识
 export class ThemeStorageKey {
-  static readonly COLOR: string = 'color' // 主题颜色key
-  static readonly BGI: string = 'bgi' // 页面顶部背景图key
-  static readonly WBGI: string = 'wbgi' // 欢迎页背景图key
+  static readonly THEME: string = 'thmem' // 主题key
 }

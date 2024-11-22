@@ -2,7 +2,7 @@ import { ExploreRule } from '../../../../database/entities/rule';
 import { router } from '@kit.ArkUI';
 import clickUtil from '../../../../common/utils/ClickUtils';
 import { ThemeStorageKey } from '../../../../common/constants/Theme';
-import { ThemeColorItem } from '../../../../common/model/Theme';
+import { ThemeItem } from '../../../../common/model/Theme';
 
 @Component
 export  struct CardItem {
@@ -10,7 +10,7 @@ export  struct CardItem {
   currentIndex:number = 0
 
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Row() {
@@ -41,12 +41,12 @@ export  struct CardItem {
           Column() {
             Text(this.item.author)
               .fontSize(10)
-              .fontColor(this.themeColor.mainColor)
+              .fontColor(this.theme.color.mainColor)
           }
           .padding({ left: 6, right: 6 })
           .height(16)
           .justifyContent(FlexAlign.Center)
-          .backgroundColor('#1FFF6600')
+          .backgroundColor(this.theme.color.secondColor)
 
           if (this.item.kind) {
             Column() {

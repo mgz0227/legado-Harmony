@@ -5,7 +5,7 @@
  */
 import CommonConstants from '../../common/constants/CommonConstants'
 import { ThemeStorageKey } from '../../common/constants/Theme'
-import { ThemeColorItem } from '../../common/model/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 
 @CustomDialog
 @Preview
@@ -14,7 +14,7 @@ export default struct exportRuleDialog{
   cancel: () => void = () => {
   }
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
       Stack(){
       Column(){
@@ -38,7 +38,7 @@ export default struct exportRuleDialog{
               }){
                 Radio({value:'default',group:'exportGroup'})
                   .radioStyle({
-                    checkedBackgroundColor: this.themeColor.mainColor
+                    checkedBackgroundColor: this.theme.color.mainColor
                   })
                   .checked(true)
                   .onChange(()=>{
@@ -58,7 +58,7 @@ export default struct exportRuleDialog{
               }){
                 Radio({value:'default',group:'exportGroup'})
                   .radioStyle({
-                    checkedBackgroundColor: this.themeColor.mainColor
+                    checkedBackgroundColor: this.theme.color.mainColor
                   })
                   .onChange(()=>{
 
@@ -89,7 +89,7 @@ export default struct exportRuleDialog{
               left:32,right:32,
               top:8,bottom:8
             })
-            .backgroundColor(this.themeColor.mainColor)
+            .backgroundColor(this.theme.color.mainColor)
 
             Column(){
               Text('导出本地').font({

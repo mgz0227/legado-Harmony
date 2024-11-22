@@ -7,7 +7,7 @@
 import CommonConstants from '../../../../common/constants/CommonConstants'
 import FontConstants from '../../../../common/constants/FontConstants'
 import { ThemeStorageKey } from '../../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../../common/model/Theme'
+import { ThemeItem } from '../../../../common/model/Theme'
 
 @Component
 export default struct PreviewEffectImage{
@@ -21,7 +21,7 @@ export default struct PreviewEffectImage{
   @Prop sourceName:string = ''
   @State isError:boolean = false
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column(){
       if (this.isShowTitle){
@@ -42,8 +42,8 @@ export default struct PreviewEffectImage{
         Stack(){
           this.ImageStack(this.customizeTitle.length > 0 && !this.sourceIconIsUrl)
           Column(){
-            LoadingProgress().color(this.themeColor.mainColor).height(30)
-            Text('图片加载中...').fontSize(5).fontColor(this.themeColor.mainColor)
+            LoadingProgress().color(this.theme.color.mainColor).height(30)
+            Text('图片加载中...').fontSize(5).fontColor(this.theme.color.mainColor)
           }.zIndex(-1)
         }
       }

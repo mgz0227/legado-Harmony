@@ -1,5 +1,5 @@
 import { ThemeStorageKey } from '../../../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../../../common/model/Theme'
+import { ThemeItem } from '../../../../../common/model/Theme'
 import BookOverlay from '../../../../../componets/bookDetail/BookOverlay'
 import { BookGroups } from '../../../../../database/entities/BookGroups'
 
@@ -13,7 +13,7 @@ export default struct BookFolderInfoManage {
   @Prop isManage:boolean
   onSelect:Function = () => {}
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Flex(
       {
@@ -64,7 +64,7 @@ export default struct BookFolderInfoManage {
           Checkbox()
             //判断是否存在当前id
             .select(this.group.groupId?this.checkGroup[this.group.groupId] ?? false:false)
-            .selectedColor(this.themeColor.mainColor)
+            .selectedColor(this.theme.color.mainColor)
             .onChange((val: boolean) => {
               if (this.group.groupId) {
                 this.checkGroup[this.group.groupId] = val

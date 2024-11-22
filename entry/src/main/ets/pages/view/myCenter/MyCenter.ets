@@ -6,7 +6,10 @@ import { dataItem } from '../../../componets/dataList/dataItem'
 import { PublicConstants, TextConstants } from '../../../common/constants/PublicConstants'
 import { ColumnModifier } from '../../../common/utils/ComponetModifier'
 import { ThemeStorageKey } from '../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../common/model/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
+import { image } from '@kit.ImageKit'
+import { resourceManager } from '@kit.LocalizationKit'
+import { BusinessError } from '@kit.BasicServicesKit'
 
 @Entry
 @Component
@@ -36,7 +39,7 @@ export default struct MyCenter {
   Column = new ColumnModifier()
 
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column(){
@@ -150,7 +153,7 @@ export default struct MyCenter {
     .attributeModifier(this.Column)
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
-      colors: [[this.themeColor.mainColor , 0.0], [this.themeColor.secondColor, 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
+      colors: [[this.theme.color.mainColor , 0.0], [this.theme.color.secondColor, 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
     })
   }
   

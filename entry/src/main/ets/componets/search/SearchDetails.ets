@@ -1,7 +1,7 @@
 
 import { SearchBookList } from './SearchBookList'
 import { SearchBook } from '../../database/entities/SearchBook'
-import { ThemeColorItem } from '../../common/model/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 import { ThemeStorageKey } from '../../common/constants/Theme'
 
 @Component
@@ -16,7 +16,7 @@ export struct SearchDetails{
   @Consume('isSearch') isSearch:boolean
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   refresh(){
     if(this.SearchStatus>2){
       this.isRefreshing=true
@@ -25,7 +25,7 @@ export struct SearchDetails{
   @Builder RefreshComponent(){
     Stack(){
       Row(){
-        LoadingProgress().color(this.themeColor.mainColor).height(26)
+        LoadingProgress().color(this.theme.color.mainColor).height(26)
         Text("共搜索到"+this.books.length+"个相关结果").fontSize(14).margin({left:20}).fontColor($r('app.string.color_black_45'))
       }.alignItems(VerticalAlign.Center)
     }.width("100%").align(Alignment.Center)
@@ -56,7 +56,7 @@ export struct SearchDetails{
       }
       //给border添加加载动画
       .border({
-        width: { top:this.isSearch?2:0 },color:this.themeColor.mainColor
+        width: { top:this.isSearch?2:0 },color:this.theme.color.mainColor
       })
       .borderStyle({
         top:BorderStyle.Solid,

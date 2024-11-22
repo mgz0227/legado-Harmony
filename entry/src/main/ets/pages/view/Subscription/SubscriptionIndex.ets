@@ -21,7 +21,7 @@ import RssSourcesHistory from './components/RssSourcesHistory'
 import rssSourcesHistoryDao from '../../../database/dao/RssSourcesHistoryDao'
 import { rssSourcesHistory } from '../../../database/entities/rssSourcesHistory'
 import { FileHandler } from 'ets/common/utils/FileHandler'
-import { ThemeColorItem } from '../../../common/model/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
 import { ThemeStorageKey } from '../../../common/constants/Theme'
 
 @Component
@@ -45,7 +45,7 @@ export default struct SubscriptionIndex {
   @State groupList: rssGroupList[] = []
   @State batchEdit: boolean = false
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   //刷新
   refresh = () => {
     this.resetState()
@@ -153,7 +153,7 @@ export default struct SubscriptionIndex {
         if (this.loading) {
           Column() {
             LoadingProgress()
-              .color(0xff6600)
+              .color(this.theme.color.mainColor)
               .width('50%')
             Text('加载中...')
           }
@@ -288,7 +288,7 @@ export default struct SubscriptionIndex {
     }
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
-      colors: [[this.themeColor.mainColor, 0], [this.themeColor.secondColor, 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
+      colors: [[this.theme.color.mainColor, 0], [this.theme.color.secondColor, 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
     })
     .height('100%')
   }

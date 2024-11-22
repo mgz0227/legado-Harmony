@@ -7,7 +7,7 @@
 import CommonConstants from '../../../../common/constants/CommonConstants'
 import PaddingConstants from '../../../../common/constants/PaddingConstants'
 import { ThemeStorageKey } from '../../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../../common/model/Theme'
+import { ThemeItem } from '../../../../common/model/Theme'
 import buttonCommon from '../../../../componets/common/buttonCommon'
 import { showMessage } from '../../../../componets/common/promptShow'
 import programDataPreferences from '../../../../preferences/programDataPreferences'
@@ -22,7 +22,7 @@ export default struct RssSourceGroup {
 
   }
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   aboutToAppear() {
    this.getRssSourceList()
@@ -42,7 +42,7 @@ export default struct RssSourceGroup {
         space:5
       }){
         Text('移动至').fontSize(16).fontWeight(700).lineHeight(24)
-        Text(`${this.moveGroup}`).fontSize(16).fontWeight(700).lineHeight(24).fontColor(this.themeColor.mainColor)
+        Text(`${this.moveGroup}`).fontSize(16).fontWeight(700).lineHeight(24).fontColor(this.theme.color.mainColor)
       }
       .padding({
         right:20,

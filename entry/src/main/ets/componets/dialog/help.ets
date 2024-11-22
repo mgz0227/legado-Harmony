@@ -2,7 +2,7 @@ import CommonConstants from '../../common/constants/CommonConstants'
 import FontConstants from '../../common/constants/FontConstants'
 import PaddingConstants from '../../common/constants/PaddingConstants'
 import { ThemeStorageKey } from '../../common/constants/Theme'
-import { ThemeColorItem } from '../../common/model/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 import { HelpInfo } from '../../viewData/HelpInfo'
 
 @Component
@@ -19,7 +19,7 @@ export default struct Help {
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   isShowContent:boolean = true
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Flex({
       direction: FlexDirection.Column,
@@ -60,7 +60,7 @@ export default struct Help {
 
       Button(!this.btnText ? $r('app.string.i_know') : this.btnText)
         .width('100%')
-        .backgroundColor(this.themeColor.mainColor)
+        .backgroundColor(this.theme.color.mainColor)
         .padding({
           left: PaddingConstants.PADDING_32,
           right: PaddingConstants.PADDING_32,

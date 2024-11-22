@@ -4,7 +4,7 @@
 import CommonConstants from '../../../../../common/constants/CommonConstants'
 import PaddingConstants from '../../../../../common/constants/PaddingConstants'
 import { ThemeStorageKey } from '../../../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../../../common/model/Theme'
+import { ThemeItem } from '../../../../../common/model/Theme'
 import worksListsUtils from '../../../../../common/utils/WorksListsUtils'
 import confirmDialogExample from '../../../../../componets/common/confirmDialog'
 import { showMessage } from '../../../../../componets/common/promptShow'
@@ -124,7 +124,7 @@ export default struct newBookShelf{
     worksBookList:[]
   }
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Flex({
@@ -202,7 +202,7 @@ export default struct newBookShelf{
                 .placeholderColor('#73000000')
                 .maxLength(20)
                 .placeholderFont({ size: 14, weight: 400 })
-                .caretColor(this.themeColor.mainColor)
+                .caretColor(this.theme.color.mainColor)
                 .height(38)
                 .margin({ top: 10, bottom: 10 })
                 .fontSize(14)
@@ -224,7 +224,7 @@ export default struct newBookShelf{
             })
               .borderRadius(4)
               .fontColor('#E0000000')
-              .caretColor(this.themeColor.mainColor)
+              .caretColor(this.theme.color.mainColor)
               .placeholderColor('#73000000')
               .width('80%')
               .fontSize(14)
@@ -350,7 +350,7 @@ export default struct newBookShelf{
       .borderRadius(20)
       .width('50%')
       .height(38)
-      .backgroundColor(this.workBookList.worksName.length >=1?this.themeColor.mainColor:'rgba(252, 102, 0, 0.5)')
+      .backgroundColor(this.workBookList.worksName.length >=1?this.theme.color.mainColor: this.theme.color.mainColor)
     }.padding({top:12,bottom:12,left:20,right:20})
   }
 
@@ -412,9 +412,9 @@ export default struct newBookShelf{
             space:6
           }){
             Row(){
-              Text('卖报小郎君').fontSize(10).fontWeight(400).fontColor(this.themeColor.mainColor)
+              Text('卖报小郎君').fontSize(10).fontWeight(400).fontColor(this.theme.color.mainColor)
             }
-            .padding({left:6,right:6,top:5,bottom:5}).backgroundColor(this.themeColor.secondColor).borderRadius(10)
+            .padding({left:6,right:6,top:5,bottom:5}).backgroundColor(this.theme.color.secondColor).borderRadius(10)
             Row(){
               Text('玄幻').fontSize(10).fontWeight(400).fontColor('rgba(0, 0, 0, 0.45)')
             }
@@ -455,7 +455,7 @@ export default struct newBookShelf{
         Flex({
           justifyContent:FlexAlign.End
         }){
-          Text('清空').textAlign(TextAlign.End).fontColor(this.themeColor.mainColor)
+          Text('清空').textAlign(TextAlign.End).fontColor(this.theme.color.mainColor)
         }.onClick(()=>{
           this.TextRecommend[book.id ?? 0] = ''
         })

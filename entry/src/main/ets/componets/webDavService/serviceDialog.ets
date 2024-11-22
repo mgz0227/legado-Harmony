@@ -1,5 +1,5 @@
 import { ThemeStorageKey } from "../../common/constants/Theme"
-import { ThemeColorItem } from "../../common/model/Theme"
+import { ThemeItem } from "../../common/model/Theme"
 
 
 @CustomDialog
@@ -29,7 +29,7 @@ export struct serviceDialog{
       .backgroundColor(color[1])
   }
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column({space:15}) {
@@ -46,8 +46,8 @@ export struct serviceDialog{
           .lineHeight(25)
       }
       Row({space:24}) {
-        this.button("取消",[this.themeColor.mainColor,'rgba(255,120,0,0.12)'],this.cancel)
-        this.button("确定",[Color.White,this.themeColor.mainColor],this.confirm)
+        this.button("取消",[this.theme.color.mainColor, this.theme.color.secondColor],this.cancel)
+        this.button("确定",[Color.White,this.theme.color.mainColor],this.confirm)
       }.padding({top:10})
     }.padding({top:20,bottom:20})
     .width(270)

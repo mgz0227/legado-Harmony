@@ -1,6 +1,6 @@
 import PaddingConstants from '../../common/constants/PaddingConstants'
 import { ThemeStorageKey } from '../../common/constants/Theme'
-import { ThemeColorItem } from '../../common/model/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 
 /**
  * @author 2008
@@ -23,7 +23,7 @@ export  default  struct FormInput {
   showTitle: boolean = false
   icon:Resource|string = $r('app.media.icon_rss_source_check_image_font')
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column() {
       Row() {
@@ -51,7 +51,7 @@ export  default  struct FormInput {
             .backgroundColor(Color.Transparent)
             .placeholderColor('#73000000')
             .placeholderFont({ size: 16, weight: 400 })
-            .caretColor(this.themeColor.mainColor)
+            .caretColor(this.theme.color.mainColor)
             .margin({ top: 10, bottom: 10 })
             .fontSize(16)
             .fontColor('#E0000000')

@@ -1,5 +1,5 @@
 import { ThemeStorageKey } from "../../common/constants/Theme";
-import { ThemeColorItem } from "../../common/model/Theme";
+import { ThemeItem } from "../../common/model/Theme";
 
 @CustomDialog
   // 通用弹窗
@@ -11,7 +11,7 @@ export default struct Dialog {
   @BuilderParam child: () => void // 通用组件
 
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column() {
@@ -47,7 +47,7 @@ export default struct Dialog {
       }) {
         Button() {
           Text(this.CancelString)
-            .fontColor(this.themeColor.mainColor)
+            .fontColor(this.theme.color.mainColor)
             .lineHeight(22)
             .font({
               size: 14,
@@ -56,7 +56,7 @@ export default struct Dialog {
         }
         .width(112)
         .height(38)
-        .backgroundColor("rgba(255, 102, 0, 0.12)")
+        .backgroundColor(this.theme.color.secondColor)
         .onClick(() => {
           if (this.controller != undefined) {
             this.controller.close()
@@ -74,7 +74,7 @@ export default struct Dialog {
         }
         .width(112)
         .height(38)
-        .backgroundColor(this.themeColor.mainColor)
+        .backgroundColor(this.theme.color.mainColor)
         .onClick(() => {
 
         })

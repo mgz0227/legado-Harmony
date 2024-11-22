@@ -1,5 +1,5 @@
 import { ThemeStorageKey } from "../../common/constants/Theme"
-import { ThemeColorItem } from "../../common/model/Theme"
+import { ThemeItem } from "../../common/model/Theme"
 
 @CustomDialog
 export default struct VersionUpdateCustomDialog {
@@ -7,7 +7,7 @@ export default struct VersionUpdateCustomDialog {
   @State clickUpdate: boolean = false
   @State ProgressValue: number = 40
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column() {
@@ -60,7 +60,7 @@ export default struct VersionUpdateCustomDialog {
 
       if (!this.clickUpdate) {
         Button("立即更新")
-          .backgroundColor(this.themeColor.mainColor)
+          .backgroundColor(this.theme.color.mainColor)
           .width("73%")
           .margin({
             top: 24,
@@ -86,7 +86,7 @@ export default struct VersionUpdateCustomDialog {
             })
           })
           .width("73%")
-          .color(this.themeColor.mainColor)
+          .color(this.theme.color.mainColor)
           .backgroundColor("#FFAF7A")
           .margin({
             top: 24,

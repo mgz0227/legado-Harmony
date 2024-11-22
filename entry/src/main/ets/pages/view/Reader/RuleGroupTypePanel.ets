@@ -1,5 +1,5 @@
 import { ThemeStorageKey } from '../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../common/model/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
 import { showMessage } from '../../../componets/common/promptShow'
 import { folderList } from '../../../componets/dataList/folderList'
 
@@ -14,7 +14,7 @@ export default struct RuleGroupTypePanel{
 
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = true
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column({
       space:15
@@ -28,7 +28,7 @@ export default struct RuleGroupTypePanel{
           Text('点击进入,长按编辑').fontSize(12).fontWeight(400).lineHeight(20).fontColor('rgba(0, 0, 0, 0.45)')
         }.alignItems(VerticalAlign.Bottom)
         Row({space:12}){
-          Text(this.isShowIcon?'完成':'管理').fontSize(12).fontWeight(400).lineHeight(20).fontColor(this.themeColor.mainColor)
+          Text(this.isShowIcon?'完成':'管理').fontSize(12).fontWeight(400).lineHeight(20).fontColor(this.theme.color.mainColor)
             .onClick(()=>{
               this.isShowIcon = !this.isShowIcon
             })
@@ -114,14 +114,14 @@ export default struct RuleGroupTypePanel{
         Text(title).fontWeight(500).fontSize(12).textOverflow({
           overflow:TextOverflow.Ellipsis
         }).ellipsisMode(EllipsisMode.END)
-          .maxLines(1).fontColor(this.themeColor.mainColor)
+          .maxLines(1).fontColor(this.theme.color.mainColor)
           .textAlign(TextAlign.Center)
       }
       .margin({ right: 16, bottom: 16 })
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
       .width(68)
-      .backgroundColor(this.themeColor.secondColor)
+      .backgroundColor(this.theme.color.secondColor)
       .padding({left:16,right:16,top:6,bottom:6})
     }
   }

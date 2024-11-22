@@ -4,7 +4,7 @@
  */
 import PaddingConstants from '../../common/constants/PaddingConstants'
 import { ThemeStorageKey } from '../../common/constants/Theme'
-import { ThemeColorItem } from '../../common/model/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 import { showMessage } from './promptShow'
 
 @CustomDialog
@@ -22,7 +22,7 @@ export default struct commonInputDialog {
   @Prop title:string = '新增'
   // @Prop titleWidth:string = '80%'
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column() {
       Text(`${this.title}` ).fontWeight(600).fontSize(20).margin({ top: 20, bottom: 10 })
@@ -37,8 +37,8 @@ export default struct commonInputDialog {
           })
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
-          .fontColor(this.themeColor.mainColor)
-          .backgroundColor(this.themeColor.secondColor)
+          .fontColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.color.secondColor)
         Text('确认')
           .onClick(() => {
             if (this.controller != undefined) {
@@ -49,7 +49,7 @@ export default struct commonInputDialog {
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
           .fontColor(Color.White)
-          .backgroundColor(this.themeColor.mainColor)
+          .backgroundColor(this.theme.color.mainColor)
       }.padding({top:PaddingConstants.PADDING_20,bottom:PaddingConstants.PADDING_20})
     }
     .padding({left:PaddingConstants.PADDING_20,right:PaddingConstants.PADDING_20})

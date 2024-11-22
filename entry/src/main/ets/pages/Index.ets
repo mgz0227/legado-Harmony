@@ -8,11 +8,10 @@ import MyCenter from './view/myCenter/MyCenter'
 import Subscription from './view/Subscription'
 import {testGetColorFunction} from '@ohos/colorLibrary'
 import { BusinessError, emitter } from '@kit.BasicServicesKit'
-import { componentSnapshot, promptAction, screenshot } from '@kit.ArkUI'
 import { JSON } from '@kit.ArkTS'
 import { image } from '@kit.ImageKit'
 import { ThemeStorageKey } from '../common/constants/Theme'
-import { ThemeColorItem } from '../common/model/Theme'
+import { ThemeItem } from '../common/model/Theme'
 
 @Entry
 @Component
@@ -27,7 +26,7 @@ struct Main {
   tabController: TabsController = new TabsController()
 
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   onPageShow(): void {
     // initBookListData()
@@ -76,8 +75,8 @@ struct Main {
       }){
         Image(this.currentTabIndex === index? icon_select:unselected).height(25)
           .draggable(false)
-          .fillColor(this.currentTabIndex === index ? this.themeColor.mainColor : '#000000')
-        Text(name).fontSize(11).margin(5).fontColor(this.currentTabIndex === index ? this.themeColor.mainColor : '#000000')
+          .fillColor(this.currentTabIndex === index ? this.theme.color.mainColor : '#000000')
+        Text(name).fontSize(11).margin(5).fontColor(this.currentTabIndex === index ? this.theme.color.mainColor : '#000000')
       }
     }.gesture(
       LongPressGesture({ repeat: index === 0,duration:1000 })

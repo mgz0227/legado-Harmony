@@ -11,7 +11,7 @@ import SideBar from '../common/SideBar'
 import Tag from '../common/Tag'
 import { router } from '@kit.ArkUI'
 import noFind from '../common/noFind'
-import { ThemeColorItem } from '../../common/model/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 import { ThemeStorageKey } from '../../common/constants/Theme'
 
 @Component
@@ -38,7 +38,7 @@ export default struct SourceView {
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   aboutToAppear() {
     console.info('TagInfo', '当前下标： ' + this.index)
     this.loading = true
@@ -272,7 +272,7 @@ export default struct SourceView {
         Column() {
           if (this.loading) {
             LoadingProgress()
-              .color(0xff6600)
+              .color(this.theme.color.mainColor)
               .width('50%')
             Text('加载中...')
           } else if (this.errorText) {
@@ -316,7 +316,7 @@ export default struct SourceView {
         Blank()
         CheckboxGroup({ group: 'checkboxGroup' + index })
           .checkboxShape(CheckBoxShape.CIRCLE)
-          .selectedColor(0xff6600)
+          .selectedColor(this.theme.color.mainColor)
       } else {
         Text('长按批量管理')
           .fontSize(12)
@@ -351,7 +351,7 @@ export default struct SourceView {
         }
 
         if (item.hasExploreUrl) {
-          Tag({ text: '发现', color: this.themeColor.mainColor, bgColor: '#1FFF6600' })
+          Tag({ text: '发现', color: this.theme.color.mainColor, bgColor: this.theme.color.secondColor })
         }
 
         Blank()
@@ -359,7 +359,7 @@ export default struct SourceView {
         if (this.isBatch) {
           Checkbox({ name: 'checkbox' + j, group: 'checkboxGroup' + i })
             .select(this.activeNameMap[item.bookSourceUrl] ?? false)
-            .selectedColor(0xff6600)
+            .selectedColor(this.theme.color.mainColor)
             .onChange((val: boolean) => {
               this.activeNameMap[item.bookSourceUrl] = val
             })
@@ -452,10 +452,10 @@ export default struct SourceView {
     })
     .border({
       width: 1,
-      color: this.activeNameMap[item.bookSourceUrl] ? this.themeColor.mainColor : Color.White,
+      color: this.activeNameMap[item.bookSourceUrl] ? this.theme.color.mainColor : Color.White,
       style: BorderStyle.Solid
     })
-    .backgroundColor(this.activeNameMap[item.bookSourceUrl] ? '#1FFF6600' : Color.White)
+    .backgroundColor(this.activeNameMap[item.bookSourceUrl] ? this.theme.color.secondColor : Color.White)
   }
 
   Item_Right_Dialog_Data: IconTitleVo[] = [

@@ -8,6 +8,8 @@ import axios, { AxiosResponse } from '@ohos/axios';
 import noFind from '../../../../componets/common/noFind';
 import { CardItem } from '../components/CardItem';
 import CommonConstants from '../../../../common/constants/CommonConstants';
+import { ThemeColorItem, ThemeItem } from '../../../../common/model/Theme';
+import { ThemeStorageKey } from '../../../../common/constants/Theme';
 
 interface RouteParams {
   bookSourceUrl: string,
@@ -33,6 +35,9 @@ struct CateGoryListPage {
   @State isRefreshing: boolean = false
   @State RefreshingTitle: string = '松开刷新'
   @State currentIndex:number = 0
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   async aboutToAppear() {
     this.startLoading = true
     const params = router.getParams() as RouteParams;
@@ -101,7 +106,7 @@ struct CateGoryListPage {
               if (this.startLoading) {
                 Row() {
                   LoadingProgress()
-                    .color(0xff6600)
+                    .color(this.theme.color.mainColor)
                     .width(35)
                   Text('内容加载中...')
                 }

@@ -5,7 +5,7 @@
  */
 import CommonConstants from '../../../../common/constants/CommonConstants'
 import { ThemeStorageKey } from '../../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../../common/model/Theme'
+import { ThemeItem } from '../../../../common/model/Theme'
 import sourceType from '../../../../componets/common/sourceType'
 import SourceCommon from '../../../../componets/source/SourceCommon'
 import BookSourceDao from '../../../../database/dao/BookSourceDao'
@@ -24,7 +24,7 @@ export default struct BodyContent {
   tabsBodyController: TabsController = new TabsController();
   @StorageLink('refreshCount') @Watch('getList') refreshCount: number = 0
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   aboutToAppear() {
     this.getList()
   }
@@ -61,7 +61,7 @@ export default struct BodyContent {
         if (this.loading) {
           Row() {
             LoadingProgress()
-              .color(this.themeColor.mainColor)
+              .color(this.theme.color.mainColor)
               .width(30)
             Text('加载中...')
           }
@@ -114,7 +114,7 @@ export default struct BodyContent {
       if (this.loading) {
         Column() {
           LoadingProgress()
-            .color(0xff6600)
+            .color(this.theme.color.mainColor)
             .width('50%')
           Text('加载中...')
         }

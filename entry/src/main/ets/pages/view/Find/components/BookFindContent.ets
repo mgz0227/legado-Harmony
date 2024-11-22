@@ -13,6 +13,8 @@ import mayAlsoLike from '../mayAlsoLike'
 import { CardItem } from './CardItem'
 import { router } from '@kit.ArkUI'
 import CommonConstants from '../../../../common/constants/CommonConstants';
+import { ThemeItem } from '../../../../common/model/Theme'
+import { ThemeStorageKey } from '../../../../common/constants/Theme'
 
 @Component
 export default struct BookFindContent {
@@ -26,6 +28,8 @@ export default struct BookFindContent {
   @Prop exploreRule: ExploreRule = {}
   handleClick: () => void = () => {
   }
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   aboutToAppear() {
     this.getList()
@@ -79,7 +83,7 @@ export default struct BookFindContent {
         if (this.loading) {
           Column() {
             LoadingProgress()
-              .color(0xff6600)
+              .color(this.theme.color.mainColor)
               .width('50%')
             Text('内容加载中...')
           }

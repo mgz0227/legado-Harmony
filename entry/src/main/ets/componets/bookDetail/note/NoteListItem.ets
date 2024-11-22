@@ -9,7 +9,7 @@ import CommonConstants from '../../../common/constants/CommonConstants'
 import { NoteVO } from '../../../componetsmodel/NoteVO';
 import CircleGeneralButton from './CircleGeneralButton';
 import { promptAction } from '@kit.ArkUI';
-import { ThemeColorItem } from '../../../common/model/Theme';
+import { ThemeItem } from '../../../common/model/Theme';
 import { ThemeStorageKey } from '../../../common/constants/Theme';
 
 @Component
@@ -21,7 +21,7 @@ export default struct NoteListItem {
   @State editContent: string = '';
   private saveChange = (val: string) => {};
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   textChange(val: string): void {
     this.editContent = val;
     this.wordCount = this.editContent.length;
@@ -58,7 +58,7 @@ export default struct NoteListItem {
           .height(22)
           .borderRadius(40)
           .padding({top: 2, bottom: 2, left: 16, right: 16})
-          .backgroundColor(this.themeColor.mainColor)
+          .backgroundColor(this.theme.color.mainColor)
           .fontColor('#FFFFFF')
           .onClick(() => {
             this.save();
@@ -88,7 +88,7 @@ export default struct NoteListItem {
         TextArea({text: this.editContent})
           .height('auto')
           .fontColor('#e0000000')
-          .caretColor(this.themeColor.mainColor)
+          .caretColor(this.theme.color.mainColor)
           .fontSize(12)
           .fontWeight(400)
           .fontColor('#e0000000')

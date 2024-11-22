@@ -1,15 +1,12 @@
 import { router } from '@kit.ArkUI'
-import { ThemeStorageKey } from '../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../common/model/Theme'
+import { ThemeColor, ThemeStorageKey } from '../../../common/constants/Theme'
+import { ThemeColorItem, ThemeItem } from '../../../common/model/Theme'
 
 // 中间导航区需要渲染的元素列表
 interface NavItem {
   text: string
   img: ResourceStr
 }
-
-// 个性主题下列表元素
-interface ThemeItem  extends NavItem { }
 
 @Entry
 @Component
@@ -23,7 +20,7 @@ struct MyThemeConfig {
   ]
   @State activeNavIndex: number = 0 // 标记当前激活的导航元素 [个性主题 / 桌面图标 / 启动页] 0 1 2
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   // 构建中间导航区TabBar元素
   @Builder
@@ -35,7 +32,7 @@ struct MyThemeConfig {
         Image(item.img)
           .width(24)
           .aspectRatio(1)
-          .fillColor(this.activeNavIndex == index ? Color.White : this.themeColor.mainColor)
+          .fillColor(this.activeNavIndex == index ? Color.White : this.theme.color.mainColor)
           .margin({bottom: 8})
         Text(item.text)
           .lineHeight(20)
@@ -57,13 +54,13 @@ struct MyThemeConfig {
           Polygon({ width: 18, height: 6 })
             .points([[0, 0], [9, 6], [18, 0]])
             .fill(Color.Green)
-            .fill(this.themeColor.mainColor)
+            .fill(this.theme.color.mainColor)
             .position({left: '50%', bottom: 0})
             .translate({x: '-50%', y: '100%'})
         }
       }
       .padding({left: 24, right: 24, top: 12})
-      .backgroundColor(this.activeNavIndex == index ? this.themeColor.mainColor : this.themeColor.secondColor)
+      .backgroundColor(this.activeNavIndex == index ? this.theme.color.mainColor : this.theme.color.secondColor)
       .borderRadius(8)
       .width(96)
       .height(78)
@@ -150,16 +147,13 @@ struct MyThemeConfig {
 struct ThemeConfigComp {
   @State
   activeIndex: number = 0 // 被选中的主题
-  @State
-  themeList: ThemeItem[] = [
-    {text: '默认主题', img: $r('app.media.backgroundimage')},
-    {text: '默认主题', img: $r('app.media.backgroundimage')},
-    {text: '默认主题', img: $r('app.media.backgroundimage')},
-    {text: '默认主题', img: $r('app.media.backgroundimage')},
-    {text: '默认主题', img: $r('app.media.backgroundimage')},
-    {text: '默认主题', img: $r('app.media.backgroundimage')},
-    {text: '默认主题', img: $r('app.media.backgroundimage')},
 
+  @State themeList: ThemeItem[] = [
+    {text: '主题1', color: ThemeColor.ORANGE},
+    {text: '主题2', color: ThemeColor.RED},
+    {text: '主题3', color: ThemeColor.YELLOW},
+    {text: '主题4', color: ThemeColor.BLUE},
+    {text: '主题5', color: ThemeColor.GREEN},
   ]
 
   // 构建个性主题下列表元素
@@ -186,9 +180,7 @@ struct ThemeConfigComp {
       .width(154)
       .height(77)
       .borderRadius(8)
-      .backgroundImage(item.img)
-      .backgroundImagePosition(Alignment.Start)
-      .backgroundImageSize(ImageSize.Cover)
+      .backgroundColor(item.color.mainColor)
 
       Text(item.text)
         .fontSize(14)

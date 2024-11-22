@@ -4,7 +4,7 @@ import { util } from '@kit.ArkTS'
 import CommonConstants from '../../common/constants/CommonConstants'
 import { ThemeStorageKey } from '../../common/constants/Theme'
 import taskSearchBooks from '../../common/model/taskSearchBook'
-import { ThemeColorItem } from '../../common/model/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 import { SearchBook } from '../../database/entities/SearchBook'
 import { SearchBookItem } from './SearchBookItem'
 
@@ -27,7 +27,7 @@ export struct SearchBookList {
   @State listOffsetY:number=0
   @State listScrollerY:number = 0
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column(){
       List({space:8,scroller:this.listScroller}){
@@ -55,7 +55,7 @@ export struct SearchBookList {
 
       Row(){
         LoadingProgress()
-          .color(this.themeColor.mainColor)
+          .color(this.theme.color.mainColor)
           .width(30)
           .height(30)
         Text('搜索中...')
@@ -63,7 +63,7 @@ export struct SearchBookList {
             size:14,
             weight:500
           })
-          .fontColor(this.themeColor.mainColor)
+          .fontColor(this.theme.color.mainColor)
       }
       .visibility(this.isSearch?Visibility.Visible:Visibility.None)
       .position({ x: '95%', y: '0%'})
@@ -74,13 +74,13 @@ export struct SearchBookList {
       }){
         Image($r('app.media.icon_search_stop'))
           .width(24).height(24)
-          .fillColor(this.themeColor.mainColor)
+          .fillColor(this.theme.color.mainColor)
         Text('停止')
           .font({
             size:14,
             weight:500
           })
-          .fontColor(this.themeColor.mainColor)
+          .fontColor(this.theme.color.mainColor)
       }
       .onClick(()=>{
         this.isSearch = false
@@ -113,7 +113,7 @@ export struct SearchBookList {
       .position({ x: '95%', y: '90%'})
       .markAnchor({ x:'90%'})
       .opacity(0.8)
-      .backgroundColor(this.themeColor.mainColor)
+      .backgroundColor(this.theme.color.mainColor)
       .borderRadius(8)
       .onClick(() => {
         // 当前显示的index值小于设定的SWITCH_BUTTON时，按钮为跳转到上次浏览记录，否则为跳转到顶部

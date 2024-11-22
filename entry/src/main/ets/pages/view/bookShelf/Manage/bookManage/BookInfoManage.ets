@@ -1,6 +1,6 @@
 import FontConstants from '../../../../../common/constants/FontConstants'
 import { ThemeStorageKey } from '../../../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../../../common/model/Theme'
+import { ThemeItem } from '../../../../../common/model/Theme'
 import { Books } from '../../../../../database/entities/Books'
 
 @Component
@@ -12,7 +12,7 @@ export default struct BookInfoManage{
   @Link checkGroup:Record<number, boolean>
   onSelect:Function = () => {}
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Flex(
       {
@@ -93,7 +93,7 @@ export default struct BookInfoManage{
                 this.checkGroup[this.bookData.id] = val
               }
             })
-            .selectedColor(this.themeColor.mainColor)
+            .selectedColor(this.theme.color.mainColor)
             .unselectedColor('rgba(0, 0, 0, 0.35)')
         }
         .padding({ left: 15, right: 15, bottom: 5, top: 5 })

@@ -10,7 +10,7 @@ import { JSON } from '@kit.ArkTS';
 import BookSourceDao from '../../../../database/dao/BookSourceDao';
 import { BookSource, BOOK_SOURCE_TYPE, GRADE_TYPE, SOURCE_GROUP_MAP,
   SOURCE_SCORE_ARR } from '../../../../database/entities/BookSource';
-import { ThemeColorItem } from '../../../../common/model/Theme';
+import { ThemeItem } from '../../../../common/model/Theme';
 import { ThemeStorageKey } from '../../../../common/constants/Theme';
 
 interface RouteParams {
@@ -55,7 +55,7 @@ struct AddSourcePage {
     showExplore: true
   }
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   async aboutToAppear() {
     const params = router.getParams() as RouteParams;
@@ -156,8 +156,8 @@ struct AddSourcePage {
       Row({ space: 20 }) {
         Button('取消')
           .height(40)
-          .fontColor(this.themeColor.mainColor)
-          .backgroundColor(this.themeColor.secondColor)
+          .fontColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.color.secondColor)
           .layoutWeight(1)
           .onClick(() => {
             router.back()
@@ -167,7 +167,7 @@ struct AddSourcePage {
         Button('确认')
           .height(40)
           .fontColor(Color.White)
-          .backgroundColor(0xff6600)
+          .backgroundColor(this.theme.color.mainColor)
           .layoutWeight(1)
           .onClick(async () => {
             if (!this.formModel.bookSourceName || !this.formModel.bookSourceUrl) {
@@ -207,7 +207,7 @@ struct AddSourcePage {
       Text('CookieJar')
 
       Toggle({ type: ToggleType.Switch, isOn: enabledCookieJar })
-        .selectedColor(0xff6600)
+        .selectedColor(this.theme.color.mainColor)
         .margin({ left: 8 })
         .onChange((val: boolean) => {
           onChange(val)
@@ -949,9 +949,9 @@ struct AddSourcePage {
         .fontSize(16)
         .fontWeight(this.currentIndex === index ? 700 : 400)
         .lineHeight(24)
-        .backgroundImage(this.currentIndex === index ? $r('app.media.underline') : '')
-        .backgroundImageSize(this.currentIndex === index ? { width: '100%', height: 15 } : {})
-        .backgroundImagePosition({ y: 16 })
+        // .backgroundImage(this.currentIndex === index ? $r('app.media.underline') : '')
+        // .backgroundImageSize(this.currentIndex === index ? { width: '100%', height: 15 } : {})
+        // .backgroundImagePosition({ y: 16 })
     }
   }
 

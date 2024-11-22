@@ -4,7 +4,7 @@ import { BookGroups } from '../../../../../database/entities/BookGroups'
 import { showMessage } from '../../../../../componets/common/promptShow'
 import buttonCommon from '../../../../../componets/common/buttonCommon'
 import bookGroupUtil from '../../../../../common/utils/bookGroupUtils'
-import { ThemeColorItem } from '../../../../../common/model/Theme'
+import { ThemeItem } from '../../../../../common/model/Theme'
 import { ThemeStorageKey } from '../../../../../common/constants/Theme'
 
 @CustomDialog
@@ -25,7 +25,7 @@ export default struct coverInfoDialog{
   }
   @State coverFolder:boolean = false
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column(){
       Flex({
@@ -85,7 +85,7 @@ export default struct coverInfoDialog{
           justifyContent:FlexAlign.SpaceBetween
         }) {
           Column(){
-            Text('取消').fontSize(16).fontWeight(400).fontColor(this.themeColor.mainColor)
+            Text('取消').fontSize(16).fontWeight(400).fontColor(this.theme.color.mainColor)
               .lineHeight(24)
               .padding({left:32,right:32,bottom:8,top:8})
           }
@@ -95,7 +95,7 @@ export default struct coverInfoDialog{
           .width('49%')
           .borderRadius(20)
           .alignItems(HorizontalAlign.Center)
-          .backgroundColor(this.themeColor.secondColor)
+          .backgroundColor(this.theme.color.secondColor)
           Column(){
             Text('确定')
               .fontSize(16)
@@ -115,7 +115,7 @@ export default struct coverInfoDialog{
           .width('49%')
           .borderRadius(20)
           .alignItems(HorizontalAlign.Center)
-          .backgroundColor(this.themeColor.mainColor)
+          .backgroundColor(this.theme.color.mainColor)
         }
       }
       .alignItems(HorizontalAlign.Center)

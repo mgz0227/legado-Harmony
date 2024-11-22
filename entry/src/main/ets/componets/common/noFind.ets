@@ -9,7 +9,7 @@ import FontConstants from '../../common/constants/FontConstants'
 import ImageConstants from '../../common/constants/ImageConstants'
 import PaddingConstants from '../../common/constants/PaddingConstants'
 import { ThemeStorageKey } from '../../common/constants/Theme'
-import { ThemeColorItem } from '../../common/model/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 
 @Component
 export default struct noFind {
@@ -19,7 +19,7 @@ export default struct noFind {
     [$r('app.media.icon_no_source_find'), $r('app.media.icon_no_source_net'), $r('app.media.icon_no_source_content')]
   onclick: () => void = () => {}
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column() {
       Image(this.hintIcon[this.hintIndex]).width(ImageConstants.IMG_WIDTH_124).height(ImageConstants.IMG_HEIGHT_120)
@@ -48,7 +48,7 @@ export default struct noFind {
           .fontSize(FontConstants.FONT_SIZE_14)
           .fontWeight(FontConstants.FONT_WEIGHT_500)
           .fontFamily(CommonConstants.FAMILY_PingFANG)
-          .backgroundColor(this.themeColor.mainColor)
+          .backgroundColor(this.theme.color.mainColor)
           .onClick(() => {
             this.onclick()
           })

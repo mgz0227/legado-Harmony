@@ -6,7 +6,7 @@
  */
 import CommonConstants from '../../common/constants/CommonConstants'
 import { ThemeStorageKey } from '../../common/constants/Theme'
-import { ThemeColorItem } from '../../common/model/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 
 @Component
 export default struct buttonCommon {
@@ -17,7 +17,7 @@ export default struct buttonCommon {
   confirm: () => void = () => {
   }
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Flex(){
@@ -27,8 +27,8 @@ export default struct buttonCommon {
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor('#1fff6600')
-          .fontColor(this.themeColor.mainColor)
+          .backgroundColor(this.theme.color.secondColor)
+          .fontColor(this.theme.color.mainColor)
           .onClick(() => {
               this.cancel()
           })
@@ -37,7 +37,7 @@ export default struct buttonCommon {
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor(this.themeColor.mainColor)
+          .backgroundColor(this.theme.color.mainColor)
           .fontColor('#FFFFFF')
           .onClick(()=>{
             this.confirm()

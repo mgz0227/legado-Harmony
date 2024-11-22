@@ -1,5 +1,5 @@
 import { ThemeStorageKey } from '../../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../../common/model/Theme'
+import { ThemeItem } from '../../../../common/model/Theme'
 import { WorksLists } from '../../../../database/entities/WorksLists'
 
 @Component
@@ -10,7 +10,7 @@ export default struct WorksBookListGrid {
   @Link checkGroup:Record<number, boolean>
   onSelect:Function = () => {}
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column() {
       Stack() {
@@ -21,10 +21,10 @@ export default struct WorksBookListGrid {
           }){
             Checkbox()
               .zIndex(2)
-              .selectedColor(this.themeColor.mainColor)
+              .selectedColor(this.theme.color.mainColor)
               .unselectedColor('rgba(0, 0, 0, 0.35)')
               .select(this.work.worksId?this.checkGroup[this.work.worksId] ?? false:false)
-              .selectedColor(this.themeColor.mainColor)
+              .selectedColor(this.theme.color.mainColor)
               .onChange((val: boolean) => {
                 if (this.work.worksId) {
                   this.checkGroup[this.work.worksId] = val

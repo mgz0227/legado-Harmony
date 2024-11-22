@@ -1,5 +1,5 @@
 import { ThemeStorageKey } from "../../common/constants/Theme"
-import { ThemeColorItem } from "../../common/model/Theme"
+import { ThemeItem } from "../../common/model/Theme"
 
 export enum FormItemType {
   Input
@@ -20,7 +20,7 @@ export  default  struct FormItem {
   showTitle: boolean = true
 
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column() {
@@ -52,7 +52,7 @@ export  default  struct FormItem {
           TextInput({ text: this.value ?? '', placeholder: `请输入${this.label}` })
             .placeholderColor('#73000000')
             .placeholderFont({ size: 14, weight: 400 })
-            .caretColor(this.themeColor.mainColor)
+            .caretColor(this.theme.color.mainColor)
             .height(38)
             .margin({ top: 10, bottom: 10 })
             .fontSize(14)

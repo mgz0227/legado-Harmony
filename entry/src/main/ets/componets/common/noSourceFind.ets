@@ -6,7 +6,7 @@
  */
 import CommonConstants from '../../common/constants/CommonConstants'
 import { ThemeStorageKey } from '../../common/constants/Theme'
-import { ThemeColorItem } from '../../common/model/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 
 @Component
 export default struct noSourceFind {
@@ -16,7 +16,7 @@ export default struct noSourceFind {
 
   }
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column(){
         Image($r('app.media.icon_no_source_find')).width(124).height(120)
@@ -32,7 +32,7 @@ export default struct noSourceFind {
           .fontColor($r('app.string.color_black_45'))
           .margin({bottom:24})
       if (!this.isShowButton){
-        Button('一键隐藏').backgroundColor(this.themeColor.mainColor)
+        Button('一键隐藏').backgroundColor(this.theme.color.mainColor)
           .onClick(()=>{
             this.setOnclick()
           })

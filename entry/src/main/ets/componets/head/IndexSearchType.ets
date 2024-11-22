@@ -2,7 +2,7 @@ import CommonConstants from '../../common/constants/CommonConstants'
 import FontConstants from '../../common/constants/FontConstants'
 import PaddingConstants from '../../common/constants/PaddingConstants'
 import { ThemeStorageKey } from '../../common/constants/Theme'
-import { ThemeColorItem } from '../../common/model/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 import { BOOK_SEARCH_TYPE } from '../../database/entities/Books'
 
 @Component
@@ -11,7 +11,7 @@ export default struct IndexSearchType {
   @Link searchValue:string
   @State isShown: boolean = false
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     if (BOOK_SEARCH_TYPE.includes(this.title)){
@@ -75,7 +75,7 @@ export default struct IndexSearchType {
                 weight: FontConstants.FONT_WEIGHT_400,
                 family: CommonConstants.FAMILY_PingFANG
               })
-              .fontColor(this.searchValue === item ? this.themeColor.mainColor : $r('app.string.color_black_88'))
+              .fontColor(this.searchValue === item ? this.theme.color.mainColor : $r('app.string.color_black_88'))
             Image(item ===  this.searchValue?$r('app.media.hook'):'').width(20).height(20)
           }
           .padding({

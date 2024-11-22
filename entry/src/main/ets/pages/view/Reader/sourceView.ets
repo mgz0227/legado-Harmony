@@ -5,7 +5,7 @@
  * 换源组件
  */
 import { ThemeStorageKey } from '../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../common/model/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
 import sourceCommon from './sourceCommon'
 
 @Component
@@ -14,7 +14,7 @@ export default struct sourceView{
   @State sourceType:string = '整本换源'
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column({
       space:16
@@ -53,7 +53,7 @@ export default struct sourceView{
             })
               .fontColor(this.sourceType === '整本换源'?$r('app.string.color_black_88'):$r('app.string.color_black_45'))
             if (this.sourceType === '整本换源'){
-              Row().width(10).height(3).backgroundColor(this.themeColor.mainColor).borderRadius(8).offset({y:16})
+              Row().width(10).height(3).backgroundColor(this.theme.color.mainColor).borderRadius(8).offset({y:16})
             }
           }.onClick(()=>{
             this.sourceType ='整本换源'
@@ -66,7 +66,7 @@ export default struct sourceView{
               })
               .fontColor(this.sourceType !== '整本换源'?$r('app.string.color_black_88'):$r('app.string.color_black_45'))
             if (this.sourceType !== '整本换源'){
-              Row().width(10).height(3).backgroundColor(this.themeColor.mainColor).borderRadius(8).offset({y:16})
+              Row().width(10).height(3).backgroundColor(this.theme.color.mainColor).borderRadius(8).offset({y:16})
             }
           }.onClick(()=>{
             this.sourceType ='单章换源'
@@ -86,7 +86,7 @@ export default struct sourceView{
           Text('点击刷新')
             .fontWeight(400)
             .fontSize(14)
-            .fontColor(this.themeColor.mainColor)
+            .fontColor(this.theme.color.mainColor)
         }
         Row({
           space:4

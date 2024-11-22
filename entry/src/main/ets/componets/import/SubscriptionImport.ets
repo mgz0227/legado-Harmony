@@ -15,7 +15,7 @@ import CommonConstants from '../../common/constants/CommonConstants';
 import programDataPreferences from '../../preferences/programDataPreferences'
 import PaddingConstants from '../../common/constants/PaddingConstants';
 import addBookTypeDialog from '../common/addBookTypeDialog';
-import { ThemeColorItem } from '../../common/model/Theme';
+import { ThemeItem } from '../../common/model/Theme';
 import { ThemeStorageKey } from '../../common/constants/Theme';
 
 @Component
@@ -35,7 +35,7 @@ export default struct SubscriptionImport {
   private secondScroll = new Scroller()
   @State sourceGroup: string = ''
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   aboutToAppear() {
     subscriptionDao.search().then(data => {
@@ -162,7 +162,7 @@ export default struct SubscriptionImport {
         Row() {
           Checkbox()
             .select(this.fullActive)
-            .selectedColor(0xff6600)
+            .selectedColor(this.theme.color.mainColor)
             .onChange((val: boolean) => {
               this.fullActive = val
               this.subscriptionList.forEach((item: rssSources) => {
@@ -173,7 +173,7 @@ export default struct SubscriptionImport {
           Text() {
             Span('全选（')
             Span(Object.values(this.insertMap).filter(o => o).length + '')
-              .fontColor(this.themeColor.mainColor)
+              .fontColor(this.theme.color.mainColor)
             Span(`/${this.subscriptionList.length})`)
           }
           .margin({ left: 8 })
@@ -190,7 +190,7 @@ export default struct SubscriptionImport {
                 weight: FontConstants.FONT_WEIGHT_700
               })
               .textAlign(TextAlign.Center)
-              .fontColor(this.themeColor.mainColor)
+              .fontColor(this.theme.color.mainColor)
               .lineHeight(22)
           }
           Text('导入至').font({
@@ -198,7 +198,7 @@ export default struct SubscriptionImport {
             weight: FontConstants.FONT_WEIGHT_400
           })
             .textAlign(TextAlign.Center)
-            .fontColor(this.themeColor.mainColor)
+            .fontColor(this.theme.color.mainColor)
             .lineHeight(22)
             .onClick(() => {
               this.getRssSourceList()
@@ -213,8 +213,8 @@ export default struct SubscriptionImport {
       Row({ space: 20 }) {
         Button('取消')
           .height(40)
-          .fontColor(this.themeColor.mainColor)
-          .backgroundColor(this.themeColor.secondColor)
+          .fontColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.color.secondColor)
           .layoutWeight(1)
           .onClick(() => {
             this.show = false;
@@ -223,7 +223,7 @@ export default struct SubscriptionImport {
         Button('确认')
           .height(40)
           .fontColor(Color.White)
-          .backgroundColor(this.themeColor.mainColor)
+          .backgroundColor(this.theme.color.mainColor)
           .layoutWeight(1)
           .onClick(async  () => {
             if (this.sourceGroup.length === 0) {
@@ -277,7 +277,7 @@ export default struct SubscriptionImport {
         })
       CheckboxGroup({ group: 'checkboxGroup' + index })
         .checkboxShape(CheckBoxShape.CIRCLE)
-        .selectedColor(0xff6600)
+        .selectedColor(this.theme.color.mainColor)
     }
     .padding({ right: 16 })
     .backgroundColor('#f5f5f5')
@@ -300,7 +300,7 @@ export default struct SubscriptionImport {
 
         Checkbox({ name: 'checkbox' + j, group: 'checkboxGroup' + i })
           .select(this.insertMap[item.sourceUrl] ?? false)
-          .selectedColor(0xff6600)
+          .selectedColor(this.theme.color.mainColor)
           .onChange((val: boolean) => {
             this.insertMap[item.sourceUrl] = val
           })

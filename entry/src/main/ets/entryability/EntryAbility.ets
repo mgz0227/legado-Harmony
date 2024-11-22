@@ -97,8 +97,10 @@ export default class EntryAbility extends UIAbility {
       AppStorage.setOrCreate('stateHeight', px2vp(avoidAreaSys.topRect.height));
 
     })
-    // 配置主题
-    themeManager.init()
+    // 主题初始化
+    if (!themeManager.isSetTheme()) {
+      themeManager.init()
+    }
 
     windowStage.loadContent('/pages/Index'.slice(1), (err, data) => {
       if (err.code) {

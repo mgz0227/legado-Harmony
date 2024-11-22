@@ -1,7 +1,7 @@
 import { router } from '@kit.ArkUI';
 import fs from '@ohos.file.fs';
 import { ThemeStorageKey } from '../../../common/constants/Theme';
-import { ThemeColorItem } from '../../../common/model/Theme';
+import { ThemeItem } from '../../../common/model/Theme';
 
 class SmartScanItem {
   bookName: string
@@ -52,7 +52,7 @@ struct LocalImportPage {
     '系统文件夹',
   ]
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   // 加载测试
   onPageShow(): void {
@@ -258,7 +258,7 @@ struct LocalImportPage {
 
       Text("导入书架")
         .lineHeight(24)
-        .fontColor(this.themeColor.mainColor)
+        .fontColor(this.theme.color.mainColor)
         .opacity(0.5)
         .font({
           size: 16,
@@ -365,7 +365,7 @@ struct LocalImportPage {
               size: 16,
               weight: 500
             })
-            .fontColor(this.currentTabIndex === index ? this.themeColor.mainColor : '#000000')
+            .fontColor(this.currentTabIndex === index ? this.theme.color.mainColor : '#000000')
             .opacity(this.currentTabIndex === index ? null : 0.45)
         }
       }

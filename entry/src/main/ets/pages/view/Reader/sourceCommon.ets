@@ -4,7 +4,7 @@
  * @className: sourceCommon
  */
 import { ThemeStorageKey } from '../../../common/constants/Theme'
-import { ThemeColorItem } from '../../../common/model/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
 import chapterCommon from './chapterCommon'
 
 @Component
@@ -14,7 +14,7 @@ export default struct sourceCommon{
   @Prop sourceType:string
   @State isShowChapter:boolean = false
   // 主题颜色
-  @StorageProp(ThemeStorageKey.COLOR) themeColor: ThemeColorItem = {} as ThemeColorItem
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Flex({
@@ -129,9 +129,9 @@ export default struct sourceCommon{
         })
       }
     }
-    .border({width:this.IsSelect?1:0,color:this.themeColor.mainColor,style:BorderStyle.Solid})
+    .border({width:this.IsSelect?1:0,color:this.theme.color.mainColor,style:BorderStyle.Solid})
     .borderRadius(12)
-    .backgroundColor(this.IsSelect?'rgba(255, 102, 0, 0.12)':'rgba(0, 0, 0, 0.06)')
+    .backgroundColor(this.IsSelect?this.theme.color.secondColor:'rgba(0, 0, 0, 0.06)')
   }
   @Builder
   chapterView(){
