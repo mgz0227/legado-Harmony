@@ -5,13 +5,13 @@
         "name": "legado",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\lingwu\\.ohos\\config\\legado_legado-Harmony-main_cr33P28rq1ixZSnwSrFz9IY32MMFza5UJdkje0d3wvA=.cer",
-          "storePassword": "0000001A73A20DF725929F5DCF90ADBE76907724A214D3B6F0A010EC313EF5E5EAA9D993CF607CEC388F",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001AE6885B5BE80AD4CAD42C5BED037508E26AC7833C735AE5886F3F215207B16E930743116463E3",
-          "profile": "C:\\Users\\lingwu\\.ohos\\config\\legado_legado-Harmony-main_cr33P28rq1ixZSnwSrFz9IY32MMFza5UJdkje0d3wvA=.p7b",
+          "storePassword": "0000001F39FAED2651D657099281BA9C199E92A7F8A9374824243F2A27430B35E7BB1A780D80A066340476F21DBD2C",
+          "certpath": "D:/喵公子Studio/Harmony签名/Legado发布.cer",
+          "keyAlias": "legado",
+          "keyPassword": "0000001F0589FA894DAA48A3E911B15A38059B6798F9C8B3EFD3D7279D80C9628B1AE59CB9EA616C14F26AA12F1E6B",
+          "profile": "D:/喵公子Studio/Harmony签名/legadoRelease.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\lingwu\\.ohos\\config\\legado_legado-Harmony-main_cr33P28rq1ixZSnwSrFz9IY32MMFza5UJdkje0d3wvA=.p12"
+          "storeFile": "D:/喵公子Studio/Harmony签名/legado.p12"
         }
       }
     ],
