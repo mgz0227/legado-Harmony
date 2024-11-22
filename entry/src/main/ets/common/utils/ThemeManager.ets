@@ -11,13 +11,43 @@ export class ThemeManager {
   ]
 
   init() {
-    PersistentStorage.persistProp<ThemeItem>(ThemeStorageKey.THEME, this.themeList[0])
+    PersistentStorage.persistProp<ThemeItem>(ThemeStorageKey.THEME, {text: '主题1', mainColor: ThemeColor.ORANGE.mainColor, secondColor: ThemeColor.ORANGE.secondColor})
+    PersistentStorage.persistProp<string>(ThemeStorageKey.THEMELISTSTR, JSON.stringify(this.themeList))
+
+    // 解析主题数组字符串 加载主题
+    const str = AppStorage.get<string>(ThemeStorageKey.THEMELISTSTR)
+    const themeList = JSON.parse(str as string) as ThemeItem[]
+    AppStorage.setOrCreate<ThemeItem[]>(ThemeStorageKey.THEMELIST, themeList)
+
     PersistentStorage.persistProp<number>(ThemeStorageKey.THEMEINDEX, 0) // 被选中主题的索引
   }
 
   setTheme(newTheme: ThemeItem, index: number) {
     AppStorage.setOrCreate<ThemeItem>(ThemeStorageKey.THEME, newTheme)
     AppStorage.setOrCreate<number>(ThemeStorageKey.THEMEINDEX, index)
+  }
+
+  addTheme(newTheme: ThemeItem) {
+    const str = AppStorage.get<string>(ThemeStorageKey.THEMELISTSTR)
+    const themeList = JSON.parse(str as string) as ThemeItem[]
+    themeList.push(newTheme)
+    AppStorage.setOrCreate(ThemeStorageKey.THEMELISTSTR, JSON.stringify(themeList))
+    AppStorage.setOrCreate<ThemeItem[]>(ThemeStorageKey.THEMELIST, themeList)
+  }
+
+  deleteTheme(index: number) {
+    const str = AppStorage.get<string>(ThemeStorageKey.THEMELISTSTR)
+    let themeList = JSON.parse(str as string) as ThemeItem[]
+    let activeIndex: number = AppStorage.get<number>(ThemeStorageKey.THEMEINDEX) as number
+    if (activeIndex > index) {
+        --activeIndex
+    } else if (activeIndex == index) {
+      activeIndex = 0
+    }
+    themeList = themeList.filter((item, i) => i != index)
+    this.setTheme(themeList[activeIndex], activeIndex)
+    AppStorage.setOrCreate(ThemeStorageKey.THEMELISTSTR, JSON.stringify(themeList))
+    AppStorage.setOrCreate<ThemeItem[]>(ThemeStorageKey.THEMELIST, themeList)
   }
 }
 

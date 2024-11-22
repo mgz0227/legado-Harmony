@@ -2,20 +2,17 @@ import { ThemeColor, ThemeStorageKey } from '../../../common/constants/Theme'
 import { ThemeItem } from '../../../common/model/Theme'
 import { promptAction, PromptAction, router } from '@kit.ArkUI'
 import { themeManager } from '../../../common/utils/ThemeManager'
+import { JSON } from '@kit.ArkTS'
 
 // 个性主题组件模块
 @Component
 export struct MyThemeConfigComp {
   @StorageProp(ThemeStorageKey.THEMEINDEX)
   activeIndex: number = 0 // 被选中的主题
+  @State longPressGestureIndex: number = 0 // 长按选中主题
 
-  themeList: ThemeItem[] = [
-    {text: '主题1', mainColor: ThemeColor.ORANGE.mainColor, secondColor: ThemeColor.ORANGE.secondColor},
-    {text: '主题2', mainColor: ThemeColor.RED.mainColor, secondColor: ThemeColor.RED.secondColor},
-    {text: '主题3', mainColor: ThemeColor.GREEN.mainColor, secondColor: ThemeColor.GREEN.secondColor},
-    {text: '主题4', mainColor: ThemeColor.YELLOW.mainColor, secondColor: ThemeColor.YELLOW.secondColor},
-    {text: '主题5', mainColor: ThemeColor.BLUE.mainColor, secondColor: ThemeColor.BLUE.secondColor},
-  ]
+  @StorageProp(ThemeStorageKey.THEMELIST)
+  themeList: ThemeItem[] = []
 
   // 主题颜色
   @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
@@ -50,11 +47,11 @@ export struct MyThemeConfigComp {
           .fontColor(Color.White)
           .backgroundColor(this.theme.mainColor)
           .onClick(() => {
-            // if (this.themeList.length > 1) {
-            //   themeManager.deleteTheme(this.activeIndex)
-            // } else {
-            //   promptAction.showToast({message: "删除失败，至少需要保留一个主题"})
-            // }
+            if (this.themeList.length > 1) {
+              themeManager.deleteTheme(this.longPressGestureIndex)
+            } else {
+              promptAction.showToast({message: "删除失败，至少需要保留一个主题"})
+            }
             this.dialog.close()
           })
           .width(112)
@@ -152,6 +149,7 @@ export struct MyThemeConfigComp {
             LongPressGesture()
               .onAction(() => {
                 this.dialog.open()
+                this.longPressGestureIndex = index
               })
           )
         })

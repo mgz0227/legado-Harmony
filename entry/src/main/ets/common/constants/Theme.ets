@@ -12,5 +12,7 @@ export class ThemeColor {
 // AppStorage key 标识
 export class ThemeStorageKey {
   static readonly THEME: string = 'theme' // 主题key
+  static readonly THEMELIST: string = 'themelist'
+  static readonly THEMELISTSTR: string = 'themeliststr'
   static readonly THEMEINDEX: string = 'themeindex' // 被选中主题索引key
 }
