@@ -37,7 +37,7 @@ export default struct customizeDialogExample {
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
           .fontColor(Color.White)
-          .backgroundColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.mainColor)
       }.padding({top:20,bottom:20})
     }
   }

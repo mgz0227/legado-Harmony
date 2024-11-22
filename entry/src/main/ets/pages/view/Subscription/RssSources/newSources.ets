@@ -550,7 +550,7 @@ export default struct newSources{
           Text('启用JavaScript')
             .fontColor(16)
           Toggle({ type: ToggleType.Switch, isOn: this.formModel.rssWebViewRule?.enableJs })
-            .selectedColor(this.theme.color.mainColor)
+            .selectedColor(this.theme.mainColor)
             .margin({ left: 8 })
             .onChange((val: boolean) => {
               if ( this.formModel.rssWebViewRule) {
@@ -566,7 +566,7 @@ export default struct newSources{
           Text('加载 BaseUrl')
             .fontColor(16)
           Toggle({ type: ToggleType.Switch, isOn: this.formModel.rssWebViewRule?.loadWithBaseUrl })
-            .selectedColor(this.theme.color.mainColor)
+            .selectedColor(this.theme.mainColor)
             .margin({ left: 8 })
             .onChange((val: boolean) => {
               if ( this.formModel.rssWebViewRule) {
@@ -655,7 +655,7 @@ export default struct newSources{
       Text('CookieJar')
 
       Toggle({ type: ToggleType.Switch, isOn: enabledCookieJar })
-        .selectedColor(this.theme.color.mainColor)
+        .selectedColor(this.theme.mainColor)
         .margin({ left: 8 })
         .onChange((val: boolean) => {
           onChange(val)
@@ -669,7 +669,7 @@ export default struct newSources{
       Text('使用链接')
 
       Toggle({ type: ToggleType.Switch, isOn: sourceIconIsUrl })
-        .selectedColor(this.theme.color.mainColor)
+        .selectedColor(this.theme.mainColor)
         .margin({ left: 8 })
         .onChange((val: boolean) => {
           onChange(val)
@@ -782,7 +782,7 @@ export default struct newSources{
           .fontColor($r('app.string.color_black_88'))
           .lineHeight(TextConstants.TEXT_LINE_HEIGHT_22)
         Toggle({ type: ToggleType.Switch, isOn: this.formModel.autoComplete})
-          .selectedColor(this.theme.color.mainColor)
+          .selectedColor(this.theme.mainColor)
           .margin({ left: 8 })
           .onChange((val: boolean) => {
             this.formModel.autoComplete = val

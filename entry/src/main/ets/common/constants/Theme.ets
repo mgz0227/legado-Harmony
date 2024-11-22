@@ -1,4 +1,4 @@
-import { ThemeColorItem } from "../model/Theme";
+import { ThemeColorItem } from "../model/Theme"
 
 // 配置主题颜色
 export class ThemeColor {
@@ -11,5 +11,6 @@ export class ThemeColor {
 
 // AppStorage key 标识
 export class ThemeStorageKey {
-  static readonly THEME: string = 'thmem' // 主题key
+  static readonly THEME: string = 'theme' // 主题key
+  static readonly THEMEINDEX: string = 'themeindex' // 被选中主题索引key
 }

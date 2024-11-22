@@ -32,7 +32,7 @@ export default struct noSourceFind {
           .fontColor($r('app.string.color_black_45'))
           .margin({bottom:24})
       if (!this.isShowButton){
-        Button('一键隐藏').backgroundColor(this.theme.color.mainColor)
+        Button('一键隐藏').backgroundColor(this.theme.mainColor)
           .onClick(()=>{
             this.setOnclick()
           })

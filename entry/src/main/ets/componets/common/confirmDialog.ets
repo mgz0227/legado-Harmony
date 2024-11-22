@@ -23,7 +23,7 @@ export default struct confirmDialogExample {
         Row({
           space:8
         }){
-          Checkbox().selectedColor(this.theme.color.mainColor).select(this.delCache)
+          Checkbox().selectedColor(this.theme.mainColor).select(this.delCache)
           Text('同时删除本地缓存')
             .fontColor('rgba(0, 0, 0, 0.45)').fontSize(14).fontWeight(400).lineHeight(22)
         }
@@ -38,8 +38,8 @@ export default struct confirmDialogExample {
           })
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
-          .fontColor(this.theme.color.mainColor)
-          .backgroundColor(this.theme.color.secondColor)
+          .fontColor(this.theme.mainColor)
+          .backgroundColor(this.theme.secondColor)
         Text('确认')
           .onClick(() => {
             if (this.controller != undefined) {
@@ -50,7 +50,7 @@ export default struct confirmDialogExample {
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
           .fontColor(Color.White)
-          .backgroundColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.mainColor)
       }.padding({top:20,bottom:20})
     }
   }

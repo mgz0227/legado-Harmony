@@ -97,7 +97,7 @@ export default struct RssSourceCheckImage{
                Stack(){
                  Radio({value:JSON.stringify(index),group:'iconGroup'})
                    .radioStyle({
-                     checkedBackgroundColor: this.theme.color.mainColor
+                     checkedBackgroundColor: this.theme.mainColor
                    })
                    .zIndex(999)
                    .onChange(()=>{

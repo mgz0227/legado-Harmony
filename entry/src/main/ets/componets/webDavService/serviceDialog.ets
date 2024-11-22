@@ -46,8 +46,8 @@ export struct serviceDialog{
           .lineHeight(25)
       }
       Row({space:24}) {
-        this.button("取消",[this.theme.color.mainColor, this.theme.color.secondColor],this.cancel)
-        this.button("确定",[Color.White,this.theme.color.mainColor],this.confirm)
+        this.button("取消",[this.theme.mainColor, this.theme.secondColor],this.cancel)
+        this.button("确定",[Color.White,this.theme.mainColor],this.confirm)
       }.padding({top:10})
     }.padding({top:20,bottom:20})
     .width(270)

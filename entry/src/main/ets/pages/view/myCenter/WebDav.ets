@@ -95,7 +95,7 @@ struct  WebDav{
       //查看帮助
       Column(){
         Text("不会填写？查看帮助")
-          .fontColor(this.theme.color.mainColor)
+          .fontColor(this.theme.mainColor)
           .fontSize(14)
       }.bindSheet($$this.helper_status,this.helper,{
         height:600,

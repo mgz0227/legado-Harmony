@@ -129,14 +129,14 @@ export default struct groupTypeSearchPanel{
         Text(title).fontWeight(500).fontSize(12).textOverflow({
           overflow:TextOverflow.Ellipsis
         }).ellipsisMode(EllipsisMode.END)
-          .maxLines(1).fontColor(this.theme.color.mainColor)
+          .maxLines(1).fontColor(this.theme.mainColor)
           .textAlign(TextAlign.Center)
       }
       .margin({ right: 16, bottom: 16 })
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
       .width(68)
-      .backgroundColor(this.theme.color.secondColor)
+      .backgroundColor(this.theme.secondColor)
       .padding({left:16,right:16,top:6,bottom:6})
     }
   }

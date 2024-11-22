@@ -41,7 +41,7 @@ export default struct SideBar {
               Row()
                 .width(3)
                 .height(16)
-                .backgroundColor(this.theme.color.mainColor)
+                .backgroundColor(this.theme.mainColor)
                 .borderRadius(12)
                 .position({
                   top: 16

@@ -85,7 +85,7 @@ export default struct coverInfoDialog{
           justifyContent:FlexAlign.SpaceBetween
         }) {
           Column(){
-            Text('取消').fontSize(16).fontWeight(400).fontColor(this.theme.color.mainColor)
+            Text('取消').fontSize(16).fontWeight(400).fontColor(this.theme.mainColor)
               .lineHeight(24)
               .padding({left:32,right:32,bottom:8,top:8})
           }
@@ -95,7 +95,7 @@ export default struct coverInfoDialog{
           .width('49%')
           .borderRadius(20)
           .alignItems(HorizontalAlign.Center)
-          .backgroundColor(this.theme.color.secondColor)
+          .backgroundColor(this.theme.secondColor)
           Column(){
             Text('确定')
               .fontSize(16)
@@ -115,7 +115,7 @@ export default struct coverInfoDialog{
           .width('49%')
           .borderRadius(20)
           .alignItems(HorizontalAlign.Center)
-          .backgroundColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.mainColor)
         }
       }
       .alignItems(HorizontalAlign.Center)

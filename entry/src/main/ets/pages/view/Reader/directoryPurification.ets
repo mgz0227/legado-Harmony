@@ -58,7 +58,7 @@ export default struct directoryPurification{
                 family:CommonConstants.FAMILY_PingFANG
               })
                 .lineHeight(24)
-              Text('*').fontColor(this.theme.color.mainColor).font({
+              Text('*').fontColor(this.theme.mainColor).font({
                 size:16,
                 weight:500,
                 family:CommonConstants.FAMILY_PingFANG
@@ -86,7 +86,7 @@ export default struct directoryPurification{
                   family:CommonConstants.FAMILY_PingFANG
                 })
                   .lineHeight(24)
-                Text('*').fontColor(this.theme.color.mainColor).font({
+                Text('*').fontColor(this.theme.mainColor).font({
                   size:16,
                   weight:500,
                   family:CommonConstants.FAMILY_PingFANG

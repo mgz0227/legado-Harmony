@@ -62,7 +62,7 @@ export default struct newAddRule{
                   family:CommonConstants.FAMILY_PingFANG
                 })
                   .lineHeight(24)
-                Text('*').fontColor(this.theme.color.mainColor).font({
+                Text('*').fontColor(this.theme.mainColor).font({
                   size:16,
                   weight:500,
                   family:CommonConstants.FAMILY_PingFANG
@@ -86,7 +86,7 @@ export default struct newAddRule{
                   family:CommonConstants.FAMILY_PingFANG
                 })
                   .lineHeight(24)
-                Text('*').fontColor(this.theme.color.mainColor).font({
+                Text('*').fontColor(this.theme.mainColor).font({
                   size:16,
                   weight:500,
                   family:CommonConstants.FAMILY_PingFANG
@@ -156,7 +156,7 @@ export default struct newAddRule{
                     family:CommonConstants.FAMILY_PingFANG
                   })
                     .lineHeight(24)
-                  Text('*').fontColor(this.theme.color.mainColor).font({
+                  Text('*').fontColor(this.theme.mainColor).font({
                     size:16,
                     weight:500,
                     family:CommonConstants.FAMILY_PingFANG
@@ -219,7 +219,7 @@ export default struct newAddRule{
                       .fontColor($r('app.string.color_black_45'))
                     Radio({value:'default',group:'radioGroup'})
                       .radioStyle({
-                        checkedBackgroundColor: this.theme.color.mainColor
+                        checkedBackgroundColor: this.theme.mainColor
                       })
                       .onChange(()=>{
 
@@ -238,7 +238,7 @@ export default struct newAddRule{
                       .fontColor($r('app.string.color_black_45'))
                     Radio({value:'default',group:'radioGroup'})
                       .radioStyle({
-                        checkedBackgroundColor: this.theme.color.mainColor
+                        checkedBackgroundColor: this.theme.mainColor
                       })
                       .checked(true)
                       .onChange(()=>{
@@ -336,7 +336,7 @@ export default struct newAddRule{
             justifyContent:FlexAlign.SpaceBetween,
             alignItems:ItemAlign.Center
           }) {
-            Text(item).fontSize(14).lineHeight(24).fontColor(item === this.grouping?this.theme.color.mainColor:$r('app.string.color_black_88'))
+            Text(item).fontSize(14).lineHeight(24).fontColor(item === this.grouping?this.theme.mainColor:$r('app.string.color_black_88'))
             if (item === this.grouping){
               Image($r('app.media.hook')).width(24).height(24)
             }

@@ -60,7 +60,7 @@ export default struct VersionUpdateCustomDialog {
 
       if (!this.clickUpdate) {
         Button("立即更新")
-          .backgroundColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.mainColor)
           .width("73%")
           .margin({
             top: 24,
@@ -86,7 +86,7 @@ export default struct VersionUpdateCustomDialog {
             })
           })
           .width("73%")
-          .color(this.theme.color.mainColor)
+          .color(this.theme.mainColor)
           .backgroundColor("#FFAF7A")
           .margin({
             top: 24,

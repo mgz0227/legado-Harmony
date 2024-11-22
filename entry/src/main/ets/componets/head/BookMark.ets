@@ -15,7 +15,7 @@ export default struct BookMark {
     Column() {
       if (this.isBackground) {
         Text(this.title)
-          .fontColor(this.currentIndex === this.index ? this.theme.color.mainColor : this.theme.color.secondColor)
+          .fontColor(this.currentIndex === this.index ? this.theme.mainColor : this.theme.secondColor)
           .fontSize(this.currentIndex === this.index ? 25 : 16)
           .fontWeight(this.currentIndex === this.index ? 700 : 500)
           .lineHeight(30)

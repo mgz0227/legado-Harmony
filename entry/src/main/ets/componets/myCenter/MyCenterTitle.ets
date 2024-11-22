@@ -103,7 +103,7 @@ export struct MyCenterTitle{
       Row(){
         Text(text)
           .font({size: 16, weight: 400})
-          .fontColor(index === this.onSelect ? this.theme.color.mainColor : "#000000")
+          .fontColor(index === this.onSelect ? this.theme.mainColor : "#000000")
           .height(22)
         if (this.onSelect === index){
           Image($r("app.media.ic_select"))

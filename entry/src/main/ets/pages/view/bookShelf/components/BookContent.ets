@@ -91,7 +91,7 @@ export default struct BookContent {
     if (this.isLoading) {
       Row(){
         LoadingProgress()
-          .color(this.theme.color.mainColor)
+          .color(this.theme.mainColor)
           .width('50%')
         Text('加载中...')
       }

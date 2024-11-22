@@ -272,7 +272,7 @@ export default struct SourceView {
         Column() {
           if (this.loading) {
             LoadingProgress()
-              .color(this.theme.color.mainColor)
+              .color(this.theme.mainColor)
               .width('50%')
             Text('加载中...')
           } else if (this.errorText) {
@@ -316,7 +316,7 @@ export default struct SourceView {
         Blank()
         CheckboxGroup({ group: 'checkboxGroup' + index })
           .checkboxShape(CheckBoxShape.CIRCLE)
-          .selectedColor(this.theme.color.mainColor)
+          .selectedColor(this.theme.mainColor)
       } else {
         Text('长按批量管理')
           .fontSize(12)
@@ -351,7 +351,7 @@ export default struct SourceView {
         }
 
         if (item.hasExploreUrl) {
-          Tag({ text: '发现', color: this.theme.color.mainColor, bgColor: this.theme.color.secondColor })
+          Tag({ text: '发现', color: this.theme.mainColor, bgColor: this.theme.secondColor })
         }
 
         Blank()
@@ -359,7 +359,7 @@ export default struct SourceView {
         if (this.isBatch) {
           Checkbox({ name: 'checkbox' + j, group: 'checkboxGroup' + i })
             .select(this.activeNameMap[item.bookSourceUrl] ?? false)
-            .selectedColor(this.theme.color.mainColor)
+            .selectedColor(this.theme.mainColor)
             .onChange((val: boolean) => {
               this.activeNameMap[item.bookSourceUrl] = val
             })
@@ -452,10 +452,10 @@ export default struct SourceView {
     })
     .border({
       width: 1,
-      color: this.activeNameMap[item.bookSourceUrl] ? this.theme.color.mainColor : Color.White,
+      color: this.activeNameMap[item.bookSourceUrl] ? this.theme.mainColor : Color.White,
       style: BorderStyle.Solid
     })
-    .backgroundColor(this.activeNameMap[item.bookSourceUrl] ? this.theme.color.secondColor : Color.White)
+    .backgroundColor(this.activeNameMap[item.bookSourceUrl] ? this.theme.secondColor : Color.White)
   }
 
   Item_Right_Dialog_Data: IconTitleVo[] = [

@@ -25,7 +25,7 @@ export struct SearchDetails{
   @Builder RefreshComponent(){
     Stack(){
       Row(){
-        LoadingProgress().color(this.theme.color.mainColor).height(26)
+        LoadingProgress().color(this.theme.mainColor).height(26)
         Text("共搜索到"+this.books.length+"个相关结果").fontSize(14).margin({left:20}).fontColor($r('app.string.color_black_45'))
       }.alignItems(VerticalAlign.Center)
     }.width("100%").align(Alignment.Center)
@@ -56,7 +56,7 @@ export struct SearchDetails{
       }
       //给border添加加载动画
       .border({
-        width: { top:this.isSearch?2:0 },color:this.theme.color.mainColor
+        width: { top:this.isSearch?2:0 },color:this.theme.mainColor
       })
       .borderStyle({
         top:BorderStyle.Solid,

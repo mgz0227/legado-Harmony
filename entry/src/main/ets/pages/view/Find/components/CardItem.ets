@@ -41,12 +41,12 @@ export  struct CardItem {
           Column() {
             Text(this.item.author)
               .fontSize(10)
-              .fontColor(this.theme.color.mainColor)
+              .fontColor(this.theme.mainColor)
           }
           .padding({ left: 6, right: 6 })
           .height(16)
           .justifyContent(FlexAlign.Center)
-          .backgroundColor(this.theme.color.secondColor)
+          .backgroundColor(this.theme.secondColor)
 
           if (this.item.kind) {
             Column() {

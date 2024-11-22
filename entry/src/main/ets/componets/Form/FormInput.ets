@@ -51,7 +51,7 @@ export  default  struct FormInput {
             .backgroundColor(Color.Transparent)
             .placeholderColor('#73000000')
             .placeholderFont({ size: 16, weight: 400 })
-            .caretColor(this.theme.color.mainColor)
+            .caretColor(this.theme.mainColor)
             .margin({ top: 10, bottom: 10 })
             .fontSize(16)
             .fontColor('#E0000000')

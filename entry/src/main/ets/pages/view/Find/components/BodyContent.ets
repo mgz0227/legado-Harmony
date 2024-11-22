@@ -61,7 +61,7 @@ export default struct BodyContent {
         if (this.loading) {
           Row() {
             LoadingProgress()
-              .color(this.theme.color.mainColor)
+              .color(this.theme.mainColor)
               .width(30)
             Text('加载中...')
           }
@@ -114,7 +114,7 @@ export default struct BodyContent {
       if (this.loading) {
         Column() {
           LoadingProgress()
-            .color(this.theme.color.mainColor)
+            .color(this.theme.mainColor)
             .width('50%')
           Text('加载中...')
         }

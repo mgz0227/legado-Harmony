@@ -156,8 +156,8 @@ struct AddSourcePage {
       Row({ space: 20 }) {
         Button('取消')
           .height(40)
-          .fontColor(this.theme.color.mainColor)
-          .backgroundColor(this.theme.color.secondColor)
+          .fontColor(this.theme.mainColor)
+          .backgroundColor(this.theme.secondColor)
           .layoutWeight(1)
           .onClick(() => {
             router.back()
@@ -167,7 +167,7 @@ struct AddSourcePage {
         Button('确认')
           .height(40)
           .fontColor(Color.White)
-          .backgroundColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.mainColor)
           .layoutWeight(1)
           .onClick(async () => {
             if (!this.formModel.bookSourceName || !this.formModel.bookSourceUrl) {
@@ -207,7 +207,7 @@ struct AddSourcePage {
       Text('CookieJar')
 
       Toggle({ type: ToggleType.Switch, isOn: enabledCookieJar })
-        .selectedColor(this.theme.color.mainColor)
+        .selectedColor(this.theme.mainColor)
         .margin({ left: 8 })
         .onChange((val: boolean) => {
           onChange(val)

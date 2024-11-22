@@ -15,18 +15,18 @@ export default struct FilterText {
     Row() {
       Text(this.title)
         .fontSize(12)
-        .fontColor(this.hasActive ? this.theme.color.mainColor : '#E0000000')
+        .fontColor(this.hasActive ? this.theme.mainColor : '#E0000000')
       if (this.isIcon) {
         Image($r('app.media.down_arrow'))
           .width(8)
           .margin({ left: 6 })
-          .fillColor(this.hasActive ? this.theme.color.mainColor : '#E0000000')
+          .fillColor(this.hasActive ? this.theme.mainColor : '#E0000000')
       }
       if (this.index === 4 && this.hasActive) {
         Image($r('app.media.close'))
           .width(8)
           .margin({ left: 2 })
-          .fillColor(this.hasActive ? this.theme.color.mainColor : '#E0000000')
+          .fillColor(this.hasActive ? this.theme.mainColor : '#E0000000')
       }
     }
     .height(22)
@@ -37,7 +37,7 @@ export default struct FilterText {
       right: 4
     })
     .layoutWeight(1)
-    .backgroundColor(this.hasActive ? this.theme.color.secondColor : Color.White)
+    .backgroundColor(this.hasActive ? this.theme.secondColor : Color.White)
     .borderRadius(4)
     .alignItems(VerticalAlign.Center)
     .justifyContent(FlexAlign.Center)

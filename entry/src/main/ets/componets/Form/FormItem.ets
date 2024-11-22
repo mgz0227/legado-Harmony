@@ -52,7 +52,7 @@ export  default  struct FormItem {
           TextInput({ text: this.value ?? '', placeholder: `请输入${this.label}` })
             .placeholderColor('#73000000')
             .placeholderFont({ size: 14, weight: 400 })
-            .caretColor(this.theme.color.mainColor)
+            .caretColor(this.theme.mainColor)
             .height(38)
             .margin({ top: 10, bottom: 10 })
             .fontSize(14)

@@ -247,7 +247,7 @@ export default struct newSourcesNetWork{
       Text('使用链接')
 
       Toggle({ type: ToggleType.Switch, isOn: sourceIconIsUrl })
-        .selectedColor(this.theme.color.mainColor)
+        .selectedColor(this.theme.mainColor)
         .margin({ left: 8 })
         .onChange((val: boolean) => {
           onChange(val)

@@ -122,8 +122,8 @@ struct CloudDisk {
         .size({width:320,height:200})
 
         Row({space:20}) {
-          this.button("取消",[this.theme.color.mainColor,this.theme.color.secondColor],()=>{this.bindSheetCancel(this.isShow)})
-          this.button("确定",[PublicConstants.THEME_COLOR_WHITE,this.theme.color.mainColor],()=>{this.bindSheetConfirm(this.isShow)})
+          this.button("取消",[this.theme.mainColor,this.theme.secondColor],()=>{this.bindSheetCancel(this.isShow)})
+          this.button("确定",[PublicConstants.THEME_COLOR_WHITE,this.theme.mainColor],()=>{this.bindSheetConfirm(this.isShow)})
 
         }.height(40)
         .width("100%")
@@ -177,7 +177,7 @@ struct CloudDisk {
             this.backups_botton()
           }
           .margin({top:32,bottom:42})
-          .backgroundColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.mainColor)
           .onClick(()=>{this.backups_onClick()})
         }
         //备份设置

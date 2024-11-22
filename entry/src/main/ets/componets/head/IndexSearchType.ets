@@ -75,7 +75,7 @@ export default struct IndexSearchType {
                 weight: FontConstants.FONT_WEIGHT_400,
                 family: CommonConstants.FAMILY_PingFANG
               })
-              .fontColor(this.searchValue === item ? this.theme.color.mainColor : $r('app.string.color_black_88'))
+              .fontColor(this.searchValue === item ? this.theme.mainColor : $r('app.string.color_black_88'))
             Image(item ===  this.searchValue?$r('app.media.hook'):'').width(20).height(20)
           }
           .padding({

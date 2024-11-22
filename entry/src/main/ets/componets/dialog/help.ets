@@ -60,7 +60,7 @@ export default struct Help {
 
       Button(!this.btnText ? $r('app.string.i_know') : this.btnText)
         .width('100%')
-        .backgroundColor(this.theme.color.mainColor)
+        .backgroundColor(this.theme.mainColor)
         .padding({
           left: PaddingConstants.PADDING_32,
           right: PaddingConstants.PADDING_32,

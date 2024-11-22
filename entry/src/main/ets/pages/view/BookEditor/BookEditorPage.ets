@@ -44,7 +44,7 @@ struct BookEditorPage {
   ButtonColor:string = '#0f000000'
   //编辑书籍确认、取消按钮颜色
   BtnConfirmColor:string = '#F60'
-  BtnCancelColor:string = this.theme.color.secondColor
+  BtnCancelColor:string = this.theme.secondColor
 
   //电池显示组件
   @Builder BufComponent () {

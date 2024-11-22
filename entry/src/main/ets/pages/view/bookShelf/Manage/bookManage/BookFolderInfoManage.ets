@@ -64,7 +64,7 @@ export default struct BookFolderInfoManage {
           Checkbox()
             //判断是否存在当前id
             .select(this.group.groupId?this.checkGroup[this.group.groupId] ?? false:false)
-            .selectedColor(this.theme.color.mainColor)
+            .selectedColor(this.theme.mainColor)
             .onChange((val: boolean) => {
               if (this.group.groupId) {
                 this.checkGroup[this.group.groupId] = val

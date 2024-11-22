@@ -164,11 +164,11 @@ export default struct newAddShelf{
         Row(){
           Text('添加').fontSize(16)
             .fontWeight(400)
-            .fontColor(this.selectBookIdList.length === 0?this.theme.color.secondColor:this.theme.color.mainColor)
+            .fontColor(this.selectBookIdList.length === 0?this.theme.secondColor:this.theme.mainColor)
           Text(`(${this.selectBookIdList.length??0})`)
             .fontSize(16)
             .fontWeight(400)
-            .fontColor(this.selectBookIdList.length === 0?this.theme.color.secondColor:this.theme.color.mainColor)
+            .fontColor(this.selectBookIdList.length === 0?this.theme.secondColor:this.theme.mainColor)
         }
         .justifyContent(FlexAlign.Center)
         .width('50%')

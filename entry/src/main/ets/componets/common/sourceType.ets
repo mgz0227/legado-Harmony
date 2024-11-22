@@ -21,7 +21,7 @@ export default struct sourceType {
         .width(12)
         .height(3)
         .borderRadius(4)
-        .backgroundColor(this.theme.color.mainColor)
+        .backgroundColor(this.theme.mainColor)
         .visibility(this.active ? Visibility.Visible : Visibility.Hidden)
         .opacity(this.active ? 1 : 0)
         .scale({

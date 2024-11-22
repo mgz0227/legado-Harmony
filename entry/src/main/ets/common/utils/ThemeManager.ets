@@ -1,24 +1,23 @@
 import { ThemeColor, ThemeStorageKey } from "../constants/Theme";
-import { ThemeColorItem, ThemeItem } from "../model/Theme";
-import { image } from "@kit.ImageKit";
-import { resourceManager } from "@kit.LocalizationKit";
-import { BusinessError } from "@kit.BasicServicesKit";
+import { ThemeItem } from "../model/Theme";
 
 export class ThemeManager {
+  themeList: ThemeItem[] = [
+    {text: '主题1', mainColor: ThemeColor.ORANGE.mainColor, secondColor: ThemeColor.ORANGE.secondColor},
+    {text: '主题2', mainColor: ThemeColor.RED.mainColor, secondColor: ThemeColor.RED.secondColor},
+    {text: '主题3', mainColor: ThemeColor.GREEN.mainColor, secondColor: ThemeColor.GREEN.secondColor},
+    {text: '主题4', mainColor: ThemeColor.YELLOW.mainColor, secondColor: ThemeColor.YELLOW.secondColor},
+    {text: '主题5', mainColor: ThemeColor.BLUE.mainColor, secondColor: ThemeColor.BLUE.secondColor},
+  ]
+
   init() {
-    AppStorage.setOrCreate<ThemeItem>(ThemeStorageKey.THEME, {text: '主题1', color: ThemeColor.ORANGE})
+    PersistentStorage.persistProp<ThemeItem>(ThemeStorageKey.THEME, this.themeList[0])
+    PersistentStorage.persistProp<number>(ThemeStorageKey.THEMEINDEX, 0) // 被选中主题的索引
   }
 
-  setTheme(newTheme: ThemeItem) {
-    AppStorage.set<ThemeItem>(ThemeStorageKey.THEME, newTheme)
-  }
-
-  isSetTheme(): boolean {
-    if (AppStorage.get<ThemeItem>(ThemeStorageKey.THEME)) {
-      return true;
-    } else {
-      return false
-    }
+  setTheme(newTheme: ThemeItem, index: number) {
+    AppStorage.setOrCreate<ThemeItem>(ThemeStorageKey.THEME, newTheme)
+    AppStorage.setOrCreate<number>(ThemeStorageKey.THEMEINDEX, index)
   }
 }
 

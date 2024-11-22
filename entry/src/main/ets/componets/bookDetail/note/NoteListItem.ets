@@ -58,7 +58,7 @@ export default struct NoteListItem {
           .height(22)
           .borderRadius(40)
           .padding({top: 2, bottom: 2, left: 16, right: 16})
-          .backgroundColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.mainColor)
           .fontColor('#FFFFFF')
           .onClick(() => {
             this.save();
@@ -88,7 +88,7 @@ export default struct NoteListItem {
         TextArea({text: this.editContent})
           .height('auto')
           .fontColor('#e0000000')
-          .caretColor(this.theme.color.mainColor)
+          .caretColor(this.theme.mainColor)
           .fontSize(12)
           .fontWeight(400)
           .fontColor('#e0000000')

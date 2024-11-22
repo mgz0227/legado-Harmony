@@ -93,7 +93,7 @@ export default struct BookInfoManage{
                 this.checkGroup[this.bookData.id] = val
               }
             })
-            .selectedColor(this.theme.color.mainColor)
+            .selectedColor(this.theme.mainColor)
             .unselectedColor('rgba(0, 0, 0, 0.35)')
         }
         .padding({ left: 15, right: 15, bottom: 5, top: 5 })

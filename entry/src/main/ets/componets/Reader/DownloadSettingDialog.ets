@@ -112,7 +112,7 @@ export default struct DownloadSettingDialog{
           Button() {
             Text("取消")
               .lineHeight(24)
-              .fontColor(this.theme.color.mainColor)
+              .fontColor(this.theme.mainColor)
               .font({
                 size: 16,
                 weight: 500
@@ -120,7 +120,7 @@ export default struct DownloadSettingDialog{
           }
           .width("80%")
           .height(40)
-          .backgroundColor(this.theme.color.secondColor)
+          .backgroundColor(this.theme.secondColor)
         }
 
         GridItem() {
@@ -135,7 +135,7 @@ export default struct DownloadSettingDialog{
           }
           .width("80%")
           .height(40)
-          .backgroundColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.mainColor)
           .onClick(() => {
             this.isShowDownload = false
             this.isShowSetting = false

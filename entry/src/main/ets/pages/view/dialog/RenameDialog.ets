@@ -47,7 +47,7 @@ export default struct RenameDialog{
                         .padding({left: 20, right:20, top: 8, bottom: 8})
                         .height(38)
                         .maxLength(4)
-                        .caretColor(this.theme.color.mainColor)
+                        .caretColor(this.theme.mainColor)
                         .onChange((value: string)=>{
                             if (value.length > 4){
                                 // value 截取前四个
@@ -79,8 +79,8 @@ export default struct RenameDialog{
                     Button("取消")
                         .buttonStyles()
                         .margin({left: 24})
-                        .fontWeight(500).fontSize(14).fontColor(this.theme.color.mainColor)
-                        .backgroundColor(this.theme.color.secondColor)
+                        .fontWeight(500).fontSize(14).fontColor(this.theme.mainColor)
+                        .backgroundColor(this.theme.secondColor)
                         .onClick(()=>{
                             this.controller?.close()
                         })
@@ -91,7 +91,7 @@ export default struct RenameDialog{
                         .buttonStyles()
                         .margin({right: 24})
                         .fontWeight(500).fontSize(14).fontColor("rgba(255, 255, 255, 1)")
-                        .backgroundColor(this.theme.color.mainColor)
+                        .backgroundColor(this.theme.mainColor)
                         .onClick(()=>{
                             if (this.confirm) this.confirm(this.newName)
                             this.controller?.close()

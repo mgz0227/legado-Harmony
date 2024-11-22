@@ -1,6 +1,7 @@
-import { router } from '@kit.ArkUI'
+import { PromptAction, router } from '@kit.ArkUI'
 import { ThemeColor, ThemeStorageKey } from '../../../common/constants/Theme'
 import { ThemeColorItem, ThemeItem } from '../../../common/model/Theme'
+import { MyThemeConfigComp } from './MyThemeConfigComp'
 
 // 中间导航区需要渲染的元素列表
 interface NavItem {
@@ -32,7 +33,7 @@ struct MyThemeConfig {
         Image(item.img)
           .width(24)
           .aspectRatio(1)
-          .fillColor(this.activeNavIndex == index ? Color.White : this.theme.color.mainColor)
+          .fillColor(this.activeNavIndex == index ? Color.White : this.theme.mainColor)
           .margin({bottom: 8})
         Text(item.text)
           .lineHeight(20)
@@ -54,13 +55,13 @@ struct MyThemeConfig {
           Polygon({ width: 18, height: 6 })
             .points([[0, 0], [9, 6], [18, 0]])
             .fill(Color.Green)
-            .fill(this.theme.color.mainColor)
+            .fill(this.theme.mainColor)
             .position({left: '50%', bottom: 0})
             .translate({x: '-50%', y: '100%'})
         }
       }
       .padding({left: 24, right: 24, top: 12})
-      .backgroundColor(this.activeNavIndex == index ? this.theme.color.mainColor : this.theme.color.secondColor)
+      .backgroundColor(this.activeNavIndex == index ? this.theme.mainColor : this.theme.secondColor)
       .borderRadius(8)
       .width(96)
       .height(78)
@@ -104,7 +105,7 @@ struct MyThemeConfig {
             Column() {
               // 如果选中个性主题
               if (index == 0) {
-                ThemeConfigComp()
+                MyThemeConfigComp()
               }
               // 如果选中桌面图标
               else if (index == 1) {
@@ -141,109 +142,3 @@ struct MyThemeConfig {
 
   }
 }
-
-// 个性主题组件模块
-@Component
-struct ThemeConfigComp {
-  @State
-  activeIndex: number = 0 // 被选中的主题
-
-  @State themeList: ThemeItem[] = [
-    {text: '主题1', color: ThemeColor.ORANGE},
-    {text: '主题2', color: ThemeColor.RED},
-    {text: '主题3', color: ThemeColor.YELLOW},
-    {text: '主题4', color: ThemeColor.BLUE},
-    {text: '主题5', color: ThemeColor.GREEN},
-  ]
-
-  // 构建个性主题下列表元素
-  @Builder
-  themeItemBuilder(item: ThemeItem, index: number) {
-    Column({space: 8}) {
-      Column() {
-        if (this.activeIndex == index) {
-          Text('使用中')
-            .fontSize(9)
-            .fontColor('#fff')
-            .backgroundColor('#ef4444')
-            .textAlign(TextAlign.Center)
-            .lineHeight(14)
-            .width(39)
-            .height(14)
-            .borderRadius({
-              topRight: 8,
-              bottomLeft: 8
-            })
-            .position({right: 0, top: 0})
-        }
-      }
-      .width(154)
-      .height(77)
-      .borderRadius(8)
-      .backgroundColor(item.color.mainColor)
-
-      Text(item.text)
-        .fontSize(14)
-        .height(22)
-        .lineHeight(22)
-        .width('100%')
-    }
-    .width(154)
-    .height(107)
-  }
-
-  build() {
-    Column() {
-      Grid() {
-        // 自定义主题
-        GridItem() {
-          Column({space: 8}) {
-            Column() {
-              Image($r('app.media.my_theme_config_custom'))
-                .width(24)
-                .aspectRatio(1)
-            }
-            .alignItems(HorizontalAlign.Center)
-            .justifyContent(FlexAlign.Center)
-            .width(154)
-            .height(77)
-            .borderRadius(8)
-            .backgroundColor('#f5f5f5')
-            .onClick(() => {
-              router.pushUrl({
-                url: '/pages/view/myCenter/CreateCustomTheme'.slice(1)
-              })
-            })
-
-            Text('自定义主题')
-              .fontSize(14)
-              .height(22)
-              .lineHeight(22)
-              .width('100%')
-          }
-          .width(154)
-          .height(107)
-        }
-        ForEach(this.themeList, (item: ThemeItem, index) => {
-          GridItem() {
-            this.themeItemBuilder(item, index)
-          }
-          .onClick(() => {
-            this.activeIndex = index
-          })
-        })
-      }
-      .columnsTemplate('1fr 1fr')
-      .columnsGap(12)
-      .rowsGap(12)
-      .width('100%')
-      .height('100%')
-    }
-    .width('100%')
-    .height('100%')
-  }
-}
-
-// 桌面图标组件模块
-
-// 启动页组件模块

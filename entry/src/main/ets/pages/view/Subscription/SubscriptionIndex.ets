@@ -153,7 +153,7 @@ export default struct SubscriptionIndex {
         if (this.loading) {
           Column() {
             LoadingProgress()
-              .color(this.theme.color.mainColor)
+              .color(this.theme.mainColor)
               .width('50%')
             Text('加载中...')
           }
@@ -288,7 +288,7 @@ export default struct SubscriptionIndex {
     }
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
-      colors: [[this.theme.color.mainColor, 0], [this.theme.color.secondColor, 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
+      colors: [[this.theme.mainColor, 0], [this.theme.secondColor, 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
     })
     .height('100%')
   }

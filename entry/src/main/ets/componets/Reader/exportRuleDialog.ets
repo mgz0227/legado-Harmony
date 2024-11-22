@@ -38,7 +38,7 @@ export default struct exportRuleDialog{
               }){
                 Radio({value:'default',group:'exportGroup'})
                   .radioStyle({
-                    checkedBackgroundColor: this.theme.color.mainColor
+                    checkedBackgroundColor: this.theme.mainColor
                   })
                   .checked(true)
                   .onChange(()=>{
@@ -58,7 +58,7 @@ export default struct exportRuleDialog{
               }){
                 Radio({value:'default',group:'exportGroup'})
                   .radioStyle({
-                    checkedBackgroundColor: this.theme.color.mainColor
+                    checkedBackgroundColor: this.theme.mainColor
                   })
                   .onChange(()=>{
 
@@ -89,7 +89,7 @@ export default struct exportRuleDialog{
               left:32,right:32,
               top:8,bottom:8
             })
-            .backgroundColor(this.theme.color.mainColor)
+            .backgroundColor(this.theme.mainColor)
 
             Column(){
               Text('导出本地').font({

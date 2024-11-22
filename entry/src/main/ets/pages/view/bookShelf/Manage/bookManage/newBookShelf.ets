@@ -202,7 +202,7 @@ export default struct newBookShelf{
                 .placeholderColor('#73000000')
                 .maxLength(20)
                 .placeholderFont({ size: 14, weight: 400 })
-                .caretColor(this.theme.color.mainColor)
+                .caretColor(this.theme.mainColor)
                 .height(38)
                 .margin({ top: 10, bottom: 10 })
                 .fontSize(14)
@@ -224,7 +224,7 @@ export default struct newBookShelf{
             })
               .borderRadius(4)
               .fontColor('#E0000000')
-              .caretColor(this.theme.color.mainColor)
+              .caretColor(this.theme.mainColor)
               .placeholderColor('#73000000')
               .width('80%')
               .fontSize(14)
@@ -350,7 +350,7 @@ export default struct newBookShelf{
       .borderRadius(20)
       .width('50%')
       .height(38)
-      .backgroundColor(this.workBookList.worksName.length >=1?this.theme.color.mainColor: this.theme.color.mainColor)
+      .backgroundColor(this.workBookList.worksName.length >=1?this.theme.mainColor: this.theme.mainColor)
     }.padding({top:12,bottom:12,left:20,right:20})
   }
 
@@ -412,9 +412,9 @@ export default struct newBookShelf{
             space:6
           }){
             Row(){
-              Text('卖报小郎君').fontSize(10).fontWeight(400).fontColor(this.theme.color.mainColor)
+              Text('卖报小郎君').fontSize(10).fontWeight(400).fontColor(this.theme.mainColor)
             }
-            .padding({left:6,right:6,top:5,bottom:5}).backgroundColor(this.theme.color.secondColor).borderRadius(10)
+            .padding({left:6,right:6,top:5,bottom:5}).backgroundColor(this.theme.secondColor).borderRadius(10)
             Row(){
               Text('玄幻').fontSize(10).fontWeight(400).fontColor('rgba(0, 0, 0, 0.45)')
             }
@@ -455,7 +455,7 @@ export default struct newBookShelf{
         Flex({
           justifyContent:FlexAlign.End
         }){
-          Text('清空').textAlign(TextAlign.End).fontColor(this.theme.color.mainColor)
+          Text('清空').textAlign(TextAlign.End).fontColor(this.theme.mainColor)
         }.onClick(()=>{
           this.TextRecommend[book.id ?? 0] = ''
         })

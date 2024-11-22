@@ -14,12 +14,12 @@ export default struct BookType {
   build() {
     Column() {
       Text(this.title)
-        .fontColor(this.index === this.bookTypeNumber ? this.theme.color.mainColor :  'rgba(0,0,0,0.8)')
+        .fontColor(this.index === this.bookTypeNumber ? this.theme.mainColor :  'rgba(0,0,0,0.8)')
         .fontSize(12)
         .fontWeight(this.index === this.bookTypeNumber ? 700 : 700)
     }
     .borderRadius(8)
     .padding(8)
-    .backgroundColor(this.index === this.bookTypeNumber? this.theme.color.secondColor:'rgb(240,240,240)')
+    .backgroundColor(this.index === this.bookTypeNumber? this.theme.secondColor:'rgb(240,240,240)')
   }
 }

@@ -106,7 +106,7 @@ struct CateGoryListPage {
               if (this.startLoading) {
                 Row() {
                   LoadingProgress()
-                    .color(this.theme.color.mainColor)
+                    .color(this.theme.mainColor)
                     .width(35)
                   Text('内容加载中...')
                 }

@@ -48,7 +48,7 @@ export default struct coverInfoImageShow {
         Radio({value:JSON.stringify('0'),group:'radioGroup'})
           .checked(this.selectImage === 0)
           .radioStyle({
-            checkedBackgroundColor: this.theme.color.mainColor
+            checkedBackgroundColor: this.theme.mainColor
           })
           .border({width:2,color:'rgba(255, 255, 255, 0.10)'})
           .width(20).height(20)
@@ -104,7 +104,7 @@ export default struct coverInfoImageShow {
         Radio({value:JSON.stringify('1'),group:'radioGroup'})
           .checked(this.selectImage === 1)
           .radioStyle({
-            checkedBackgroundColor: this.theme.color.mainColor
+            checkedBackgroundColor: this.theme.mainColor
           })
           .border({width:2,color:'rgba(255, 255, 255, 0.10)'})
           .width(20).height(20)
@@ -142,7 +142,7 @@ export default struct coverInfoImageShow {
         Radio({value:JSON.stringify('2'),group:'radioGroup'})
           .checked(this.selectImage === 2)
           .radioStyle({
-            checkedBackgroundColor: this.theme.color.mainColor
+            checkedBackgroundColor: this.theme.mainColor
           })
           .border({width:2,color:'rgba(255, 255, 255, 0.10)'})
           .width(20).height(20)

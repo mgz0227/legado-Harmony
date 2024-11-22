@@ -27,8 +27,8 @@ export default struct buttonCommon {
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor(this.theme.color.secondColor)
-          .fontColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.secondColor)
+          .fontColor(this.theme.mainColor)
           .onClick(() => {
               this.cancel()
           })
@@ -37,7 +37,7 @@ export default struct buttonCommon {
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.mainColor)
           .fontColor('#FFFFFF')
           .onClick(()=>{
             this.confirm()

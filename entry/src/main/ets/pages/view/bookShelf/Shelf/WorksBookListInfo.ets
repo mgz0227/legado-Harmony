@@ -66,7 +66,7 @@ export default struct WorksBookListInfo{
       if (this.isShowCheck){
         Row() {
           Checkbox()
-            .selectedColor(this.theme.color.mainColor)
+            .selectedColor(this.theme.mainColor)
             .select(this.work.worksId?this.checkGroup[this.work.worksId] ?? false:false)
             .onChange((val: boolean) => {
               if (this.work.worksId) {

@@ -42,8 +42,8 @@ export default struct PreviewEffectImage{
         Stack(){
           this.ImageStack(this.customizeTitle.length > 0 && !this.sourceIconIsUrl)
           Column(){
-            LoadingProgress().color(this.theme.color.mainColor).height(30)
-            Text('图片加载中...').fontSize(5).fontColor(this.theme.color.mainColor)
+            LoadingProgress().color(this.theme.mainColor).height(30)
+            Text('图片加载中...').fontSize(5).fontColor(this.theme.mainColor)
           }.zIndex(-1)
         }
       }

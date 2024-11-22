@@ -12,7 +12,7 @@ export struct SearchRefresh{
   @Builder refresh(){
     Stack(){
       Row(){
-        LoadingProgress().color(this.theme.color.mainColor).height(30)
+        LoadingProgress().color(this.theme.mainColor).height(30)
         Text("玩命加载中...").fontSize(16).margin({left:20}).fontColor(this.color)
       }.alignItems(VerticalAlign.Center)
     }.width("100%").height("100%").align(Alignment.Center)

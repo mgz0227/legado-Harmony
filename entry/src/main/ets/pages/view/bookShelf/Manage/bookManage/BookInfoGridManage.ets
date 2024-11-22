@@ -46,7 +46,7 @@ export default struct BookInfoGridManage{
                 this.onSelect()
               })
               .select(this.bookData.id?this.checkGroup[this.bookData.id] ?? false:false)
-              .selectedColor(this.theme.color.mainColor)
+              .selectedColor(this.theme.mainColor)
               .unselectedColor('rgba(0, 0, 0, 0.35)')
               .zIndex(2)
               .onChange((val:boolean)=>{

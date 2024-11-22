@@ -34,8 +34,8 @@ export default struct addBookTypeDialog {
           })
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
-          .fontColor(this.theme.color.mainColor)
-          .backgroundColor(this.theme.color.secondColor)
+          .fontColor(this.theme.mainColor)
+          .backgroundColor(this.theme.secondColor)
         Text('确认')
           .onClick(() => {
             if (this.controller != undefined) {
@@ -46,7 +46,7 @@ export default struct addBookTypeDialog {
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
           .fontColor(Color.White)
-          .backgroundColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.mainColor)
       }.padding({top:20,bottom:20})
     }.width('80%')
   }

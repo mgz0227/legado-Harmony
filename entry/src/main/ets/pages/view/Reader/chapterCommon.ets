@@ -67,8 +67,8 @@ export default struct chapterCommon{
          .width(150)
          .height(40)
          .borderRadius(200)
-         .backgroundColor(this.theme.color.secondColor)
-         .fontColor(this.theme.color.mainColor)
+         .backgroundColor(this.theme.secondColor)
+         .fontColor(this.theme.mainColor)
          .onClick(()=>{
            this.isShowChapter = false
          })
@@ -78,7 +78,7 @@ export default struct chapterCommon{
          .width(150)
          .height(40)
          .borderRadius(200)
-         .backgroundColor(this.theme.color.mainColor)
+         .backgroundColor(this.theme.mainColor)
          .fontColor($r('sys.color.comp_background_list_card'))
 
      }
@@ -98,7 +98,7 @@ export default struct chapterCommon{
       if (!showRead){
         Radio({value:'第一章',group:'radioGroup'}).checked(checkRead)
           .radioStyle({
-            checkedBackgroundColor: this.theme.color.mainColor
+            checkedBackgroundColor: this.theme.mainColor
           })
           .border({width:2,color:'rgba(255, 255, 255, 0.10)'})
           .width(24).height(24)

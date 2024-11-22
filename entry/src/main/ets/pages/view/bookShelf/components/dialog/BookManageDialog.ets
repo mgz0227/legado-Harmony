@@ -323,7 +323,7 @@ export default  struct BookManageDialog {
     }) {
       Checkbox()
         .select(this.allCheck)
-        .selectedColor(this.theme.color.mainColor)
+        .selectedColor(this.theme.mainColor)
         .onClick(() => {
           if (this.verificationDate()) {
             return

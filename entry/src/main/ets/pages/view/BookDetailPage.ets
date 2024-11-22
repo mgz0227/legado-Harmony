@@ -233,8 +233,8 @@ struct BookDetailPage {
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor(this.theme.color.secondColor)
-          .fontColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.secondColor)
+          .fontColor(this.theme.mainColor)
           .onClick(() => {
             !this.bookData.isJoin?this.addBookShelf():''
           })
@@ -248,7 +248,7 @@ struct BookDetailPage {
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor(this.txtFile.totalCount() > 0 ? this.theme.color.mainColor : 'gray')
+          .backgroundColor(this.txtFile.totalCount() > 0 ? this.theme.mainColor : 'gray')
           .fontColor('#FFFFFF')
           .enabled(this.txtFile.totalCount() > 0)
           .onClick(() => {
@@ -301,7 +301,7 @@ struct BookDetailPage {
         .width(10)
         .strokeWidth(3)
         .lineCap(LineCapStyle.Round)
-        .color(this.theme.color.mainColor)
+        .color(this.theme.mainColor)
         .opacity(this.currentIndex === index ? 1 : 0)
     }
     .padding({ top: 8, bottom: 8 })

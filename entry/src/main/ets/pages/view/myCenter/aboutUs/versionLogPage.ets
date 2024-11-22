@@ -63,7 +63,7 @@ struct VersionLogPage {
     Column() {
       Row() {
         Line({ width: 4, height: 16 })
-          .backgroundColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.mainColor)
           .margin({ right: 8 })
         Text(version)
           .lineHeight(24)

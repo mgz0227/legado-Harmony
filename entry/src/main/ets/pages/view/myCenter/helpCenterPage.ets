@@ -204,7 +204,7 @@ struct HelpCenterPage {
                     Row() {
                       if (this.MoreQuestionsIndex == index) {
                         Line({ width: 3, height: 16 })
-                          .backgroundColor(this.theme.color.mainColor)
+                          .backgroundColor(this.theme.mainColor)
                       }
                       Text(item)
                         .lineHeight(22)
@@ -290,12 +290,12 @@ struct HelpCenterPage {
   question(title: string, index: number) {
     Column() {
       Text(title)
-        .fontColor(index == 0 ? this.theme.color.mainColor : 'rgba(0, 0, 0, 0.88)')
+        .fontColor(index == 0 ? this.theme.mainColor : 'rgba(0, 0, 0, 0.88)')
         .fontSize(12)
         .fontWeight(700)
     }
     .borderRadius(8)
     .padding(8)
-    .backgroundColor(index == 0 ? this.theme.color.secondColor : 'rgb(240,240,240)')
+    .backgroundColor(index == 0 ? this.theme.secondColor : 'rgb(240,240,240)')
   }
 }

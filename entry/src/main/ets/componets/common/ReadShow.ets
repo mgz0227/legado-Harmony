@@ -70,7 +70,7 @@ export default struct ReadShow {
               .fontWeight(600)
               .padding(10)
               .borderRadius(20)
-              .fontColor(this.theme.color.mainColor)
+              .fontColor(this.theme.mainColor)
               .backgroundColor(Color.White)
           }
           .padding({left:55,right:30})

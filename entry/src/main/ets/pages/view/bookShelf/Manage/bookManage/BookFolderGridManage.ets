@@ -21,7 +21,7 @@ export default struct BookFolderGridManage {
             Checkbox()
               .zIndex(9)
               .select(this.group.groupId?this.checkGroup[this.group.groupId] ?? false:false)
-              .selectedColor(this.theme.color.mainColor)
+              .selectedColor(this.theme.mainColor)
               .onChange((val: boolean) => {
                 if (this.group.groupId) {
                   this.checkGroup[this.group.groupId] = val

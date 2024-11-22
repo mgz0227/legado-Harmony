@@ -49,7 +49,7 @@ export default struct groupTypePanel{
           Text('点击进入').fontSize(12).fontWeight(400).lineHeight(20).fontColor('rgba(0, 0, 0, 0.45)')
         }.alignItems(VerticalAlign.Bottom)
         Row({space:12}){
-          Text(this.isShowIcon?'完成':'管理').fontSize(12).fontWeight(400).lineHeight(20).fontColor(this.theme.color.mainColor)
+          Text(this.isShowIcon?'完成':'管理').fontSize(12).fontWeight(400).lineHeight(20).fontColor(this.theme.mainColor)
             .onClick(()=>{
               this.isShowIcon = !this.isShowIcon
             })
@@ -119,7 +119,7 @@ export default struct groupTypePanel{
           })
           Text('标签锁').fontSize(16).fontWeight(500).lineHeight(24).fontColor('rgba(0, 0, 0, 0.45)')
           Toggle({ type: ToggleType.Switch, isOn: $$this.APP_INDEX_SCROLLABLE})
-            .selectedColor(this.theme.color.mainColor).hoverEffect(HoverEffect.None)
+            .selectedColor(this.theme.mainColor).hoverEffect(HoverEffect.None)
             .onChange(()=>{
               updateAppData(this.APP_INDEX_SCROLLABLE)
               showMessage(this.APP_INDEX_SCROLLABLE?'标签栏锁已开启':'标签栏已解锁')
@@ -242,14 +242,14 @@ export default struct groupTypePanel{
         Text(title).fontWeight(500).fontSize(12).textOverflow({
           overflow:TextOverflow.Ellipsis
         }).ellipsisMode(EllipsisMode.END)
-          .maxLines(1).fontColor(this.theme.color.mainColor)
+          .maxLines(1).fontColor(this.theme.mainColor)
           .textAlign(TextAlign.Center)
       }
       .margin({ right: 16, bottom: 16 })
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
       .width(68)
-      .backgroundColor(this.theme.color.secondColor)
+      .backgroundColor(this.theme.secondColor)
       .padding({left:16,right:16,top:6,bottom:6})
     }
   }

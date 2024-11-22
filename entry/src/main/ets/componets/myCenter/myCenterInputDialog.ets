@@ -55,8 +55,8 @@ export struct myCenterInputDialog{
 
 
       Row({space:12}) {
-        this.button("取消",[this.theme.color.mainColor,this.theme.color.secondColor],this.cancel)
-        this.button("确定",[Color.White,this.theme.color.mainColor],this.confirm)
+        this.button("取消",[this.theme.mainColor,this.theme.secondColor],this.cancel)
+        this.button("确定",[Color.White,this.theme.mainColor],this.confirm)
       }
     }.padding(24)
     .width(284)

@@ -21,10 +21,10 @@ export default struct WorksBookListGrid {
           }){
             Checkbox()
               .zIndex(2)
-              .selectedColor(this.theme.color.mainColor)
+              .selectedColor(this.theme.mainColor)
               .unselectedColor('rgba(0, 0, 0, 0.35)')
               .select(this.work.worksId?this.checkGroup[this.work.worksId] ?? false:false)
-              .selectedColor(this.theme.color.mainColor)
+              .selectedColor(this.theme.mainColor)
               .onChange((val: boolean) => {
                 if (this.work.worksId) {
                   this.checkGroup[this.work.worksId] = val

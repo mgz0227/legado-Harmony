@@ -129,9 +129,9 @@ export default struct sourceCommon{
         })
       }
     }
-    .border({width:this.IsSelect?1:0,color:this.theme.color.mainColor,style:BorderStyle.Solid})
+    .border({width:this.IsSelect?1:0,color:this.theme.mainColor,style:BorderStyle.Solid})
     .borderRadius(12)
-    .backgroundColor(this.IsSelect?this.theme.color.secondColor:'rgba(0, 0, 0, 0.06)')
+    .backgroundColor(this.IsSelect?this.theme.secondColor:'rgba(0, 0, 0, 0.06)')
   }
   @Builder
   chapterView(){

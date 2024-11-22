@@ -48,7 +48,7 @@ export default struct noFind {
           .fontSize(FontConstants.FONT_SIZE_14)
           .fontWeight(FontConstants.FONT_WEIGHT_500)
           .fontFamily(CommonConstants.FAMILY_PingFANG)
-          .backgroundColor(this.theme.color.mainColor)
+          .backgroundColor(this.theme.mainColor)
           .onClick(() => {
             this.onclick()
           })

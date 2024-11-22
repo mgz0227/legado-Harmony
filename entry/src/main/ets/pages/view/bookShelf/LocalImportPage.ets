@@ -258,7 +258,7 @@ struct LocalImportPage {
 
       Text("导入书架")
         .lineHeight(24)
-        .fontColor(this.theme.color.mainColor)
+        .fontColor(this.theme.mainColor)
         .opacity(0.5)
         .font({
           size: 16,
@@ -365,7 +365,7 @@ struct LocalImportPage {
               size: 16,
               weight: 500
             })
-            .fontColor(this.currentTabIndex === index ? this.theme.color.mainColor : '#000000')
+            .fontColor(this.currentTabIndex === index ? this.theme.mainColor : '#000000')
             .opacity(this.currentTabIndex === index ? null : 0.45)
         }
       }

@@ -31,7 +31,7 @@ export struct SearchBookItem {
         //书名
         Row(){
           Text(this.book.name)
-            .fontColor(this.SearchValue=== this.book.name ? this.theme.color.mainColor :"#000000")
+            .fontColor(this.SearchValue=== this.book.name ? this.theme.mainColor :"#000000")
         }
         //作者及书源数量
         Row({space:2}){

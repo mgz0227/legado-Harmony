@@ -71,8 +71,8 @@ export default struct SourceView {
       buttons: [
         {
           value: '取消',
-          background: this.theme.color.secondColor,
-          fontColor: this.theme.color.mainColor,
+          background: this.theme.secondColor,
+          fontColor: this.theme.mainColor,
           action: () => {
             this.dialogItem = {}
             this.dialogController.close()
@@ -80,7 +80,7 @@ export default struct SourceView {
         },
         {
           value: '确认',
-          background: 'this.theme.color.mainColor',
+          background: 'this.theme.mainColor',
           fontColor: '#FFFFFF',
           action: async () => {
             if (this.isBatch) {
@@ -108,7 +108,7 @@ export default struct SourceView {
       ],
       theme: {
         colors: {
-          confirm: this.theme.color.mainColor
+          confirm: this.theme.mainColor
         }
       }
     }),
@@ -507,7 +507,7 @@ export default struct SourceView {
             Text(this.errorText)
           } else {
             LoadingProgress()
-              .color(this.theme.color.mainColor)
+              .color(this.theme.mainColor)
               .width('50%')
             Text('加载中...')
           }
@@ -542,7 +542,7 @@ export default struct SourceView {
           Row().width(12)
           Column() {
             Toggle({ type: ToggleType.Switch, isOn: this.toggleAll })
-              .selectedColor(this.theme.color.mainColor)
+              .selectedColor(this.theme.mainColor)
               .margin({ bottom: 4 })
               .onChange(async (val: boolean) => {
                 this.toggleAll = val
@@ -710,7 +710,7 @@ export default struct SourceView {
           Radio({ value: '2', group: 'radioGroup' })
             .checked(this.dialogItem?.bookSourceGrade === 2)
             .radioStyle({
-              checkedBackgroundColor: this.theme.color.mainColor
+              checkedBackgroundColor: this.theme.mainColor
             })
             .height(20)
             .width(20)
@@ -727,7 +727,7 @@ export default struct SourceView {
           Radio({ value: '1', group: 'radioGroup' })
             .checked(this.dialogItem?.bookSourceGrade === 1)
             .radioStyle({
-              checkedBackgroundColor: this.theme.color.mainColor
+              checkedBackgroundColor: this.theme.mainColor
             })
             .height(20)
             .width(20)
@@ -745,7 +745,7 @@ export default struct SourceView {
           Radio({ value: '0', group: 'radioGroup' })
             .checked(this.dialogItem?.bookSourceGrade === 0)
             .radioStyle({
-              checkedBackgroundColor: this.theme.color.mainColor
+              checkedBackgroundColor: this.theme.mainColor
             })
             .height(20)
             .width(20)
@@ -781,7 +781,7 @@ export default struct SourceView {
         Blank()
         CheckboxGroup({ group: 'checkboxGroup' + index })
           .checkboxShape(CheckBoxShape.CIRCLE)
-          .selectedColor(this.theme.color.mainColor)
+          .selectedColor(this.theme.mainColor)
       } else {
         Text('长按批量管理')
           .fontSize(12)
@@ -816,7 +816,7 @@ export default struct SourceView {
         }
 
         if (item.hasExploreUrl) {
-          Tag({ text: '发现', color: this.theme.color.mainColor, bgColor: this.theme.color.secondColor })
+          Tag({ text: '发现', color: this.theme.mainColor, bgColor: this.theme.secondColor })
         }
 
         Blank()
@@ -824,7 +824,7 @@ export default struct SourceView {
         if (this.isBatch) {
           Checkbox({ name: 'checkbox' + j, group: 'checkboxGroup' + i })
             .select(this.activeNameMap[item.bookSourceUrl] ?? false)
-            .selectedColor(this.theme.color.mainColor)
+            .selectedColor(this.theme.mainColor)
             .onChange((val: boolean) => {
               this.activeNameMap[item.bookSourceUrl] = val
             })
@@ -896,7 +896,7 @@ export default struct SourceView {
           .fontColor('rgba(0, 0, 0, 0.45)')
         Blank()
         Toggle({ type: ToggleType.Switch, isOn: item.enabled })
-          .selectedColor(this.theme.color.mainColor)
+          .selectedColor(this.theme.mainColor)
           .onChange(async (val: boolean) => {
             item.enabled = val
             await BookSourceDao.updateFlow(item)

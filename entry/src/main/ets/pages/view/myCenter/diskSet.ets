@@ -40,7 +40,7 @@ struct DiskSet {
       Toggle({type:ToggleType.Switch,isOn:item.status})
         .onChange((isOn: boolean) => {
           item.status=isOn;
-        }).selectedColor(this.theme.color.mainColor).hoverEffect(HoverEffect.None)
+        }).selectedColor(this.theme.mainColor).hoverEffect(HoverEffect.None)
     }.justifyContent(FlexAlign.SpaceBetween)
     .stateStyles({normal: this.componetStyles})
   }

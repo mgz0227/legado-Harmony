@@ -42,7 +42,7 @@ export default struct RssSourceGroup {
         space:5
       }){
         Text('移动至').fontSize(16).fontWeight(700).lineHeight(24)
-        Text(`${this.moveGroup}`).fontSize(16).fontWeight(700).lineHeight(24).fontColor(this.theme.color.mainColor)
+        Text(`${this.moveGroup}`).fontSize(16).fontWeight(700).lineHeight(24).fontColor(this.theme.mainColor)
       }
       .padding({
         right:20,

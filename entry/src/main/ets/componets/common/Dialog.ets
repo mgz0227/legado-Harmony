@@ -47,7 +47,7 @@ export default struct Dialog {
       }) {
         Button() {
           Text(this.CancelString)
-            .fontColor(this.theme.color.mainColor)
+            .fontColor(this.theme.mainColor)
             .lineHeight(22)
             .font({
               size: 14,
@@ -56,7 +56,7 @@ export default struct Dialog {
         }
         .width(112)
         .height(38)
-        .backgroundColor(this.theme.color.secondColor)
+        .backgroundColor(this.theme.secondColor)
         .onClick(() => {
           if (this.controller != undefined) {
             this.controller.close()
@@ -74,7 +74,7 @@ export default struct Dialog {
         }
         .width(112)
         .height(38)
-        .backgroundColor(this.theme.color.mainColor)
+        .backgroundColor(this.theme.mainColor)
         .onClick(() => {
 
         })

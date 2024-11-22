@@ -83,7 +83,7 @@ export default struct BookFindContent {
         if (this.loading) {
           Column() {
             LoadingProgress()
-              .color(this.theme.color.mainColor)
+              .color(this.theme.mainColor)
               .width('50%')
             Text('内容加载中...')
           }

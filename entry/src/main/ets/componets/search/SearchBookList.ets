@@ -55,7 +55,7 @@ export struct SearchBookList {
 
       Row(){
         LoadingProgress()
-          .color(this.theme.color.mainColor)
+          .color(this.theme.mainColor)
           .width(30)
           .height(30)
         Text('搜索中...')
@@ -63,7 +63,7 @@ export struct SearchBookList {
             size:14,
             weight:500
           })
-          .fontColor(this.theme.color.mainColor)
+          .fontColor(this.theme.mainColor)
       }
       .visibility(this.isSearch?Visibility.Visible:Visibility.None)
       .position({ x: '95%', y: '0%'})
@@ -74,13 +74,13 @@ export struct SearchBookList {
       }){
         Image($r('app.media.icon_search_stop'))
           .width(24).height(24)
-          .fillColor(this.theme.color.mainColor)
+          .fillColor(this.theme.mainColor)
         Text('停止')
           .font({
             size:14,
             weight:500
           })
-          .fontColor(this.theme.color.mainColor)
+          .fontColor(this.theme.mainColor)
       }
       .onClick(()=>{
         this.isSearch = false
@@ -113,7 +113,7 @@ export struct SearchBookList {
       .position({ x: '95%', y: '90%'})
       .markAnchor({ x:'90%'})
       .opacity(0.8)
-      .backgroundColor(this.theme.color.mainColor)
+      .backgroundColor(this.theme.mainColor)
       .borderRadius(8)
       .onClick(() => {
         // 当前显示的index值小于设定的SWITCH_BUTTON时，按钮为跳转到上次浏览记录，否则为跳转到顶部

@@ -49,7 +49,7 @@ export struct WebdavService {
           Toggle({type:ToggleType.Switch,isOn:$$this.webDavStatus})
             .onChange((isOn: boolean) => {
               this.webDavStatus=isOn
-            }).selectedColor(this.theme.color.mainColor).hoverEffect(HoverEffect.None)
+            }).selectedColor(this.theme.mainColor).hoverEffect(HoverEffect.None)
         }
       }.width("100%").justifyContent(FlexAlign.SpaceBetween)
       //wifi 阅读 写源
@@ -103,7 +103,7 @@ export struct WebdavService {
           .fontColor("rgba(0, 0, 0, 0.45)")
           .fontSize(14)
         Text("复制")
-          .fontColor(this.theme.color.mainColor)
+          .fontColor(this.theme.mainColor)
           .fontSize(14)
           .fontWeight(600)
           .onClick(()=>{this.copy(this.address)})

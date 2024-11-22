@@ -66,13 +66,13 @@ struct DownloadManagementPage {
               ForEach(this.questionsList, (item: string, index) => {
                 Column() {
                   Text(item)
-                    .fontColor(this.currentScrollCardIndex === index ? this.theme.color.mainColor : 'rgba(0, 0, 0, 0.88)')
+                    .fontColor(this.currentScrollCardIndex === index ? this.theme.mainColor : 'rgba(0, 0, 0, 0.88)')
                     .fontSize(12)
                     .fontWeight(700)
                 }
                 .borderRadius(8)
                 .padding(8)
-                .backgroundColor(this.currentScrollCardIndex === index ? this.theme.color.secondColor : 'rgb(240,240,240)')
+                .backgroundColor(this.currentScrollCardIndex === index ? this.theme.secondColor : 'rgb(240,240,240)')
                 .onClick(() => {
                   this.currentScrollCardIndex = index
                 })
@@ -125,7 +125,7 @@ struct DownloadManagementPage {
                 } else {
                   Text("全部暂停")
                     .lineHeight(20)
-                    .fontColor(this.theme.color.mainColor)
+                    .fontColor(this.theme.mainColor)
                     .font({
                       size: 12,
                       weight: 500
@@ -198,7 +198,7 @@ struct DownloadManagementPage {
 
                 Text("全部导出")
                   .lineHeight(20)
-                  .fontColor(this.theme.color.mainColor)
+                  .fontColor(this.theme.mainColor)
                   .font({
                     size: 12,
                     weight: 500
@@ -231,7 +231,7 @@ struct DownloadManagementPage {
                 } else {
                   Text("查看文件")
                     .lineHeight(20)
-                    .fontColor(this.theme.color.mainColor)
+                    .fontColor(this.theme.mainColor)
                     .font({
                       size: 12,
                       weight: 500
@@ -346,7 +346,7 @@ struct DownloadManagementPage {
       } else if (itemType === "DownloadFinish" && currentTab === 1) {
         // 导出页的已下载
         Progress({ value: 50, total: 100, type: ProgressType.Capsule })
-          .color(this.theme.color.mainColor)
+          .color(this.theme.mainColor)
           .backgroundColor("#FFAF7A")
           .value(50)
           .width(68)
@@ -549,7 +549,7 @@ struct DownloadManagementPage {
               size: 16,
               weight: 500
             })
-            .fontColor(this.currentTabIndex === index ? this.theme.color.mainColor : '#000000')
+            .fontColor(this.currentTabIndex === index ? this.theme.mainColor : '#000000')
             .opacity(this.currentTabIndex === index ? null : 0.45)
         }
       }

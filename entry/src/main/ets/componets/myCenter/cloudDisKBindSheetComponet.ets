@@ -17,20 +17,20 @@ export struct cloudDisKBindSheetComponet{
           //$r("app.media.my_center_file_icon")
           Image(item.type==1?$r("app.media.phone_icon"):$r("app.media.my_center_file_icon"))
             .size({width:20,height:20})
-            .fillColor(index==this.bindSheetIndex ? this.theme.color.mainColor :  Color.Black)
+            .fillColor(index==this.bindSheetIndex ? this.theme.mainColor :  Color.Black)
           Text(item.title).fontSize(14)
             .lineHeight(22)
-            .fontColor(index==this.bindSheetIndex? this.theme.color.mainColor :Color.Black)
+            .fontColor(index==this.bindSheetIndex? this.theme.mainColor :Color.Black)
         }.padding({top:14,bottom:14,left:20,right:20})
         .width(280)
         .borderRadius(8)
-        .backgroundColor(index==this.bindSheetIndex? this.theme.color.secondColor:"rgb(245, 245, 245)")
+        .backgroundColor(index==this.bindSheetIndex? this.theme.secondColor:"rgb(245, 245, 245)")
         .onClick(()=>{
           this.bindSheetIndex=index
         })
         .border({
           width:index==this.bindSheetIndex?1:0,
-          color:index==this.bindSheetIndex? this.theme.color.mainColor :PublicConstants.THEME_COLOR_WHITE
+          color:index==this.bindSheetIndex? this.theme.mainColor :PublicConstants.THEME_COLOR_WHITE
         })
       })
     }.padding({top:12,left:20,right:20})

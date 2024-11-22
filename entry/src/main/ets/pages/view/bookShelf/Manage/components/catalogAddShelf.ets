@@ -143,8 +143,8 @@ export default struct catalogAddShelf{
           Row({
             space:12
           }){
-            Image($r('app.media.add')).width(24).fillColor(this.theme.color.mainColor)
-            Text('新建书单').fontSize(14).fontColor(this.theme.color.mainColor).fontWeight(400).lineHeight(22)
+            Image($r('app.media.add')).width(24).fillColor(this.theme.mainColor)
+            Text('新建书单').fontSize(14).fontColor(this.theme.mainColor).fontWeight(400).lineHeight(22)
           }.onClick(()=>{
             this.workBookListStatus = 0
             this.isShowEditBook = true
