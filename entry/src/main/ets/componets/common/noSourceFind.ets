@@ -5,6 +5,8 @@
  * 公用无发现功能log
  */
 import CommonConstants from '../../common/constants/CommonConstants'
+import { ThemeStorageKey } from '../../common/constants/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 
 @Component
 export default struct noSourceFind {
@@ -13,6 +15,8 @@ export default struct noSourceFind {
   setOnclick:() => void = () => {
 
   }
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column(){
         Image($r('app.media.icon_no_source_find')).width(124).height(120)
@@ -28,7 +32,7 @@ export default struct noSourceFind {
           .fontColor($r('app.string.color_black_45'))
           .margin({bottom:24})
       if (!this.isShowButton){
-        Button('一键隐藏').backgroundColor($r('app.color.theme_color'))
+        Button('一键隐藏').backgroundColor(this.theme.mainColor)
           .onClick(()=>{
             this.setOnclick()
           })

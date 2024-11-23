@@ -7,6 +7,8 @@
 import CommonConstants from '../../../../common/constants/CommonConstants'
 import FontConstants from '../../../../common/constants/FontConstants'
 import PaddingConstants from '../../../../common/constants/PaddingConstants'
+import { ThemeStorageKey } from '../../../../common/constants/Theme'
+import { ThemeItem } from '../../../../common/model/Theme'
 import buttonCommon from '../../../../componets/common/buttonCommon'
 import FormInput from '../../../../componets/Form/FormInput'
 import PreviewEffectImage from './PreviewEffectImage'
@@ -49,6 +51,8 @@ export default struct RssSourceCheckImage{
   //取消
   onCancel:Function = ()=>{}
   scroller: Scroller = new Scroller()
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Flex({
@@ -93,7 +97,7 @@ export default struct RssSourceCheckImage{
                Stack(){
                  Radio({value:JSON.stringify(index),group:'iconGroup'})
                    .radioStyle({
-                     checkedBackgroundColor: $r('app.color.theme_color')
+                     checkedBackgroundColor: this.theme.mainColor
                    })
                    .zIndex(999)
                    .onChange(()=>{

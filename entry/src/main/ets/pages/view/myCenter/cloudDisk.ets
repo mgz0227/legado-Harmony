@@ -4,6 +4,8 @@ import { MyCenterTitle } from '../../../componets/myCenter/MyCenterTitle';
 import { cloudDisKBindSheetComponet } from '../../../componets/myCenter/cloudDisKBindSheetComponet';
 import { ColumnModifier } from '../../../common/utils/ComponetModifier';
 import { PublicConstants, TextConstants } from '../../../common/constants/PublicConstants';
+import { ThemeItem } from '../../../common/model/Theme';
+import { ThemeStorageKey } from '../../../common/constants/Theme';
 
 @Entry
 @Component
@@ -49,7 +51,8 @@ struct CloudDisk {
   @State zipDataIndex:number=0
   @State deviceDataIndex:number=0
   @State isShow:boolean=false
-
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   @Builder backups_item(item:dataItem){
     Row(){
@@ -119,8 +122,8 @@ struct CloudDisk {
         .size({width:320,height:200})
 
         Row({space:20}) {
-          this.button("取消",[$r('app.color.theme_color'),'rgba(255,120,0,0.12)'],()=>{this.bindSheetCancel(this.isShow)})
-          this.button("确定",[PublicConstants.THEME_COLOR_WHITE,$r('app.color.theme_color')],()=>{this.bindSheetConfirm(this.isShow)})
+          this.button("取消",[this.theme.mainColor,this.theme.secondColor],()=>{this.bindSheetCancel(this.isShow)})
+          this.button("确定",[PublicConstants.THEME_COLOR_WHITE,this.theme.mainColor],()=>{this.bindSheetConfirm(this.isShow)})
 
         }.height(40)
         .width("100%")
@@ -174,7 +177,7 @@ struct CloudDisk {
             this.backups_botton()
           }
           .margin({top:32,bottom:42})
-          .backgroundColor(PublicConstants.THEME_COLOR)
+          .backgroundColor(this.theme.mainColor)
           .onClick(()=>{this.backups_onClick()})
         }
         //备份设置

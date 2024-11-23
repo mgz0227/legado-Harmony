@@ -8,6 +8,8 @@ import { bookShelfImport } from '../../../database/entities/Books'
 import { getPasteDataSync, isNetworkUrl, sleep } from '../../../common/utils/utils'
 import booksUtil from '../../../common/utils/booksUtils'
 import axios, { AxiosResponse } from '@ohos/axios'
+import { ThemeItem } from '../../../common/model/Theme'
+import { ThemeStorageKey } from '../../../common/constants/Theme'
 
 @Component
 export default struct IndexShelf {
@@ -32,6 +34,8 @@ export default struct IndexShelf {
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   @State bookImport:bookShelfImport[] = []
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   // 网址导入dialog
   dialogController: CustomDialogController = new CustomDialogController({
     builder: Dialog({
@@ -198,7 +202,7 @@ export default struct IndexShelf {
     .height('100%')
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
-      colors: [["rgb(254, 203, 169)", 0], ["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
+      colors: [[this.theme.mainColor, 0], [this.theme.secondColor, 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
     })
     .borderRadius({ bottomRight: 5, bottomLeft: 5 })
   }

@@ -1,3 +1,5 @@
+import { ThemeStorageKey } from '../../../../../common/constants/Theme'
+import { ThemeItem } from '../../../../../common/model/Theme'
 import { BookGroups } from '../../../../../database/entities/BookGroups'
 
 /**
@@ -9,6 +11,8 @@ export default struct BookFolderGridManage {
   @Link checkGroup:Record<number, boolean>
   @Prop isManage:boolean
   onSelect:Function = () => {}
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column() {
       Stack() {
@@ -17,7 +21,7 @@ export default struct BookFolderGridManage {
             Checkbox()
               .zIndex(9)
               .select(this.group.groupId?this.checkGroup[this.group.groupId] ?? false:false)
-              .selectedColor($r('app.color.theme_color'))
+              .selectedColor(this.theme.mainColor)
               .onChange((val: boolean) => {
                 if (this.group.groupId) {
                   this.checkGroup[this.group.groupId] = val

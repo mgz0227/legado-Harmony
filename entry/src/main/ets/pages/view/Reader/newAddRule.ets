@@ -5,6 +5,8 @@
  * 新建替换规则弹窗
  */
 import CommonConstants from '../../../common/constants/CommonConstants'
+import { ThemeStorageKey } from '../../../common/constants/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
 import buttonCommon from '../../../componets/common/buttonCommon'
 import { showMessage } from '../../../componets/common/promptShow'
 
@@ -17,6 +19,8 @@ export default struct newAddRule{
   @Prop isEdit:boolean = false
   cancel: () => void = () => {
   }
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Flex({
       direction:FlexDirection.Column,
@@ -58,7 +62,7 @@ export default struct newAddRule{
                   family:CommonConstants.FAMILY_PingFANG
                 })
                   .lineHeight(24)
-                Text('*').fontColor($r('app.color.theme_color')).font({
+                Text('*').fontColor(this.theme.mainColor).font({
                   size:16,
                   weight:500,
                   family:CommonConstants.FAMILY_PingFANG
@@ -82,7 +86,7 @@ export default struct newAddRule{
                   family:CommonConstants.FAMILY_PingFANG
                 })
                   .lineHeight(24)
-                Text('*').fontColor($r('app.color.theme_color')).font({
+                Text('*').fontColor(this.theme.mainColor).font({
                   size:16,
                   weight:500,
                   family:CommonConstants.FAMILY_PingFANG
@@ -152,7 +156,7 @@ export default struct newAddRule{
                     family:CommonConstants.FAMILY_PingFANG
                   })
                     .lineHeight(24)
-                  Text('*').fontColor($r('app.color.theme_color')).font({
+                  Text('*').fontColor(this.theme.mainColor).font({
                     size:16,
                     weight:500,
                     family:CommonConstants.FAMILY_PingFANG
@@ -215,7 +219,7 @@ export default struct newAddRule{
                       .fontColor($r('app.string.color_black_45'))
                     Radio({value:'default',group:'radioGroup'})
                       .radioStyle({
-                        checkedBackgroundColor: $r('app.color.theme_color')
+                        checkedBackgroundColor: this.theme.mainColor
                       })
                       .onChange(()=>{
 
@@ -234,7 +238,7 @@ export default struct newAddRule{
                       .fontColor($r('app.string.color_black_45'))
                     Radio({value:'default',group:'radioGroup'})
                       .radioStyle({
-                        checkedBackgroundColor: $r('app.color.theme_color')
+                        checkedBackgroundColor: this.theme.mainColor
                       })
                       .checked(true)
                       .onChange(()=>{
@@ -332,7 +336,7 @@ export default struct newAddRule{
             justifyContent:FlexAlign.SpaceBetween,
             alignItems:ItemAlign.Center
           }) {
-            Text(item).fontSize(14).lineHeight(24).fontColor(item === this.grouping?$r('app.color.theme_color'):$r('app.string.color_black_88'))
+            Text(item).fontSize(14).lineHeight(24).fontColor(item === this.grouping?this.theme.mainColor:$r('app.string.color_black_88'))
             if (item === this.grouping){
               Image($r('app.media.hook')).width(24).height(24)
             }

@@ -4,6 +4,8 @@
  * @className: coverInfoImageShow
  */
 import CommonConstants from '../../common/constants/CommonConstants'
+import { ThemeStorageKey } from '../../common/constants/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 import BookOverlay from '../../componets/bookDetail/BookOverlay'
 
 @Component
@@ -13,6 +15,8 @@ export default struct coverInfoImageShow {
   @Prop imageString:string
   @Prop selectImage:number = 0
   onSelectImageNumber:Function = (_selectImage:number)=>{}
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     if (this.coverCount === 1){
       this.coverImageOne(this.image)
@@ -44,7 +48,7 @@ export default struct coverInfoImageShow {
         Radio({value:JSON.stringify('0'),group:'radioGroup'})
           .checked(this.selectImage === 0)
           .radioStyle({
-            checkedBackgroundColor: $r('app.color.theme_color')
+            checkedBackgroundColor: this.theme.mainColor
           })
           .border({width:2,color:'rgba(255, 255, 255, 0.10)'})
           .width(20).height(20)
@@ -100,7 +104,7 @@ export default struct coverInfoImageShow {
         Radio({value:JSON.stringify('1'),group:'radioGroup'})
           .checked(this.selectImage === 1)
           .radioStyle({
-            checkedBackgroundColor: $r('app.color.theme_color')
+            checkedBackgroundColor: this.theme.mainColor
           })
           .border({width:2,color:'rgba(255, 255, 255, 0.10)'})
           .width(20).height(20)
@@ -138,7 +142,7 @@ export default struct coverInfoImageShow {
         Radio({value:JSON.stringify('2'),group:'radioGroup'})
           .checked(this.selectImage === 2)
           .radioStyle({
-            checkedBackgroundColor: $r('app.color.theme_color')
+            checkedBackgroundColor: this.theme.mainColor
           })
           .border({width:2,color:'rgba(255, 255, 255, 0.10)'})
           .width(20).height(20)

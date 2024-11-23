@@ -5,6 +5,11 @@ import { promptAction } from '@kit.ArkUI'
 import { dataItem } from '../../../componets/dataList/dataItem'
 import { PublicConstants, TextConstants } from '../../../common/constants/PublicConstants'
 import { ColumnModifier } from '../../../common/utils/ComponetModifier'
+import { ThemeStorageKey } from '../../../common/constants/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
+import { image } from '@kit.ImageKit'
+import { resourceManager } from '@kit.LocalizationKit'
+import { BusinessError } from '@kit.BasicServicesKit'
 
 @Entry
 @Component
@@ -32,6 +37,10 @@ export default struct MyCenter {
   ]
   @StorageLink('topRectHeight') topRectHeight: number = 0
   Column = new ColumnModifier()
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
+
   build() {
     Column(){
       // Blank(this.topRectHeight-20)
@@ -144,12 +153,10 @@ export default struct MyCenter {
     .attributeModifier(this.Column)
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
-      colors: [["rgb(254, 203, 169)", 0.0], ["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
+      colors: [[this.theme.mainColor , 0.0], [this.theme.secondColor, 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
     })
-
   }
-
-
+  
   //切换夜间模式
   night_onclick(){
 
@@ -185,7 +192,11 @@ export default struct MyCenter {
           url: 'pages/view/myCenter/cloudDisk'
         })
         break
+      // 点击主题
       case 2:
+        router.pushUrl({
+          url: '/pages/view/myCenter/MyThemeConfig'.slice(1)
+        })
         break
       case 3:
         break

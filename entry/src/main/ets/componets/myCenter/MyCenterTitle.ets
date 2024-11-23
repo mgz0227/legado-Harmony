@@ -1,5 +1,7 @@
 import { router } from '@kit.ArkUI'
 import CommonConstants from '../../common/constants/CommonConstants'
+import { ThemeStorageKey } from '../../common/constants/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 
 @Component
 export struct MyCenterTitle{
@@ -21,6 +23,9 @@ export struct MyCenterTitle{
   // @BuilderParam menu?: ()=> void
 
   @StorageProp('topRectHeight') topRectHeight: number = 0
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   // 重构 我的中心标题栏
   build() {
@@ -98,7 +103,7 @@ export struct MyCenterTitle{
       Row(){
         Text(text)
           .font({size: 16, weight: 400})
-          .fontColor(index === this.onSelect ? "#FF6600" : "#000000")
+          .fontColor(index === this.onSelect ? this.theme.mainColor : "#000000")
           .height(22)
         if (this.onSelect === index){
           Image($r("app.media.ic_select"))

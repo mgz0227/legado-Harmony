@@ -1,4 +1,6 @@
+import { ThemeStorageKey } from '../../../../common/constants/Theme'
 import BasicDataSource from '../../../../common/LazyIDataSource/BasicDataSource'
+import { ThemeItem } from '../../../../common/model/Theme'
 import booksDao from '../../../../database/dao/BooksDao'
 import { Books } from '../../../../database/entities/Books'
 import BookInfoGrids from './BookInfoGrids'
@@ -66,6 +68,8 @@ export default struct BookContent {
 
   @State isLoading: boolean = false
   @State currentPage:number = 1
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   async loadMoreBooks() {
     if (!this.isLoading) {
       this.isLoading = true;
@@ -87,7 +91,7 @@ export default struct BookContent {
     if (this.isLoading) {
       Row(){
         LoadingProgress()
-          .color(0xff6600)
+          .color(this.theme.mainColor)
           .width('50%')
         Text('加载中...')
       }

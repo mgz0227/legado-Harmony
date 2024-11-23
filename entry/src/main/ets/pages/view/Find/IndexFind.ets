@@ -11,6 +11,8 @@ import { getPasteDataSync, isNetworkUrl, sleep } from '../../../common/utils/uti
 import { showMessage } from '../../../componets/common/promptShow';
 import FindContent from './components/FindContent';
 import { BookSource } from '../../../database/entities/BookSource';
+import { ThemeItem } from '../../../common/model/Theme';
+import { ThemeStorageKey } from '../../../common/constants/Theme';
 
 /**
  * @author 2008
@@ -35,6 +37,8 @@ export default struct IndexFind {
   @State isShowHelp: boolean = false
   @State isShowImport: boolean = false
   @State sourceList: BookSource[] = []
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column() {
@@ -128,9 +132,7 @@ export default struct IndexFind {
     }
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
-      colors: [
-        ["rgb(254, 203, 169)", 0], ["RGB(245, 245, 245)", 0.15]
-        , ["RGB254, 203, 169)", 0.25]] // 数组末尾元素占比小于1时满足重复着色效果
+      colors: [[this.theme.mainColor, 0], [this.theme.secondColor, 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
     })
   }
 

@@ -1,3 +1,6 @@
+import { ThemeStorageKey } from "../../common/constants/Theme";
+import { ThemeItem } from "../../common/model/Theme";
+
 @CustomDialog
   // 通用弹窗
 export default struct Dialog {
@@ -6,6 +9,9 @@ export default struct Dialog {
   @Prop CancelString: string = "取消"
   @Prop ConfirmString: string = "确定"
   @BuilderParam child: () => void // 通用组件
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column() {
@@ -41,7 +47,7 @@ export default struct Dialog {
       }) {
         Button() {
           Text(this.CancelString)
-            .fontColor("#FF6600")
+            .fontColor(this.theme.mainColor)
             .lineHeight(22)
             .font({
               size: 14,
@@ -50,7 +56,7 @@ export default struct Dialog {
         }
         .width(112)
         .height(38)
-        .backgroundColor("rgba(255, 102, 0, 0.12)")
+        .backgroundColor(this.theme.secondColor)
         .onClick(() => {
           if (this.controller != undefined) {
             this.controller.close()
@@ -68,7 +74,7 @@ export default struct Dialog {
         }
         .width(112)
         .height(38)
-        .backgroundColor("#FF6600")
+        .backgroundColor(this.theme.mainColor)
         .onClick(() => {
 
         })

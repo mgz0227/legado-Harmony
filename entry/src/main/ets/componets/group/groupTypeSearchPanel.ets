@@ -1,3 +1,5 @@
+import { ThemeStorageKey } from '../../common/constants/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 import BookGroupsDao from '../../database/dao/BookGroupsDao'
 import { BookGroups } from '../../database/entities/BookGroups'
 import BookManageDialog from '../../pages/view/bookShelf/components/dialog/BookManageDialog'
@@ -12,6 +14,8 @@ export default struct groupTypeSearchPanel{
   @Prop currentIndex:number = 0
   @Prop clickGroup:BookGroups
   @Link searchBookList:number[]
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   aboutToAppear(): void {
     this.getGroupList()
   }
@@ -125,14 +129,14 @@ export default struct groupTypeSearchPanel{
         Text(title).fontWeight(500).fontSize(12).textOverflow({
           overflow:TextOverflow.Ellipsis
         }).ellipsisMode(EllipsisMode.END)
-          .maxLines(1).fontColor($r('app.color.theme_color'))
+          .maxLines(1).fontColor(this.theme.mainColor)
           .textAlign(TextAlign.Center)
       }
       .margin({ right: 16, bottom: 16 })
       .justifyContent(FlexAlign.Center)
       .alignItems(VerticalAlign.Center)
       .width(68)
-      .backgroundColor('rgba(252, 121, 0, 0.12)')
+      .backgroundColor(this.theme.secondColor)
       .padding({left:16,right:16,top:6,bottom:6})
     }
   }

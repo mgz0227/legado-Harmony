@@ -1,5 +1,7 @@
 import CommonConstants from '../../../../../common/constants/CommonConstants'
 import FontConstants from '../../../../../common/constants/FontConstants'
+import { ThemeStorageKey } from '../../../../../common/constants/Theme'
+import { ThemeItem } from '../../../../../common/model/Theme'
 import { Books } from '../../../../../database/entities/Books'
 
 @Component
@@ -14,6 +16,8 @@ export default struct BookInfoGridManage{
 
   @Link checkGroup:Record<number, boolean>
   onSelect:Function = () => {}
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column({
       space:CommonConstants.SPACE_6
@@ -42,7 +46,7 @@ export default struct BookInfoGridManage{
                 this.onSelect()
               })
               .select(this.bookData.id?this.checkGroup[this.bookData.id] ?? false:false)
-              .selectedColor($r('app.color.theme_color'))
+              .selectedColor(this.theme.mainColor)
               .unselectedColor('rgba(0, 0, 0, 0.35)')
               .zIndex(2)
               .onChange((val:boolean)=>{

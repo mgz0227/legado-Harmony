@@ -1,3 +1,6 @@
+import { ThemeStorageKey } from "../../common/constants/Theme"
+import { ThemeItem } from "../../common/model/Theme"
+
 /**
  * 自定义标题和内容
  */
@@ -9,6 +12,9 @@ export default struct customizeDialogExample {
   }
   @Prop title:string = '标签锁'
   @Prop content:string = '长按底部tab栏书架图标可锁定分组标签栏，再次长按解锁，锁定后左右滑动将直接切换小说，漫画，有声书分组大类'
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column() {
@@ -31,7 +37,7 @@ export default struct customizeDialogExample {
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
           .fontColor(Color.White)
-          .backgroundColor($r('app.color.theme_color'))
+          .backgroundColor(this.theme.mainColor)
       }.padding({top:20,bottom:20})
     }
   }

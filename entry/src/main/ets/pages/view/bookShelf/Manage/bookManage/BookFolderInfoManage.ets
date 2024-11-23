@@ -1,3 +1,5 @@
+import { ThemeStorageKey } from '../../../../../common/constants/Theme'
+import { ThemeItem } from '../../../../../common/model/Theme'
 import BookOverlay from '../../../../../componets/bookDetail/BookOverlay'
 import { BookGroups } from '../../../../../database/entities/BookGroups'
 
@@ -10,6 +12,8 @@ export default struct BookFolderInfoManage {
   @Link checkGroup:Record<number, boolean>
   @Prop isManage:boolean
   onSelect:Function = () => {}
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Flex(
       {
@@ -60,7 +64,7 @@ export default struct BookFolderInfoManage {
           Checkbox()
             //判断是否存在当前id
             .select(this.group.groupId?this.checkGroup[this.group.groupId] ?? false:false)
-            .selectedColor($r('app.color.theme_color'))
+            .selectedColor(this.theme.mainColor)
             .onChange((val: boolean) => {
               if (this.group.groupId) {
                 this.checkGroup[this.group.groupId] = val

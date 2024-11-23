@@ -1,11 +1,14 @@
 import CommonConstants from '../../common/constants/CommonConstants'
 import FontConstants from '../../common/constants/FontConstants'
+import { ThemeStorageKey } from '../../common/constants/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 
 @Component
 export default struct sourceType {
   @Prop title: string
   @Prop active: boolean
-
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column({
       space: 2
@@ -18,7 +21,7 @@ export default struct sourceType {
         .width(12)
         .height(3)
         .borderRadius(4)
-        .backgroundColor($r('app.color.theme_color'))
+        .backgroundColor(this.theme.mainColor)
         .visibility(this.active ? Visibility.Visible : Visibility.Hidden)
         .opacity(this.active ? 1 : 0)
         .scale({

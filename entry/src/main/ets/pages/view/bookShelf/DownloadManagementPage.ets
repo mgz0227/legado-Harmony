@@ -1,6 +1,8 @@
 import { router } from '@kit.ArkUI';
 import picker from '@ohos.file.picker';
 import fs from '@ohos.file.fs';
+import { ThemeItem } from '../../../common/model/Theme';
+import { ThemeStorageKey } from '../../../common/constants/Theme';
 
 class DownloadItem {
   bookName: string
@@ -52,6 +54,9 @@ struct DownloadManagementPage {
     new DownloadItem("斗破苍穹导出", 50, 200, "PDF"),
   ]
 
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
+
   build() {
     Stack() {
       if (this.IsEdit === false) {
@@ -61,13 +66,13 @@ struct DownloadManagementPage {
               ForEach(this.questionsList, (item: string, index) => {
                 Column() {
                   Text(item)
-                    .fontColor(this.currentScrollCardIndex === index ? '#FF6600' : 'rgba(0, 0, 0, 0.88)')
+                    .fontColor(this.currentScrollCardIndex === index ? this.theme.mainColor : 'rgba(0, 0, 0, 0.88)')
                     .fontSize(12)
                     .fontWeight(700)
                 }
                 .borderRadius(8)
                 .padding(8)
-                .backgroundColor(this.currentScrollCardIndex === index ? 'rgba(255, 102, 0, 0.12)' : 'rgb(240,240,240)')
+                .backgroundColor(this.currentScrollCardIndex === index ? this.theme.secondColor : 'rgb(240,240,240)')
                 .onClick(() => {
                   this.currentScrollCardIndex = index
                 })
@@ -120,7 +125,7 @@ struct DownloadManagementPage {
                 } else {
                   Text("全部暂停")
                     .lineHeight(20)
-                    .fontColor("#FF6600")
+                    .fontColor(this.theme.mainColor)
                     .font({
                       size: 12,
                       weight: 500
@@ -193,7 +198,7 @@ struct DownloadManagementPage {
 
                 Text("全部导出")
                   .lineHeight(20)
-                  .fontColor("#FF6600")
+                  .fontColor(this.theme.mainColor)
                   .font({
                     size: 12,
                     weight: 500
@@ -226,7 +231,7 @@ struct DownloadManagementPage {
                 } else {
                   Text("查看文件")
                     .lineHeight(20)
-                    .fontColor("#FF6600")
+                    .fontColor(this.theme.mainColor)
                     .font({
                       size: 12,
                       weight: 500
@@ -341,7 +346,7 @@ struct DownloadManagementPage {
       } else if (itemType === "DownloadFinish" && currentTab === 1) {
         // 导出页的已下载
         Progress({ value: 50, total: 100, type: ProgressType.Capsule })
-          .color("#FF6600")
+          .color(this.theme.mainColor)
           .backgroundColor("#FFAF7A")
           .value(50)
           .width(68)
@@ -544,7 +549,7 @@ struct DownloadManagementPage {
               size: 16,
               weight: 500
             })
-            .fontColor(this.currentTabIndex === index ? '#FF6600' : '#000000')
+            .fontColor(this.currentTabIndex === index ? this.theme.mainColor : '#000000')
             .opacity(this.currentTabIndex === index ? null : 0.45)
         }
       }

@@ -1,3 +1,5 @@
+import { ThemeStorageKey } from "../../common/constants/Theme"
+import { ThemeItem } from "../../common/model/Theme"
 
 
 @CustomDialog
@@ -13,6 +15,8 @@ export struct myCenterInputDialog{
   @Prop title:string = ''
   @Link value:string
   @Prop placeholder:string=""
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   @Builder button(title:string,color:Array<ResourceStr|Color>,confirm: () => void){
     Text(title)
       .onClick(() => {
@@ -51,8 +55,8 @@ export struct myCenterInputDialog{
 
 
       Row({space:12}) {
-        this.button("取消",[$r('app.color.theme_color'),'rgba(255,120,0,0.12)'],this.cancel)
-        this.button("确定",[Color.White,$r('app.color.theme_color')],this.confirm)
+        this.button("取消",[this.theme.mainColor,this.theme.secondColor],this.cancel)
+        this.button("确定",[Color.White,this.theme.mainColor],this.confirm)
       }
     }.padding(24)
     .width(284)

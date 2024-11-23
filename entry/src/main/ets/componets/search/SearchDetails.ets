@@ -1,6 +1,8 @@
 
 import { SearchBookList } from './SearchBookList'
 import { SearchBook } from '../../database/entities/SearchBook'
+import { ThemeItem } from '../../common/model/Theme'
+import { ThemeStorageKey } from '../../common/constants/Theme'
 
 @Component
 export struct SearchDetails{
@@ -13,6 +15,8 @@ export struct SearchDetails{
   @Consume('searchBookList') books:SearchBook[]
   @Consume('isSearch') isSearch:boolean
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   refresh(){
     if(this.SearchStatus>2){
       this.isRefreshing=true
@@ -21,7 +25,7 @@ export struct SearchDetails{
   @Builder RefreshComponent(){
     Stack(){
       Row(){
-        LoadingProgress().color("#FF6600").height(26)
+        LoadingProgress().color(this.theme.mainColor).height(26)
         Text("共搜索到"+this.books.length+"个相关结果").fontSize(14).margin({left:20}).fontColor($r('app.string.color_black_45'))
       }.alignItems(VerticalAlign.Center)
     }.width("100%").align(Alignment.Center)
@@ -52,7 +56,7 @@ export struct SearchDetails{
       }
       //给border添加加载动画
       .border({
-        width: { top:this.isSearch?2:0 },color:$r('app.color.theme_color')
+        width: { top:this.isSearch?2:0 },color:this.theme.mainColor
       })
       .borderStyle({
         top:BorderStyle.Solid,

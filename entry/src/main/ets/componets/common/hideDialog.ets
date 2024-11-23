@@ -1,3 +1,5 @@
+import { ThemeStorageKey } from "../../common/constants/Theme"
+import { ThemeItem } from "../../common/model/Theme"
 
 @CustomDialog
 export default struct hideDialogExample {
@@ -10,6 +12,8 @@ export default struct hideDialogExample {
   }
   @Prop title:string
   @Prop isHide:boolean = true
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column() {
@@ -28,8 +32,8 @@ export default struct hideDialogExample {
           })
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
-          .fontColor($r('app.color.theme_color'))
-          .backgroundColor('rgba(255,120,0,0.12)')
+          .fontColor(this.theme.mainColor)
+          .backgroundColor(this.theme.secondColor)
         Text('确认')
           .onClick(() => {
             if (this.controller != undefined) {
@@ -40,7 +44,7 @@ export default struct hideDialogExample {
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
           .fontColor(Color.White)
-          .backgroundColor($r('app.color.theme_color'))
+          .backgroundColor(this.theme.mainColor)
       }.padding({top:20,bottom:20})
     }
   }

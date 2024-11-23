@@ -5,10 +5,14 @@
  * 章节选择弹窗
  */
 import CommonConstants from '../../../common/constants/CommonConstants'
+import { ThemeStorageKey } from '../../../common/constants/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
 
 @Component
 export default struct chapterCommon{
   @Link isShowChapter:boolean
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
    Column(){
      Column(){
@@ -63,8 +67,8 @@ export default struct chapterCommon{
          .width(150)
          .height(40)
          .borderRadius(200)
-         .backgroundColor('#1fff6600')
-         .fontColor($r('app.color.theme_color'))
+         .backgroundColor(this.theme.secondColor)
+         .fontColor(this.theme.mainColor)
          .onClick(()=>{
            this.isShowChapter = false
          })
@@ -74,7 +78,7 @@ export default struct chapterCommon{
          .width(150)
          .height(40)
          .borderRadius(200)
-         .backgroundColor($r('app.color.theme_color'))
+         .backgroundColor(this.theme.mainColor)
          .fontColor($r('sys.color.comp_background_list_card'))
 
      }
@@ -94,7 +98,7 @@ export default struct chapterCommon{
       if (!showRead){
         Radio({value:'第一章',group:'radioGroup'}).checked(checkRead)
           .radioStyle({
-            checkedBackgroundColor: $r('app.color.theme_color')
+            checkedBackgroundColor: this.theme.mainColor
           })
           .border({width:2,color:'rgba(255, 255, 255, 0.10)'})
           .width(24).height(24)

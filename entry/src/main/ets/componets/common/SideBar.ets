@@ -4,6 +4,8 @@
  * @className: SideBar
  * 分类左侧列表，支持是否开启角标，支持是否开启拖拽
  */
+import { ThemeStorageKey } from '../../common/constants/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 import { GroupList, GroupPartList } from '../../database/entities/BookSource'
 
 @Component
@@ -16,6 +18,9 @@ export default struct SideBar {
   }
   scroller?: Scroller = undefined
   onDragChange: (list: GroupList[] | GroupPartList[] | string[]) => void = (_list) => {}
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   // 交换listArr数组中listItem的位置
   changeListItemIndex(index1: number, index2: number) {
@@ -36,7 +41,7 @@ export default struct SideBar {
               Row()
                 .width(3)
                 .height(16)
-                .backgroundColor('#FF6600')
+                .backgroundColor(this.theme.mainColor)
                 .borderRadius(12)
                 .position({
                   top: 16

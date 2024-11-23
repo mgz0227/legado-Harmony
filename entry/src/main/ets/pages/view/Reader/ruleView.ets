@@ -4,6 +4,8 @@
  * @className: ruleView
  */
 import CommonConstants from '../../../common/constants/CommonConstants'
+import { ThemeStorageKey } from '../../../common/constants/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
 import buttonCommon from '../../../componets/common/buttonCommon'
 import InsideCircleIcon from '../../../componets/common/InsideCircleIcon'
 import operateIcon from '../../../componets/common/operateIcon'
@@ -46,6 +48,8 @@ export default struct ruleView{
     }
     this.ruleNumber = this.checkedRuleList.length
   }
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Flex({
       direction:FlexDirection.Column
@@ -72,8 +76,8 @@ export default struct ruleView{
               })
                 .textAlign(TextAlign.Center)
                 .lineHeight(24)
-                .fontColor(this.ruleType === item?$r('app.color.theme_color'):$r('app.string.color_black_45'))
-              Row().width(10).height(3).backgroundColor($r('app.color.theme_color')).borderRadius(8).offset({y:5})
+                .fontColor(this.ruleType === item?this.theme.mainColor:$r('app.string.color_black_45'))
+              Row().width(10).height(3).backgroundColor(this.theme.mainColor).borderRadius(8).offset({y:5})
                 .visibility(this.ruleType === item?Visibility.Visible:Visibility.None)
                 .opacity(this.ruleType === item?1:0)
                 .scale({
@@ -212,7 +216,7 @@ export default struct ruleView{
       .height('83%')
       Column(){
         Row(){
-          Checkbox().selectedColor($r('app.color.theme_color')).margin({right:8}).select(this.checkRule)
+          Checkbox().selectedColor(this.theme.mainColor).margin({right:8}).select(this.checkRule)
             .onChange(()=>{
               this.checkRule = !this.checkRule
             })
@@ -228,7 +232,7 @@ export default struct ruleView{
             weight:400
           })
             .lineHeight(24)
-          Text(`${this.ruleNumber}`).fontColor($r('app.color.theme_color'))
+          Text(`${this.ruleNumber}`).fontColor(this.theme.mainColor)
             .font({
               size:16,
               weight:400
@@ -303,7 +307,7 @@ export default struct ruleView{
             borderRadius:12
           })
             .animationIsBatchF()
-          Checkbox().selectedColor($r('app.color.theme_color')).select(this.isRuleCheck)
+          Checkbox().selectedColor(this.theme.mainColor).select(this.isRuleCheck)
             .onChange((value:boolean)=>{
               this.checkedRuleListPush(title,value)
             })
@@ -317,7 +321,7 @@ export default struct ruleView{
           Checkbox({
             name: title
           })
-            .selectedColor($r('app.color.theme_color'))
+            .selectedColor(this.theme.mainColor)
             .select(this.checkRule)
             .onChange((value:boolean)=>{
               this.checkedRuleListPush(title,value)
@@ -352,7 +356,7 @@ export default struct ruleView{
               borderRadius:12
             })
               .animationIsBatchF()
-            Checkbox().selectedColor($r('app.color.theme_color')).select(this.isRuleCheck)
+            Checkbox().selectedColor(this.theme.mainColor).select(this.isRuleCheck)
               .onChange((value:boolean)=>{
                 this.checkedRuleListPush(title,value)
               })
@@ -370,7 +374,7 @@ export default struct ruleView{
               .onChange((value:boolean)=>{
                 this.checkedRuleListPush(title,value)
               })
-              .selectedColor($r('app.color.theme_color'))
+              .selectedColor(this.theme.mainColor)
           }
         }
       }
@@ -579,7 +583,7 @@ export default struct ruleView{
               if (item.id === 2) {
                 Column(){
                   Toggle({ type: ToggleType.Switch, isOn: $$this.operateDisable})
-                    .selectedColor($r('app.color.theme_color')).hoverEffect(HoverEffect.None)
+                    .selectedColor(this.theme.mainColor).hoverEffect(HoverEffect.None)
                     .onChange(()=>{
                       if (this.checkedRuleList.length === 0) {
                         showMessage('请选择要禁用的内容')

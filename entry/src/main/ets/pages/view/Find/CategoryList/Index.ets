@@ -8,35 +8,25 @@ import axios, { AxiosResponse } from '@ohos/axios';
 import noFind from '../../../../componets/common/noFind';
 import { CardItem } from '../components/CardItem';
 import CommonConstants from '../../../../common/constants/CommonConstants';
-import { BookSource } from '../../../../database/entities/BookSource';
+import { ThemeColorItem, ThemeItem } from '../../../../common/model/Theme';
+import { ThemeStorageKey } from '../../../../common/constants/Theme';
 
 interface RouteParams {
-  bookSource: BookSource,
+  bookSourceUrl: string,
   exploreItem: ExploreItem,
+  exploreRule: ExploreRule,
   currentIndex: number
 }
 
 @Entry
 @Component
 struct CateGoryListPage {
+  @State bookSourceUrl: string = ''
   @State exploreItem: ExploreItem = {
     title: '',
     url: ''
   }
-  @State bookSource?: BookSource = {
-    bookSourceUrl: '',
-    bookSourceName: '',
-    bookSourceType: 0,
-    customOrder: 0,
-    enabled: false,
-    enabledExplore: false,
-    lastUpdateTime: 0,
-    respondTime: 0,
-    weight: 0,
-    isTop: false,
-    showRecentIcon: false,
-    showExplore: true
-  }
+  @State exploreRule: ExploreRule = {}
   @State pageNum: number = 1
   @State pageSize: number = 10
   @State bookList: ExploreRule[] = []
@@ -45,38 +35,38 @@ struct CateGoryListPage {
   @State isRefreshing: boolean = false
   @State RefreshingTitle: string = '松开刷新'
   @State currentIndex:number = 0
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   async aboutToAppear() {
     this.startLoading = true
     const params = router.getParams() as RouteParams;
     this.currentIndex = params.currentIndex
     console.log('TagInfo', JSON.stringify(params))
-    this.bookSource = params.bookSource
+    this.bookSourceUrl = params.bookSourceUrl
     this.exploreItem = params.exploreItem
+    this.exploreRule = params.exploreRule
     await this.getList()
     this.startLoading = false
   }
 
   async getList() {
-    if (!this.bookSource) return
-    const bookSourceUrl = this.bookSource.bookSourceUrl
-    const exploreRule = this.bookSource.ruleExplore
-    const searchRule = this.bookSource.ruleSearch
     let url = this.exploreItem.url.replace('{{page}}', this.pageNum.toString())
     if (!isNetworkUrl(url)) {
-      url = bookSourceUrl + url
+      url = this.bookSourceUrl + url
     }
     const exploreQuery: ExploreQuery = {
       url,
+      bookList: this.exploreRule.bookList,
       pageSize: this.pageSize,
-      bookList: exploreRule?.bookList || searchRule?.bookList,
-      name: exploreRule?.name || searchRule?.name,
-      author: exploreRule?.author || searchRule?.author,
-      intro: exploreRule?.intro || searchRule?.intro,
-      kind: exploreRule?.kind || searchRule?.kind,
-      lastChapter: exploreRule?.lastChapter || searchRule?.lastChapter,
-      bookUrl: exploreRule?.bookUrl || searchRule?.bookUrl,
-      coverUrl: exploreRule?.coverUrl || searchRule?.coverUrl,
-      wordCount: exploreRule?.wordCount || searchRule?.wordCount
+      name: this.exploreRule.name,
+      author: this.exploreRule.author,
+      intro: this.exploreRule.intro,
+      kind: this.exploreRule.kind,
+      lastChapter: this.exploreRule.lastChapter,
+      bookUrl: this.exploreRule.bookUrl,
+      coverUrl: this.exploreRule.coverUrl,
+      wordCount: this.exploreRule.wordCount
     }
     if (this.pageNum * this.pageSize - this.bookList.length >= this.pageSize * 2 && !this.startLoading) {
       return
@@ -87,7 +77,7 @@ struct CateGoryListPage {
       console.info('TagInfo, 解析内容：', JSON.stringify(res.data))
       const bookList = (res.data as ExploreRule[]).map(item => {
         if (item.coverUrl && !isNetworkUrl(item.coverUrl)) {
-          item.coverUrl = bookSourceUrl + item.coverUrl
+          item.coverUrl = this.bookSourceUrl + item.coverUrl
         }
         return item
       })
@@ -116,7 +106,7 @@ struct CateGoryListPage {
               if (this.startLoading) {
                 Row() {
                   LoadingProgress()
-                    .color(0xff6600)
+                    .color(this.theme.mainColor)
                     .width(35)
                   Text('内容加载中...')
                 }

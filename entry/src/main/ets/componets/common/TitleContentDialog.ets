@@ -1,3 +1,6 @@
+import { ThemeStorageKey } from "../../common/constants/Theme"
+import { ThemeItem } from "../../common/model/Theme"
+
 /**
  * 自定义标题和内容弹窗
  * title标题、content内容、confirm确认按钮、cancel取消按钮
@@ -13,6 +16,8 @@ export default struct TitleContentDialog {
   }
   @Prop title:string = ''
   @Prop content:string = ''
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column() {
@@ -36,8 +41,8 @@ export default struct TitleContentDialog {
           })
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
-          .fontColor($r('app.color.theme_color'))
-          .backgroundColor('rgba(255,120,0,0.12)')
+          .fontColor(this.theme.mainColor)
+          .backgroundColor(this.theme.secondColor)
         Text('确认')
           .onClick(() => {
             if (this.controller != undefined) {
@@ -48,7 +53,7 @@ export default struct TitleContentDialog {
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
           .fontColor(Color.White)
-          .backgroundColor($r('app.color.theme_color'))
+          .backgroundColor(this.theme.mainColor)
       }.padding({top:20,bottom:20})
     }
   }

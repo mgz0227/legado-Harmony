@@ -7,12 +7,18 @@ import { BookHistory } from '../../database/entities/BookHistory'
 import { Books } from '../../database/entities/Books'
 import { router } from '@kit.ArkUI'
 import clickUtil from '../../common/utils/ClickUtils'
+import { ThemeStorageKey } from '../../common/constants/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 
 @Component
 export default struct ReadShow {
   @Link showReadShow:boolean
   @State bookHistory:BookHistory[] = []
   @State book:Books = new Books()
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
+
   aboutToAppear(): void {
     this.getBookHistoryList()
   }
@@ -64,7 +70,7 @@ export default struct ReadShow {
               .fontWeight(600)
               .padding(10)
               .borderRadius(20)
-              .fontColor('#FF6600')
+              .fontColor(this.theme.mainColor)
               .backgroundColor(Color.White)
           }
           .padding({left:55,right:30})

@@ -12,6 +12,8 @@ import BookSourceDao from '../../database/dao/BookSourceDao';
 import { BookSource, GroupList, SOURCE_GROUP_MAP } from '../../database/entities/BookSource';
 import SourceGroup from '../ui/SourceGroup';
 import text from '@ohos.graphics.text';
+import { ThemeItem } from '../../common/model/Theme';
+import { ThemeStorageKey } from '../../common/constants/Theme';
 
 @Component
 export default struct ImportCommon {
@@ -32,7 +34,8 @@ export default struct ImportCommon {
   @State groupIndex: number = 0
   private scroll: Scroller = new Scroller()
   private secondScroll = new Scroller()
-
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   aboutToAppear() {
     BookSourceDao.search().then(data => {
       const bookSource = data ?? []
@@ -137,7 +140,7 @@ export default struct ImportCommon {
       Row() {
         Checkbox()
           .select(this.fullActive)
-          .selectedColor(0xff6600)
+          .selectedColor(this.theme.mainColor)
           .onChange((val: boolean) => {
             this.fullActive = val
             this.sourceList.forEach((item: BookSource) => {
@@ -148,7 +151,7 @@ export default struct ImportCommon {
         Text() {
           Span('全选（')
           Span(Object.values(this.insertMap).filter(o => o).length + '')
-            .fontColor(0xff6600)
+            .fontColor(this.theme.mainColor)
           Span(`/${this.sourceList.length})`)
         }
         .margin({ left: 8 })
@@ -161,7 +164,7 @@ export default struct ImportCommon {
       Row() {
         Image($r('app.media.warning'))
           .width(20)
-          .fillColor(0xff6600)
+          .fillColor(this.theme.mainColor)
 
         Text('允许对书架中正在使用的书源进行更新')
           .fontSize(14)
@@ -172,7 +175,7 @@ export default struct ImportCommon {
 
         Checkbox()
           .select(this.waringActive)
-          .selectedColor(0xff6600)
+          .selectedColor(this.theme.mainColor)
           .onChange((val: boolean) => {
             this.waringActive = val
           })
@@ -180,13 +183,13 @@ export default struct ImportCommon {
       .width('100%')
       .height(48)
       .padding({ left: 20, right: 20 })
-      .backgroundColor('rgba(239, 68, 68, 0.12)')
+      .backgroundColor(this.theme.secondColor)
 
       Row({ space: 20 }) {
         Button('取消')
           .height(40)
-          .fontColor(0xff6600)
-          .backgroundColor('rgba(255, 102, 0, 0.12)')
+          .fontColor(this.theme.mainColor)
+          .backgroundColor(this.theme.secondColor)
           .layoutWeight(1)
           .onClick(() => {
             this.show = false;
@@ -195,7 +198,7 @@ export default struct ImportCommon {
         Button('确认')
           .height(40)
           .fontColor(Color.White)
-          .backgroundColor(0xff6600)
+          .backgroundColor(this.theme.mainColor)
           .layoutWeight(1)
           .onClick(async  () => {
             const insertBookSources = this.sourceList.filter(item => this.insertMap[item.bookSourceUrl] ?? false)
@@ -249,7 +252,7 @@ export default struct ImportCommon {
           Text(SOURCE_GROUP_MAP[groupIndex][0])
             .fontSize(14)
             .lineHeight(22)
-            .fontColor('#FF6600')
+            .fontColor(this.theme.mainColor)
           Image($r('app.media.f60_right'))
             .width(16)
         }
@@ -264,7 +267,7 @@ export default struct ImportCommon {
 
       CheckboxGroup({ group: 'checkboxGroup' + index })
         .checkboxShape(CheckBoxShape.CIRCLE)
-        .selectedColor(0xff6600)
+        .selectedColor(this.theme.mainColor)
     }
     .alignItems(VerticalAlign.Center)
     .padding({ right: 16 })
@@ -288,7 +291,7 @@ export default struct ImportCommon {
 
         Checkbox({ name: 'checkbox' + j, group: 'checkboxGroup' + i })
           .select(this.insertMap[item.bookSourceUrl] ?? false)
-          .selectedColor(0xff6600)
+          .selectedColor(this.theme.mainColor)
           .onChange((val: boolean) => {
             this.insertMap[item.bookSourceUrl] = val
           })

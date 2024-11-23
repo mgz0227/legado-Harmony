@@ -14,6 +14,8 @@ import SubscriptionDao from '../../../../database/dao/SubscriptionDao';
 import { showMessage } from '../../../../componets/common/promptShow';
 import rssSourcesUtils from '../../../../common/utils/rssSourcesUtils';
 import PreviewEffectImage from './PreviewEffectImage';
+import { ThemeItem } from '../../../../common/model/Theme';
+import { ThemeStorageKey } from '../../../../common/constants/Theme';
 
 @Entry
 @Component
@@ -22,6 +24,8 @@ struct SubscriptionSearch {
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @State
   searchList: rssSources[] = []
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   onPageShow(): void {
     this.changeSearchValue()
@@ -98,7 +102,7 @@ struct SubscriptionSearch {
     }
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
-      colors: [["rgb(254, 203, 169)", 0], ["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
+      colors: [[this.theme.mainColor, 0], [this.theme.secondColor, 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
     })
     .padding({
       top: this.topRectHeight,

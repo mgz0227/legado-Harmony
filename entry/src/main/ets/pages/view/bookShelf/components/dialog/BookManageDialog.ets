@@ -20,6 +20,8 @@ import WorksBookLists from '../../Shelf/WorksBookLists';
 import { WorksLists } from '../../../../../database/entities/WorksLists';
 import worksListsDao from '../../../../../database/dao/WorksListsDao';
 import worksListsUtils from '../../../../../common/utils/WorksListsUtils';
+import { ThemeItem } from '../../../../../common/model/Theme';
+import { ThemeStorageKey } from '../../../../../common/constants/Theme';
 
 
 /**
@@ -239,6 +241,8 @@ export default  struct BookManageDialog {
   }
   @State titleManage:string = '最近阅读'
   @State searchValue: string = '最近阅读'
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   @Builder headTitleManage(){
     Flex(
       {
@@ -319,7 +323,7 @@ export default  struct BookManageDialog {
     }) {
       Checkbox()
         .select(this.allCheck)
-        .selectedColor(0xff6600)
+        .selectedColor(this.theme.mainColor)
         .onClick(() => {
           if (this.verificationDate()) {
             return

@@ -1,4 +1,6 @@
 import { router } from '@kit.ArkUI';
+import { ThemeStorageKey } from '../../../../common/constants/Theme';
+import { ThemeItem } from '../../../../common/model/Theme';
 
 @Entry
 @Component
@@ -9,6 +11,8 @@ struct VersionLogPage {
     '更新icon图标',
     '关于我们-QQ群增加Beta群',
   ]
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column({ space: 16 }) {
@@ -59,7 +63,7 @@ struct VersionLogPage {
     Column() {
       Row() {
         Line({ width: 4, height: 16 })
-          .backgroundColor('#FF6600')
+          .backgroundColor(this.theme.mainColor)
           .margin({ right: 8 })
         Text(version)
           .lineHeight(24)

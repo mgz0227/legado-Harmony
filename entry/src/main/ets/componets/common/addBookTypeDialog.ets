@@ -1,3 +1,6 @@
+import { ThemeStorageKey } from "../../common/constants/Theme"
+import { ThemeItem } from "../../common/model/Theme"
+
 /**
  * 添加分类类型弹窗
  */
@@ -14,7 +17,8 @@ export default struct addBookTypeDialog {
   }
 
   @State BookTypeValueLength:number = 0
-
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column() {
@@ -30,8 +34,8 @@ export default struct addBookTypeDialog {
           })
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
-          .fontColor($r('app.color.theme_color'))
-          .backgroundColor('rgba(255,120,0,0.12)')
+          .fontColor(this.theme.mainColor)
+          .backgroundColor(this.theme.secondColor)
         Text('确认')
           .onClick(() => {
             if (this.controller != undefined) {
@@ -42,7 +46,7 @@ export default struct addBookTypeDialog {
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
           .fontColor(Color.White)
-          .backgroundColor($r('app.color.theme_color'))
+          .backgroundColor(this.theme.mainColor)
       }.padding({top:20,bottom:20})
     }.width('80%')
   }

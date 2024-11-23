@@ -1,4 +1,6 @@
 import { router, SwipeRefresher } from '@kit.ArkUI'
+import { ThemeStorageKey } from '../../../common/constants/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
 import { BookEditorType } from './BookEditorType/BookEditorType'
 import inputComponent from './InputComponet/inputComponet'
 
@@ -31,6 +33,7 @@ struct BookEditorPage {
     this.BookIconUrl,
     this.BookSynopsis
   );
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
 
   //标题文本颜色
@@ -41,7 +44,7 @@ struct BookEditorPage {
   ButtonColor:string = '#0f000000'
   //编辑书籍确认、取消按钮颜色
   BtnConfirmColor:string = '#F60'
-  BtnCancelColor:string = '#1fff6600'
+  BtnCancelColor:string = this.theme.secondColor
 
   //电池显示组件
   @Builder BufComponent () {

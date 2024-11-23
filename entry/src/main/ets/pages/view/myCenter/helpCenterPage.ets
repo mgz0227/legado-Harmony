@@ -1,4 +1,6 @@
 import { router } from '@kit.ArkUI';
+import { ThemeStorageKey } from '../../../common/constants/Theme';
+import { ThemeItem } from '../../../common/model/Theme';
 
 @Entry
 @Component
@@ -38,6 +40,9 @@ struct HelpCenterPage {
     "如何导入本地书籍"
   ]
   scroller: Scroller = new Scroller()
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column() {
@@ -199,7 +204,7 @@ struct HelpCenterPage {
                     Row() {
                       if (this.MoreQuestionsIndex == index) {
                         Line({ width: 3, height: 16 })
-                          .backgroundColor('#FF6600')
+                          .backgroundColor(this.theme.mainColor)
                       }
                       Text(item)
                         .lineHeight(22)
@@ -285,12 +290,12 @@ struct HelpCenterPage {
   question(title: string, index: number) {
     Column() {
       Text(title)
-        .fontColor(index == 0 ? '#FF6600' : 'rgba(0, 0, 0, 0.88)')
+        .fontColor(index == 0 ? this.theme.mainColor : 'rgba(0, 0, 0, 0.88)')
         .fontSize(12)
         .fontWeight(700)
     }
     .borderRadius(8)
     .padding(8)
-    .backgroundColor(index == 0 ? 'rgba(255, 102, 0, 0.12)' : 'rgb(240,240,240)')
+    .backgroundColor(index == 0 ? this.theme.secondColor : 'rgb(240,240,240)')
   }
 }

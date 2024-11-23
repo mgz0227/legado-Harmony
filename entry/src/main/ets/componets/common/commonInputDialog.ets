@@ -3,6 +3,8 @@
  * 主要传值为title标题、textValue输入框值、cancel取消方法、confirm确认方法
  */
 import PaddingConstants from '../../common/constants/PaddingConstants'
+import { ThemeStorageKey } from '../../common/constants/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 import { showMessage } from './promptShow'
 
 @CustomDialog
@@ -19,6 +21,8 @@ export default struct commonInputDialog {
   //标题
   @Prop title:string = '新增'
   // @Prop titleWidth:string = '80%'
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column() {
       Text(`${this.title}` ).fontWeight(600).fontSize(20).margin({ top: 20, bottom: 10 })
@@ -33,8 +37,8 @@ export default struct commonInputDialog {
           })
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
-          .fontColor($r('app.color.theme_color'))
-          .backgroundColor('rgba(255,120,0,0.12)')
+          .fontColor(this.theme.mainColor)
+          .backgroundColor(this.theme.secondColor)
         Text('确认')
           .onClick(() => {
             if (this.controller != undefined) {
@@ -45,7 +49,7 @@ export default struct commonInputDialog {
           .borderRadius(15)
           .padding({left:30,right:30,top:10,bottom:10})
           .fontColor(Color.White)
-          .backgroundColor($r('app.color.theme_color'))
+          .backgroundColor(this.theme.mainColor)
       }.padding({top:PaddingConstants.PADDING_20,bottom:PaddingConstants.PADDING_20})
     }
     .padding({left:PaddingConstants.PADDING_20,right:PaddingConstants.PADDING_20})

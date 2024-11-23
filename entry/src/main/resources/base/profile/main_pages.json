@@ -26,6 +26,8 @@
     "pages/view/Find/BookSource/AddSourcePage",
     "pages/view/Subscription/components/SubscriptionSearch",
     "pages/view/Subscription/rssWebView",
-    "pages/view/Find/CategoryList/Index"
+    "pages/view/Find/CategoryList/Index",
+    "pages/view/myCenter/MyThemeConfig",
+    "pages/view/myCenter/CreateCustomTheme"
   ]
 }

@@ -3,6 +3,8 @@ import FontConstants from '../../../../common/constants/FontConstants'
 import ImageConstants from '../../../../common/constants/ImageConstants'
 import PaddingConstants from '../../../../common/constants/PaddingConstants'
 import TextConstants from '../../../../common/constants/TextConstants'
+import { ThemeStorageKey } from '../../../../common/constants/Theme'
+import { ThemeItem } from '../../../../common/model/Theme'
 import { isNetworkUrl } from '../../../../common/utils/utils'
 import buttonCommon from '../../../../componets/common/buttonCommon'
 import dialogTitleFuction from '../../../../componets/common/dialogTitleFuction'
@@ -239,6 +241,8 @@ export default struct newSources{
     }
     this.readIndex = 0
   }
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   @Builder
   baseForm() {
@@ -546,7 +550,7 @@ export default struct newSources{
           Text('启用JavaScript')
             .fontColor(16)
           Toggle({ type: ToggleType.Switch, isOn: this.formModel.rssWebViewRule?.enableJs })
-            .selectedColor(0xff6600)
+            .selectedColor(this.theme.mainColor)
             .margin({ left: 8 })
             .onChange((val: boolean) => {
               if ( this.formModel.rssWebViewRule) {
@@ -562,7 +566,7 @@ export default struct newSources{
           Text('加载 BaseUrl')
             .fontColor(16)
           Toggle({ type: ToggleType.Switch, isOn: this.formModel.rssWebViewRule?.loadWithBaseUrl })
-            .selectedColor(0xff6600)
+            .selectedColor(this.theme.mainColor)
             .margin({ left: 8 })
             .onChange((val: boolean) => {
               if ( this.formModel.rssWebViewRule) {
@@ -639,9 +643,9 @@ export default struct newSources{
         .fontSize(16)
         .fontWeight(this.currentIndex === index ? 700 : 400)
         .lineHeight(24)
-        .backgroundImage(this.currentIndex === index ? $r('app.media.underline') : '')
-        .backgroundImageSize(this.currentIndex === index ? { width: '100%', height: 15 } : {})
-        .backgroundImagePosition({ y: 16 })
+        // .backgroundImage(this.currentIndex === index ? $r('app.media.underline') : '')
+        // .backgroundImageSize(this.currentIndex === index ? { width: '100%', height: 15 } : {})
+        // .backgroundImagePosition({ y: 16 })
     }
   }
 
@@ -651,7 +655,7 @@ export default struct newSources{
       Text('CookieJar')
 
       Toggle({ type: ToggleType.Switch, isOn: enabledCookieJar })
-        .selectedColor(0xff6600)
+        .selectedColor(this.theme.mainColor)
         .margin({ left: 8 })
         .onChange((val: boolean) => {
           onChange(val)
@@ -665,7 +669,7 @@ export default struct newSources{
       Text('使用链接')
 
       Toggle({ type: ToggleType.Switch, isOn: sourceIconIsUrl })
-        .selectedColor(0xff6600)
+        .selectedColor(this.theme.mainColor)
         .margin({ left: 8 })
         .onChange((val: boolean) => {
           onChange(val)
@@ -778,7 +782,7 @@ export default struct newSources{
           .fontColor($r('app.string.color_black_88'))
           .lineHeight(TextConstants.TEXT_LINE_HEIGHT_22)
         Toggle({ type: ToggleType.Switch, isOn: this.formModel.autoComplete})
-          .selectedColor(0xff6600)
+          .selectedColor(this.theme.mainColor)
           .margin({ left: 8 })
           .onChange((val: boolean) => {
             this.formModel.autoComplete = val

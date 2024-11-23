@@ -18,6 +18,8 @@ import WorksBookLists from '../Shelf/WorksBookLists';
 import worksListsDao from '../../../../database/dao/WorksListsDao';
 import { WorksLists } from '../../../../database/entities/WorksLists';
 import worksListsUtils from '../../../../common/utils/WorksListsUtils';
+import { ThemeItem } from '../../../../common/model/Theme';
+import { ThemeStorageKey } from '../../../../common/constants/Theme';
 
 class routerParams {
   currentIndex:number
@@ -49,6 +51,8 @@ struct BookManagePage {
   @State worksLists:WorksLists[] =[] //书单
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   @StorageLink('BOOK_IS_BOOK_GROUPS_REFRESHING') @Watch('getGroupList')BOOK_IS_BOOK_GROUPS_REFRESHING: number = 0
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   //判断是否全部置顶或取消置顶
   selectIsAllTop(){
     let allTopNumber = 0
@@ -159,7 +163,7 @@ struct BookManagePage {
     })
     .linearGradient({
       direction: GradientDirection.Bottom, // 渐变方向
-      colors: [["rgb(254, 203, 169)", 0.1],["RGB(245, 245, 245)", 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
+      colors: [[this.theme.mainColor, 0.1],[this.theme.secondColor, 0.2]] // 数组末尾元素占比小于1时满足重复着色效果
     })
     .borderRadius({ bottomRight: 5, bottomLeft: 5 })
 
@@ -243,7 +247,7 @@ struct BookManagePage {
     }) {
       Checkbox()
         .select(this.allCheck)
-        .selectedColor(0xff6600)
+        .selectedColor(this.theme.mainColor)
         .onClick(() => {
           if (this.verificationDate()) {
             return

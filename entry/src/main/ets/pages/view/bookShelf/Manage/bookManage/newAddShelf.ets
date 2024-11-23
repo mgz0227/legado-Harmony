@@ -1,3 +1,5 @@
+import { ThemeStorageKey } from '../../../../../common/constants/Theme'
+import { ThemeItem } from '../../../../../common/model/Theme'
 import { showMessage } from '../../../../../componets/common/promptShow'
 import groupTypeSearch from '../../../../../componets/group/GroupTypeSearch'
 import booksDao from '../../../../../database/dao/BooksDao'
@@ -23,6 +25,9 @@ export default struct newAddShelf{
   @State @Watch('getBookList')bookTypeNumber:number = 2
   @State groupCoverShow: boolean = false
   @State @Watch('searchBook')searchBookList:number[] = []
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   //用于分组弹窗添加书籍
   searchBook(){
     if (this.searchBookList.length === 0 ) return
@@ -159,11 +164,11 @@ export default struct newAddShelf{
         Row(){
           Text('添加').fontSize(16)
             .fontWeight(400)
-            .fontColor(this.selectBookIdList.length === 0?'rgba(252, 102, 0, 0.5)':$r('app.color.theme_color'))
+            .fontColor(this.selectBookIdList.length === 0?this.theme.secondColor:this.theme.mainColor)
           Text(`(${this.selectBookIdList.length??0})`)
             .fontSize(16)
             .fontWeight(400)
-            .fontColor(this.selectBookIdList.length === 0?'rgba(252, 102, 0, 0.5)':$r('app.color.theme_color'))
+            .fontColor(this.selectBookIdList.length === 0?this.theme.secondColor:this.theme.mainColor)
         }
         .justifyContent(FlexAlign.Center)
         .width('50%')

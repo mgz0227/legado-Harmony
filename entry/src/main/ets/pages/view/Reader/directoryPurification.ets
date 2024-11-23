@@ -5,6 +5,8 @@
  * 目录净化弹窗
  */
 import CommonConstants from '../../../common/constants/CommonConstants'
+import { ThemeStorageKey } from '../../../common/constants/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
 import buttonCommon from '../../../componets/common/buttonCommon'
 import { showMessage } from '../../../componets/common/promptShow'
 
@@ -14,6 +16,8 @@ export default struct directoryPurification{
   @Prop isEdit:boolean = false
   cancel: () => void = () => {
   }
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Flex({
       direction:FlexDirection.Column,
@@ -54,7 +58,7 @@ export default struct directoryPurification{
                 family:CommonConstants.FAMILY_PingFANG
               })
                 .lineHeight(24)
-              Text('*').fontColor($r('app.color.theme_color')).font({
+              Text('*').fontColor(this.theme.mainColor).font({
                 size:16,
                 weight:500,
                 family:CommonConstants.FAMILY_PingFANG
@@ -82,7 +86,7 @@ export default struct directoryPurification{
                   family:CommonConstants.FAMILY_PingFANG
                 })
                   .lineHeight(24)
-                Text('*').fontColor($r('app.color.theme_color')).font({
+                Text('*').fontColor(this.theme.mainColor).font({
                   size:16,
                   weight:500,
                   family:CommonConstants.FAMILY_PingFANG

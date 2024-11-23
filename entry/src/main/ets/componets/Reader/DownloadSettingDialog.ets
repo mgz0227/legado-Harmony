@@ -1,4 +1,6 @@
 import { AddDownloadDialog } from 'ets/componets/Reader/AddDownloadDialog';
+import { ThemeStorageKey } from '../../common/constants/Theme';
+import { ThemeItem } from '../../common/model/Theme';
 
 @Component
 export default struct DownloadSettingDialog{
@@ -13,6 +15,7 @@ export default struct DownloadSettingDialog{
   @State StartText: string = "1" // 下载-缓存开始章节
   @State EndText: string = "2" // 下载-缓存结束章节
   controller: TextInputController = new TextInputController()
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Column() {
@@ -109,7 +112,7 @@ export default struct DownloadSettingDialog{
           Button() {
             Text("取消")
               .lineHeight(24)
-              .fontColor($r('app.string.ThemeColor'))
+              .fontColor(this.theme.mainColor)
               .font({
                 size: 16,
                 weight: 500
@@ -117,7 +120,7 @@ export default struct DownloadSettingDialog{
           }
           .width("80%")
           .height(40)
-          .backgroundColor($r('app.string.BackgroundThemeColor'))
+          .backgroundColor(this.theme.secondColor)
         }
 
         GridItem() {
@@ -132,7 +135,7 @@ export default struct DownloadSettingDialog{
           }
           .width("80%")
           .height(40)
-          .backgroundColor($r('app.string.ThemeColor'))
+          .backgroundColor(this.theme.mainColor)
           .onClick(() => {
             this.isShowDownload = false
             this.isShowSetting = false

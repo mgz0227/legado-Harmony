@@ -7,6 +7,11 @@ import Find from './view/Find/Find'
 import MyCenter from './view/myCenter/MyCenter'
 import Subscription from './view/Subscription'
 import {testGetColorFunction} from '@ohos/colorLibrary'
+import { BusinessError, emitter } from '@kit.BasicServicesKit'
+import { JSON } from '@kit.ArkTS'
+import { image } from '@kit.ImageKit'
+import { ThemeStorageKey } from '../common/constants/Theme'
+import { ThemeItem } from '../common/model/Theme'
 
 @Entry
 @Component
@@ -18,6 +23,10 @@ struct Main {
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = true
   @State ShowBar: boolean = true
+  tabController: TabsController = new TabsController()
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   onPageShow(): void {
     // initBookListData()
@@ -33,7 +42,26 @@ struct Main {
     })
   }
 
+  screenShot() {
+    // 切换回首页
+    let index = this.currentTabIndex
+    this.tabController.changeIndex(0)
+    this.getUIContext().getComponentSnapshot().get('main', ((err: Error, pixmap: image.PixelMap) => {
+      if (err) {
+        console.log("error: " + JSON.stringify(err))
+        return
+      }
+      AppStorage.setOrCreate('screen_shot', pixmap)
+    }))
+    // 恢复当前页
+    this.tabController.changeIndex(index)
+  }
+
   aboutToAppear(): void {
+    // 注册监听截图事件 用于我的页面下主题设置预览
+    emitter.on('screen_shot', () => {
+      this.screenShot()
+    })
     //测试颜色模块
     testGetColorFunction();
   }
@@ -45,9 +73,10 @@ struct Main {
         alignItems:ItemAlign.Center,
         justifyContent:FlexAlign.Center
       }){
-        Image(this.currentTabIndex === index?icon_select:unselected).height(25)
+        Image(this.currentTabIndex === index? icon_select:unselected).height(25)
           .draggable(false)
-        Text(name).fontSize(11).margin(5).fontColor(this.currentTabIndex === index ?'rgb(255,119, 50)' : '#000000')
+          .fillColor(this.currentTabIndex === index ? this.theme.mainColor : '#000000')
+        Text(name).fontSize(11).margin(5).fontColor(this.currentTabIndex === index ? this.theme.mainColor : '#000000')
       }
     }.gesture(
       LongPressGesture({ repeat: index === 0,duration:1000 })
@@ -71,7 +100,8 @@ struct Main {
   build() {
     Column() {
       Tabs({
-        barPosition:BarPosition.End
+        barPosition:BarPosition.End,
+        controller: this.tabController
       }){
         ForEach(this.nav,(item:NavItem) => {
           TabContent() {
@@ -106,5 +136,6 @@ struct Main {
     }
     .width("100%")
     .height("100%")
+    .id('main')
   }
 }

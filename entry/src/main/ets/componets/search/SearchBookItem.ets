@@ -1,6 +1,8 @@
 import { SearchBook } from '../../database/entities/SearchBook'
 import { router } from '@kit.ArkUI'
 import clickUtil from '../../common/utils/ClickUtils'
+import { ThemeStorageKey } from '../../common/constants/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 
 @Component
 export struct SearchBookItem {
@@ -16,6 +18,8 @@ export struct SearchBookItem {
       .backgroundColor("rgba(0, 0, 0, 0.06)")
       .borderRadius(5)
   }
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Row({space:20}){
       Image(this.book.coverUrl).size({
@@ -27,7 +31,7 @@ export struct SearchBookItem {
         //书名
         Row(){
           Text(this.book.name)
-            .fontColor(this.SearchValue=== this.book.name?"rgba(255, 102, 0, 1)":"#000000")
+            .fontColor(this.SearchValue=== this.book.name ? this.theme.mainColor :"#000000")
         }
         //作者及书源数量
         Row({space:2}){

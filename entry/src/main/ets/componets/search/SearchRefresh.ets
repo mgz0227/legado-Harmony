@@ -1,13 +1,18 @@
+import { ThemeStorageKey } from "../../common/constants/Theme";
+import { ThemeItem } from "../../common/model/Theme";
 
 @Component
 export struct SearchRefresh{
   @State color:string="rgba(0, 0, 0, 0.45)"
   @Consume  SearchStatus: number;
 
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
+
   @Builder refresh(){
     Stack(){
       Row(){
-        LoadingProgress().color("#FF6600").height(30)
+        LoadingProgress().color(this.theme.mainColor).height(30)
         Text("玩命加载中...").fontSize(16).margin({left:20}).fontColor(this.color)
       }.alignItems(VerticalAlign.Center)
     }.width("100%").height("100%").align(Alignment.Center)

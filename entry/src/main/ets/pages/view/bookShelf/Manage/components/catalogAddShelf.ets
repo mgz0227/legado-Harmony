@@ -5,6 +5,8 @@
  * 加入书单弹窗
  */
 import CommonConstants from '../../../../../common/constants/CommonConstants'
+import { ThemeStorageKey } from '../../../../../common/constants/Theme'
+import { ThemeItem } from '../../../../../common/model/Theme'
 import bookGroupUtil from '../../../../../common/utils/bookGroupUtils'
 import worksListsUtils from '../../../../../common/utils/WorksListsUtils'
 import { showMessage } from '../../../../../componets/common/promptShow'
@@ -24,6 +26,8 @@ export default struct catalogAddShelf{
   @State worksBook:WorksLists = new WorksLists()
   @State worksLists:WorksLists[] =[]
   @State newBookIds:number[] = []
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   getWorkLists() {
     worksListsDao.search({
       type:this.currentIndex
@@ -139,8 +143,8 @@ export default struct catalogAddShelf{
           Row({
             space:12
           }){
-            Image($r('app.media.add')).width(24).fillColor($r('app.color.theme_color'))
-            Text('新建书单').fontSize(14).fontColor($r('app.color.theme_color')).fontWeight(400).lineHeight(22)
+            Image($r('app.media.add')).width(24).fillColor(this.theme.mainColor)
+            Text('新建书单').fontSize(14).fontColor(this.theme.mainColor).fontWeight(400).lineHeight(22)
           }.onClick(()=>{
             this.workBookListStatus = 0
             this.isShowEditBook = true

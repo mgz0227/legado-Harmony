@@ -7,6 +7,7 @@ import display from '@ohos.display';
 import DbUtil from '../common/utils/DbUtil';
 import DataBase from '../database'
 import { webview } from '@kit.ArkWeb';
+import { themeManager, ThemeManager } from '../common/utils/ThemeManager';
 
 export default class EntryAbility extends UIAbility {
 
@@ -96,11 +97,14 @@ export default class EntryAbility extends UIAbility {
       AppStorage.setOrCreate('stateHeight', px2vp(avoidAreaSys.topRect.height));
 
     })
-    windowStage.loadContent('pages/welcomePage', (err, data) => {
+
+    windowStage.loadContent('/pages/Index'.slice(1), (err, data) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
         return;
       }
+      // 主题初始化
+      themeManager.init()
       hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
     });
   }

@@ -10,6 +10,8 @@ import { Books } from '../../database/entities/Books'
 import { BookHistory } from '../../database/entities/BookHistory'
 import bookHistoryUtils from '../../common/utils/BookHistoryUtils'
 import booksUtil from '../../common/utils/booksUtils'
+import { ThemeStorageKey } from '../../common/constants/Theme'
+import { ThemeItem } from '../../common/model/Theme'
 
 /**
  * 标题图片样式
@@ -87,6 +89,10 @@ struct BookDetailPage {
   })
   @State txtFiles: chaptersItem[] = [];
   @State txtFile: ChaptersDataSource = new ChaptersDataSource()
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
+
   onPageShow() {
     this.isShow = true
   }
@@ -227,8 +233,8 @@ struct BookDetailPage {
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor('#1fff6600')
-          .fontColor('#FF6600')
+          .backgroundColor(this.theme.secondColor)
+          .fontColor(this.theme.mainColor)
           .onClick(() => {
             !this.bookData.isJoin?this.addBookShelf():''
           })
@@ -242,7 +248,7 @@ struct BookDetailPage {
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor(this.txtFile.totalCount() > 0 ? '#FF6600' : 'gray')
+          .backgroundColor(this.txtFile.totalCount() > 0 ? this.theme.mainColor : 'gray')
           .fontColor('#FFFFFF')
           .enabled(this.txtFile.totalCount() > 0)
           .onClick(() => {
@@ -295,7 +301,7 @@ struct BookDetailPage {
         .width(10)
         .strokeWidth(3)
         .lineCap(LineCapStyle.Round)
-        .color('#FF6600')
+        .color(this.theme.mainColor)
         .opacity(this.currentIndex === index ? 1 : 0)
     }
     .padding({ top: 8, bottom: 8 })

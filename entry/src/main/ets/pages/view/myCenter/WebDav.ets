@@ -5,6 +5,8 @@ import web_webview from '@ohos.web.webview'
 
 import { promptAction, router } from '@kit.ArkUI';
 import { ColumnModifier } from '../../../common/utils/ComponetModifier';
+import { ThemeItem } from '../../../common/model/Theme';
+import { ThemeStorageKey } from '../../../common/constants/Theme';
 
 @Entry
 @Component
@@ -17,6 +19,8 @@ struct  WebDav{
     new Input_items("","账号",InputType.Email||InputType.PhoneNumber),
     new Input_items("","密码",InputType.Password)
   ]
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   @State helper_status:boolean=false
   controller: web_webview.WebviewController = new web_webview.WebviewController()
   Column = new ColumnModifier().setPadding(0,0)
@@ -91,7 +95,7 @@ struct  WebDav{
       //查看帮助
       Column(){
         Text("不会填写？查看帮助")
-          .fontColor("rgba(255, 149, 0, 1)")
+          .fontColor(this.theme.mainColor)
           .fontSize(14)
       }.bindSheet($$this.helper_status,this.helper,{
         height:600,

@@ -1,11 +1,17 @@
 import { ExploreRule } from '../../../../database/entities/rule';
 import { router } from '@kit.ArkUI';
 import clickUtil from '../../../../common/utils/ClickUtils';
+import { ThemeStorageKey } from '../../../../common/constants/Theme';
+import { ThemeItem } from '../../../../common/model/Theme';
 
 @Component
 export  struct CardItem {
   @Prop item: ExploreRule = {};
   currentIndex:number = 0
+
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
+
   build() {
     Row() {
       Image(this.item.coverUrl ?? $r('app.media.no_record'))
@@ -35,12 +41,12 @@ export  struct CardItem {
           Column() {
             Text(this.item.author)
               .fontSize(10)
-              .fontColor('#FF6600')
+              .fontColor(this.theme.mainColor)
           }
           .padding({ left: 6, right: 6 })
           .height(16)
           .justifyContent(FlexAlign.Center)
-          .backgroundColor('#1FFF6600')
+          .backgroundColor(this.theme.secondColor)
 
           if (this.item.kind) {
             Column() {

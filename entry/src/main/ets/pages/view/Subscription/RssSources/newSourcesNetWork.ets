@@ -6,6 +6,8 @@
  */
 import FontConstants from '../../../../common/constants/FontConstants'
 import PaddingConstants from '../../../../common/constants/PaddingConstants'
+import { ThemeStorageKey } from '../../../../common/constants/Theme'
+import { ThemeItem } from '../../../../common/model/Theme'
 import { isNetworkUrl } from '../../../../common/utils/utils'
 import buttonCommon from '../../../../componets/common/buttonCommon'
 import { showMessage } from '../../../../componets/common/promptShow'
@@ -20,6 +22,8 @@ import RssSourceCheckImage from '../components/RssSourceCheckImage'
 export default struct newSourcesNetWork{
   hideNewWork:Function = ()=>{}
   @Prop isEdit:boolean = false
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   build() {
     Column(){
       Column(){
@@ -243,7 +247,7 @@ export default struct newSourcesNetWork{
       Text('使用链接')
 
       Toggle({ type: ToggleType.Switch, isOn: sourceIconIsUrl })
-        .selectedColor(0xff6600)
+        .selectedColor(this.theme.mainColor)
         .margin({ left: 8 })
         .onChange((val: boolean) => {
           onChange(val)

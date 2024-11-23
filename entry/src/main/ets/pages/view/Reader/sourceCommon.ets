@@ -3,6 +3,8 @@
  * @datetime 2024/6/6 22:05
  * @className: sourceCommon
  */
+import { ThemeStorageKey } from '../../../common/constants/Theme'
+import { ThemeItem } from '../../../common/model/Theme'
 import chapterCommon from './chapterCommon'
 
 @Component
@@ -11,6 +13,8 @@ export default struct sourceCommon{
   @Prop IsSelect:boolean = true
   @Prop sourceType:string
   @State isShowChapter:boolean = false
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   build() {
     Flex({
@@ -125,9 +129,9 @@ export default struct sourceCommon{
         })
       }
     }
-    .border({width:this.IsSelect?1:0,color:$r('app.color.theme_color'),style:BorderStyle.Solid})
+    .border({width:this.IsSelect?1:0,color:this.theme.mainColor,style:BorderStyle.Solid})
     .borderRadius(12)
-    .backgroundColor(this.IsSelect?'rgba(255, 102, 0, 0.12)':'rgba(0, 0, 0, 0.06)')
+    .backgroundColor(this.IsSelect?this.theme.secondColor:'rgba(0, 0, 0, 0.06)')
   }
   @Builder
   chapterView(){

@@ -5,6 +5,8 @@ import { MyCenterTitle } from '../../../componets/myCenter/MyCenterTitle';
 
 import { diskComponet } from '../../../componets/myCenter/diskComponet';
 import { PublicConstants, TextConstants } from '../../../common/constants/PublicConstants';
+import { ThemeItem } from '../../../common/model/Theme';
+import { ThemeStorageKey } from '../../../common/constants/Theme';
 
 @Entry
 @Component
@@ -25,7 +27,8 @@ struct DiskSet {
   @State localBackup:dataItem= new dataItem("本地备份","","","",false)
   @State deviceName:dataItem= new dataItem("设备名称","Meta 40 Pro","","",false)
   @State localBackupPath:dataItem= new dataItem("本地备份路径","emulated/emulated/阅读/备份","","",true)
-
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   @Builder toggleComponets(item:dataItem){
     Row(){
@@ -37,7 +40,7 @@ struct DiskSet {
       Toggle({type:ToggleType.Switch,isOn:item.status})
         .onChange((isOn: boolean) => {
           item.status=isOn;
-        }).selectedColor(PublicConstants.THEME_COLOR).hoverEffect(HoverEffect.None)
+        }).selectedColor(this.theme.mainColor).hoverEffect(HoverEffect.None)
     }.justifyContent(FlexAlign.SpaceBetween)
     .stateStyles({normal: this.componetStyles})
   }

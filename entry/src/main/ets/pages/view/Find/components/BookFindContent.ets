@@ -13,54 +13,52 @@ import mayAlsoLike from '../mayAlsoLike'
 import { CardItem } from './CardItem'
 import { router } from '@kit.ArkUI'
 import CommonConstants from '../../../../common/constants/CommonConstants';
-import { BookSource } from '../../../../database/entities/BookSource'
+import { ThemeItem } from '../../../../common/model/Theme'
+import { ThemeStorageKey } from '../../../../common/constants/Theme'
 
 @Component
 export default struct BookFindContent {
   @Prop currentIndex: number
+  @Prop bookSourceUrl: string
   @Prop exploreItem: ExploreItem
   @Prop @Watch('getList') counter: number = 0
   @State loading: boolean = true
   @State errorExplore: boolean = false
   @State bookList: ExploreRule[] = []
-  @Prop bookSource?: BookSource
+  @Prop exploreRule: ExploreRule = {}
   handleClick: () => void = () => {
   }
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   aboutToAppear() {
     this.getList()
-    if (!this.bookSource) return
   }
 
   getList() {
-    if (!this.bookSource) return
-    const bookSourceUrl = this.bookSource.bookSourceUrl
-    const exploreRule = this.bookSource.ruleExplore
-    const searchRule = this.bookSource.ruleSearch
     this.loading = true
     let url = this.exploreItem.url.replace('{{page}}', "1")
     if (!isNetworkUrl(url)) {
-      url = bookSourceUrl + url
+      url = this.bookSourceUrl + url
     }
     const exploreQuery: ExploreQuery = {
       url,
+      bookList: this.exploreRule.bookList,
       pageSize: 3,
-      bookList: exploreRule?.bookList || searchRule?.bookList,
-      name: exploreRule?.name || searchRule?.name,
-      author: exploreRule?.author || searchRule?.author,
-      intro: exploreRule?.intro || searchRule?.intro,
-      kind: exploreRule?.kind || searchRule?.kind,
-      lastChapter: exploreRule?.lastChapter || searchRule?.lastChapter,
-      bookUrl: exploreRule?.bookUrl || searchRule?.bookUrl,
-      coverUrl: exploreRule?.coverUrl || searchRule?.coverUrl,
-      wordCount: exploreRule?.wordCount || searchRule?.wordCount
+      name: this.exploreRule.name,
+      author: this.exploreRule.author,
+      intro: this.exploreRule.intro,
+      kind: this.exploreRule.kind,
+      lastChapter: this.exploreRule.lastChapter,
+      bookUrl: this.exploreRule.bookUrl,
+      coverUrl: this.exploreRule.coverUrl,
+      wordCount: this.exploreRule.wordCount
     }
-    console.info('解析参数:', JSON.stringify(exploreQuery))
     axios.post(CommonConstants.BASE_URL + '/common/analysisRules', exploreQuery).then((res: AxiosResponse) => {
       console.info('TagInfo, 解析内容：', JSON.stringify(res.data))
       this.bookList = (res.data as ExploreRule[]).map(item => {
         if (item.coverUrl && !isNetworkUrl(item.coverUrl)) {
-          item.coverUrl = bookSourceUrl + item.coverUrl
+          item.coverUrl = this.bookSourceUrl + item.coverUrl
         }
         return item
       })
@@ -85,7 +83,7 @@ export default struct BookFindContent {
         if (this.loading) {
           Column() {
             LoadingProgress()
-              .color(0xff6600)
+              .color(this.theme.mainColor)
               .width('50%')
             Text('内容加载中...')
           }
@@ -121,8 +119,9 @@ export default struct BookFindContent {
                 router.pushUrl({
                   url: 'pages/view/Find/CategoryList/Index',
                   params: {
-                    bookSource: this.bookSource,
+                    bookSourceUrl: this.bookSourceUrl,
                     exploreItem: this.exploreItem,
+                    exploreRule: this.exploreRule,
                     currentIndex: this.currentIndex
                   }
                 })
