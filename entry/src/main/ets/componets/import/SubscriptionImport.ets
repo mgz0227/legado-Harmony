@@ -239,7 +239,7 @@ export default struct SubscriptionImport {
             await SubscriptionDao.batchInsert(insertRssSources)
             this.show = false;
             this.resetState()
-            showMessage('添加成功')
+            showMessage('导入成功')
           })
       }
       .backgroundColor(Color.White)
