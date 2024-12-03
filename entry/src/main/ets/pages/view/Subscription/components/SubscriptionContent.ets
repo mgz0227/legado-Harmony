@@ -82,7 +82,7 @@ export default struct SubscriptionContent{
               this.rightDialogBuilder(this.Item_Right_Dialog_Data, async (index: number) => {
                 switch (index) {
                   case 0:
-                    showMessage('编辑')
+                    showMessage('重命名')
                     break
                   case 1:
                     showMessage('置顶')
@@ -314,6 +314,13 @@ export default struct SubscriptionContent{
   }
 
   Item_Right_Dialog_Data: IconTitleVo[] = [
+    new IconTitleVo($r('app.media.ic_public_edit'), '重命名'),
+    new IconTitleVo($r('app.media.icon_operate_top'), '置顶'),
+    new IconTitleVo($r('app.media.icon_operate_move'), '移动至'),
+    new IconTitleVo($r('app.media.delete_svg'), '删除'),
+  ]
+
+  Item_Dialog_Data: IconTitleVo[] = [
     new IconTitleVo($r('app.media.ic_public_edit'), '编辑'),
     new IconTitleVo($r('app.media.icon_operate_top'), '置顶'),
     new IconTitleVo($r('app.media.icon_operate_move'), '移动至'),
@@ -327,7 +334,7 @@ export default struct SubscriptionContent{
       GridRow({
         columns:4
       }){
-       ForEach(this.Item_Right_Dialog_Data,(item:IconTitleVo,index:number)=>{
+       ForEach(this.Item_Dialog_Data,(item:IconTitleVo,index:number)=>{
          GridCol(){
            CircleIcon({
              item:item
@@ -414,7 +421,7 @@ export default struct SubscriptionContent{
       direction:FlexDirection.Column
     }){
       ForEach(list, (item: IconTitleVo, index) => {
-        if (!(this.subscriptionTitle === '收藏' && item.title === '删除')){
+        if (this.subscriptionTitle.indexOf('收藏') === -1){
           dialogTitleFuction({
             title: item.title,
             icon: item.icon,
@@ -423,6 +430,17 @@ export default struct SubscriptionContent{
             .onClick(() => {
               dialogRightChange(index)
             })
+        } else {
+          if (item.title !== '重命名' && item.title !== '删除') {
+            dialogTitleFuction({
+              title: item.title,
+              icon: item.icon,
+              isBorder: list.length !== index + 1
+            })
+              .onClick(() => {
+                dialogRightChange(index)
+              })
+          }
         }
 
       })
