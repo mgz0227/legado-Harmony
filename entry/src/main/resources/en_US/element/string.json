@@ -87,6 +87,10 @@
     {
       "name": "export_help",
       "value": "export help"
+    },
+    {
+      "name": "clear_recently_used",
+      "value": "clear recently used"
     }
   ]
 }

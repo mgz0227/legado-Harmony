@@ -5,6 +5,7 @@
  * 订阅源
  */
 import DbUtil from '../../common/utils/DbUtil';
+import { showMessage } from '../../componets/common/promptShow';
 import AppDatabaseUtil from '../AppDatabaseUtil';
 import { rssSourcesHistory } from '../entities/rssSourcesHistory';
 import { ColumnInfo } from '../types/ColumnInfo';
@@ -115,6 +116,7 @@ class RssSourcesHistoryDao {
       for (let index = 0; index < rssHistory.length; index++) {
         await this.deleteRssSourcesHistory(rssHistory[index].sourceUrl)
       }
+      showMessage('清除最近使用')
       return true
     } catch (err) {
       console.log('TagInfo, Error, ', JSON.stringify(err))

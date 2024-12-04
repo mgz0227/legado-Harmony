@@ -38,12 +38,16 @@ export default struct SubscriptionIndex {
     new IconTitleVo($r('app.media.icon_rule_add'), '新建订阅'),
     new IconTitleVo($r('app.media.icon_rule_batch'), '批量管理'),
   ]
+  //批量管理选中内容存储
+  @Provide('batchList') batchList: Record<number, boolean> = {}
   @State RecentlyUsed: rssSourcesHistory[] = []
   @State loading: boolean = false
   @State subscriptionList: rssSources[] = []
   @State rssSourcesList: rssSources[] = []
   @State groupList: rssGroupList[] = []
   @State batchEdit: boolean = false
+  //全选
+  @Provide('batchAll') batchAll: boolean = false
   // 主题颜色
   @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   //刷新
@@ -71,6 +75,12 @@ export default struct SubscriptionIndex {
       const rssSources = data ?? []
       console.info('TagInfo', JSON.stringify(rssSources.slice(0, 3)))
       this.rssSourcesList = rssSources
+      //将rssSources的id存放进batchList值默认为false
+      rssSources.forEach((item: rssSources) => {
+        if (item.id) {
+          this.batchList[item.id] = false
+        }
+      })
       this.getGroupList()
     }).catch(() => {
 
@@ -128,14 +138,26 @@ export default struct SubscriptionIndex {
                 .height(ImageConstants.IMG_HEIGHT_24)
                 .bindMenu(this.MenuBuilder)
             } else {
-              Text('全选')
+              Text(`${this.batchAll?'取消全选':'全选'}`)
+                .width('33%')
+                .onClick(()=>{
+                  this.batchAll = !this.batchAll
+
+                  Object.keys(this.batchList).forEach((key: string) => {
+                    this.batchList[key] = this.batchAll
+                  })
+                })
               Blank(1)
-              Text(`已选2项`)
+              //获取选中项数量
+              Text(`已选${Object.values(this.batchList).filter(value => value === true).length}项`).width('33%')
               Blank(1)
-              Text('完成').onClick(() => {
-                this.batchEdit = false
-                getContext(this).eventHub.emit('SubscriptionBatchEdit', true);
-              })
+              Text('完成')
+                .width('33%')
+                .onClick(() => {
+                  this.batchList = {}
+                  this.batchEdit = false
+                  getContext(this).eventHub.emit('SubscriptionBatchEdit', true);
+                })
             }
           }
           .width('100%')
@@ -162,6 +184,7 @@ export default struct SubscriptionIndex {
         } else if (!this.groupList.length) {
           SubscriptionContent({
             subscriptionTitle: '收藏',
+            batchEdit:this.batchEdit,
             showAddDialog: () => {
               this.isShowNewSources = true
             }
@@ -173,6 +196,7 @@ export default struct SubscriptionIndex {
                 SubscriptionContent({
                   subscriptionTitle: item.title,
                   contentList: item.list,
+                  batchEdit:this.batchEdit,
                   refresh: this.refresh
                 })
               })
