@@ -22,6 +22,8 @@ import confirmDialogExample from '../../../../componets/common/confirmDialog'
 import RssSourceGroup from './RssSourceGroup'
 import PreviewEffectImage from './PreviewEffectImage'
 import rssSourcesUtils from '../../../../common/utils/rssSourcesUtils'
+import { ThemeItem } from '../../../../common/model/Theme'
+import { ThemeStorageKey } from '../../../../common/constants/Theme'
 
 @Component
 export default struct SubscriptionContent{
@@ -29,6 +31,10 @@ export default struct SubscriptionContent{
   @Prop contentList: rssSources[] = []
   @State isButtonFunction: boolean = false
   @State contentIndex:number = 0
+  @Prop batchEdit: boolean
+  @Consume('batchAll') batchAll: boolean
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
+  @Consume('batchList') batchList: Record<number, boolean>
   // controller: web_webview.WebviewController = new web_webview.WebviewController()
   refresh: () => void = () => {
 
@@ -133,7 +139,7 @@ export default struct SubscriptionContent{
           columns:2
         }){
           ForEach(this.contentList,(item:rssSources,index:number)=>{
-            if (index < 2){
+            if (index < 2 && !this.batchEdit){
               GridCol({
                 span:1
               }){
@@ -167,7 +173,7 @@ export default struct SubscriptionContent{
           columns: 5
         }){
           ForEach(this.contentList,(item:rssSources,index:number)=>{
-            if (index >= 2) {
+            if (index >= 2 || this.batchEdit) {
               GridCol(){
                 this.contentListBuilder(item)
               }
@@ -497,36 +503,60 @@ export default struct SubscriptionContent{
 
   @Builder
   contentListBuilder(item:rssSources){
-    Column({
-      space: CommonConstants.SPACE_6
-    }){
-      Stack(){
-        PreviewEffectImage({
-          sourceIcon:item.sourceIcon,
-          customizeTitle:item.customizeTitle,
-          PreviewWidth:ImageConstants.IMG_WIDTH_40,
-          PreviewHeight:ImageConstants.IMG_HEIGHT_40,
-          isShowTitle:false,
-          sourceName:item.sourceName
-        })
-          .borderRadius(8)
-
-        if (this.isShowRecentIcon(item.lastUpdateTime) && item.showRecentIcon)
-          Row().width(8).height(8)
+    Stack(){
+      Column({
+        space: CommonConstants.SPACE_6
+      }){
+        Stack(){
+          PreviewEffectImage({
+            sourceIcon:item.sourceIcon,
+            customizeTitle:item.customizeTitle,
+            PreviewWidth:ImageConstants.IMG_WIDTH_40,
+            PreviewHeight:ImageConstants.IMG_HEIGHT_40,
+            isShowTitle:false,
+            sourceName:item.sourceName
+          })
             .borderRadius(8)
-            .backgroundColor('#EF4444')
-            .position({
-              right: -2,
-              top:-2
+          Checkbox({
+            group:'checkBatch',
+            name:JSON.stringify(item.id)
+          })
+            .onChange((val)=>{
+              if (item.id) {
+                this.batchList[item.id] = val
+              }
             })
-      }
-      .alignContent(Alignment.TopEnd)
+            .select(item?.id?this.batchList[item.id]??false:false)
+            .width(15)
+            .selectedColor(this.theme.mainColor)
+            .unselectedColor('rgba(0, 0, 0, 0.35)')
+              .position({
+                top:-10,
+                right:-10
+              })
+          .visibility(this.batchEdit?Visibility.Visible:Visibility.None)
+          .zIndex(2)
+          if (this.isShowRecentIcon(item.lastUpdateTime) && item.showRecentIcon && !this.batchEdit){
+            Row().width(8).height(8)
+              .borderRadius(8)
+              .backgroundColor('#EF4444')
+              .position({
+                right: -2,
+                top:-2
+              })
+          }
+        }
+        .alignContent(Alignment.TopEnd)
 
-      Text(`${item.sourceName}`).fontSize(10)
-        .fontColor($r('app.string.color_black_88'))
-        .lineHeight(18)
-        .fontFamily(CommonConstants.FAMILY_PingFANG)
-        .fontWeight(FontConstants.FONT_WEIGHT_400)
-    }.margin({bottom:20})
+        Text(`${item.sourceName}`)
+          .minFontSize(8)
+          .maxFontSize(12)
+          .fontSize(10)
+          .fontColor($r('app.string.color_black_88'))
+          .lineHeight(18)
+          .fontFamily(CommonConstants.FAMILY_PingFANG)
+          .fontWeight(FontConstants.FONT_WEIGHT_400)
+      }.margin({bottom:20})
+    } .alignContent(Alignment.TopEnd)
   }
 }

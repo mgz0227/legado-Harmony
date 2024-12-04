@@ -87,6 +87,10 @@
     {
       "name": "export_help",
       "value": "导入帮助"
+    },
+    {
+      "name": "clear_recently_used",
+      "value": "清除最近使用"
     }
   ]
 }
