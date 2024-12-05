@@ -142,7 +142,6 @@ export default struct SubscriptionIndex {
                 .width('33%')
                 .onClick(()=>{
                   this.batchAll = !this.batchAll
-
                   Object.keys(this.batchList).forEach((key: string) => {
                     this.batchList[key] = this.batchAll
                   })
@@ -154,8 +153,11 @@ export default struct SubscriptionIndex {
               Text('完成')
                 .width('33%')
                 .onClick(() => {
-                  this.batchList = {}
+                  this.batchAll = false
                   this.batchEdit = false
+                  Object.keys(this.batchList).forEach((key: string) => {
+                    this.batchList[key] = false
+                  })
                   getContext(this).eventHub.emit('SubscriptionBatchEdit', true);
                 })
             }
@@ -276,7 +278,22 @@ export default struct SubscriptionIndex {
                 .fontColor('rgba(0, 0, 0, 0.88)')
             }
             .onClick(() => {
-              showMessage('功能开发中,暂未开放')
+              let checkRssSources = Object.values(this.batchList).filter(value => value === true).length
+              if (checkRssSources <= 0){
+                showMessage('请选择要删除的订阅源');
+                return;
+              }
+
+              Object.keys(this.batchList).forEach((key: string) => {
+              if (this.batchList[key]) {
+                subscriptionDao.deleteRssSourcesById({
+                  id: Number(key)
+                })
+                this.batchList[key] = false
+              }
+              })
+              setTimeout(()=>{this.refresh()},200)
+              showMessage('删除成功!')
             })
           }
         }

@@ -13,7 +13,7 @@ import { rssSourcesTypeParams } from '../types/rssSourcesType';
 import rssSourcesHistoryDao from './RssSourcesHistoryDao';
 
 interface delParams {
-  url: string,
+  url?: string,
   id:number
 }
 
