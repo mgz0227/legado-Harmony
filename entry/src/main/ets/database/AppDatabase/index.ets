@@ -209,7 +209,7 @@ export default {
           {
             "fieldPath": "isTop",
             "columnName": "isTop",
-            "affinity": "isTop",
+            "affinity": "INTEGER",
             "boolean": true,
             "notNull": true,
             "defaultValue": "1"
@@ -2365,6 +2365,54 @@ export default {
           "autoGenerate": false,
           "columnNames": [
             "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName":"rss_source_group",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rssGroupId` INTEGER NOT NULL, `rssGroupName` TEXT NOT NULL , `isTop` INTEGER NOT NULL DEFAULT 0 , `groupSort` INTEGER , `isDelete` INTEGER NOT NULL DEFAULT 1 , PRIMARY KEY(`rssGroupId`))",
+        "fields": [
+          {
+            "fieldPath": "rssGroupId",
+            "columnName": "rssGroupId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rssGroupName",
+            "columnName": "rssGroupName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupSort",
+            "columnName": "groupSort",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isTop",
+            "columnName": "isTop",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "isDelete",
+            "columnName": "isDelete",
+            "affinity": "INTEGER",
+            "boolean": true,
+            "notNull": false,
+            "defaultValue": "1"
+          }
+          ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "rssGroupId"
           ]
         },
         "indices": [],

@@ -45,7 +45,7 @@ export default struct SubscriptionContent{
   build() {
     Column(){
       Column({
-        space:20
+        space:16
       }){
         Flex({
           justifyContent:FlexAlign.SpaceBetween,

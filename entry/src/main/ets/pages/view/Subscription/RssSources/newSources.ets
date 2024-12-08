@@ -11,6 +11,7 @@ import dialogTitleFuction from '../../../../componets/common/dialogTitleFuction'
 import { showMessage } from '../../../../componets/common/promptShow'
 import Help from '../../../../componets/dialog/help'
 import FormItem from '../../../../componets/Form/FormItem'
+import rssSourceGroupDao from '../../../../database/dao/rssSourceGroupDao'
 import SubscriptionDao from '../../../../database/dao/SubscriptionDao'
 import { rssSources, SUBSCRIPTION_GROUP_TYPE } from '../../../../database/entities/rssSources'
 import { rssListRule } from '../../../../database/entities/rule/rssListRule'
@@ -221,15 +222,23 @@ export default struct newSources{
     rssWebViewRule: new rssWebViewRule(),
   }
 
+  // @State sourceGroupList:SelectOption[] = []
   @State sourceGroupList:SelectOption[] = []
-  getRssSourceList() {
-    let list = programDataPreferences.getRssSourcesListData()
-    //将list存放到sourceGroupList
-    list.forEach((item) => {
+
+  async getRssSourceList() {
+    let group = await rssSourceGroupDao.search();
+    group.forEach(item=>{
       this.sourceGroupList.push({
-        value: item
+        value: item.rssGroupName
       })
     })
+    // let list = programDataPreferences.getRssSourcesListData()
+    // //将list存放到sourceGroupList
+    // list.forEach((item) => {
+    //   this.sourceGroupList.push({
+    //     value: item
+    //   })
+    // })
   }
   aboutToAppear(): void {
     this.getRssSourceList()
