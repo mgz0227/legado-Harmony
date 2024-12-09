@@ -12,6 +12,7 @@ import { isNetworkUrl } from '../../../../common/utils/utils'
 import buttonCommon from '../../../../componets/common/buttonCommon'
 import { showMessage } from '../../../../componets/common/promptShow'
 import FormItem from '../../../../componets/Form/FormItem'
+import rssSourceGroupDao from '../../../../database/dao/rssSourceGroupDao'
 import SubscriptionDao from '../../../../database/dao/SubscriptionDao'
 import { rssSources, SUBSCRIPTION_GROUP_TYPE } from '../../../../database/entities/rssSources'
 import programDataPreferences from '../../../../preferences/programDataPreferences'
@@ -97,14 +98,21 @@ export default struct newSourcesNetWork{
     this.getRssSourceList()
   }
   @State sourceGroupList:SelectOption[] = []
-  getRssSourceList() {
-    let list = programDataPreferences.getRssSourcesListData()
-    //将list存放到sourceGroupList
-    list.forEach((item) => {
+
+  async getRssSourceList() {
+    let group = await rssSourceGroupDao.search();
+    group.forEach(item=>{
       this.sourceGroupList.push({
-        value: item
+        value: item.rssGroupName
       })
     })
+    // let list = programDataPreferences.getRssSourcesListData()
+    // //将list存放到sourceGroupList
+    // list.forEach((item) => {
+    //   this.sourceGroupList.push({
+    //     value: item
+    //   })
+    // })
   }
   @Builder
   baseForm() {

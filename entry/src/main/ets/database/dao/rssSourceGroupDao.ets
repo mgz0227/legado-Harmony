@@ -41,7 +41,7 @@ class RssSourceGroupDao {
 
   //系统初始订阅源分组数据
   async initGroupData() {
-    let initGroup = ['小说','漫画','影视','资讯','收藏']
+    let initGroup = ['小说','漫画','影视','资讯','收藏夹']
     try {
       const groupList = await this.search()
       if (groupList.length > 0) {

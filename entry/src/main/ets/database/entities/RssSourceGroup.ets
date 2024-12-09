@@ -10,7 +10,7 @@ export class RssSourceGroup{
   //分组名称
   rssGroupName:string = "";
   //排序
-  groupSort:number = 0;
+  groupSort?:number;
   //是否置顶
   isTop:boolean = false;
   //是否允许删除
