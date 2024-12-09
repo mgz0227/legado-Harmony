@@ -8,9 +8,9 @@ import CommonConstants from '../../../../common/constants/CommonConstants'
 import PaddingConstants from '../../../../common/constants/PaddingConstants'
 import { ThemeStorageKey } from '../../../../common/constants/Theme'
 import { ThemeItem } from '../../../../common/model/Theme'
+import rssSourcesUtil from '../../../../common/utils/rssSourcesUtils'
 import buttonCommon from '../../../../componets/common/buttonCommon'
 import { showMessage } from '../../../../componets/common/promptShow'
-import programDataPreferences from '../../../../preferences/programDataPreferences'
 
 @Component
 export default struct RssSourceGroup {
@@ -28,8 +28,8 @@ export default struct RssSourceGroup {
    this.getRssSourceList()
   }
 
-  getRssSourceList() {
-    this.sourceGroupList = programDataPreferences.getRssSourcesListData()
+  async getRssSourceList() {
+    this.sourceGroupList = await rssSourcesUtil.getRssSourcesGroup()
   }
 
   @Link moveGroup:string
@@ -89,7 +89,6 @@ export default struct RssSourceGroup {
       }).ellipsisMode(EllipsisMode.END).maxLines(1)
     }
     .onClick(()=>{
-      showMessage(title)
       this.moveGroup = title
     })
     .width(96)

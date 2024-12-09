@@ -23,6 +23,8 @@ import { rssSourcesHistory } from '../../../database/entities/rssSourcesHistory'
 import { FileHandler } from 'ets/common/utils/FileHandler'
 import { ThemeItem } from '../../../common/model/Theme'
 import { ThemeStorageKey } from '../../../common/constants/Theme'
+import addBookTypeDialog from '../../../componets/common/addBookTypeDialog'
+import rssSourcesUtils from '../../../common/utils/rssSourcesUtils'
 
 @Component
 export default struct SubscriptionIndex {
@@ -46,6 +48,7 @@ export default struct SubscriptionIndex {
   @State rssSourcesList: rssSources[] = []
   @State groupList: rssGroupList[] = []
   @State batchEdit: boolean = false
+  @State newGroupType:string = ''
   //全选
   @Provide('batchAll') batchAll: boolean = false
   // 主题颜色

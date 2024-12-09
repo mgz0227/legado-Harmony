@@ -12,11 +12,11 @@ import { rssGroupList, rssSources } from '../../database/entities/rssSources';
 import SubscriptionDao from '../../database/dao/SubscriptionDao';
 import FontConstants from '../../common/constants/FontConstants';
 import CommonConstants from '../../common/constants/CommonConstants';
-import programDataPreferences from '../../preferences/programDataPreferences'
 import PaddingConstants from '../../common/constants/PaddingConstants';
 import addBookTypeDialog from '../common/addBookTypeDialog';
 import { ThemeItem } from '../../common/model/Theme';
 import { ThemeStorageKey } from '../../common/constants/Theme';
+import rssSourcesUtils from '../../common/utils/rssSourcesUtils';
 
 @Component
 export default struct SubscriptionImport {
@@ -47,8 +47,9 @@ export default struct SubscriptionImport {
     })
   }
 
-  getRssSourceList() {
-   this.sourceGroupList = programDataPreferences.getRssSourcesListData()
+  async getRssSourceList() {
+   // this.sourceGroupList = programDataPreferences.getRssSourcesListData()
+    this.sourceGroupList = await rssSourcesUtils.getRssSourcesGroup();
   }
 
   getGroupList() {
@@ -418,8 +419,14 @@ export default struct SubscriptionImport {
   addNewGroupType: CustomDialogController | null = new CustomDialogController({
     builder: addBookTypeDialog({
       cancel: ()=> { this.addNewGroupType?.close() },
-      confirm: ()=> {
-        this.addGroupType()
+      confirm: async ()=> {
+       let insertSuccess:boolean = await rssSourcesUtils.addGroupType(this.newGroupType)
+        this.newGroupType = ''
+        if (insertSuccess) {
+          setTimeout(()=>{
+            this.getRssSourceList()
+          },200)
+        }
       },
       bookType: this.newGroupType
     }),
@@ -430,22 +437,26 @@ export default struct SubscriptionImport {
     cornerRadius: 25
   })
   @State isInsert:boolean = false
-  addGroupType(){
-    programDataPreferences.getRssSourcesListData().map((data:string)=>{
-      if(data === this.newGroupType){
-        this.isInsert = true
-      }
-    })
-    if (this.isInsert) {
-      showMessage('分组名称重复')
-      this.isInsert = false
-    } else {
-      programDataPreferences.updateRssSourcesData(this.newGroupType)
-      //添加分组后再次刷新分组列表
-      this.getRssSourceList()
-      showMessage(`添加分组${this.newGroupType}成功!`)
-    }
-    this.newGroupType = ''
-  }
+
+  // async addGroupType(){
+  //   let group = await rssSourcesUtils.getRssSourcesGroup();
+  //   group.map((data:string)=>{
+  //     if(data === this.newGroupType){
+  //       this.isInsert = true
+  //     }
+  //   })
+  //   if (this.isInsert) {
+  //     showMessage('分组名称重复')
+  //     this.isInsert = false
+  //   } else {
+  //     rssSourcesUtils.insertRssSourceGroup(this.newGroupType)
+  //     //添加分组后再次刷新分组列表
+  //     setTimeout(()=>{
+  //       this.getRssSourceList()
+  //     },200)
+  //     showMessage(`添加分组${this.newGroupType}成功!`)
+  //   }
+  //   this.newGroupType = ''
+  // }
 }
 
