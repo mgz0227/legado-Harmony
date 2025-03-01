@@ -338,7 +338,7 @@ struct ReaderPage {
             Grid() {
               GridItem() {
                 Column() {
-                  Image($r("app.media.ic_public_return_left")).width(24)
+                  Image($r("app.media.outlined")).width(24)
                   Text("目录")
                 }
               }

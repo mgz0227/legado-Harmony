@@ -1,5 +1,5 @@
 
-import { display, promptAction, router, window } from '@kit.ArkUI';
+import { display, promptAction, router, SwipeRefresher, window } from '@kit.ArkUI';
 import sourceView from './sourceView';
 import { NetworkInput } from 'ets/componets/Reader/NetworkInput';
 import DownloadSettingDialog from '../../../componets/Reader/DownloadSettingDialog';
@@ -23,10 +23,19 @@ import {
   ReaderChapterItem,
 } from '@ohos/readerLibrary/src/main/ets/common/entity/ReaderChaptersItem';
 import { ReaderProvider } from '@ohos/readerLibrary/src/main/ets/provider/configProvider';
+import CommonConstants from '../../../common/constants/CommonConstants';
+import { ThemeItem } from '../../../common/model/Theme';
+import { ThemeStorageKey } from '../../../common/constants/Theme';
+import NoteIndex from '../../../componets/bookDetail/note/NoteIndex';
+import { BookHistory } from '../../../database/entities/BookHistory';
+import bookHistoryUtils from '../../../common/utils/BookHistoryUtils';
+import { Books } from '../../../database/entities/Books';
+import { FileHandler } from '../../../common/utils/FileHandler';
+import ChaptersDataSource from '../../../common/LazyIDataSource/ChaptersDataSource';
 
 
 interface ParamsObj {
-  bookData: BookList,
+  bookData: Books,
   clickBookChapter: number,
   txtFile: chaptersItem[]
 }
@@ -36,10 +45,12 @@ interface ParamsObj {
 struct ReaderPage2 {
   currentChapters: number = 0
   chapterList: ReaderChapterItem[] = [];
+  bookData?: Books;
   async aboutToAppear() {
     //详情页加了个目录序号参数，所以修改了一下params的类型，不影响之前的bookData，但需要多‘.’一次。看看大佬们可以怎么优化一下，上个页面BookDetailPage
     let temp = router.getParams() as ParamsObj
-    console.log('router ReaderPage2:' + temp.bookData.fileLink)
+    this.bookData = temp.bookData
+    // console.log('router ReaderPage2:' + temp.bookData.fileLink)
     this.chapterList = temp.txtFile.map((value) => {
       return new ReaderChapterItem(value.number, value.title, value.chapterTitleNumber, value.content);
     }) //txt小说
@@ -93,7 +104,9 @@ struct ReaderPage2 {
     Row() {
       ReaderProvider({
         chapterList: this.chapterList,
-        child: this.contentBuilder
+        child: this.contentBuilder,
+        bookData: this.bookData,
+        currentChapterIndex: this.currentChapters
       })
     }
     .height('100%')
@@ -121,6 +134,8 @@ struct ContentContainer {
 
 @Component
 struct ReaderPageContent {
+  @State isShowCatalogue: boolean = false;
+  @State currentIndex: number = 0;
   @State isShowSetting: boolean = true
   @State isShowContentSetting: boolean = false
   @State isShowDownload: boolean = false
@@ -143,10 +158,15 @@ struct ReaderPageContent {
   @Consume('currentLuminance') currentLuminance: number
   @StorageLink('bottomRectHeight') bottomRectHeight: number = 0
   @StorageLink('topRectHeight') topRectHeight: number = 0
+  @State txtFile: ChaptersDataSource = new ChaptersDataSource()
+  @Consume('bookData') bookData: Books
+  // 主题颜色
+  @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   aboutToAppear(): void {
     this.screenW = px2vp(display.getDefaultDisplaySync().width);
     this.screenH = px2vp(display.getDefaultDisplaySync().height - (AppStorage.get('avoidHeight') as number));
+    this.txtFile.pushAllData(this.chapterList)
   }
 
   get totalChapter(): number {
@@ -224,6 +244,10 @@ struct ReaderPageContent {
 
           Blank(1)
             .onClick(() => {
+              if (this.isShowCatalogue) {
+                this.isShowCatalogue = false
+                return
+              }
               this.isShowSetting = false
             })
 
@@ -432,10 +456,13 @@ struct ReaderPageContent {
             Grid() {
               GridItem() {
                 Column() {
-                  Image($r("app.media.ic_public_return_left")).width(24)
+                  Image($r("app.media.catalogue")).width(24)
                   Text("目录")
                 }
               }
+              .onClick(() => {
+                this.isShowCatalogue = true
+              })
 
               GridItem() {
                 Column() {
@@ -562,6 +589,13 @@ struct ReaderPageContent {
     })
     .height('100%')
     .width('100%')
+    .bindSheet($$this.isShowCatalogue, this.catalogPanel(), {
+      detents: [SheetSize.MEDIUM, SheetSize.LARGE, 200],
+      backgroundColor: '#FFFFFF',
+      showClose: false,
+      dragBar: true,
+      enableOutsideInteractive: true,
+    })
 
   }
 
@@ -709,5 +743,150 @@ struct ReaderPageContent {
     LayoutMoreDialog({ ReaderPadding: this.readerPadding })
       .height(500)
       .width("100%")
+  }
+
+  /**
+   * tab页签
+   */
+  @Builder
+  catalogTab(index: number, name: string, count: number) {
+    Column() {
+      Row() {
+        Text(name)
+          .fontSize(16)
+          .fontColor(this.currentIndex === index ? '#e0000000' : '#73000000')
+          .fontWeight(500)
+          .lineHeight(24)
+        Text(count.toString())
+          .fontSize(12)
+          .lineHeight(20)
+          .fontColor(this.currentIndex === index ? '#e0000000' : '#73000000')
+          .fontWeight(500)
+      }
+
+      Divider()
+        .width(10)
+        .strokeWidth(3)
+        .lineCap(LineCapStyle.Round)
+        .color(this.theme.mainColor)
+        .opacity(this.currentIndex === index ? 1 : 0)
+    }
+    .padding({ top: 8, bottom: 8 })
+    .width(59)
+    .height(40)
+  }
+
+  /**
+   * Panel
+   */
+  @Builder
+  catalogPanel() {
+    Column() {
+      Search({ placeholder: '搜索目录' })
+        .height(34)
+        .padding({ top: 8, bottom: 8 })
+      Tabs({ barPosition: BarPosition.Start }) {
+        TabContent() {
+          Column() {
+            if (this.chapterList.length === 0 || undefined) {
+              SwipeRefresher({
+                content: '目录加载中...',
+                isLoading: true
+              })
+            } else {
+              List() {
+                LazyForEach(this.txtFile, (item: ReaderChapterItem, index: number) => {
+                  ListItem() {
+                    Button({ type: ButtonType.Normal }) {
+                      Row() {
+                        Text(`${item.chapterTitleNumber} ${item.title}`
+                          .replace(new RegExp('\\s{1,}', 'g'), ' ')
+                          .replaceAll('=', ''))
+                          .layoutWeight(1)
+                      }
+                      .width('100%')
+                      .padding({
+                        left: 20,
+                        right: 20,
+                        top: 12,
+                        bottom: 12
+                      })
+                    }
+                    .borderRadius(10)
+                    .width('100%')
+                    .backgroundColor(Color.White)
+                    .onClick(() => {
+                      // 跳转到阅读器
+                      router.replaceUrl({
+                        url: 'pages/view/Reader/ReaderPage2',
+                        //跳转到对应的章节，传index过去，对面TotalChapters接收
+                        params: {
+                          bookData: this.bookData,
+                          clickBookChapter: index,
+                          txtFile: this.chapterList.map((value) => new chaptersItem(value.number, value.title, value.chapterTitleNumber, value.content))
+                        }
+                      })
+                      if (this.chapterList && this.chapterList[index]) {
+                        this.jumpReadPage(`${item.chapterTitleNumber} ${item.title}`,index, this.bookData)
+                      }
+                    })
+                  }
+                })
+
+              }
+              .chainAnimation(true)
+              .edgeEffect(EdgeEffect.Fade)
+              .divider({
+                strokeWidth: 0.8,
+                color: '#cccccc',
+                startMargin: 12,
+                endMargin: 12
+              })
+            }
+          }
+        }
+        .tabBar(this.catalogTab(0, '目录', this.chapterList.length))
+
+        TabContent() {
+          Column() {
+            SwipeRefresher({
+              content: '书源加载中...',
+              isLoading: true
+            })
+          }
+        }
+        .tabBar(this.catalogTab(1, '书源', 24))
+
+        TabContent() {
+          NoteIndex()
+        }
+        .tabBar(this.catalogTab(2, '笔记', 7))
+      }
+      .layoutWeight(1)
+      .onChange((index: number) => {
+        this.currentIndex = index;
+      })
+    }
+    .padding({ left: 20, right: 20, bottom: 12 })
+    .width(CommonConstants.FULL_WIDTH)
+    .height(CommonConstants.FULL_HEIGHT)
+    .borderRadius(16)
+  }
+
+  // @StorageLink('BOOK_IS_BOOK_HISTORY_REFRESHING') isBookHistoryRefreshing: number = 0
+  //跳转阅读界面更新或者添加阅读历史记录方法
+  async jumpReadPage(durChapterTitle:string,durChapterIndex:number, bookData: Books) {
+    let bookHistory = new BookHistory()
+    bookHistory.id = bookData.id
+    bookHistory.bookName = bookData.bookName
+    bookHistory.author = bookData.author
+    bookHistory.durChapterTime = Date.now()
+    bookHistory.bookType = bookData.bookType
+    bookHistory.bookUrl = bookData.bookUrl??''
+    bookHistory.coverUrl = bookData.coverUrl??''
+    bookHistory.originBookId = bookData.id
+    bookHistory.durChapterTitle = durChapterTitle
+    bookHistory.durChapterIndex = durChapterIndex
+    bookHistoryUtils.addBooks(bookHistory)
   }
 }
