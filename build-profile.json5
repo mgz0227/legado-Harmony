@@ -2,6 +2,19 @@
   "app": {
     "signingConfigs": [
       {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/marvin/.ohos/config/legado_legado-Harmony_MyllrDqm6xS6lYiuyPHLBur4MYKV24GlKQTNkWAePkw=.cer",
+          "storePassword": "0000001AAD3D03C71F53122E76D453C8EDDC9DB5599EBD349F41F4A6DB21EC7FB017351674183AE7CD46",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001AD0736ECAE2F9F125160640C6974AC0460C948595607158122AD40C3BBF7A032B96464C4B8E59",
+          "profile": "/Users/marvin/.ohos/config/legado_legado-Harmony_MyllrDqm6xS6lYiuyPHLBur4MYKV24GlKQTNkWAePkw=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/marvin/.ohos/config/legado_legado-Harmony_MyllrDqm6xS6lYiuyPHLBur4MYKV24GlKQTNkWAePkw=.p12"
+        }
+      },
+      {
         "name": "legado",
         "type": "HarmonyOS",
         "material": {
@@ -18,7 +31,7 @@
     "products": [
       {
         "name": "default",
-        "signingConfig": "legado",
+        "signingConfig": "default",
         "compatibleSdkVersion": "5.0.0(12)",
         "runtimeOS": "HarmonyOS",
       }

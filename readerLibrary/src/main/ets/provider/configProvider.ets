@@ -3,6 +3,7 @@ import { ReaderChapterItem, ReaderChapterPageItem } from '../common/entity/Reade
 import { NovelContentParseHelper } from '../common/helper/NovelContentParseHelper';
 import { display } from '@kit.ArkUI';
 import taskPool from '@ohos.taskpool';
+import { Books } from '../types/Books';
 
 @Component
 export struct ReaderProvider {
@@ -16,6 +17,7 @@ export struct ReaderProvider {
   curPosition: number = 0
   turnStyle: FlipPageType = FlipPageType.COVER_FLIP_PAGE
   chapterList: ReaderChapterItem[] = [];
+  bookData?: Books;
 
   build() {
     Row() {
@@ -26,7 +28,8 @@ export struct ReaderProvider {
         bgColor: this.bgColor,
         child: this.child,
         chapterList: this.chapterList,
-        currentChapterIndex: this.currentChapterIndex
+        currentChapterIndex: this.currentChapterIndex,
+        bookData: this.bookData,
       })
     }
   }
@@ -55,6 +58,7 @@ struct ReaderSourceProvider {
   @Consume('displaySize') @Watch('onDisplaySizeChange') displaySize: number[]
   @Consume('currentChapterIndex') @Watch('calChapterContent') currentChapterIndex: number
   @Consume('paragraphSpacing') @Watch('onConfigSizeChange') paragraphSpacing: number
+  bookData?: Books;
 
   onConfigSizeChange() {
     this.forceCalChapterContent()
@@ -150,13 +154,15 @@ struct ReaderConfigProvider {
   @Provide('paragraphSpacing') paragraphSpacing: number = 0;
   chapterList: ReaderChapterItem[] = [];
   currentChapterIndex: number = 0;
+  @Provide('bookData') bookData: Books = {} as Books;
+
 
   build() {
     Row() {
       ReaderStatusProvider({
         child: this.child,
         chapterList: this.chapterList,
-        currentChapterIndex: this.currentChapterIndex
+        currentChapterIndex: this.currentChapterIndex,
       })
     }
   }
