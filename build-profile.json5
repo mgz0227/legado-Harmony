@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "/Users/marvin/.ohos/config/legado_legado-Harmony_MyllrDqm6xS6lYiuyPHLBur4MYKV24GlKQTNkWAePkw=.cer",
-          "storePassword": "0000001AAD3D03C71F53122E76D453C8EDDC9DB5599EBD349F41F4A6DB21EC7FB017351674183AE7CD46",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001AD0736ECAE2F9F125160640C6974AC0460C948595607158122AD40C3BBF7A032B96464C4B8E59",
-          "profile": "/Users/marvin/.ohos/config/legado_legado-Harmony_MyllrDqm6xS6lYiuyPHLBur4MYKV24GlKQTNkWAePkw=.p7b",
+          "storePassword": "0000001F1F09C437B3548BCA235E4E5CA1C62FCF37A63160E81985333257763D467D3CA9BC067ECF03B05AE06FD1C6",
+          "certpath": "D:/喵公子Studio/Harmony签名/Legado发布.cer",
+          "keyAlias": "legado",
+          "keyPassword": "0000001F10636F0A3DF81F42254C2C3E00A9E4F2CB8B90C7BDE5E465B594EFAFA89819E5347B3BF4479C1455B369FB",
+          "profile": "D:/喵公子Studio/Harmony签名/legadoRelease.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "/Users/marvin/.ohos/config/legado_legado-Harmony_MyllrDqm6xS6lYiuyPHLBur4MYKV24GlKQTNkWAePkw=.p12"
+          "storeFile": "D:/喵公子Studio/Harmony签名/legado.p12"
         }
       },
       {
