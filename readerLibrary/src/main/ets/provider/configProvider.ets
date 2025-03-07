@@ -4,10 +4,10 @@ import { NovelContentParseHelper } from '../common/helper/NovelContentParseHelpe
 import { display } from '@kit.ArkUI';
 import taskPool from '@ohos.taskpool';
 import { Books } from '../types/Books';
-
+@Builder function childFunction(): void {}
 @Component
 export struct ReaderProvider {
-  @BuilderParam child: () => void // 通用组件
+  @BuilderParam child: () => void = childFunction // 通用组件
   fontSize: number = Constants.INIT_FONT_SIZE
   lineHeightRatio: number = Constants.INIT_LINE_HEIGHT_RATIO
   bgColor: string = BG_COLOR_ARRAY[BGColorType.WHITE]
@@ -51,7 +51,7 @@ async function calChapterContent(width: number, height: number, targetParagraphL
 
 @Component
 struct ReaderSourceProvider {
-  @BuilderParam child: () => void // 通用组件
+  @BuilderParam child: () => void = childFunction// 通用组件
   @Provide('chapterList') chapterList: ReaderChapterItem[] = [];
   @Consume('lineHeightRatio') @Watch('onConfigSizeChange') lineHeightRatio: number
   @Consume('fontSize') @Watch('onConfigSizeChange') fontSize: number
@@ -145,7 +145,7 @@ struct ReaderSourceProvider {
 
 @Component
 struct ReaderConfigProvider {
-  @BuilderParam child: () => void // 通用组件
+  @BuilderParam child: () => void = childFunction// 通用组件
   @Provide('turnStyle') turnStyle: FlipPageType = FlipPageType.COVER_FLIP_PAGE;
   @Provide('fontSize') fontSize: number = Constants.INIT_FONT_SIZE;
   @Provide('currentLuminance') currentLuminance: number = 0 // 亮度
@@ -170,7 +170,7 @@ struct ReaderConfigProvider {
 
 @Component
 struct ReaderStatusProvider {
-  @BuilderParam child: () => void // 通用组件
+  @BuilderParam child: () => void = childFunction // 通用组件
   @Provide('curPosition') curPosition: number = 0;
   @Provide('currentPageIndex') currentPageIndex: number = 0;
   @Provide('currentChapterIndex') currentChapterIndex: number = 0;
