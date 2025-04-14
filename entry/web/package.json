@@ -20,7 +20,7 @@
     "axios": "^1.4.0",
     "element-plus": "^2.3.4",
     "hotkeys-js": "^3.10.2",
-    "pinia": "^2.0.36",
+    "pinia": "^3.0.2",
     "vue": "^3.3.2",
     "vue-router": "^4.2.0",
     "vue3-virtual-scroll-list": "^0.2.1"
