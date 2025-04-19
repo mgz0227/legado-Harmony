@@ -6,7 +6,10 @@ export class BookList {
    * 标题
    */
   title:string
-
+  /**
+   * 书籍本地路径
+   */
+  bookUrl:string
   /**
    * 描述
    */
@@ -52,5 +55,6 @@ export class BookList {
     this.topUpdateTime = topUpdateTime
     this.author = author
     this.fileLink = fileLink
+    this.bookUrl = ''
   }
 }

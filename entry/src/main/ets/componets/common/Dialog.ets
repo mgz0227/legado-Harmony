@@ -9,7 +9,8 @@ export default struct Dialog {
   @Prop CancelString: string = "取消"
   @Prop ConfirmString: string = "确定"
   @BuilderParam child: () => void // 通用组件
-
+  ConfirmCallback: () => void = () => {}
+  CancelCallback: () => void = () => {}
   // 主题颜色
   @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
@@ -58,6 +59,7 @@ export default struct Dialog {
         .height(38)
         .backgroundColor(this.theme.secondColor)
         .onClick(() => {
+          this.CancelCallback?.()
           if (this.controller != undefined) {
             this.controller.close()
           }
@@ -76,7 +78,10 @@ export default struct Dialog {
         .height(38)
         .backgroundColor(this.theme.mainColor)
         .onClick(() => {
-
+          this.ConfirmCallback?.()
+          if (this.controller != undefined) {
+            this.controller.close()
+          }
         })
       }
     }
