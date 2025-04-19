@@ -89,9 +89,9 @@ struct BookDetailPage {
   })
   @State txtFiles: chaptersItem[] = [];
   @State txtFile: ChaptersDataSource = new ChaptersDataSource()
-
   // 主题颜色
   @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
+  @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
 
   onPageShow() {
     this.isShow = true
@@ -103,22 +103,21 @@ struct BookDetailPage {
       this.bookData = router.getParams() as Books
       //校验是否加入书架
       if (!this.bookData.isJoin) {
-       this.bookData.isJoin = await booksUtil.isExistBooks(this.bookData.bookUrl, this.bookData.bookName)
+        this.bookData.isJoin = await booksUtil.isExistBooks(this.bookData.bookUrl, this.bookData.bookName)
       }
-      let temp = await FileHandler.readFile(this.bookData?.bookUrl||'') //txt小说
+      let temp = await FileHandler.readFile(this.bookData?.bookUrl || '') //txt小说
       // FileHandler.readerEpubFile(this.bookData?.bookUrl||'')
       this.txtFile.pushAllData(temp)
       this.txtFiles = this.txtFile.getListData()
       this.initUrlBook()
     }
   }
-  initUrlBook(){
+
+  initUrlBook() {
     let book = this.bookData.bookUrl
     console.log(book)
   }
 
-
-  @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
   // 加入书架函数
   addBookShelf() {
     booksUtil.addBooks(this.bookData)
@@ -173,16 +172,16 @@ struct BookDetailPage {
                     .onClick(() => {
                       // 跳转到阅读器
                       router.pushUrl({
-                        url: 'pages/view/Reader/ReaderPage2',
+                        url: 'pages/view/Reader/ReaderPage3',
                         //跳转到对应的章节，传index过去，对面TotalChapters接收
                         params: {
                           bookData: this.bookData,
                           clickBookChapter: index,
-                          txtFile: this.txtFiles
+                          txtFile: this.txtFiles,
                         }
                       })
                       if (this.txtFiles && this.txtFile.getListData()[index]) {
-                        this.jumpReadPage(`${item.chapterTitleNumber} ${item.title}`,index)
+                        this.jumpReadPage(`${item.chapterTitleNumber} ${item.title}`, index)
                       }
                     })
                   }
@@ -236,7 +235,7 @@ struct BookDetailPage {
           .backgroundColor(this.theme.secondColor)
           .fontColor(this.theme.mainColor)
           .onClick(() => {
-            !this.bookData.isJoin?this.addBookShelf():''
+            !this.bookData.isJoin ? this.addBookShelf() : ''
           })
         Button('立即阅读')
           .padding({
@@ -254,16 +253,17 @@ struct BookDetailPage {
           .onClick(() => {
             // 跳转到阅读器
             router.pushUrl({
-              url: 'pages/view/Reader/ReaderPage2',
+              url: 'pages/view/Reader/ReaderPage3',
               params: {
                 bookData: this.bookData,
                 //后续持久化后再获取已经读到的章节序号，目前先传默认的0
                 clickBookChapter: 0,
-                txtFile: this.txtFiles
+                txtFile: this.txtFiles,
               }
             })
             if (this.txtFiles && this.txtFile.getListData()[0]) {
-              this.jumpReadPage(`${this.txtFile.getListData()[0].chapterTitleNumber} ${this.txtFile.getListData()[0].title}`,0)
+              this.jumpReadPage(`${this.txtFile.getListData()[0].chapterTitleNumber} ${this.txtFile.getListData()[0]
+                .title}`, 0)
             }
           })
       }
@@ -370,7 +370,7 @@ struct BookDetailPage {
           Text(this.bookData.bookName.replace(new RegExp('\\..*', 'g'), ''))
             .width('75%')
             .maxLines(2)
-            .textOverflow({overflow:TextOverflow.Ellipsis})
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
             .fontColor(Color.White)
             .fontSize(20)
           Blank()
@@ -432,10 +432,11 @@ struct BookDetailPage {
 
       // 书籍简介
       Flex() {
-        Text(this.bookData.intro ?? '《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... ' +
-          '\n他起初的目的只是自保，顺便在这个没有人权的社会里当个富家翁悠闲度日。 ...... 多年后，许七安回首前尘，身后是早已逝去的敌人，以及累累白骨。 ' +
-          '\n滚滚长江东逝水，浪花淘尽英雄，是非成败转头空。 ' +
-          '\n青山依旧在，几度夕阳红。')
+        Text(this.bookData.intro ??
+          '《大奉打更人》（第一卷）实体书已在天猫、当当、京东等全平台，以及各个实体书店发售。 这个世界，有儒；有道；有佛；有妖；有术士。 警校毕业的许七安幽幽醒来，发现自己身处牢狱之中，三日后流放边陲..... ' +
+            '\n他起初的目的只是自保，顺便在这个没有人权的社会里当个富家翁悠闲度日。 ...... 多年后，许七安回首前尘，身后是早已逝去的敌人，以及累累白骨。 ' +
+            '\n滚滚长江东逝水，浪花淘尽英雄，是非成败转头空。 ' +
+            '\n青山依旧在，几度夕阳红。')
           .fontColor('#FFFFFF')
           .fontSize(14)
           .fontWeight(400)
@@ -471,17 +472,18 @@ struct BookDetailPage {
     .width(CommonConstants.FULL_WIDTH)
     .backgroundColor($r('app.color.book_detail_background'))
   }
+
   // @StorageLink('BOOK_IS_BOOK_HISTORY_REFRESHING') isBookHistoryRefreshing: number = 0
   //跳转阅读界面更新或者添加阅读历史记录方法
-  async jumpReadPage(durChapterTitle:string,durChapterIndex:number) {
+  async jumpReadPage(durChapterTitle: string, durChapterIndex: number) {
     let bookHistory = new BookHistory()
     bookHistory.id = this.bookData.id
     bookHistory.bookName = this.bookData.bookName
     bookHistory.author = this.bookData.author
     bookHistory.durChapterTime = Date.now()
     bookHistory.bookType = this.bookData.bookType
-    bookHistory.bookUrl = this.bookData.bookUrl??''
-    bookHistory.coverUrl = this.bookData.coverUrl??''
+    bookHistory.bookUrl = this.bookData.bookUrl ?? ''
+    bookHistory.coverUrl = this.bookData.coverUrl ?? ''
     bookHistory.originBookId = this.bookData.id
     bookHistory.durChapterTitle = durChapterTitle
     bookHistory.durChapterIndex = durChapterIndex
