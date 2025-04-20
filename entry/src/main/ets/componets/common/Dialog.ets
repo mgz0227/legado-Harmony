@@ -1,5 +1,5 @@
-import { ThemeStorageKey } from "../../common/constants/Theme";
-import { ThemeItem } from "../../common/model/Theme";
+import { ThemeStorageKey } from '../../common/constants/Theme';
+import { ThemeItem } from '../../common/model/Theme';
 
 @CustomDialog
   // 通用弹窗
@@ -9,10 +9,14 @@ export default struct Dialog {
   @Prop CancelString: string = "取消"
   @Prop ConfirmString: string = "确定"
   @BuilderParam child: () => void // 通用组件
-  ConfirmCallback: () => void = () => {}
-  CancelCallback: () => void = () => {}
   // 主题颜色
   @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
+
+  ConfirmCallback: () => void = () => {
+  }
+
+  CancelCallback: () => void = () => {
+  }
 
   build() {
     Column() {
@@ -25,8 +29,9 @@ export default struct Dialog {
           })
       }
 
-
-      this.child()
+      if (this.child) {
+        this.child()
+      }
       // Row() {
       //   TextInput({ placeholder: this.placeholder })
       //     .maxLength(this.maxlength)
