@@ -5,7 +5,6 @@ import DownloadSettingDialog from '../../../componets/Reader/DownloadSettingDial
 import LayoutMoreDialog from '../../../componets/Reader/LayoutMoreDialog';
 import { MusicPlayer } from 'ets/componets/Reader/MusicPlayer';
 import purificationView from './purificationView';
-import { chaptersItem } from 'ets/componets/dataList/ReaderChaptersItem';
 import { BookList } from 'ets/componets/dataList/bookList';
 import { bookParser, readerCore, ReadPageComponent } from '@kit.ReaderKit';
 import { common } from '@kit.AbilityKit';
@@ -16,7 +15,6 @@ import { NetworkInput } from '../../../componets/Reader/NetworkInput';
 interface ParamsObj {
   bookData: BookList,
   clickBookChapter: number,
-  txtFile: chaptersItem[]
 }
 
 //2025.4.19 改用官方API16的 ReaderKit
@@ -31,18 +29,17 @@ struct ReaderPage3 {
   @State isShowListen: boolean = false
   @State isShowContentSetting: boolean = false
   @State isShowMoreLayout: boolean = false
-  @State TotalChapters: number = 0
   @State CurrentLuminance: number = 0 // 亮度
   @State CurrentFontSize: number = 20 // 字号
   @State LineHeight: number = 1.8
   @State ParagraphSpacing: number = -2
   @State isShowSource: boolean = false
   @State isShowPurification: boolean = false
-  @State txtFile: chaptersItem[] = [];
   //书籍解析用数据
   @State bookData: BookList | null = null; //书籍书籍
-  @State spineList: bookParser.SpineItem[] = [] //章节数据
+  @State CatalogList: bookParser.CatalogItem[] = []; //章节数据
   @State @Watch('spineIndexChange') spineIndex: number = 0 //当前章节索引
+  readerComponentController: readerCore.ReaderComponentController = new readerCore.ReaderComponentController();
   // 网址导入Dialog
   dialogController: CustomDialogController = new CustomDialogController({
     builder: Dialog({
@@ -60,17 +57,14 @@ struct ReaderPage3 {
     gridCount: 4,
     offset: { dx: 0, dy: -300 }
   })
-  readerComponentController: readerCore.ReaderComponentController = new readerCore.ReaderComponentController();
 
   spineIndexChange() {
-    this.readerComponentController.startPlay(this.spineIndex || 0, '');
+    this.readerComponentController.startPlay(this.spineIndex, '');
   }
 
   async aboutToAppear() {
     //详情页加了个目录序号参数，所以修改了一下params的类型，不影响之前的bookData，但需要多‘.’一次。看看大佬们可以怎么优化一下，上个页面BookDetailPage
     let temp = router.getParams() as ParamsObj
-    this.txtFile = temp.txtFile //txt小说
-    this.TotalChapters = this.txtFile.length
     this.spineIndex = temp.clickBookChapter
     this.bookData = temp.bookData
     this.init()
@@ -81,7 +75,7 @@ struct ReaderPage3 {
       // 当前应用下资源的沙箱路径地址
       let path: string = this.bookData?.bookUrl ?? ''
       let bookParserHandler: bookParser.BookParserHandler = await bookParser.getDefaultHandler(path);
-      this.spineList = bookParserHandler.getSpineList();
+      this.CatalogList = bookParserHandler.getCatalogList();
       let domPos: string = '';
 
       let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
@@ -129,7 +123,7 @@ struct ReaderPage3 {
                 .onClick(() => {
                   router.back()
                 })
-              Text(`${this.txtFile[this.spineIndex]?.chapterTitleNumber} ${this.txtFile[this.spineIndex]?.title}`
+              Text(`第${this.spineIndex}章 ${this.CatalogList[this.spineIndex].catalogName}`
                 .replace(new RegExp('\\s{1,}', 'g'), ' ')
                 .replaceAll('=', ''))
                 .layoutWeight(1)
@@ -271,7 +265,7 @@ struct ReaderPage3 {
 
                 Slider({
                   value: this.spineIndex,
-                  max: this.TotalChapters - 1,
+                  max: this.CatalogList.length - 1,
                   min: 0,
                   step: 1,
                   style: SliderStyle.InSet
@@ -284,7 +278,7 @@ struct ReaderPage3 {
                   })
 
                 Text("下一章").onClick(() => {
-                  if (this.spineIndex < this.TotalChapters - 1) {
+                  if (this.spineIndex < this.CatalogList.length - 1) {
                     this.spineIndex++
                   }
                 })
