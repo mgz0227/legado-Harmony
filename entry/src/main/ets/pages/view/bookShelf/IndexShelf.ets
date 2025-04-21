@@ -243,7 +243,7 @@ export default struct IndexShelf {
         //   router.pushUrl({
         //     url: 'pages/view/bookShelf/LocalImportPage'
         //   });
-          let FileResult = await FileHandler.documentPickerFile(1, ['.txt', '.epub'])
+          let FileResult = await FileHandler.documentPickerFile(1, ['.txt', '.epub', '.mobi', '.azw', '.azw3'])
           FileHandler.CopyFile(FileResult[0], this.currentIndex)
           this.isShowImport = false
           setTimeout(()=>{
