@@ -62,8 +62,7 @@ struct ReaderPage3 {
     this.readerComponentController.startPlay(this.spineIndex, '');
   }
 
-  async aboutToAppear() {
-    //详情页加了个目录序号参数，所以修改了一下params的类型，不影响之前的bookData，但需要多‘.’一次。看看大佬们可以怎么优化一下，上个页面BookDetailPage
+  async aboutToAppear() { //详情页加了个目录序号参数，所以修改了一下params的类型，不影响之前的bookData，但需要多‘.’一次。看看大佬们可以怎么优化一下，上个页面BookDetailPage
     let temp = router.getParams() as ParamsObj
     this.spineIndex = temp.clickBookChapter
     this.bookData = temp.bookData
@@ -71,8 +70,7 @@ struct ReaderPage3 {
   }
 
   async init() {
-    try {
-      // 当前应用下资源的沙箱路径地址
+    try { // 当前应用下资源的沙箱路径地址
       let path: string = this.bookData?.bookUrl ?? ''
       let bookParserHandler: bookParser.BookParserHandler = await bookParser.getDefaultHandler(path);
       this.CatalogList = bookParserHandler.getCatalogList();
@@ -82,10 +80,10 @@ struct ReaderPage3 {
       this.readerComponentController = new readerCore.ReaderComponentController();
       await this.readerComponentController.init(context);
 
-      this.readerComponentController.on('pageShow', (data: readerCore.PageDataInfo): void => {
-        // 开发者可在此保存内容分布排版数据，利用data.resourceIndex及data.startDomPos数据调用startPlay接口继续阅读
-        hilog.info(0x0000, 'testTag', 'pageshow: data is: ' + JSON.stringify(data));
-      })
+      this.readerComponentController.on('pageShow',
+        (data: readerCore.PageDataInfo): void => { // 开发者可在此保存内容分布排版数据，利用data.resourceIndex及data.startDomPos数据调用startPlay接口继续阅读
+          hilog.info(0x0000, 'testTag', 'pageshow: data is: ' + JSON.stringify(data));
+        })
 
       this.readerComponentController.registerBookParser(bookParserHandler);
 
@@ -97,8 +95,7 @@ struct ReaderPage3 {
   }
 
   aboutToDisappear(): void {
-    this.readerComponentController.off('pageShow', () => {
-      //todo:保存当前章节索引和其它数据
+    this.readerComponentController.off('pageShow', () => { //todo:保存当前章节索引和其它数据
     });
   }
 
@@ -109,85 +106,62 @@ struct ReaderPage3 {
         readerCallback: (err: BusinessError, data: readerCore.ReaderComponentController) => {
           this.readerComponentController = data;
         }
-      })
-        .width('100%')
-        .height('100%')
+      }).width('100%').height('100%')
 
       Column() {
-        if (this.isShowSetting) {
-          // 阅读器-上方弹框
+        if (this.isShowSetting) { // 阅读器-上方弹框
           Column() {
             Row({ space: 8 }) {
-              Image($r("app.media.ic_public_return_left"))
-                .width(24)
-                .onClick(() => {
-                  router.back()
-                })
-              Text(`第${this.spineIndex}章 ${this.CatalogList[this.spineIndex].catalogName}`
-                .replace(new RegExp('\\s{1,}', 'g'), ' ')
-                .replaceAll('=', ''))
-                .layoutWeight(1)
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
+              Image($r("app.media.ic_public_return_left")).width(24).onClick(() => {
+                router.back()
+              })
+              Text(`${this.CatalogList[this.spineIndex]?.catalogName ?? ''}`.replace(new RegExp('\\s{1,}', 'g'), ' ')
+                .replaceAll('=', '')).layoutWeight(1).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
               Row({ space: 16 }) {
-                Image($r("app.media.refresh"))
-                  .width(24)
-                  .onClick(() => {
+                Image($r("app.media.refresh")).width(24).onClick(() => {
 
-                  })
-                Image($r("app.media.down"))
-                  .width(24)
-                  .onClick(() => {
-                    this.isShowDownload = true
-                  })
-                  .bindSheet($$this.isShowDownload, this.DownloadDialog(), {
-                    height: 500,
-                    showClose: false,
-                    dragBar: false,
-                    blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
-                    onDisappear: () => {
-                      // this.clickBookType = ''
-                    }
-                  })
-                Image($r("app.media.more"))
-                  .width(24)
-                  .onClick(() => {
+                })
+                Image($r("app.media.down")).width(24).onClick(() => {
+                  this.isShowDownload = true
+                }).bindSheet($$this.isShowDownload, this.DownloadDialog(), {
+                  height: 500,
+                  showClose: false,
+                  dragBar: false,
+                  blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
+                  onDisappear: () => { // this.clickBookType = ''
+                  }
+                })
+                Image($r("app.media.more")).width(24).onClick(() => {
 
-                  })
+                })
               }
-            }
-            .padding({
+            }.padding({
               top: 12,
               left: 20,
               right: 20,
               bottom: 12
-            })
-            .width("100%")
+            }).width("100%")
 
             Row() {
               NetworkInput()
-            }
-            .padding({
+            }.padding({
               top: 8,
               left: 20,
               right: 20,
               bottom: 12
-            })
-            .width("100%")
+            }).width("100%")
 
             Divider()
-          }
-          .backgroundColor("white")
-          .transition(TransitionEffect.move(TransitionEdge.TOP).animation({ duration: 500 }))
+          }.backgroundColor("white").transition(TransitionEffect.move(TransitionEdge.TOP).animation({ duration: 500 }))
 
-          Blank(1)
-            .onClick(() => {
-              this.isShowSetting = false
-            })
+          Blank(1).onClick(() => {
+            this.isShowSetting = false
+          })
 
           // 阅读器-下方弹框
           Column({ space: 20 }) {
             Divider()
+
             if (!this.isShowContentSetting) {
               Row() {
                 Button({ type: ButtonType.Normal }) {
@@ -195,11 +169,9 @@ struct ReaderPage3 {
                     space: 4
                   }) {
                     Image($r("app.media.change_source_icon")).width(16).height(16)
-                    Text("换源").fontColor($r('app.string.color_black_65'))
-                      .font({
-                        size: 14,
-                        weight: 400
-                      })
+                    Text("换源").fontColor($r('app.string.color_black_65')).font({
+                      size: 14, weight: 400
+                    })
                   }
                 }
                 .borderRadius(8)
@@ -224,13 +196,10 @@ struct ReaderPage3 {
                     space: 4
                   }) {
                     Image($r("app.media.purify_icon")).width(16).height(16)
-                    Text("净化").fontColor($r('app.string.color_black_65'))
-                      .font({
-                        size: 14,
-                        weight: 400
-                      })
-                  }
-                  .bindSheet($$this.isShowPurification, this.purificationView(), {
+                    Text("净化").fontColor($r('app.string.color_black_65')).font({
+                      size: 14, weight: 400
+                    })
+                  }.bindSheet($$this.isShowPurification, this.purificationView(), {
                     height: '40%',
                     showClose: false,
                     dragBar: false,
@@ -238,23 +207,13 @@ struct ReaderPage3 {
                     onDisappear: () => {
                       console.log('隐藏')
                     }
-                  })
-                  .onClick(() => {
+                  }).onClick(() => {
                     this.isShowPurification = true
                   })
-                }
-                .borderRadius(8)
-                .height(40)
-                .width("45%")
-                .backgroundColor("rgba(0, 0, 0, 0.06)")
-              }
-              .padding({
-                top: 12,
-                left: 24,
-                right: 24
-              })
-              .justifyContent(FlexAlign.SpaceBetween)
-              .width("100%")
+                }.borderRadius(8).height(40).width("45%").backgroundColor("rgba(0, 0, 0, 0.06)")
+              }.padding({
+                top: 12, left: 24, right: 24
+              }).justifyContent(FlexAlign.SpaceBetween).width("100%")
 
               Row({ space: 16 }) {
                 Text("上一章").onClick(() => {
@@ -274,7 +233,7 @@ struct ReaderPage3 {
                   .blockSize({ width: 30, height: 30 })
                   .layoutWeight(1)
                   .onChange((value) => {
-                    this.spineIndex = Number(value.toFixed(0))
+                    this.spineIndex = Math.floor(value)
                   })
 
                 Text("下一章").onClick(() => {
@@ -282,14 +241,11 @@ struct ReaderPage3 {
                     this.spineIndex++
                   }
                 })
-              }
-              .padding({
-                left: 24,
-                right: 24
-              })
-              .width("100%")
-            } else {
-              // 下方-设置
+              }.padding({
+                //todo:临时bottom距离
+                left: 24, right: 24, bottom: '10%'
+              }).width("100%")
+            } else { // 下方-设置
               Column({ space: 24 }) {
                 Row({ space: 16 }) {
                   Text('亮度')
@@ -333,35 +289,29 @@ struct ReaderPage3 {
 
                 Row({ space: 16 }) {
                   Text('排版')
-                  Button('紧凑')
-                    .onClick(() => {
-                      this.LineHeight = 1.6
-                      this.ParagraphSpacing = -4
-                    })
-                  Button('适中')
-                    .onClick(() => {
-                      this.LineHeight = 1.8
-                      this.ParagraphSpacing = -2
-                    })
-                  Button('宽松')
-                    .onClick(() => {
-                      this.LineHeight = 2
-                      this.ParagraphSpacing = 0
-                    })
+                  Button('紧凑').onClick(() => {
+                    this.LineHeight = 1.6
+                    this.ParagraphSpacing = -4
+                  })
+                  Button('适中').onClick(() => {
+                    this.LineHeight = 1.8
+                    this.ParagraphSpacing = -2
+                  })
+                  Button('宽松').onClick(() => {
+                    this.LineHeight = 2
+                    this.ParagraphSpacing = 0
+                  })
                   Row() {
-                    Button('更多')
-                      .bindSheet($$this.isShowMoreLayout, this.LayoutMoreDialog(), {
-                        height: 500,
-                        showClose: false,
-                        dragBar: false,
-                        blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
-                        onDisappear: () => {
-                          // this.clickBookType = ''
-                        }
-                      })
-                      .onClick(() => {
-                        this.isShowMoreLayout = true
-                      })
+                    Button('更多').bindSheet($$this.isShowMoreLayout, this.LayoutMoreDialog(), {
+                      height: 500,
+                      showClose: false,
+                      dragBar: false,
+                      blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
+                      onDisappear: () => { // this.clickBookType = ''
+                      }
+                    }).onClick(() => {
+                      this.isShowMoreLayout = true
+                    })
                   }
                 }
 
@@ -378,77 +328,60 @@ struct ReaderPage3 {
                   Button('仿真翻页')
                   Button('更多设置')
                 }
-              }
-              .padding({
-                left: 20,
-                right: 20
+              }.padding({
+                left: 20, right: 20
               })
-
             }
-            Grid() {
-              GridItem() {
-                Column() {
-                  Image($r("app.media.outlined")).width(24)
-                  Text("目录")
-                }
-              }
 
-              GridItem() {
-                Column() {
-                  Image($r("app.media.listen")).width(24)
-                  Text("听书")
-                }
-              }
-              .bindContentCover($$this.isShowListen, this.BookListen(), {
-                modalTransition: ModalTransition.DEFAULT,
-                backgroundColor: "rgba(51, 106, 128, 0.75)"
-              })
-              .onClick(() => {
-                this.isShowListen = true
-              })
+            //todo:下方功能开发
+            /* Grid() {
+               GridItem() {
+                 Column() {
+                   Image($r("app.media.outlined")).width(24)
+                   Text("目录")
+                 }
+               }
 
-              GridItem() {
-                Column() {
-                  Image($r("app.media.night_icon")).width(24)
-                  Text("夜间")
-                }
-              }
+               //todo:听书功能开发
+               GridItem() {
+                 Column() {
+                   Image($r("app.media.listen")).width(24)
+                   Text("听书")
+                 }
+               }
+               .bindContentCover($$this.isShowListen, this.BookListen(), {
+                 modalTransition: ModalTransition.DEFAULT, backgroundColor: "rgba(51, 106, 128, 0.75)"
+               }).onClick(() => {
+                 this.isShowListen = true
+               })
 
-              GridItem() {
-                Column() {
-                  Image($r(this.isShowContentSetting ? "app.media.my_center_set_icon_fill" :
-                    "app.media.my_center_set_icon"))
-                    .width(24)
-                  Text("设置")
-                }
-                .onClick(() => {
-                  this.isShowContentSetting = !this.isShowContentSetting
-                })
-              }
-            }
-            .padding({
-              left: 24,
-              right: 24
-            })
-            .columnsTemplate("1fr 1fr 1fr 1fr")
-            .width("100%")
-            .height(60)
+               GridItem() {
+                 Column() {
+                   Image($r("app.media.night_icon")).width(24)
+                   Text("夜间")
+                 }
+               }
+
+               GridItem() {
+                 Column() {
+                   Image($r(this.isShowContentSetting ? "app.media.my_center_set_icon_fill" :
+                     "app.media.my_center_set_icon")).width(24)
+                   Text("设置")
+                 }.onClick(() => {
+                   this.isShowContentSetting = !this.isShowContentSetting
+                 })
+               }
+             }.padding({
+               left: 24, right: 24
+             }).columnsTemplate("1fr 1fr 1fr 1fr").width("100%").height(60)*/
           }
           .backgroundColor("white")
           .transition(TransitionEffect.move(TransitionEdge.BOTTOM).animation({ duration: 500 }))
         }
-      }
-      .width("100%")
-      .height("100%")
-      .enabled(this.isShowSetting)
-      .padding({
+      }.width("100%").height("100%").enabled(this.isShowSetting).padding({
         top: this.topRectHeight,
       })
-    }
-    .width('100%')
-    .height('100%')
-    .onClick(() => {
-      // 支持在此实现点击拉起菜单栏功能
+    }.width('100%').height('100%').onClick(() => { // 支持在此实现点击拉起菜单栏功能
       this.isShowSetting = true
     })
   }
@@ -458,8 +391,7 @@ struct ReaderPage3 {
     Column() {
       Column() {
         Row().width(36).height(4).backgroundColor($r('app.string.color_black_15')).borderRadius(12)
-      }
-      .padding({ top: 12 })
+      }.padding({ top: 12 })
 
       sourceView()
     }
@@ -477,17 +409,11 @@ struct ReaderPage3 {
   @Builder
   DialogString() {
     Row() {
-      Text("喜欢就加入书架吧")
-        .lineHeight(22)
-        .font({
-          size: 14,
-          weight: 400
-        })
-        .fontColor($r("app.string.color_black_45"))
-    }
-    .margin({
-      top: 12,
-      bottom: 16
+      Text("喜欢就加入书架吧").lineHeight(22).font({
+        size: 14, weight: 400
+      }).fontColor($r("app.string.color_black_45"))
+    }.margin({
+      top: 12, bottom: 16
     })
   }
 
@@ -498,25 +424,20 @@ struct ReaderPage3 {
 
   @Builder
   BookListen() {
-    MusicPlayer({ WidthMinus: 118, isShowListen: this.isShowListen })
-      .width("100%")
-      .height("100%")
+    MusicPlayer({ WidthMinus: 118, isShowListen: this.isShowListen }).width("100%").height("100%")
   }
 
   @Builder
   DownloadDialog() {
     Column() {
       DownloadSettingDialog({
-        isShowDownload: this.isShowDownload,
-        isShowSetting: this.isShowSetting,
+        isShowDownload: this.isShowDownload, isShowSetting: this.isShowSetting,
       })
     }
   }
 
   @Builder
   LayoutMoreDialog() {
-    LayoutMoreDialog({ ReaderPadding: this.ReaderPadding })
-      .height(500)
-      .width("100%")
+    LayoutMoreDialog({ ReaderPadding: this.ReaderPadding }).height(500).width("100%")
   }
 }

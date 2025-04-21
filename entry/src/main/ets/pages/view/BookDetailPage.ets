@@ -247,9 +247,8 @@ struct BookDetailPage {
           .width(150)
           .height(40)
           .borderRadius(200)
-          .backgroundColor(this.txtFile.totalCount() > 0 ? this.theme.mainColor : 'gray')
+          .backgroundColor(this.theme.mainColor)
           .fontColor('#FFFFFF')
-          .enabled(this.txtFile.totalCount() > 0)
           .onClick(() => {
             // 跳转到阅读器
             router.pushUrl({
@@ -257,8 +256,8 @@ struct BookDetailPage {
               params: {
                 bookData: this.bookData,
                 //后续持久化后再获取已经读到的章节序号，目前先传默认的0
-                clickBookChapter: 0,
-                txtFile: this.txtFiles,
+                // clickBookChapter: 0,
+                // txtFile: this.txtFiles,
               }
             })
             if (this.txtFiles && this.txtFile.getListData()[0]) {
