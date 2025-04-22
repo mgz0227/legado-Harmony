@@ -14,7 +14,7 @@ import { NetworkInput } from '../../../componets/Reader/NetworkInput';
 
 interface ParamsObj {
   bookData: BookList,
-  clickBookChapter: number,
+  clickBookCatalogId: number,
 }
 
 //2025.4.19 改用官方API16的 ReaderKit
@@ -64,16 +64,20 @@ struct ReaderPage3 {
 
   async aboutToAppear() { //详情页加了个目录序号参数，所以修改了一下params的类型，不影响之前的bookData，但需要多‘.’一次。看看大佬们可以怎么优化一下，上个页面BookDetailPage
     let temp = router.getParams() as ParamsObj
-    this.spineIndex = temp.clickBookChapter
     this.bookData = temp.bookData
-    this.init()
+    this.init(temp.clickBookCatalogId)
   }
 
-  async init() {
+  async init(clickBookCatalogId: number) {
     try { // 当前应用下资源的沙箱路径地址
       let path: string = this.bookData?.bookUrl ?? ''
       let bookParserHandler: bookParser.BookParserHandler = await bookParser.getDefaultHandler(path);
       this.CatalogList = bookParserHandler.getCatalogList();
+      this.CatalogList.forEach((item, index) => {
+        if (item.catalogId == clickBookCatalogId) {
+          this.spineIndex = index
+        }
+      })
       let domPos: string = '';
 
       let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
@@ -94,9 +98,11 @@ struct ReaderPage3 {
     }
   }
 
-  aboutToDisappear(): void {
-    this.readerComponentController.off('pageShow', () => { //todo:保存当前章节索引和其它数据
+  aboutToDisappear(): void { //todo:保存当前章节索引和其它数据
+    this.readerComponentController.off('pageShow', () => {
     });
+    this.readerComponentController.off('resourceRequest');
+    this.readerComponentController.releaseBook();
   }
 
   build() {
