@@ -100,6 +100,7 @@ struct Main {
   build() {
     Column() {
       Tabs({
+        index:this.currentTabIndex,
         barPosition:BarPosition.End,
         controller: this.tabController
       }){
@@ -127,8 +128,8 @@ struct Main {
       .barHeight(this.ShowBar?null:0)
       .scrollable(!this.APP_INDEX_SCROLLABLE)
       .padding({bottom:this.bottomRectHeight})
-      .onChange((index) => {
-        this.currentTabIndex = index
+      .onAnimationStart((index,targetIndex) => {
+        this.currentTabIndex = targetIndex
       })
       if (this.showReadShow){
         ReadShow({showReadShow:this.showReadShow}).offset({y:-150 - this.bottomRectHeight})
