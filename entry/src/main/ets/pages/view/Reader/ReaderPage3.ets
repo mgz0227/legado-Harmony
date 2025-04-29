@@ -9,7 +9,7 @@ import { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { NetworkInput } from '../../../componets/Reader/NetworkInput';
-import { PreferencesUtil } from '@pura/harmony-utils';
+import { ClickUtil, PreferencesUtil } from '@pura/harmony-utils';
 import { Books } from '../../../database/entities/Books';
 
 interface ParamsObj {
@@ -232,7 +232,10 @@ struct ReaderPage3 {
                   .blockSize({ width: 30, height: 30 })
                   .layoutWeight(1)
                   .onChange((value) => {
-                    this.CatalogIndex = Math.floor(value)
+                    ClickUtil.debounce(() => {
+                      //防抖
+                      this.CatalogIndex = Math.floor(value)
+                    }, 500)
                   })
 
                 Text("下一章").onClick(() => {
