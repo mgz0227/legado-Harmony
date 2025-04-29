@@ -8,7 +8,8 @@
   "license": "",
   "dependencies": {
     "@ohos/axios": "^2.2.0",
-    "dayjs": "^1.11.7"
+    "dayjs": "^1.11.7",
+    "@pura/harmony-utils": "^1.3.2"
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.17",
