@@ -5,23 +5,25 @@ import { showMessage } from '../common/promptShow';
 
 
 @Component
-export struct SearchHead{
+export struct SearchHead {
   @Consume SearchValue: string
   @Consume SearchStatus: number
-  @Consume('searchBookList') books:SearchBook[]
-  @State lastSearch:string = ''
-  @Consume('isSearch') isSearch:boolean
+  @Consume('searchBookList') books: SearchBook[]
+  @State lastSearch: string = ''
+  @Consume('isSearch') isSearch: boolean
+  @StorageLink('topRectHeight') topRectHeight: number = 0
+
   // @State bookIndex:number = 0
   build() {
     Flex({
-      alignItems:ItemAlign.End,
-      justifyContent:FlexAlign.SpaceBetween
-    }){
+      alignItems: ItemAlign.End,
+      justifyContent: FlexAlign.SpaceBetween
+    }) {
       Row({ space: 15 }) {
         Image($r('app.media.return_left'))
           .width(25)
           .height(25)
-          .onClick(()=>{
+          .onClick(() => {
             router.back()
             if (this.isSearch) {
               taskSearchBooks.cancelAllTasks()
@@ -32,8 +34,8 @@ export struct SearchHead{
           .height(40)
           .onChange(this.onChange)
           .onSubmit(this.onSubmit);
-        Text(this.isSearch?"取消":"搜索").width("10%").height(40).fontWeight(600)
-          .onClick(()=>{
+        Text(this.isSearch ? "取消" : "搜索").width("10%").height(40).fontWeight(600)
+          .onClick(() => {
             if (this.isSearch) {
               taskSearchBooks.cancelAllTasks()
               console.log(`取消搜索${this.books.length}`)
@@ -42,20 +44,21 @@ export struct SearchHead{
               this.onSubmit(this.SearchValue)
             }
           })
-      }.margin({left:5}).width("100%")
+      }.margin({ left: 5 }).width("100%")
+      .margin({ top: this.topRectHeight })
     }
-    .borderRadius({ bottomRight:5 ,bottomLeft:5})
+    .borderRadius({ bottomRight: 5, bottomLeft: 5 })
     .backgroundImage($r('app.media.backgroundimage'))
-    .backgroundImageSize({width:'100%'})
-    .height('11%')
+    .backgroundImageSize({ width: '100%' })
+    .height(50+this.topRectHeight)
   }
 
-  onChange=(value: string)=> {
+  onChange = (value: string) => {
     this.lastSearch = this.SearchValue
-    this.SearchValue=value;
+    this.SearchValue = value;
   }
-  onSubmit= async (value: string)=>{
-    this.SearchValue=value;
+  onSubmit = async (value: string) => {
+    this.SearchValue = value;
     if (!this.SearchValue) {
       showMessage('搜索内容不能为空')
       return
@@ -67,17 +70,21 @@ export struct SearchHead{
     this.books = []
     taskSearchBooks.search(this.SearchValue, (newUrls: SearchBook[]) => {
       this.setBookList(newUrls)
-    },()=>{
+    }, () => {
       this.SearchStatus = 2
       this.isSearch = false
     })
   }
 
   setBookList(books: SearchBook[]) {
-    if (books.length === 0) return
+    if (books.length === 0) {
+      return
+    }
     books.forEach((book: SearchBook) => {
       let found = false;
-      if(!book.name) return
+      if (!book.name) {
+        return
+      }
       for (let item of this.books) {
         if (item.name === book.name && item.author === book.author) {
           item.belongCount++;
@@ -120,7 +127,7 @@ export struct SearchHead{
     });
   }
 
-  getSimilarity(str1: string, str2: string){
+  getSimilarity(str1: string, str2: string) {
     const lengthDifference = Math.abs(str1.length - str2.length);
     const commonLength = Math.min(str1.length, str2.length);
     let similarity = 0;
@@ -134,8 +141,7 @@ export struct SearchHead{
     return similarity - lengthDifference;
   }
 
-
-  countMatchingChars(last:string, current:string){
+  countMatchingChars(last: string, current: string) {
     // 创建一个对象来存储字符串 a 中的字符及其出现次数
     const charsInA: Record<string, number> = {};
     // 填充对象
@@ -153,6 +159,7 @@ export struct SearchHead{
     }
     return count;
   }
+
   aboutToAppear(): void {
     console.log(this.SearchStatus.toString());
   }

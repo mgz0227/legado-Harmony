@@ -95,7 +95,16 @@ export default class EntryAbility extends UIAbility {
       let total = avoidAreaSys.topRect.height + navi.bottomRect.height;
       AppStorage.setOrCreate('avoidHeight', total);
       AppStorage.setOrCreate('stateHeight', px2vp(avoidAreaSys.topRect.height));
-
+      // 注册监听函数，动态获取避让区域数据
+      windowClass.on('avoidAreaChange', (data) => {
+        if (data.type === window.AvoidAreaType.TYPE_SYSTEM) {
+          let topRectHeight = data.area.topRect.height;
+          AppStorage.setOrCreate('topRectHeight', px2vp(topRectHeight));
+        } else if (data.type == window.AvoidAreaType.TYPE_NAVIGATION_INDICATOR) {
+          let bottomRectHeight = data.area.bottomRect.height;
+          AppStorage.setOrCreate('bottomRectHeight', px2vp(bottomRectHeight));
+        }
+      });
     })
 
     windowStage.loadContent('/pages/welcomePage'.slice(1), (err, data) => {
