@@ -8,6 +8,7 @@ import DbUtil from '../common/utils/DbUtil';
 import DataBase from '../database'
 import { webview } from '@kit.ArkWeb';
 import { themeManager, ThemeManager } from '../common/utils/ThemeManager';
+import { AppUtil } from '@pura/harmony-utils';
 
 export default class EntryAbility extends UIAbility {
 
@@ -37,6 +38,7 @@ export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
     webview.WebviewController.initializeWebEngine()//初始化web控件
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
+    AppUtil.init(this.context);
   }
 
   onDestroy() {

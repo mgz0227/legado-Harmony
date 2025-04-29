@@ -1,49 +1,41 @@
-
 export class BookList {
-
-  bookId:string
+  bookId: string
   /**
    * 标题
    */
-  title:string
+  title: string
   /**
    * 书籍本地路径
    */
-  bookUrl:string
+  bookUrl: string
   /**
    * 描述
    */
-  describe:string
-
+  describe: string
   /**
    * 是否加入书架
    */
-  isJoin:boolean
-
+  isJoin: boolean
   /**
    * 章节
    */
-  chapter:string
-
+  chapter: string
   /**
    * 图片
    */
-  bookImage:Resource
-
-  bookType:string
-
+  bookImage: Resource
+  bookType: string
   /**
    * 是否置顶
    */
-  isTop:boolean
+  isTop: boolean
+  topUpdateTime: Date
+  author: string
+  fileLink: string
 
-  topUpdateTime:Date
-
-  author:string
-
-  fileLink:string
-
-  constructor(bookId:string = '', title:string,describe:string , chapter:string,  bookImage:Resource,author:string = '卖报小郎君',bookType:string ='玄幻',fileLink:string = '', topUpdateTime:Date = new Date(),isJoin:boolean = false,isTop:boolean = false) {
+  constructor(bookId: string = '', title: string, describe: string, chapter: string, bookImage: Resource,
+    author: string = '卖报小郎君', bookType: string = '玄幻', fileLink: string = '', topUpdateTime: Date = new Date(),
+    isJoin: boolean = false, isTop: boolean = false) {
     this.bookId = bookId
     this.title = title
     this.isJoin = isJoin

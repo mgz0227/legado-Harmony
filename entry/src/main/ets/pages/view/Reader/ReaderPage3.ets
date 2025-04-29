@@ -1,19 +1,19 @@
-import Dialog from 'ets/componets/common/Dialog';
 import { router } from '@kit.ArkUI';
 import sourceView from './sourceView';
 import DownloadSettingDialog from '../../../componets/Reader/DownloadSettingDialog';
 import LayoutMoreDialog from '../../../componets/Reader/LayoutMoreDialog';
 import { MusicPlayer } from 'ets/componets/Reader/MusicPlayer';
 import purificationView from './purificationView';
-import { BookList } from 'ets/componets/dataList/bookList';
 import { bookParser, readerCore, ReadPageComponent } from '@kit.ReaderKit';
 import { common } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { NetworkInput } from '../../../componets/Reader/NetworkInput';
+import { PreferencesUtil } from '@pura/harmony-utils';
+import { Books } from '../../../database/entities/Books';
 
 interface ParamsObj {
-  bookData: BookList,
+  bookData: Books,
   clickBookCatalogId: number,
 }
 
@@ -36,48 +36,40 @@ struct ReaderPage3 {
   @State isShowSource: boolean = false
   @State isShowPurification: boolean = false
   //书籍解析用数据
-  @State bookData: BookList | null = null; //书籍书籍
+  @State bookData: Books = new Books(); //书籍书籍
   @State CatalogList: bookParser.CatalogItem[] = []; //章节数据
-  @State @Watch('spineIndexChange') spineIndex: number = 0 //当前章节索引
+  @State @Watch('spineIndexChange') CatalogIndex: number = 0 //当前章节索引
   readerComponentController: readerCore.ReaderComponentController = new readerCore.ReaderComponentController();
-  // 网址导入Dialog
-  dialogController: CustomDialogController = new CustomDialogController({
-    builder: Dialog({
-      title: '加入书架',
-      CancelString: "暂不加入",
-      ConfirmString: "加入书架",
-      CancelCallback: () => {
-        router.back()
-      },
-      ConfirmCallback: () => {
-        router.back()
-      },
-    }),
-    cornerRadius: 16,
-    gridCount: 4,
-    offset: { dx: 0, dy: -300 }
-  })
 
   spineIndexChange() {
-    this.readerComponentController.startPlay(this.spineIndex, '');
+    this.readerComponentController.startPlay(this.CatalogIndex, '');
   }
 
-  async aboutToAppear() { //详情页加了个目录序号参数，所以修改了一下params的类型，不影响之前的bookData，但需要多‘.’一次。看看大佬们可以怎么优化一下，上个页面BookDetailPage
+  async aboutToAppear() {
     let temp = router.getParams() as ParamsObj
     this.bookData = temp.bookData
     this.init(temp.clickBookCatalogId)
   }
 
   async init(clickBookCatalogId: number) {
+
     try { // 当前应用下资源的沙箱路径地址
       let path: string = this.bookData?.bookUrl ?? ''
       let bookParserHandler: bookParser.BookParserHandler = await bookParser.getDefaultHandler(path);
       this.CatalogList = bookParserHandler.getCatalogList();
-      this.CatalogList.forEach((item, index) => {
-        if (item.catalogId == clickBookCatalogId) {
-          this.spineIndex = index
+      if (clickBookCatalogId) { //从上级页面选定的章节定位到对应章节
+        this.CatalogList.forEach((item, index) => {
+          if (item.catalogId == clickBookCatalogId) {
+            this.CatalogIndex = index
+          }
+        })
+      } else { //上级页面没选定，从上次阅读到的章节定位
+        // console.log('this.bookData.bookName:' + this.bookData.bookName)
+        let lastCatalogIndex = PreferencesUtil.getSync(`BookIndex_${this.bookData.bookName}`, 0)
+        if (lastCatalogIndex) {
+          this.CatalogIndex = lastCatalogIndex as number ?? 0
         }
-      })
+      }
       let domPos: string = '';
 
       let context = this.getUIContext().getHostContext() as common.UIAbilityContext;
@@ -92,16 +84,17 @@ struct ReaderPage3 {
       this.readerComponentController.registerBookParser(bookParserHandler);
 
       //开始解析渲染
-      this.readerComponentController.startPlay(this.spineIndex || 0, domPos);
+      this.readerComponentController.startPlay(this.CatalogIndex || 0, domPos);
     } catch (err) {
       hilog.error(0x0000, 'testTag', `failed to startPlay, Code is ${err.code}, message is ${err.message}`);
     }
   }
 
-  aboutToDisappear(): void { //todo:保存当前章节索引和其它数据
-    this.readerComponentController.off('pageShow', () => {
-    });
-    this.readerComponentController.off('resourceRequest');
+  aboutToDisappear(): void {
+    if (this.bookData) {
+      //保存当前章节索引和其它数据
+      PreferencesUtil.putSync(`BookIndex_${this.bookData.bookName}`, this.CatalogIndex)
+    }
     this.readerComponentController.releaseBook();
   }
 
@@ -121,7 +114,7 @@ struct ReaderPage3 {
               Image($r("app.media.ic_public_return_left")).width(24).onClick(() => {
                 router.back()
               })
-              Text(`${this.CatalogList[this.spineIndex]?.catalogName ?? ''}`.replace(new RegExp('\\s{1,}', 'g'), ' ')
+              Text(`${this.CatalogList[this.CatalogIndex]?.catalogName ?? ''}`.replace(new RegExp('\\s{1,}', 'g'), ' ')
                 .replaceAll('=', '')).layoutWeight(1).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
               Row({ space: 16 }) {
                 Image($r("app.media.refresh")).width(24).onClick(() => {
@@ -223,13 +216,13 @@ struct ReaderPage3 {
 
               Row({ space: 16 }) {
                 Text("上一章").onClick(() => {
-                  if (this.spineIndex > 0) {
-                    this.spineIndex--
+                  if (this.CatalogIndex > 0) {
+                    this.CatalogIndex--
                   }
                 })
 
                 Slider({
-                  value: this.spineIndex,
+                  value: this.CatalogIndex,
                   max: this.CatalogList.length - 1,
                   min: 0,
                   step: 1,
@@ -239,12 +232,12 @@ struct ReaderPage3 {
                   .blockSize({ width: 30, height: 30 })
                   .layoutWeight(1)
                   .onChange((value) => {
-                    this.spineIndex = Math.floor(value)
+                    this.CatalogIndex = Math.floor(value)
                   })
 
                 Text("下一章").onClick(() => {
-                  if (this.spineIndex < this.CatalogList.length - 1) {
-                    this.spineIndex++
+                  if (this.CatalogIndex < this.CatalogList.length - 1) {
+                    this.CatalogIndex++
                   }
                 })
               }.padding({
@@ -421,11 +414,6 @@ struct ReaderPage3 {
     }.margin({
       top: 12, bottom: 16
     })
-  }
-
-  onBackPress() {
-    this.dialogController.open();
-    return true
   }
 
   @Builder
