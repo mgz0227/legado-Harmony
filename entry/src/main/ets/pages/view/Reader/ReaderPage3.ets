@@ -35,6 +35,7 @@ struct ReaderPage3 {
   @State ParagraphSpacing: number = -2
   @State isShowSource: boolean = false
   @State isShowPurification: boolean = false
+  @State isShowCatalogDialog: boolean = false // 目录弹窗
   //书籍解析用数据
   @State bookData: Books = new Books(); //书籍书籍
   @State CatalogList: bookParser.CatalogItem[] = []; //章节数据
@@ -63,8 +64,7 @@ struct ReaderPage3 {
             this.CatalogIndex = index
           }
         })
-      } else { //上级页面没选定，从上次阅读到的章节定位
-        // console.log('this.bookData.bookName:' + this.bookData.bookName)
+      } else { //上级页面没选定，从上次阅读到的章节定位 // console.log('this.bookData.bookName:' + this.bookData.bookName)
         let lastCatalogIndex = PreferencesUtil.getSync(`BookIndex_${this.bookData.bookName}`, 0)
         if (lastCatalogIndex) {
           this.CatalogIndex = lastCatalogIndex as number ?? 0
@@ -91,8 +91,7 @@ struct ReaderPage3 {
   }
 
   aboutToDisappear(): void {
-    if (this.bookData) {
-      //保存当前章节索引和其它数据
+    if (this.bookData) { //保存当前章节索引和其它数据
       PreferencesUtil.putSync(`BookIndex_${this.bookData.bookName}`, this.CatalogIndex)
     }
     this.readerComponentController.releaseBook();
@@ -232,8 +231,7 @@ struct ReaderPage3 {
                   .blockSize({ width: 30, height: 30 })
                   .layoutWeight(1)
                   .onChange((value) => {
-                    ClickUtil.debounce(() => {
-                      //防抖
+                    ClickUtil.debounce(() => { //防抖
                       this.CatalogIndex = Math.floor(value)
                     }, 500)
                   })
@@ -335,47 +333,53 @@ struct ReaderPage3 {
               })
             }
 
-            //todo:下方功能开发
-            /* Grid() {
-               GridItem() {
-                 Column() {
-                   Image($r("app.media.outlined")).width(24)
-                   Text("目录")
-                 }
-               }
+            Grid() {
+              GridItem() {
+                Column() {
+                  Image($r("app.media.catalogue")).width(24)
+                  Text("目录")
+                }.onClick(() => {
+                  this.isShowCatalogDialog = true
+                }).bindSheet(this.isShowCatalogDialog, this.CatalogDialog(), {
+                  detents: [SheetSize.FIT_CONTENT, SheetSize.LARGE, 200],
+                  dragBar: true,
+                  showClose: false,
+                  onDisappear: () => {
+                    this.isShowCatalogDialog = false
+                  }
+                })
+              }
 
-               //todo:听书功能开发
-               GridItem() {
-                 Column() {
-                   Image($r("app.media.listen")).width(24)
-                   Text("听书")
-                 }
-               }
-               .bindContentCover($$this.isShowListen, this.BookListen(), {
-                 modalTransition: ModalTransition.DEFAULT, backgroundColor: "rgba(51, 106, 128, 0.75)"
-               }).onClick(() => {
-                 this.isShowListen = true
-               })
+              //todo:听书功能开发
+              /*GridItem() {
+                Column() {
+                  Image($r("app.media.listen")).width(24)
+                  Text("听书")
+                }
+              }
+              .bindContentCover($$this.isShowListen, this.BookListen(), {
+                modalTransition: ModalTransition.DEFAULT, backgroundColor: "rgba(51, 106, 128, 0.75)"
+              }).onClick(() => {
+                this.isShowListen = true
+              })
 
-               GridItem() {
-                 Column() {
-                   Image($r("app.media.night_icon")).width(24)
-                   Text("夜间")
-                 }
-               }
+              GridItem() {
+                Column() {
+                  Image($r("app.media.night_icon")).width(24)
+                  Text("夜间")
+                }
+              }
 
-               GridItem() {
-                 Column() {
-                   Image($r(this.isShowContentSetting ? "app.media.my_center_set_icon_fill" :
-                     "app.media.my_center_set_icon")).width(24)
-                   Text("设置")
-                 }.onClick(() => {
-                   this.isShowContentSetting = !this.isShowContentSetting
-                 })
-               }
-             }.padding({
-               left: 24, right: 24
-             }).columnsTemplate("1fr 1fr 1fr 1fr").width("100%").height(60)*/
+              GridItem() {
+                Column() {
+                  Image($r(this.isShowContentSetting ? "app.media.my_center_set_icon_fill" :
+                    "app.media.my_center_set_icon")).width(24)
+                  Text("设置")
+                }.onClick(() => {
+                  this.isShowContentSetting = !this.isShowContentSetting
+                })
+              }*/
+            }.columnsTemplate("1fr 1fr 1fr 1fr").width("100%").height(60)
           }
           .backgroundColor("white")
           .transition(TransitionEffect.move(TransitionEdge.BOTTOM).animation({ duration: 500 }))
@@ -386,6 +390,21 @@ struct ReaderPage3 {
     }.width('100%').height('100%').onClick(() => { // 支持在此实现点击拉起菜单栏功能
       this.isShowSetting = true
     })
+  }
+
+  @Builder
+  CatalogDialog() {
+    List({ space: 10 }) {
+      ForEach(this.CatalogList, (item: bookParser.CatalogItem, index) => {
+        ListItem() {
+          Text(item.catalogName)
+        }
+        .onClick(() => {
+          this.CatalogIndex = index
+          this.isShowCatalogDialog = false
+        })
+      })
+    }.width('100%').height('100%').padding({ left: 15, right: 16 })
   }
 
   @Builder
