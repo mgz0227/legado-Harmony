@@ -1,4 +1,4 @@
-import { router } from '@kit.ArkUI';
+import { display, router } from '@kit.ArkUI';
 import sourceView from './sourceView';
 import DownloadSettingDialog from '../../../componets/Reader/DownloadSettingDialog';
 import LayoutMoreDialog from '../../../componets/Reader/LayoutMoreDialog';
@@ -35,12 +35,14 @@ struct ReaderPage3 {
   @State ParagraphSpacing: number = -2
   @State isShowSource: boolean = false
   @State isShowPurification: boolean = false
-  @State isShowCatalogDialog: boolean = false // 目录弹窗
   //书籍解析用数据
   @State bookData: Books = new Books(); //书籍书籍
   @State CatalogList: bookParser.CatalogItem[] = []; //章节数据
   @State @Watch('spineIndexChange') CatalogIndex: number = 0 //当前章节索引
   readerComponentController: readerCore.ReaderComponentController = new readerCore.ReaderComponentController();
+  //阅读器设置
+  @State currentNightMode: boolean = false
+  @State isShowCatalogDialog: boolean = false // 目录弹窗
 
   spineIndexChange() {
     this.readerComponentController.startPlay(this.CatalogIndex, '');
@@ -53,7 +55,6 @@ struct ReaderPage3 {
   }
 
   async init(clickBookCatalogId: number) {
-
     try { // 当前应用下资源的沙箱路径地址
       let path: string = this.bookData?.bookUrl ?? ''
       let bookParserHandler: bookParser.BookParserHandler = await bookParser.getDefaultHandler(path);
@@ -110,12 +111,20 @@ struct ReaderPage3 {
         if (this.isShowSetting) { // 阅读器-上方弹框
           Column() {
             Row({ space: 8 }) {
-              Image($r("app.media.ic_public_return_left")).width(24).onClick(() => {
-                router.back()
-              })
-              Text(`${this.CatalogList[this.CatalogIndex]?.catalogName ?? ''}`.replace(new RegExp('\\s{1,}', 'g'), ' ')
-                .replaceAll('=', '')).layoutWeight(1).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
-              Row({ space: 16 }) {
+              Image($r("app.media.ic_public_return_left"))
+                .fillColor(this.currentNightMode ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
+                .width(24)
+                .onClick(() => {
+                  router.back()
+                })
+
+              Text(`${this.CatalogList[this.CatalogIndex]?.catalogName ?? ''}`
+                .replace(new RegExp('\\s{1,}', 'g'), ' ')
+                .replaceAll('=', ''))
+                .layoutWeight(1).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+                .fontColor(this.currentNightMode ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
+
+              /*Row({ space: 16 }) {
                 Image($r("app.media.refresh")).width(24).onClick(() => {
 
                 })
@@ -132,7 +141,7 @@ struct ReaderPage3 {
                 Image($r("app.media.more")).width(24).onClick(() => {
 
                 })
-              }
+              }*/
             }.padding({
               top: 12,
               left: 20,
@@ -140,17 +149,19 @@ struct ReaderPage3 {
               bottom: 12
             }).width("100%")
 
-            Row() {
-              NetworkInput()
-            }.padding({
-              top: 8,
-              left: 20,
-              right: 20,
-              bottom: 12
-            }).width("100%")
+            /*            Row() {
+                          NetworkInput()
+                        }.padding({
+                          top: 8,
+                          left: 20,
+                          right: 20,
+                          bottom: 12
+                        }).width("100%")*/
 
             Divider()
-          }.backgroundColor("white").transition(TransitionEffect.move(TransitionEdge.TOP).animation({ duration: 500 }))
+          }
+          .backgroundColor(this.currentNightMode ? '#1F1F1F' : 'rgba(250, 250, 250, 1)')
+          .transition(TransitionEffect.move(TransitionEdge.TOP).animation({ duration: 500 }))
 
           Blank(1).onClick(() => {
             this.isShowSetting = false
@@ -161,7 +172,7 @@ struct ReaderPage3 {
             Divider()
 
             if (!this.isShowContentSetting) {
-              Row() {
+              /*Row() {
                 Button({ type: ButtonType.Normal }) {
                   Row({
                     space: 4
@@ -211,14 +222,16 @@ struct ReaderPage3 {
                 }.borderRadius(8).height(40).width("45%").backgroundColor("rgba(0, 0, 0, 0.06)")
               }.padding({
                 top: 12, left: 24, right: 24
-              }).justifyContent(FlexAlign.SpaceBetween).width("100%")
+              }).justifyContent(FlexAlign.SpaceBetween).width("100%")*/
 
               Row({ space: 16 }) {
-                Text("上一章").onClick(() => {
-                  if (this.CatalogIndex > 0) {
-                    this.CatalogIndex--
-                  }
-                })
+                Text("上一章")
+                  .fontColor(this.currentNightMode ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
+                  .onClick(() => {
+                    if (this.CatalogIndex > 0) {
+                      this.CatalogIndex--
+                    }
+                  })
 
                 Slider({
                   value: this.CatalogIndex,
@@ -236,11 +249,13 @@ struct ReaderPage3 {
                     }, 500)
                   })
 
-                Text("下一章").onClick(() => {
-                  if (this.CatalogIndex < this.CatalogList.length - 1) {
-                    this.CatalogIndex++
-                  }
-                })
+                Text("下一章")
+                  .fontColor(this.currentNightMode ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
+                  .onClick(() => {
+                    if (this.CatalogIndex < this.CatalogList.length - 1) {
+                      this.CatalogIndex++
+                    }
+                  })
               }.padding({
                 //todo:临时bottom距离
                 left: 24, right: 24, bottom: '10%'
@@ -338,6 +353,7 @@ struct ReaderPage3 {
                 Column() {
                   Image($r("app.media.catalogue")).width(24)
                   Text("目录")
+                    .fontColor(this.currentNightMode ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
                 }.onClick(() => {
                   this.isShowCatalogDialog = true
                 }).bindSheet(this.isShowCatalogDialog, this.CatalogDialog(), {
@@ -351,23 +367,45 @@ struct ReaderPage3 {
               }
 
               //todo:听书功能开发
-              /*GridItem() {
-                Column() {
-                  Image($r("app.media.listen")).width(24)
-                  Text("听书")
-                }
-              }
-              .bindContentCover($$this.isShowListen, this.BookListen(), {
-                modalTransition: ModalTransition.DEFAULT, backgroundColor: "rgba(51, 106, 128, 0.75)"
-              }).onClick(() => {
-                this.isShowListen = true
-              })
+              /*              GridItem() {
+                              Column() {
+                                Image($r("app.media.listen")).width(24)
+                                Text("听书")
+                              }
+                            }
+                            .bindContentCover($$this.isShowListen, this.BookListen(), {
+                              modalTransition: ModalTransition.DEFAULT, backgroundColor: "rgba(51, 106, 128, 0.75)"
+                            }).onClick(() => {
+                              this.isShowListen = true
+                            })*/
 
               GridItem() {
                 Column() {
                   Image($r("app.media.night_icon")).width(24)
                   Text("夜间")
-                }
+                    .fontColor(this.currentNightMode ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
+                }.onClick(() => {
+                  this.currentNightMode = !this.currentNightMode
+                  let readerSetting: readerCore.ReaderSetting = {
+                    fontName: '系统字体',
+                    fontPath: '',
+                    fontSize: 18,
+                    fontColor: this.currentNightMode ? '#ffffff' : '#000000',
+                    fontWeight: 400,
+                    lineHeight: 1.9,
+                    nightMode: this.currentNightMode,
+                    themeColor: this.currentNightMode ? '#1F1F1F' : 'rgba(248, 249, 250, 1)',
+                    themeBgImg: '',
+                    flipMode: '0',
+                    scaledDensity: display.getDefaultDisplaySync().scaledDensity > 0 ?
+                    display.getDefaultDisplaySync().scaledDensity :
+                      1,
+                    viewPortWidth: display.getDefaultDisplaySync().width, // 视口宽度，需要根据设备实际情况获取
+                    viewPortHeight: display.getDefaultDisplaySync().height, // 视口高度，需要根据设备实际情况获取
+                  };
+                  this.readerComponentController.setPageConfig(readerSetting);
+                  this.readerComponentController.startPlay(this.CatalogIndex, '');
+                })
               }
 
               GridItem() {
@@ -375,13 +413,14 @@ struct ReaderPage3 {
                   Image($r(this.isShowContentSetting ? "app.media.my_center_set_icon_fill" :
                     "app.media.my_center_set_icon")).width(24)
                   Text("设置")
+                    .fontColor(this.currentNightMode ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
                 }.onClick(() => {
                   this.isShowContentSetting = !this.isShowContentSetting
                 })
-              }*/
-            }.columnsTemplate("1fr 1fr 1fr 1fr").width("100%").height(60)
+              }
+            }.columnsTemplate("1fr 1fr 1fr").width("100%").height(60)
           }
-          .backgroundColor("white")
+          .backgroundColor(this.currentNightMode ? '#1F1F1F' : 'rgba(248, 249, 250, 1)')
           .transition(TransitionEffect.move(TransitionEdge.BOTTOM).animation({ duration: 500 }))
         }
       }.width("100%").height("100%").enabled(this.isShowSetting).padding({
