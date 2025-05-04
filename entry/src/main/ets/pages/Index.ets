@@ -12,6 +12,7 @@ import { JSON } from '@kit.ArkTS'
 import { image } from '@kit.ImageKit'
 import { ThemeStorageKey } from '../common/constants/Theme'
 import { ThemeItem } from '../common/model/Theme'
+import { WindowAbility } from '../entryability/WindowAbility'
 
 @Entry
 @Component
@@ -28,6 +29,8 @@ struct Main {
   @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   onPageShow(): void {
+    // 退出阅读页面后显示状态栏
+    WindowAbility.getInstance().toggleWindowSystemBar(['status', 'navigation'], this.getUIContext().getHostContext());
     // initBookListData()
     setTimeout(() => {
       this.showReadShow = false
@@ -58,6 +61,8 @@ struct Main {
   }
 
   aboutToAppear(): void {
+    // 退出阅读页面后显示状态栏
+    WindowAbility.getInstance().toggleWindowSystemBar(['status', 'navigation'], this.getUIContext().getHostContext());
     // 注册监听截图事件 用于我的页面下主题设置预览
     emitter.on('screen_shot', () => {
       this.screenShot()
