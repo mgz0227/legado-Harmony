@@ -5,6 +5,7 @@
  * 书籍
  */
 import { BookSource } from './BookSource';
+import { readerCore } from '@kit.ReaderKit';
 
 @Observed
 export class Books {
@@ -54,6 +55,8 @@ export class Books {
   durChapterIndex: number = 0
   //当前阅读的进度(首行字符的索引位置)
   durChapterPos: number = 0
+  //本地书籍阅读的进度
+  localBookDurChapterPos?:readerCore.PageDataInfo|null = null
   //最近一次阅读书籍的时间(打开正文的时间)
   durChapterTime: number = 0
   //字数

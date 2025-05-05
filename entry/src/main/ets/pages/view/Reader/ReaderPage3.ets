@@ -18,7 +18,7 @@ interface ParamsObj {
   clickBookCatalogId: number,
 }
 
-//2025.4.19 改用官方API16的 ReaderKit
+
 @Entry
 @Component
 struct ReaderPage3 {
@@ -41,7 +41,6 @@ struct ReaderPage3 {
   //书籍解析用数据
   @State bookData: Books = new Books(); //书籍数据
   @State CatalogList: bookParser.CatalogItem[] = []; //章节数据
-  @State CatalogIndex: number = 0 //当前章节索引
   readerComponentController: readerCore.ReaderComponentController = new readerCore.ReaderComponentController();
   //阅读器设置
   @State isShowCatalogDialog: boolean = false // 目录弹窗
@@ -63,13 +62,8 @@ struct ReaderPage3 {
     viewPortHeight: this.windowHeight
   };
   private screenDensityCallBack: Callback<number> | null = null;
-  private defaultHandler: bookParser.BookParserHandler | null = null;
-  private currentData: readerCore.PageDataInfo | null = null;
+  private BookHandler: bookParser.BookParserHandler | null = null;
   private scrollerForList: ListScroller = new ListScroller();
-
-  spineIndexChange() {
-    this.readerComponentController.startPlay(this.CatalogIndex, '');
-  }
 
   async aboutToAppear() {
     this.registerScreenDensityChange();
@@ -88,11 +82,11 @@ struct ReaderPage3 {
     }
     let temp = router.getParams() as ParamsObj
     this.bookData = temp.bookData
-    this.currentData =PreferencesUtil.getSync(`BookCurrentData_${this.bookData.bookName}`, this.currentData)?
-      PreferencesUtil.getSync(`BookCurrentData_${this.bookData.bookName}`, this.currentData) as readerCore.PageDataInfo:null
-    this.CatalogIndex = this.currentData?.resourceIndex ?? 0
-    this.startPlay(this.bookData?.bookUrl ?? '', this.currentData?.resourceIndex ?? 0,
-      this.currentData?.startDomPos ?? '');
+    this.bookData = PreferencesUtil.getSync(`BookCurrentData_${this.bookData.bookName}`, this.bookData) as Books
+    this.readerSetting = PreferencesUtil.getSync(`ReaderSetting_${this.bookData.bookName}`,
+      this.readerSetting) as readerCore.ReaderSetting;
+    this.startPlay(this.bookData.bookUrl ?? '', this.bookData.localBookDurChapterPos?.resourceIndex ?? 0,
+      this.bookData.localBookDurChapterPos?.startDomPos ?? '');
   }
 
   private async startPlay(path: string, resourceIndex: number, domPos: string) {
@@ -101,11 +95,11 @@ struct ReaderPage3 {
       let initPromise: Promise<void> = this.readerComponentController.init(context);
       let defaultHandler: Promise<bookParser.BookParserHandler> = bookParser.getDefaultHandler(path);
       let result: [bookParser.BookParserHandler, void] = await Promise.all([defaultHandler, initPromise]);
-      this.defaultHandler = result[0];
-      this.readerComponentController.registerBookParser(this.defaultHandler);
+      this.BookHandler = result[0];
+      this.readerComponentController.registerBookParser(this.BookHandler);
       this.readerComponentController.setPageConfig(this.readerSetting);
       this.readerComponentController.startPlay(resourceIndex || 0, domPos);
-      this.CatalogList = this.defaultHandler?.getCatalogList() || []; //获取目录列表
+      this.CatalogList = this.BookHandler?.getCatalogList() || []; //获取目录列表
       hilog.info(0x0000, 'testTag', 'catalog list length: ' + this.CatalogList.length);
     } catch (err) {
       hilog.error(0x0000, 'testTag', `failed to startPlay, Code is ${err.code}, message is ${err.message}`);
@@ -145,9 +139,13 @@ struct ReaderPage3 {
 
   private registerListener(): void {
     this.readerComponentController.on('pageShow', (data: readerCore.PageDataInfo): void => {
-      this.currentData = data;
-      // 保存页面数据。
-      PreferencesUtil.putSync(`BookCurrentData_${this.bookData.bookName}`, this.currentData)
+      this.bookData.localBookDurChapterPos = data;
+      this.bookData.durChapterTitle = this.CatalogList[this.bookData.durChapterIndex].catalogName;
+      this.bookData.totalChapterNum = this.CatalogList.length;
+      // 保存书籍数据。
+      PreferencesUtil.putSync(`BookCurrentData_${this.bookData.bookName}`, this.bookData)
+      //  保存阅读器设置。
+      PreferencesUtil.putSync(`ReaderSetting_${this.bookData.bookName}`, this.readerSetting)
     });
     WindowAbility.getInstance().onWindowSizeChange(() => {
       if (this.readerSetting.viewPortWidth != this.windowWidth ||
@@ -191,7 +189,7 @@ struct ReaderPage3 {
                   router.back()
                 })
 
-              Text(`${this.CatalogList[this.CatalogIndex]?.catalogName ?? ''}`
+              Text(`${this.CatalogList[this.bookData.durChapterIndex?? 0].catalogName ?? ''}`
                 .replace(new RegExp('\\s{1,}', 'g'), ' ')
                 .replaceAll('=', ''))
                 .layoutWeight(1).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -303,14 +301,14 @@ struct ReaderPage3 {
                 Text("上一章")
                   .fontColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
                   .onClick(() => {
-                    if (this.CatalogIndex > 0) {
-                      this.CatalogIndex--
-                      this.spineIndexChange()
+                    if (this.bookData.durChapterIndex > 0) {
+                      this.bookData.durChapterIndex--
+                      this.jumpToCatalogItem(this.CatalogList[this.bookData.durChapterIndex])
                     }
                   })
 
                 Slider({
-                  value: this.CatalogIndex,
+                  value: this.bookData.durChapterIndex,
                   max: this.CatalogList.length - 1,
                   min: 0,
                   step: 1,
@@ -321,17 +319,17 @@ struct ReaderPage3 {
                   .layoutWeight(1)
                   .onChange((value) => {
                     ClickUtil.debounce(() => { //防抖
-                      this.CatalogIndex = Math.floor(value)
-                      this.spineIndexChange()
+                      this.bookData.durChapterIndex = value
+                      this.jumpToCatalogItem(this.CatalogList[this.bookData.durChapterIndex])
                     }, 500)
                   })
 
                 Text("下一章")
                   .fontColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
                   .onClick(() => {
-                    if (this.CatalogIndex < this.CatalogList.length - 1) {
-                      this.CatalogIndex++
-                      this.spineIndexChange()
+                    if (this.bookData.durChapterIndex < this.CatalogList.length - 1) {
+                      this.bookData.durChapterIndex++
+                      this.jumpToCatalogItem(this.CatalogList[this.bookData.durChapterIndex])
                     }
                   })
               }
@@ -504,15 +502,14 @@ struct ReaderPage3 {
         top: this.topRectHeight,
       })
     }.width('100%').height('100%').onClick(() => {
-      this.readerComponentController.on('pageShow', (data: readerCore.PageDataInfo): void => {
-        this.currentData = data;
-        this.CatalogIndex = data.resourceIndex
-      });
       // 点击拉起菜单栏功能
       this.isShowSetting = true
     })
   }
 
+  /**
+   * 目录弹窗
+   */
   @Builder
   CatalogDialog() {
     List({ space: 10, scroller: this.scrollerForList }) {
@@ -538,8 +535,8 @@ struct ReaderPage3 {
           })
         }
         .onClick(() => {
-          this.CatalogIndex = index
-          this.spineIndexChange()
+          this.bookData.durChapterIndex = index
+          this.jumpToCatalogItem(item)
           this.isShowCatalogDialog = false
         })
       })
@@ -547,7 +544,7 @@ struct ReaderPage3 {
     .width('100%')
     .height('100%')
     .onAppear(() => {
-      this.scrollerForList.scrollToIndex(this.CatalogIndex)
+      this.scrollerForList.scrollToIndex(this.bookData.durChapterIndex)
     })
   }
 
@@ -607,5 +604,54 @@ struct ReaderPage3 {
   pageTransition() {
     PageTransitionEnter({ duration: 0, curve: Curve.Sharp });
     PageTransitionExit({ duration: 0, curve: Curve.Sharp });
+  }
+
+  /**
+   * 跳转到指定的章节
+   *
+   * @param catalogItem 书籍目录节点
+   */
+  private async jumpToCatalogItem(catalogItem: bookParser.CatalogItem) {
+    // 根据目录项获取章节的索引
+    const resourceIndex = this.getResourceItemByCatalog(catalogItem).index;
+    // 跳转到指定章节
+    this.readerComponentController.startPlay(resourceIndex, '');
+  }
+
+  /**
+   * 根据目录项获取章节位置信息
+   *
+   * @param catalogItem 书籍目录节点
+   * @returns 返回找到的章节位置信息或默认的空章节位置信息
+   */
+  private getResourceItemByCatalog(catalogItem: bookParser.CatalogItem): bookParser.SpineItem {
+    // 获取目录项中的内容文件引用，如果没有则默认为空字符串
+    let resourceFile = catalogItem.resourceFile || '';
+
+    // 获取默认处理程序中的书脊内容列表，如果没有则默认为空数组
+    let spineList: bookParser.SpineItem[] = this.BookHandler?.getSpineList() || []
+
+    // 过滤书脊内容列表，找出href与内容文件引用匹配的章节位置信息
+    let resourceItemArr = spineList.filter(item => item.href === resourceFile);
+
+    // 如果找到了匹配的章节位置信息，则返回第一个匹配的章节位置信息
+    if (resourceItemArr.length > 0) {
+      hilog.info(0x0000, 'testTag', 'getResourceItemByCatalog get resource ', resourceItemArr[0]);
+      let resourceItem = resourceItemArr[0];
+      return resourceItem;
+      // 如果没有找到匹配的章节位置信息，但书脊内容列表有项，则返回书脊内容列表的第一项
+    } else if (spineList.length > 0) {
+      hilog.info(0x0000, 'testTag', 'getResourceItemByCatalog get resource in resourceList', spineList[0]);
+      return spineList[0];
+      // 如果书脊内容列表为空，则返回一个空的章节位置信息对象
+    } else {
+      hilog.info(0x0000, 'testTag', 'getResourceItemByCatalog get resource in escape');
+      return {
+        idRef: '',
+        index: 0,
+        href: '',
+        properties: ''
+      };
+    }
   }
 }
