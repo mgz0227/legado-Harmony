@@ -2,13 +2,15 @@ import UIAbility from '@ohos.app.ability.UIAbility';
 import hilog from '@ohos.hilog';
 import window from '@ohos.window';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { AbilityConstant, Want } from '@kit.AbilityKit';
+import { AbilityConstant, Configuration, Want } from '@kit.AbilityKit';
 import display from '@ohos.display';
 import DbUtil from '../common/utils/DbUtil';
 import DataBase from '../database'
 import { webview } from '@kit.ArkWeb';
 import { themeManager, ThemeManager } from '../common/utils/ThemeManager';
 import { AppUtil } from '@pura/harmony-utils';
+import { WindowAbility } from './WindowAbility';
+import { deviceInfo } from '@kit.BasicServicesKit';
 
 export default class EntryAbility extends UIAbility {
 
@@ -39,6 +41,7 @@ export default class EntryAbility extends UIAbility {
     webview.WebviewController.initializeWebEngine()//初始化web控件
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
     AppUtil.init(this.context);
+    WindowAbility.getInstance().initContext(this.context)
   }
 
   onDestroy() {
@@ -50,6 +53,8 @@ export default class EntryAbility extends UIAbility {
     DbUtil.initDB(this.context).then(() => {
       DataBase.initAllTable()
     })
+    WindowAbility.getInstance().setWindowStage(windowStage);
+    this.initWindowProcess(windowStage);
     // 获取本地文件存储路径
     const pathDir = this.context.filesDir;
     AppStorage.setOrCreate('pathDir', pathDir);
@@ -119,7 +124,24 @@ export default class EntryAbility extends UIAbility {
       hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
     });
   }
+  onConfigurationUpdate(newConfig: Configuration): void {
+    AppStorage.setOrCreate('colorMode', newConfig.colorMode);
+  }
 
+  initWindowProcess(windowStage: window.WindowStage): void {
+    windowStage.getMainWindow((err, windowClass: window.Window) => {
+      WindowAbility.getInstance().initAvoidArea(windowClass);
+      let systemBarProperties: window.SystemBarProperties = {
+        statusBarContentColor: this.context.config.colorMode ? '#000000' : '#FFFFFF'
+      };
+      windowClass.setWindowSystemBarProperties(systemBarProperties);
+    });
+    WindowAbility.getInstance().setWindowLayoutFullScreen(true);
+    if (deviceInfo.deviceType === 'tablet') {
+      WindowAbility.getInstance().setOrientation(windowStage, window.Orientation.AUTO_ROTATION_RESTRICTED);
+    }
+    WindowAbility.getInstance().initWindowSize();
+  }
   onWindowStageDestroy() {
     // Main window is destroyed, release UI related resources
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
