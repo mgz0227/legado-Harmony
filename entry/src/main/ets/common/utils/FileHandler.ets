@@ -17,10 +17,10 @@ let options: Options = {
 };
 
 export class FileHandler {
-  static CopyFile(srcUrl: string, currentIndex:number) {
+  static CopyFile(srcUrl: string, currentIndex: number) {
     let file = fs.openSync(srcUrl, fs.OpenMode.READ_WRITE);
     let dstPath = filePath + '/' + file.name; // file.name:《幽影之冰》.txt
-    let book:Books = {
+    let book: Books = {
       bookName: file.name,
       bookUrl: dstPath,
       author: '暂无',
@@ -59,7 +59,7 @@ export class FileHandler {
       let readLen: number = await fs.read(file.fd, arrayBuffer)
       let JSONString = buffer.from(arrayBuffer, 0, readLen).toString();
       return JSONString
-    } catch (e){
+    } catch (e) {
       console.error(`读取失败：${e}`);
       return ''
     }
@@ -99,7 +99,7 @@ export class FileHandler {
     return chapters
   }
 
-  static async documentPickerFile(maxSelectNumber: number, fileSuffixFilters: Array<string>) {
+  static async documentPickerFile(maxSelectNumber: number | undefined = undefined, fileSuffixFilters: Array<string>) {
     // 尝试写一个通用的picker
     try {
       const documentSelectOptions = new picker.DocumentSelectOptions();

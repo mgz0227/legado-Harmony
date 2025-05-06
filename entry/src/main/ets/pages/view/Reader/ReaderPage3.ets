@@ -8,7 +8,6 @@ import { bookParser, readerCore, ReadPageComponent } from '@kit.ReaderKit';
 import { common, ConfigurationConstant } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { NetworkInput } from '../../../componets/Reader/NetworkInput';
 import { ClickUtil, PreferencesUtil } from '@pura/harmony-utils';
 import { Books } from '../../../database/entities/Books';
 import { WindowAbility } from '../../../entryability/WindowAbility';
@@ -213,7 +212,8 @@ struct ReaderPage3 {
 
                 })
               }*/
-            }.padding({
+            }
+            .padding({
               top: 12,
               left: 20,
               right: 20,
