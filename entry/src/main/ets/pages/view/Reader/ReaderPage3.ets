@@ -1,4 +1,4 @@
-import { display, router } from '@kit.ArkUI';
+import { display, promptAction, router } from '@kit.ArkUI';
 import sourceView from './sourceView';
 import DownloadSettingDialog from '../../../componets/Reader/DownloadSettingDialog';
 import LayoutMoreDialog from '../../../componets/Reader/LayoutMoreDialog';
@@ -340,7 +340,7 @@ struct ReaderPage3 {
               .width("100%")
             } else { // 下方-设置
               Column({ space: 24 }) {
-                Row({ space: 16 }) {
+                /*Row({ space: 16 }) {
                   Text('亮度')
                   Slider({
                     value: this.CurrentLuminance,
@@ -358,10 +358,12 @@ struct ReaderPage3 {
                   Row() {
                     Text('跟随系统')
                   }
-                }
+                }*/
 
                 Row({ space: 16 }) {
                   Text('字号')
+                    .fontColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
+
                   Slider({
                     value: this.readerSetting.fontSize,
                     max: 48,
@@ -376,13 +378,15 @@ struct ReaderPage3 {
                       this.readerSetting.fontSize = value
                       this.readerComponentController.setPageConfig(this.readerSetting);
                     })
-                  Row() {
-                    Button('字体')
-                  }
+                  // Row() {
+                  //   Button('字体')
+                  // }
                 }
 
                 Row({ space: 16 }) {
                   Text('行距')
+                    .fontColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
+
                   Slider({
                     value: this.readerSetting.lineHeight,
                     max: 3,
@@ -397,7 +401,7 @@ struct ReaderPage3 {
                       this.readerSetting.lineHeight = value
                       this.readerComponentController.setPageConfig(this.readerSetting);
                     })
-                  Row() {
+                  /*Row() {
                     Button('更多').bindSheet($$this.isShowMoreLayout, this.LayoutMoreDialog(), {
                       height: 500,
                       showClose: false,
@@ -408,21 +412,32 @@ struct ReaderPage3 {
                     }).onClick(() => {
                       this.isShowMoreLayout = true
                     })
-                  }
+                  }*/
                 }
 
-                Row({ space: 16 }) {
+                /*Row({ space: 16 }) {
                   Text('背景')
                   Blank(1)
                   Row() {
                     Button('更多')
                   }
-                }
+                }*/
 
                 Row({ space: 16 }) {
-                  Button('自动阅读')
+                  // Button('自动阅读')
                   Button('仿真翻页')
-                  Button('更多设置')
+                    .fontColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
+                    .onClick(() => {
+                      if (this.readerSetting.flipMode == '0') {
+                        this.readerSetting.flipMode = '1';
+                        promptAction.showToast({ message: '横滑' })
+                      } else {
+                        this.readerSetting.flipMode = '0';
+                        promptAction.showToast({ message: '仿真' })
+                      }
+                      this.readerComponentController.setPageConfig(this.readerSetting);
+                    })
+                  // Button('更多设置')
                 }
               }.padding({
                 left: 20, right: 20
