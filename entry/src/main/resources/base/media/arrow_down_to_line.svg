@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="arrow_up_to_line.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="51.333333"
+     inkscape:cx="12"
+     inkscape:cy="12"
+     inkscape:window-width="2520"
+     inkscape:window-height="1556"
+     inkscape:window-x="-12"
+     inkscape:window-y="-12"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <rect
+     width="24"
+     height="24"
+     opacity="0"
+     id="rect1" />
+  <g
+     id="g1"
+     transform="matrix(1,0,0,-1,0,24)">
+    <path
+       d="m 13.1,6.14 q -0.45,-0.45 -1.09,-0.45 -0.63,0 -1.09,0.45 l -7.25,7.25 q -0.24,0.22 -0.24,0.53 0,0.31 0.24,0.53 0.22,0.21 0.52,0.21 0.3,0 0.51,-0.21 l 6.51,-6.43 v 12.24 q 0,0.31 0.21,0.52 0.22,0.22 0.53,0.22 0.31,0 0.54,-0.22 0.23,-0.21 0.23,-0.52 V 7.87 l 6.53,6.53 q 0.21,0.22 0.53,0.22 0.31,0 0.52,-0.22 0.22,-0.22 0.22,-0.53 0,-0.31 -0.22,-0.53 z m 6.89,-1.65 q 0.31,0 0.54,-0.22 0.23,-0.21 0.23,-0.53 0,-0.31 -0.23,-0.52 Q 20.3,3 19.99,3 H 4.01 Q 3.7,3 3.47,3.22 3.24,3.43 3.24,3.74 q 0,0.32 0.23,0.53 0.23,0.22 0.54,0.22 z"
+       fill="rgba(0,0,0,0.9019607843137255)"
+       id="path1" />
+  </g>
+</svg>
