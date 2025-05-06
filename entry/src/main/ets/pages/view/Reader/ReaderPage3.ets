@@ -70,16 +70,6 @@ struct ReaderPage3 {
     this.registerListener();
     //  进入阅读页面后隐藏系统状态栏
     WindowAbility.getInstance().toggleWindowSystemBar([], this.getUIContext().getHostContext());
-    //修改为设置的主题
-    if (this.colorMode === 0) {
-      this.readerSetting.nightMode = true;
-      this.readerSetting.fontColor = '#ffffff';
-      this.readerSetting.themeColor = '#202224';
-    } else {
-      this.readerSetting.nightMode = false;
-      this.readerSetting.fontColor = '#000000';
-      this.readerSetting.themeColor = '#FFFFFF';
-    }
     let temp = router.getParams() as ParamsObj
     this.bookData = temp.bookData
     this.bookData = PreferencesUtil.getSync(`BookCurrentData_${this.bookData.bookName}`, this.bookData) as Books
@@ -87,6 +77,8 @@ struct ReaderPage3 {
       this.readerSetting) as readerCore.ReaderSetting;
     this.startPlay(this.bookData.bookUrl ?? '', this.bookData.localBookDurChapterPos?.resourceIndex ?? 0,
       this.bookData.localBookDurChapterPos?.startDomPos ?? '');
+    //修改为设置的主题，需要在初始化阅读器后设置
+    this.colorMode = this.readerSetting.nightMode ? 0 : 1
   }
 
   private async startPlay(path: string, resourceIndex: number, domPos: string) {
@@ -449,7 +441,9 @@ struct ReaderPage3 {
             Grid() {
               GridItem() {
                 Column() {
-                  Image($r("app.media.catalogue")).width(24)
+                  Image($r("app.media.catalogue"))
+                    .width(24)
+                    .fillColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
                   Text("目录")
                     .fontColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
                 }
@@ -482,8 +476,10 @@ struct ReaderPage3 {
 
               GridItem() {
                 Column() {
-                  Image($r("app.media.night_icon")).width(24)
-                  Text("夜间")
+                  Image(this.colorMode == 0 ? $r("app.media.day_icon") : $r("app.media.night_icon"))
+                    .width(24)
+                    .fillColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
+                  Text(this.colorMode == 0 ? "日间" : "夜间")
                     .fontColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
                 }.onClick(() => {
                   this.colorMode = this.colorMode == 0 ? 1 : 0
@@ -503,7 +499,9 @@ struct ReaderPage3 {
               GridItem() {
                 Column() {
                   Image($r(this.isShowContentSetting ? "app.media.my_center_set_icon_fill" :
-                    "app.media.my_center_set_icon")).width(24)
+                    "app.media.my_center_set_icon"))
+                    .width(24)
+                    .fillColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
                   Text("设置")
                     .fontColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
                 }.onClick(() => {
@@ -569,37 +567,40 @@ struct ReaderPage3 {
 
       Column() {
         Column() {
-          Image($r('app.media.arrow_up_to_line'))
+          Image($r('app.media.top'))
             .width(20)
             .height(20)
           Text('顶部')
             .fontSize(12)
         }
-      .padding(5)
+        .padding(5)
         .onClick(() => {
           this.scrollerForList.scrollToIndex(0)
         })
+
         Column() {
-          Text(){
+          Text() {
             SymbolSpan($r("sys.symbol.position"))
           }
+
           Text('定位')
             .fontSize(12)
         }
-      .padding(5)
+        .padding(5)
         .onClick(() => {
           this.scrollerForList.scrollToIndex(this.bookData.durChapterIndex)
         })
+
         Column() {
-          Image($r('app.media.arrow_down_to_line'))
+          Image($r('app.media.down'))
             .width(20)
             .height(20)
           Text('底部')
             .fontSize(12)
         }
-      .padding(5)
+        .padding(5)
         .onClick(() => {
-          this.scrollerForList.scrollToIndex(this.CatalogList.totalCount()-1)
+          this.scrollerForList.scrollToIndex(this.CatalogList.totalCount() - 1)
         })
       }
       .padding(5)
