@@ -16,24 +16,25 @@ export default struct IndexShelf {
   @State currentIndex: number = 0
   THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单', '批量管理']
   titleArray: Array<string> = ['小说', '漫画', '有声书']
-
-  @State bookTypeNumber:number = 2
+  @State bookTypeNumber: number = 2
   @State EXHIBIT: string = '列表'
-  @State @Watch('changeGroup')GROUP: string = '标签'
-  changeGroup(){
+  @State @Watch('changeGroup') GROUP: string = '标签'
+
+  changeGroup() {
     if (this.GROUP === '文件夹') {
       this.bookTypeNumber = 1
     } else {
       this.bookTypeNumber = 2
     }
   }
+
   @State isShowImport: boolean = false
   @State isShowCloudImport: boolean = false
   @State isShowImportBookList: boolean = false
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageProp('APP_INDEX_SCROLLABLE') APP_INDEX_SCROLLABLE: boolean = false
   @StorageLink('BOOK_IS_BOOK_REFRESHING') isBookRefreshing: number = 0
-  @State bookImport:bookShelfImport[] = []
+  @State bookImport: bookShelfImport[] = []
   // 主题颜色
   @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
   // 网址导入dialog
@@ -49,6 +50,7 @@ export default struct IndexShelf {
   })
   tabsController: TabsController = new TabsController();
   private scrollController: Scroller = new Scroller();
+
   build() {
     Column() {
       Flex({
@@ -177,14 +179,14 @@ export default struct IndexShelf {
       }) {
         ForEach(this.titleArray, () => {
           TabContent() {
-           Column(){
-             BookBodyContent({
-               currentIndex: this.currentIndex,
-               EXHIBIT: this.EXHIBIT,
-               GROUP: this.GROUP,
-               bookTypeNumber:this.bookTypeNumber
-             })
-           }
+            Column() {
+              BookBodyContent({
+                currentIndex: this.currentIndex,
+                EXHIBIT: this.EXHIBIT,
+                GROUP: this.GROUP,
+                bookTypeNumber: this.bookTypeNumber
+              })
+            }
           }
         })
       }
@@ -239,16 +241,18 @@ export default struct IndexShelf {
     .onClick(async () => {
       switch (index) {
         case 0:
-        // 本地导入
-        //   router.pushUrl({
-        //     url: 'pages/view/bookShelf/LocalImportPage'
-        //   });
-          let FileResult = await FileHandler.documentPickerFile(1, ['.txt', '.epub', '.mobi', '.azw', '.azw3'])
-          FileHandler.CopyFile(FileResult[0], this.currentIndex)
+          // 本地导入
+          //   router.pushUrl({
+          //     url: 'pages/view/bookShelf/LocalImportPage'
+          //   });
+          let FileResult = await FileHandler.documentPickerFile(undefined, ['.txt', '.epub', '.mobi', '.azw', '.azw3'])
+          FileResult.forEach((item) => {
+            FileHandler.CopyFile(item, this.currentIndex)
+          })
           this.isShowImport = false
-          setTimeout(()=>{
+          setTimeout(() => {
             this.isBookRefreshing++
-          },500)
+          }, 500)
           break
         case 1:
           // 云盘导入
@@ -268,13 +272,14 @@ export default struct IndexShelf {
           FileHandler.ReadJSONFile(res[0]).then(async result => {
             if (result.length > 0) {
               this.bookImport = JSON.parse(result) as bookShelfImport[]
-              this.bookImport.length>0?await booksUtil.batchAdd(this.bookImport,this.currentIndex):''
-              showMessage(this.bookImport.length > 0?`相关书单书籍内容导入${this.bookImport.length}本`:'未找到相关书单书籍内容')
+              this.bookImport.length > 0 ? await booksUtil.batchAdd(this.bookImport, this.currentIndex) : ''
+              showMessage(this.bookImport.length > 0 ? `相关书单书籍内容导入${this.bookImport.length}本` :
+                '未找到相关书单书籍内容')
             }
           })
-          setTimeout(()=>{
+          setTimeout(() => {
             this.isBookRefreshing++
-          },500)
+          }, 500)
           break
       }
     })
@@ -286,18 +291,21 @@ export default struct IndexShelf {
     Column() {
       GridRow({
         columns: 3
-      }){
-        GridCol(){
+      }) {
+        GridCol() {
           this.ImportClickBox(0, "app.media.my_center_file_icon", "本地导入")
         }
-        GridCol(){
+
+        GridCol() {
           this.ImportClickBox(1, "app.media.my_center_cloud_icon", "网盘导入")
         }
-        GridCol(){
+
+        GridCol() {
           this.ImportClickBox(2, "app.media.official_website", "网址导入")
         }
       }
       .height("60%")
+
       Divider()
 
       Column() {
@@ -317,8 +325,7 @@ export default struct IndexShelf {
   @Builder
   DialogInput(placeholder: string, maxlength?: number) {
     Row() {
-      TextInput({ placeholder: placeholder })
-        // .maxLength(maxlength)
+      TextInput({ placeholder: placeholder })// .maxLength(maxlength)
         // .showCounter(true)
         .cancelButton({
           icon: {
@@ -482,17 +489,17 @@ export default struct IndexShelf {
     // 右上角更多
     switch (themeNum) {
       case 0:
-      // 书籍导入弹窗
+        // 书籍导入弹窗
         this.isShowImport = true
         break
       case 1:
-      // 下载管理页
+        // 下载管理页
         router.pushUrl({
           url: 'pages/view/bookShelf/DownloadManagementPage'
         });
         break
       case 2:
-      // 导入书单弹窗
+        // 导入书单弹窗
         this.isShowImportBookList = true
         break
       case 3:
@@ -526,8 +533,9 @@ export default struct IndexShelf {
       const res: AxiosResponse = await axios
         .get(url);
       this.bookImport = res.data as bookShelfImport[]
-      showMessage(this.bookImport.length > 0?`相关书单书籍内容导入${this.bookImport.length}本`:'未找到相关书单书籍内容')
-      this.bookImport.length>0?booksUtil.batchAdd(this.bookImport,this.currentIndex):''
+      showMessage(this.bookImport.length > 0 ? `相关书单书籍内容导入${this.bookImport.length}本` :
+        '未找到相关书单书籍内容')
+      this.bookImport.length > 0 ? booksUtil.batchAdd(this.bookImport, this.currentIndex) : ''
     } catch (err) {
       console.error('错误 ' + err);
     }
