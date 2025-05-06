@@ -11,6 +11,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { ClickUtil, PreferencesUtil } from '@pura/harmony-utils';
 import { Books } from '../../../database/entities/Books';
 import { WindowAbility } from '../../../entryability/WindowAbility';
+import BasicDataSource from '../../../common/LazyIDataSource/BasicDataSource';
 
 interface ParamsObj {
   bookData: Books,
@@ -39,7 +40,7 @@ struct ReaderPage3 {
   @State isShowPurification: boolean = false
   //书籍解析用数据
   @State bookData: Books = new Books(); //书籍数据
-  @State CatalogList: bookParser.CatalogItem[] = []; //章节数据
+  @State CatalogList: BasicDataSource<bookParser.CatalogItem> = new BasicDataSource<bookParser.CatalogItem>(); //章节数据
   readerComponentController: readerCore.ReaderComponentController = new readerCore.ReaderComponentController();
   //阅读器设置
   @State isShowCatalogDialog: boolean = false // 目录弹窗
@@ -98,8 +99,8 @@ struct ReaderPage3 {
       this.readerComponentController.registerBookParser(this.BookHandler);
       this.readerComponentController.setPageConfig(this.readerSetting);
       this.readerComponentController.startPlay(resourceIndex || 0, domPos);
-      this.CatalogList = this.BookHandler?.getCatalogList() || []; //获取目录列表
-      hilog.info(0x0000, 'testTag', 'catalog list length: ' + this.CatalogList.length);
+      this.CatalogList.pushAllData(this.BookHandler?.getCatalogList() || []); //获取目录列表
+      hilog.info(0x0000, 'testTag', 'catalog list length: ' + this.CatalogList.totalCount());
     } catch (err) {
       hilog.error(0x0000, 'testTag', `failed to startPlay, Code is ${err.code}, message is ${err.message}`);
     }
@@ -139,8 +140,8 @@ struct ReaderPage3 {
   private registerListener(): void {
     this.readerComponentController.on('pageShow', (data: readerCore.PageDataInfo): void => {
       this.bookData.localBookDurChapterPos = data;
-      this.bookData.durChapterTitle = this.CatalogList[this.bookData.durChapterIndex].catalogName;
-      this.bookData.totalChapterNum = this.CatalogList.length;
+      this.bookData.durChapterTitle = this.CatalogList.getData(this.bookData.durChapterIndex).catalogName;
+      this.bookData.totalChapterNum = this.CatalogList.totalCount();
       // 保存书籍数据。
       PreferencesUtil.putSync(`BookCurrentData_${this.bookData.bookName}`, this.bookData)
       //  保存阅读器设置。
@@ -188,7 +189,7 @@ struct ReaderPage3 {
                   router.back()
                 })
 
-              Text(`${this.CatalogList[this.bookData.durChapterIndex?? 0].catalogName ?? ''}`
+              Text(`${this.CatalogList.getData(this.bookData.durChapterIndex ?? 0).catalogName ?? ''}`
                 .replace(new RegExp('\\s{1,}', 'g'), ' ')
                 .replaceAll('=', ''))
                 .layoutWeight(1).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -303,13 +304,13 @@ struct ReaderPage3 {
                   .onClick(() => {
                     if (this.bookData.durChapterIndex > 0) {
                       this.bookData.durChapterIndex--
-                      this.jumpToCatalogItem(this.CatalogList[this.bookData.durChapterIndex])
+                      this.jumpToCatalogItem(this.CatalogList.getData(this.bookData.durChapterIndex))
                     }
                   })
 
                 Slider({
                   value: this.bookData.durChapterIndex,
-                  max: this.CatalogList.length - 1,
+                  max: this.CatalogList.totalCount() - 1,
                   min: 0,
                   step: 1,
                   style: SliderStyle.InSet
@@ -317,19 +318,20 @@ struct ReaderPage3 {
                   .selectedColor('rgba(0, 0, 0, 0.04)')
                   .blockSize({ width: 30, height: 30 })
                   .layoutWeight(1)
-                  .onChange((value) => {
-                    ClickUtil.debounce(() => { //防抖
+                  .onChange((value, mode) => {
+                    //结束滑动后再跳转到对应章节
+                    if (mode == SliderChangeMode.End) {
                       this.bookData.durChapterIndex = value
-                      this.jumpToCatalogItem(this.CatalogList[this.bookData.durChapterIndex])
-                    }, 500)
+                      this.jumpToCatalogItem(this.CatalogList.getData(this.bookData.durChapterIndex))
+                    }
                   })
 
                 Text("下一章")
                   .fontColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
                   .onClick(() => {
-                    if (this.bookData.durChapterIndex < this.CatalogList.length - 1) {
+                    if (this.bookData.durChapterIndex < this.CatalogList.totalCount() - 1) {
                       this.bookData.durChapterIndex++
-                      this.jumpToCatalogItem(this.CatalogList[this.bookData.durChapterIndex])
+                      this.jumpToCatalogItem(this.CatalogList.getData(this.bookData.durChapterIndex))
                     }
                   })
               }
@@ -439,8 +441,8 @@ struct ReaderPage3 {
                 .onClick(() => {
                   this.isShowCatalogDialog = true
                 })
-                .bindSheet(this.isShowCatalogDialog, this.CatalogDialog(), {
-                  detents: ['90%', 200],
+                .bindSheet($$this.isShowCatalogDialog, this.CatalogDialog(), {
+                  detents: ['90%', '30%'],
                   dragBar: true,
                   showClose: false,
                   onDisappear: () => {
@@ -512,40 +514,84 @@ struct ReaderPage3 {
    */
   @Builder
   CatalogDialog() {
-    List({ space: 10, scroller: this.scrollerForList }) {
-      ForEach(this.CatalogList, (item: bookParser.CatalogItem, index) => {
-        ListItem() {
-          Column() {
-            Row() {
-              Text(item.catalogName)
-                .fontSize(14)
-                .fontColor(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(19, 19, 19, 1.00)')
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-                .padding({ top: 8, bottom: 8 })
-                .layoutWeight(1)
-            }
-            .width('100%')
+    Stack() {
+      List({ space: 10, scroller: this.scrollerForList }) {
+        LazyForEach(this.CatalogList, (item: bookParser.CatalogItem, index) => {
+          ListItem() {
+            Column() {
+              Row() {
+                Text(item.catalogName)
+                  .fontSize(14)
+                  .fontColor(this.colorMode == 0 ?
+                    (this.bookData.durChapterIndex == index ? 'rgba(129, 231, 126, 1.00)' : 'rgba(248, 249, 250, 1)') :
+                    (this.bookData.durChapterIndex == index ? 'rgba(129, 231, 126, 1.00)' : 'rgba(19, 19, 19, 1.00)'))
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  .padding({ top: 8, bottom: 8 })
+                  .layoutWeight(1)
+              }
+              .width('100%')
 
-            Divider()
-              .color(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(136, 136, 136, 1.00)')
+              Divider()
+                .color(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(136, 136, 136, 1.00)')
+            }
+            .padding({
+              left: item.catalogLevel ? item.catalogLevel * 26 : 16,
+              right: 16,
+            })
           }
-          .padding({
-            left: item.catalogLevel ? item.catalogLevel * 26 : 16,
-            right: 16,
+          .onClick(() => {
+            this.bookData.durChapterIndex = index
+            this.jumpToCatalogItem(item)
+            this.isShowCatalogDialog = false
           })
-        }
-        .onClick(() => {
-          this.bookData.durChapterIndex = index
-          this.jumpToCatalogItem(item)
-          this.isShowCatalogDialog = false
         })
+      }
+      .width('100%')
+      .height('100%')
+      .onAppear(() => {
+        this.scrollerForList.scrollToIndex(this.bookData.durChapterIndex)
       })
+
+      Column() {
+        Column() {
+          Image($r('app.media.arrow_up_to_line'))
+            .width(20)
+            .height(20)
+          Text('顶部')
+            .fontSize(12)
+        }
+      .padding(5)
+        .onClick(() => {
+          this.scrollerForList.scrollToIndex(0)
+        })
+        Column() {
+          Text(){
+            SymbolSpan($r("sys.symbol.position"))
+          }
+          Text('定位')
+            .fontSize(12)
+        }
+      .padding(5)
+        .onClick(() => {
+          this.scrollerForList.scrollToIndex(this.bookData.durChapterIndex)
+        })
+        Column() {
+          Image($r('app.media.arrow_down_to_line'))
+            .width(20)
+            .height(20)
+          Text('底部')
+            .fontSize(12)
+        }
+      .padding(5)
+        .onClick(() => {
+          this.scrollerForList.scrollToIndex(this.CatalogList.totalCount()-1)
+        })
+      }
+      .padding(5)
+      .backgroundColor('rgba(129, 231, 126, 1.00)')
+      .borderRadius(20)
+      .position({ bottom: '10%', right: '5%' })
     }
-    .width('100%')
-    .height('100%')
-    .onAppear(() => {
-      this.scrollerForList.scrollToIndex(this.bookData.durChapterIndex)
-    })
   }
 
   @Builder
