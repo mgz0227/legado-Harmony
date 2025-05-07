@@ -30,8 +30,8 @@ struct Main {
   @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   onPageShow(): void {
-    // 退出阅读页面后恢复默认亮度
-    BrightnessUtil.setBrightness('default',-1)
+    // 退出阅读页面后恢复系统亮度
+    BrightnessUtil.setBrightness('default', -1)
     // 退出阅读页面后显示状态栏
     WindowAbility.getInstance().toggleWindowSystemBar(['status', 'navigation'], this.getUIContext().getHostContext());
     // initBookListData()
@@ -45,7 +45,7 @@ struct Main {
       this.APP_INDEX_SCROLLABLE = !this.APP_INDEX_SCROLLABLE
       console.log('SubscriptionBatchEdit:' + params)
     })
-    console.debug('res1',this.bottomRectHeight)
+    console.debug('res1', this.bottomRectHeight)
   }
 
   screenShot() {
@@ -88,13 +88,10 @@ struct Main {
         Text(name).fontSize(11).margin(5).fontColor(this.currentTabIndex === index ? this.theme.mainColor : '#000000')
       }
     }.gesture(
-      LongPressGesture({ repeat: index === 0, duration: 1000 })
+      LongPressGesture({ repeat: false, duration: 500 })
         .onAction((event: GestureEvent) => {
-          console.log('onAction' + event.repeat)
-          if (event.repeat) {
-            updateAppData(!this.APP_INDEX_SCROLLABLE)
-            showMessage(this.APP_INDEX_SCROLLABLE ? '标签栏锁已开启' : '标签栏已解锁')
-          }
+          updateAppData(!this.APP_INDEX_SCROLLABLE)
+          showMessage(this.APP_INDEX_SCROLLABLE ? '标签栏锁已开启' : '标签栏已解锁')
         }))
     .width('100%')
     .margin({ top: 4 })

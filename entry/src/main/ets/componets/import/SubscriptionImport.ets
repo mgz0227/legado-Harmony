@@ -20,7 +20,6 @@ import rssSourcesUtils from '../../common/utils/rssSourcesUtils';
 
 @Component
 export default struct SubscriptionImport {
-
   @State localSourceList: rssSources[] = []
   @Prop subscriptionList: rssSources[] = []
   @Link show: boolean;
@@ -48,7 +47,7 @@ export default struct SubscriptionImport {
   }
 
   async getRssSourceList() {
-   // this.sourceGroupList = programDataPreferences.getRssSourcesListData()
+    // this.sourceGroupList = programDataPreferences.getRssSourcesListData()
     this.sourceGroupList = await rssSourcesUtils.getRssSourcesGroup();
   }
 
@@ -76,9 +75,9 @@ export default struct SubscriptionImport {
           this.alreadyNameMap[item.sourceUrl] = true
           if (
             localItem.sourceName !== item.sourceName ||
-            localItem.sourceUrl !== item.sourceUrl ||
-            localItem.rssListRule?.ruleTitle !== item.rssListRule?.ruleTitle ||
-            localItem.rssWebViewRule?.ruleContent !== item.rssWebViewRule?.ruleContent
+              localItem.sourceUrl !== item.sourceUrl ||
+              localItem.rssListRule?.ruleTitle !== item.rssListRule?.ruleTitle ||
+              localItem.rssWebViewRule?.ruleContent !== item.rssWebViewRule?.ruleContent
           ) {
             this.insertMap[item.sourceUrl] = true
             this.updateNameMap[item.sourceUrl] = true
@@ -106,8 +105,9 @@ export default struct SubscriptionImport {
     this.groupList = []
     this.currentIndex = 0
   }
-  @State longCount: number = 0
+
   @State isBatch: boolean = false
+
   build() {
     Column() {
       Row({ space: 12 }) {
@@ -141,25 +141,17 @@ export default struct SubscriptionImport {
         })
         .layoutWeight(1)
         .gesture(
-          LongPressGesture({ repeat: true, duration: 500 })
+          LongPressGesture({ repeat: false, duration: 500 })
             .onAction((event: GestureEvent) => {
-              if (event && event.repeat) {
-                if (this.longCount >= 1) {
-                  this.isBatch = true
-                }
-                this.longCount++
-              }
-            })
-            .onActionEnd(() => {
-              this.longCount = 0
+              this.isBatch = true
             })
         )
       }
       .layoutWeight(1)
 
       Flex({
-        justifyContent:FlexAlign.SpaceBetween
-      }){
+        justifyContent: FlexAlign.SpaceBetween
+      }) {
         Row() {
           Checkbox()
             .select(this.fullActive)
@@ -182,9 +174,9 @@ export default struct SubscriptionImport {
         .height(40)
 
         Row({
-          space:6
-        }){
-          if (this.sourceGroup.length > 0){
+          space: 6
+        }) {
+          if (this.sourceGroup.length > 0) {
             Text(`订阅源分组:${this.sourceGroup}`)
               .font({
                 size: 14,
@@ -194,10 +186,11 @@ export default struct SubscriptionImport {
               .fontColor(this.theme.mainColor)
               .lineHeight(22)
           }
-          Text('导入至').font({
-            size: 14,
-            weight: FontConstants.FONT_WEIGHT_400
-          })
+          Text('导入至')
+            .font({
+              size: 14,
+              weight: FontConstants.FONT_WEIGHT_400
+            })
             .textAlign(TextAlign.Center)
             .fontColor(this.theme.mainColor)
             .lineHeight(22)
@@ -226,7 +219,7 @@ export default struct SubscriptionImport {
           .fontColor(Color.White)
           .backgroundColor(this.theme.mainColor)
           .layoutWeight(1)
-          .onClick(async  () => {
+          .onClick(async () => {
             if (this.sourceGroup.length === 0) {
               showMessage('请选择分组')
               return
@@ -251,12 +244,13 @@ export default struct SubscriptionImport {
         top: 12,
         bottom: 12
       })
+
       Flex()
-        .bindSheet($$this.isCatalogMove,this.catalogMove(), {
-          height:330,
+        .bindSheet($$this.isCatalogMove, this.catalogMove(), {
+          height: 330,
           showClose: false,
           dragBar: false,
-          blurStyle:BlurStyle.COMPONENT_ULTRA_THIN,
+          blurStyle: BlurStyle.COMPONENT_ULTRA_THIN,
           maskColor: 'rgba(0,0,0,0.6)'
         })
     }
@@ -335,27 +329,34 @@ export default struct SubscriptionImport {
     .backgroundColor(Color.White)
   }
 
-  @State isCatalogMove:boolean = false
-  @State sourceGroupList:string[] = []
+  @State isCatalogMove: boolean = false
+  @State sourceGroupList: string[] = []
 
-
-  @Builder catalogMove() {
+  @Builder
+  catalogMove() {
     Column() {
-      Column(){
+      Column() {
         Text('导入至').fontSize(16).fontWeight(700).lineHeight(24)
 
-      }.padding({right:20,left:20,top:12,bottom:12})
+      }
+      .padding({
+        right: 20,
+        left: 20,
+        top: 12,
+        bottom: 12
+      })
 
       Divider().strokeWidth(0.5)
-      Scroll(){
+      Scroll() {
         GridRow({
-          columns:3,
-        }){
-          GridCol(){
+          columns: 3,
+        }) {
+          GridCol() {
             this.titleBuilder('')
           }
+
           ForEach(this.sourceGroupList, (item: string, index: number) => {
-            GridCol(){
+            GridCol() {
               this.titleBuilder(item)
             }
 
@@ -366,18 +367,19 @@ export default struct SubscriptionImport {
       .align(Alignment.Top)
       .height('65%')
       .scrollBar(BarState.Off)
+
       Divider().strokeWidth(0.5)
       Column() {
         Text('取消').fontSize(16).fontWeight(400)
           .lineHeight(24)
       }
-      .onClick(()=>{
+      .onClick(() => {
         this.isCatalogMove = false
       })
       .alignItems(HorizontalAlign.Center)
       .padding({
         left: 32,
-        right:32,
+        right: 32,
         top: 16
       })
     }
@@ -385,18 +387,19 @@ export default struct SubscriptionImport {
     .height(CommonConstants.FULL_HEIGHT)
   }
 
-  @Builder titleBuilder(title:string) {
+  @Builder
+  titleBuilder(title: string) {
     Column() {
-      if (title === ''){
+      if (title === '') {
         Image($r('app.media.add')).width(24)
       } else {
         Text(title).fontSize(14).textOverflow({
-          overflow:TextOverflow.Ellipsis
+          overflow: TextOverflow.Ellipsis
         }).ellipsisMode(EllipsisMode.END).maxLines(1)
       }
     }
-    .onClick(()=>{
-      if(title === ''){
+    .onClick(() => {
+      if (title === '') {
         this.addNewGroupType?.open()
         return
       } else {
@@ -405,27 +408,31 @@ export default struct SubscriptionImport {
         this.isCatalogMove = false;
       }
     })
-    .width(96).height(36)
-    .margin({bottom:PaddingConstants.PADDING_16})
+    .width(96)
+    .height(36)
+    .margin({ bottom: PaddingConstants.PADDING_16 })
     .backgroundColor($r('app.string.color_black_6'))
     .padding({
-      left:16,
-      right:16,
-      top:8,
-      bottom:8
+      left: 16,
+      right: 16,
+      top: 8,
+      bottom: 8
     })
   }
-  @State newGroupType:string = ''
+
+  @State newGroupType: string = ''
   addNewGroupType: CustomDialogController | null = new CustomDialogController({
     builder: addBookTypeDialog({
-      cancel: ()=> { this.addNewGroupType?.close() },
-      confirm: async ()=> {
-       let insertSuccess:boolean = await rssSourcesUtils.addGroupType(this.newGroupType)
+      cancel: () => {
+        this.addNewGroupType?.close()
+      },
+      confirm: async () => {
+        let insertSuccess: boolean = await rssSourcesUtils.addGroupType(this.newGroupType)
         this.newGroupType = ''
         if (insertSuccess) {
-          setTimeout(()=>{
+          setTimeout(() => {
             this.getRssSourceList()
-          },200)
+          }, 200)
         }
       },
       bookType: this.newGroupType
@@ -436,8 +443,7 @@ export default struct SubscriptionImport {
     customStyle: false,
     cornerRadius: 25
   })
-  @State isInsert:boolean = false
-
+  @State isInsert: boolean = false
   // async addGroupType(){
   //   let group = await rssSourcesUtils.getRssSourcesGroup();
   //   group.map((data:string)=>{

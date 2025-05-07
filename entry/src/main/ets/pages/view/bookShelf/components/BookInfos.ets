@@ -100,11 +100,11 @@ export default struct BookInfos {
       //     params: this.book
       //   })
       // })
-    }).gesture(LongPressGesture({ repeat: true, duration: 500 }).onAction((event: GestureEvent) => {
-      if (event.repeat) {
-        this.bookInfoDialog?.open()
-      }
-    })).padding(10).borderRadius(10)
+    }).gesture(
+      LongPressGesture({ repeat: false, duration: 500 })
+        .onAction((event: GestureEvent) => {
+          this.bookInfoDialog?.open()
+        })).padding(10).borderRadius(10)
   }
 
   //退出弹框
