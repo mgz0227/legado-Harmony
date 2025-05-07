@@ -12,146 +12,146 @@ import newBookShelf from '../Manage/bookManage/newBookShelf'
  */
 @Component
 export default struct WorksBookLists {
-  @Link checkGroup:Record<number, boolean>
+  @Link checkGroup: Record<number, boolean>
   @Prop EXHIBIT: string
-  @Prop currentIndex:number
-  @Prop worksLists:WorksLists[] =[]
-  @Prop isShowCheck:boolean = false
-  @State worksBook:WorksLists = new WorksLists()
-  @StorageLink('BOOK_IS_BOOK_WORKS_BOOK_LIST') @Watch('getWorkLists')isWorksBookListRefreshing: number = 0
-  onSelect:Function = () => {}
+  @Prop currentIndex: number
+  @Prop worksLists: WorksLists[] = []
+  @Prop isShowCheck: boolean = false
+  @State worksBook: WorksLists = new WorksLists()
+  @StorageLink('BOOK_IS_BOOK_WORKS_BOOK_LIST') @Watch('getWorkLists') isWorksBookListRefreshing: number = 0
+  onSelect: Function = () => {
+  }
+
   aboutToAppear(): void {
     if (this.worksLists.length === 0) {
       this.getWorkLists()
     }
   }
-  @State workBookListStatus:number = 1
+
+  @State workBookListStatus: number = 1
 
   getWorkLists() {
     worksListsDao.search({
-      type:this.currentIndex
-    }).then((val)=>{
+      type: this.currentIndex
+    }).then((val) => {
       this.worksLists = val
     })
   }
 
   build() {
-    Column(){
+    Column() {
       GridRow({
-        columns:this.EXHIBIT === '宫格'?3:1
-      }){
+        columns: this.EXHIBIT === '宫格' ? 3 : 1
+      }) {
         ForEach(this.worksLists, (item: WorksLists, index: number) => {
-          GridCol(){
+          GridCol() {
             if (this.EXHIBIT === '宫格') {
               WorksBookListGrid({
-                work:item,
-                isShowCheck:this.isShowCheck,
-                checkGroup:this.checkGroup,
-                onSelect:()=>{
+                work: item,
+                isShowCheck: this.isShowCheck,
+                checkGroup: this.checkGroup,
+                onSelect: () => {
                   this.onSelect()
                 }
               }).width('33%')
                 .gesture(
-                  LongPressGesture({ repeat: true,duration:500 })
+                  LongPressGesture({ repeat: false, duration: 500 })
                     .onAction((event: GestureEvent) => {
-                      if (event.repeat) {
-                        if (!this.isShowCheck) {
-                          this.worksBook = item
-                          this.shelfInfoDialog?.open()
-                        }
-                      }
+                        this.worksBook = item
+                        this.shelfInfoDialog?.open()
                     }))
-                .onClick(()=>{
-                  if (!this.isShowCheck) {
+                .onClick(() => {
                     this.worksBook = item
                     this.isShowEditBook = true
-                  }
                 })
 
             } else {
               WorksBookListInfo({
-                work:item,
-                isShowCheck:this.isShowCheck,
-                checkGroup:this.checkGroup,
-                onSelect:()=>{
+                work: item,
+                isShowCheck: this.isShowCheck,
+                checkGroup: this.checkGroup,
+                onSelect: () => {
                   this.onSelect()
                 }
               })
                 .gesture(
-                  LongPressGesture({ repeat: true,duration:500 })
+                  LongPressGesture({ repeat: false, duration: 500 })
                     .onAction((event: GestureEvent) => {
-                      if (event.repeat) {
-                        if (!this.isShowCheck) {
-                          this.worksBook = item
-                          this.shelfInfoDialog?.open()
-                        }
-                      }
+                      this.worksBook = item
+                      this.shelfInfoDialog?.open()
                     }))
-                .onClick(()=>{
-                  if (!this.isShowCheck) {
-                    this.worksBook = item
-                    this.isShowEditBook = true
-                  }
+                .onClick(() => {
+                  this.worksBook = item
+                  this.isShowEditBook = true
                 })
             }
           }
         })
       }
+
       Flex()
         .bindContentCover($$this.isShowEditBook, this.showEditBook(), {
-        modalTransition: ModalTransition.DEFAULT,
-        onDisappear: () => {
-          this.isShowEditBook = false;
-        }
-      })
-
+          modalTransition: ModalTransition.DEFAULT,
+          onDisappear: () => {
+            this.isShowEditBook = false;
+          }
+        })
     }
-
   }
-  @State isShowEditBook:boolean = false
-  @Builder showEditBook(){
-    Column(){
+
+  @State isShowEditBook: boolean = false
+
+  @Builder
+  showEditBook() {
+    Column() {
       newBookShelf({
-        currentIndex:this.currentIndex,
-        changeShowNumber:()=>{
+        currentIndex: this.currentIndex,
+        changeShowNumber: () => {
           this.isShowEditBook = false
-          setTimeout(()=>{
+          setTimeout(() => {
             this.getWorkLists()
-          },200)
+          }, 200)
         },
-        returnClose:true,
-        workBookListStatus:this.workBookListStatus,
-        lastWorkBookList:this.worksBook
+        returnClose: true,
+        workBookListStatus: this.workBookListStatus,
+        lastWorkBookList: this.worksBook
       })
     }
     .backgroundColor(Color.White)
   }
+
   shelfInfoDialog: CustomDialogController | null = new CustomDialogController({
     builder: worksBookInfoDialog({
-      works:this.worksBook,
+      works: this.worksBook,
       cancel: () => {
         this.exitDialog()
       }
     }),
     cancel: this.exitDialog,
     autoCancel: true,
-    width:'100%',
+    width: '100%',
     alignment: DialogAlignment.Bottom,
-    customStyle:true
+    customStyle: true
 
   })
+
   //退出弹框
-  exitDialog(){
-    setTimeout(()=>{
+  exitDialog() {
+    setTimeout(() => {
       this.getWorkLists()
-    },100)
+    }, 100)
   }
-  @State delCache:boolean = false
+
+  @State delCache: boolean = false
   shelfInfoDel: CustomDialogController | null = new CustomDialogController({
     builder: confirmDialogExample({
-      cancel: ()=> { this.onCancel() },
-      confirm: ()=> { this.onAccept() },
-      delCache:this.delCache
+      cancel: () => {
+        this.onCancel()
+      },
+      confirm: () => {
+        this.onAccept()
+      },
+      delCache: this.delCache
     }),
     cancel: this.exitApp,
     autoCancel: true,

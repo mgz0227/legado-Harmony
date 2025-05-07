@@ -39,6 +39,7 @@ export default struct SourceView {
   private secondScroll = new Scroller()
   // 主题颜色
   @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
+
   aboutToAppear() {
     console.info('TagInfo', '当前下标： ' + this.index)
     this.loading = true
@@ -188,11 +189,9 @@ export default struct SourceView {
           .height('100%')
           .layoutWeight(1)
           .gesture(
-            LongPressGesture({ repeat: true, duration: 500 })
+            LongPressGesture({ repeat: false, duration: 500 })
               .onAction((event: GestureEvent) => {
-                if (event && event.repeat) {
-                  this.isBatch = true
-                }
+                this.isBatch = true
               })
           )
         }

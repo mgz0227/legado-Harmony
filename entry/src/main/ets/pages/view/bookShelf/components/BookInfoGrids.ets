@@ -128,11 +128,9 @@ export default struct BookInfoGrids{
       })
     })
     .gesture(
-      LongPressGesture({ repeat: true,duration:500 })
+      LongPressGesture({ repeat: false,duration:500 })
         .onAction((event: GestureEvent) => {
-          if (event.repeat) {
             this.bookInfoDialog?.open()
-          }
         }))
   }
   bookInfoDialog: CustomDialogController | null = new CustomDialogController({

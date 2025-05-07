@@ -35,7 +35,6 @@ export default struct SourceView {
   @State clickNameMap: Record<string, boolean> = {}
   @State enabledMap: Record<string, boolean> = {}
   @Link isBatch: boolean
-  @State longCount: number = 0
   @State loading: boolean = true
   @State errorText: string = ''
   @State showRightDialogMap: Record<string, boolean> = {}
@@ -245,7 +244,8 @@ export default struct SourceView {
           Row().width(12)
           FilterText({
             index: 3,
-            title: this.query.bookSourceGrade === undefined ? '等级' : ['常规', '优质', '精品'][this.query.bookSourceGrade],
+            title: this.query.bookSourceGrade === undefined ? '等级' :
+            ['常规', '优质', '精品'][this.query.bookSourceGrade],
             hasActive: this.query.bookSourceGrade !== undefined,
             onChange: (index) => {
               if (this.currentTitle === index) {
@@ -477,17 +477,9 @@ export default struct SourceView {
             .height('100%')
             .layoutWeight(1)
             .gesture(
-              LongPressGesture({ repeat: true, duration: 500 })
+              LongPressGesture({ repeat: false, duration: 500 })
                 .onAction((event: GestureEvent) => {
-                  if (event && event.repeat) {
-                    if (this.longCount >= 1) {
-                      this.isBatch = true
-                    }
-                    this.longCount++
-                  }
-                })
-                .onActionEnd(() => {
-                  this.longCount = 0
+                  this.isBatch = true
                 })
             )
           }

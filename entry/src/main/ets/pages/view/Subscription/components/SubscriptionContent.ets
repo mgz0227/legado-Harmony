@@ -159,7 +159,7 @@ export default struct SubscriptionContent{
                   this.refresh()
                 })
                 .gesture(
-                  LongPressGesture({ repeat: true,duration:1000 })
+                  LongPressGesture({ repeat: false,duration:500 })
                     .onAction((event: GestureEvent) => {
                       this.contentIndex = index
                       this.isButtonFunction = true
@@ -190,7 +190,7 @@ export default struct SubscriptionContent{
                 this.refresh()
               })
               .gesture(
-                LongPressGesture({ repeat: true,duration:500 })
+                LongPressGesture({ repeat: false,duration:500 })
                   .onAction((event: GestureEvent) => {
                     this.contentIndex = index
                     this.isButtonFunction = true
