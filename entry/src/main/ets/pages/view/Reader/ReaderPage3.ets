@@ -19,6 +19,11 @@ interface ParamsObj {
   clickBookCatalogId: number,
 }
 
+interface themeItem {
+  fontColor: string,
+  themeColor: string,
+  themeBgImg: string,
+}
 
 @Entry
 @Component
@@ -46,7 +51,7 @@ struct ReaderPage3 {
   readerComponentController: readerCore.ReaderComponentController = new readerCore.ReaderComponentController();
   //阅读器设置
   @State isShowCatalogDialog: boolean = false // 目录弹窗
-  private readerSetting: readerCore.ReaderSetting = {
+  @State readerSetting: readerCore.ReaderSetting = {
     fontName: '系统字体',
     fontPath: '',
     fontSize: 18,
@@ -66,6 +71,12 @@ struct ReaderPage3 {
   private screenDensityCallBack: Callback<number> | null = null;
   private BookHandler: bookParser.BookParserHandler | null = null;
   private scrollerForList: ListScroller = new ListScroller();
+  @State themeList: themeItem[] = [
+    { fontColor: '#202224', themeColor: '#FFFFFF', themeBgImg: '' },
+    { fontColor: '#202224', themeColor: '#ffbf9263', themeBgImg: '' },
+    { fontColor: '#202224', themeColor: '#C5E7CE', themeBgImg: '' },
+    { fontColor: '#FFFFFF', themeColor: '#202224', themeBgImg: '' },
+  ]
 
   async aboutToAppear() {
     this.isScreenState = PreferencesUtil.getSync(`isScreenState`, this.isScreenState) as boolean
@@ -343,7 +354,7 @@ struct ReaderPage3 {
               })
               .width("100%")
             } else { // 下方-设置
-              Column({ space: 24 }) {
+              Column({ space: 12 }) {
                 Row({ space: 5 }) {
                   Text('亮度')
                   Slider({
@@ -431,13 +442,51 @@ struct ReaderPage3 {
                   }*/
                 }
 
-                /*Row({ space: 16 }) {
+                Row({ space: 16 }) {
                   Text('背景')
-                  Blank(1)
-                  Row() {
-                    Button('更多')
+                  Scroll() {
+                    Row({ space: 12 }) {
+                      ForEach(this.themeList, (item: themeItem) => {
+                        Stack() {
+                          Column()
+                            .width('100%')
+                            .height(30)
+                            .borderWidth(this.readerSetting.themeColor == item.themeColor &&
+                              this.readerSetting.fontColor == item.fontColor &&
+                              this.readerSetting.themeBgImg == item.themeBgImg ? 1 : 2)
+                            .borderColor(this.readerSetting.themeColor == item.themeColor &&
+                              this.readerSetting.fontColor == item.fontColor &&
+                              this.readerSetting.themeBgImg == item.themeBgImg ? '#ff6600' : item.themeColor)
+                            .backgroundColor(item.themeColor)
+                            .backgroundImage(item.themeBgImg)
+                            .backgroundImagePosition(Alignment.BottomEnd)
+                            .backgroundImageSize(ImageSize.Cover)
+                            .borderRadius(20)
+                        }
+                        .width(50)
+                        .constraintSize({
+                          minWidth: 60
+                        })
+                        .borderRadius(30)
+                        .borderStyle(BorderStyle.Solid)
+                        .onClick(() => {
+                          this.readerSetting.fontColor = item.fontColor;
+                          this.readerSetting.themeColor = item.themeColor;
+                          this.readerSetting.themeBgImg = item.themeBgImg;
+                          this.readerComponentController.setPageConfig(this.readerSetting);
+                        })
+                      })
+                    }
                   }
-                }*/
+                  .scrollable(ScrollDirection.Horizontal)
+                  .scrollBar(BarState.Off)
+                  .edgeEffect(EdgeEffect.Spring)
+                  .width('80%')
+
+                  // Row() {
+                  //   Button('更多')
+                  // }
+                }
 
                 Row({ space: 16 }) {
                   // Button('自动阅读')
