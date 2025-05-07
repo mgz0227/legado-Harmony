@@ -13,6 +13,7 @@ import { image } from '@kit.ImageKit'
 import { ThemeStorageKey } from '../common/constants/Theme'
 import { ThemeItem } from '../common/model/Theme'
 import { WindowAbility } from '../entryability/WindowAbility'
+import BrightnessUtil from '../../common/utils/BrightnessUtil'
 
 @Entry
 @Component
@@ -29,6 +30,8 @@ struct Main {
   @StorageProp(ThemeStorageKey.THEME) theme: ThemeItem = {} as ThemeItem
 
   onPageShow(): void {
+    // 退出阅读页面后恢复默认亮度
+    BrightnessUtil.setBrightness('default',-1)
     // 退出阅读页面后显示状态栏
     WindowAbility.getInstance().toggleWindowSystemBar(['status', 'navigation'], this.getUIContext().getHostContext());
     // initBookListData()

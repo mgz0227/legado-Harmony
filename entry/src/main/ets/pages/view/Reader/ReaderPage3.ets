@@ -12,6 +12,7 @@ import { ClickUtil, PreferencesUtil } from '@pura/harmony-utils';
 import { Books } from '../../../database/entities/Books';
 import { WindowAbility } from '../../../entryability/WindowAbility';
 import BasicDataSource from '../../../common/LazyIDataSource/BasicDataSource';
+import BrightnessUtil from '../../../../common/utils/BrightnessUtil';
 
 interface ParamsObj {
   bookData: Books,
@@ -34,7 +35,8 @@ struct ReaderPage3 {
   @State isShowListen: boolean = false
   @State isShowContentSetting: boolean = false
   @State isShowMoreLayout: boolean = false
-  @State CurrentLuminance: number = 0 // 亮度
+  @State isLuminanceFollowSystem: boolean = false //亮度跟随系统
+  @State isScreenState: boolean = false //屏幕是否常亮
   @State ParagraphSpacing: number = -2
   @State isShowSource: boolean = false
   @State isShowPurification: boolean = false
@@ -66,6 +68,13 @@ struct ReaderPage3 {
   private scrollerForList: ListScroller = new ListScroller();
 
   async aboutToAppear() {
+    this.isScreenState = PreferencesUtil.getSync(`isScreenState`, this.isScreenState) as boolean
+    const Brightness = BrightnessUtil.getBrightness('reader')
+    if (Brightness == -1) {
+      this.isLuminanceFollowSystem = true
+    } else {
+      BrightnessUtil.setBrightness('reader', Brightness)
+    }
     this.registerScreenDensityChange();
     this.registerListener();
     //  进入阅读页面后隐藏系统状态栏
@@ -155,6 +164,7 @@ struct ReaderPage3 {
   }
 
   aboutToDisappear(): void {
+    PreferencesUtil.putSync(`isScreenState`, this.isScreenState)
     display.off('change', this.screenDensityCallBack);
     this.readerComponentController.off('pageShow');
     this.readerComponentController.off('resourceRequest');
@@ -334,25 +344,37 @@ struct ReaderPage3 {
               .width("100%")
             } else { // 下方-设置
               Column({ space: 24 }) {
-                /*Row({ space: 16 }) {
+                Row({ space: 5 }) {
                   Text('亮度')
                   Slider({
-                    value: this.CurrentLuminance,
-                    max: 100,
+                    value: BrightnessUtil.getBrightness('reader'),
+                    max: 1,
                     min: 0,
-                    step: 1,
+                    step: 0.01,
                     style: SliderStyle.InSet
                   })
                     .selectedColor('rgba(0, 0, 0, 0.04)')
                     .blockSize({ width: 30, height: 30 })
                     .layoutWeight(1)
+                    .hitTestBehavior(this.isLuminanceFollowSystem ? HitTestMode.None : HitTestMode.Default)
                     .onChange((value) => {
-                      this.CurrentLuminance = value
+                      if (!this.isLuminanceFollowSystem) {
+                        BrightnessUtil.setBrightness('reader', value)
+                      }
                     })
-                  Row() {
-                    Text('跟随系统')
-                  }
-                }*/
+                  Text('随系统')
+                  Toggle({ type: ToggleType.Switch, isOn: $$this.isLuminanceFollowSystem })
+                    .onChange((value) => {
+                      this.isLuminanceFollowSystem = value
+                      BrightnessUtil.setBrightness('reader', value ? -1 : 0.3)
+                    })
+                  Text('常亮')
+                  Toggle({ type: ToggleType.Switch, isOn: $$this.isScreenState })
+                    .onChange((value) => {
+                      this.isScreenState = value
+                      BrightnessUtil.setScreenState(value)
+                    })
+                }
 
                 Row({ space: 16 }) {
                   Text('字号')
