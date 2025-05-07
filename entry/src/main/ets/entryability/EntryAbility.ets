@@ -11,13 +11,13 @@ import { themeManager, ThemeManager } from '../common/utils/ThemeManager';
 import { AppUtil } from '@pura/harmony-utils';
 import { WindowAbility } from './WindowAbility';
 import { deviceInfo } from '@kit.BasicServicesKit';
+import BrightnessUtil from '../../common/utils/BrightnessUtil';
 
 export default class EntryAbility extends UIAbility {
-
   private curBp: string = ''
 
   // 根据当前窗口尺寸更新断点
-  private updateBreakpoint(windowWidth: number) :void{
+  private updateBreakpoint(windowWidth: number): void {
     // 将长度的单位由px换算为vp
     let windowWidthVp = windowWidth / display.getDefaultDisplaySync().densityPixels
     let newBp: string = ''
@@ -38,7 +38,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
-    webview.WebviewController.initializeWebEngine()//初始化web控件
+    webview.WebviewController.initializeWebEngine() //初始化web控件
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onCreate');
     AppUtil.init(this.context);
     WindowAbility.getInstance().initContext(this.context)
@@ -68,6 +68,9 @@ export default class EntryAbility extends UIAbility {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');
         return
       }
+      // 初始化屏幕亮度设置
+      BrightnessUtil.initWindow(windowClass);
+
       //全屏
       windowClass.setWindowLayoutFullScreen(true)
         .then(() => {
@@ -124,6 +127,7 @@ export default class EntryAbility extends UIAbility {
       hilog.info(0x0000, 'testTag', 'Succeeded in loading the content. Data: %{public}s', JSON.stringify(data) ?? '');
     });
   }
+
   onConfigurationUpdate(newConfig: Configuration): void {
     AppStorage.setOrCreate('colorMode', newConfig.colorMode);
   }
@@ -142,6 +146,7 @@ export default class EntryAbility extends UIAbility {
     }
     WindowAbility.getInstance().initWindowSize();
   }
+
   onWindowStageDestroy() {
     // Main window is destroyed, release UI related resources
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
