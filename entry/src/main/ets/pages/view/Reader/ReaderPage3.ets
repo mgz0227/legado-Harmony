@@ -522,8 +522,8 @@ struct ReaderPage3 {
                   this.isShowCatalogDialog = true
                 })
                 .bindSheet($$this.isShowCatalogDialog, this.CatalogDialog(), {
-                  detents: ['90%', '30%'],
-                  dragBar: true,
+                  detents: ['90%'],
+                  dragBar: false,
                   showClose: false,
                   onDisappear: () => {
                     this.isShowCatalogDialog = false
@@ -602,26 +602,24 @@ struct ReaderPage3 {
       List({ space: 10, scroller: this.scrollerForList }) {
         LazyForEach(this.CatalogList, (item: bookParser.CatalogItem, index) => {
           ListItem() {
-            Column() {
-              Row() {
-                Text(item.catalogName)
-                  .fontSize(14)
-                  .fontColor(this.colorMode == 0 ?
-                    (this.bookData.durChapterIndex == index ? 'rgba(129, 231, 126, 1.00)' : 'rgba(248, 249, 250, 1)') :
-                    (this.bookData.durChapterIndex == index ? 'rgba(129, 231, 126, 1.00)' : 'rgba(19, 19, 19, 1.00)'))
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
-                  .padding({ top: 8, bottom: 8 })
-                  .layoutWeight(1)
+              Column() {
+                Row() {
+                  Text(item.catalogName)
+                    .fontSize(14)
+                    .fontColor(this.colorMode == 0 ?
+                      (this.bookData.durChapterIndex == index ? 'rgba(129, 231, 126, 1.00)' :
+                        'rgba(248, 249, 250, 1)') :
+                      (this.bookData.durChapterIndex == index ? 'rgba(129, 231, 126, 1.00)' : 'rgba(19, 19, 19, 1.00)'))
+                    .textOverflow({ overflow: TextOverflow.Ellipsis })
+                    .padding({ top: 8, bottom: 8 })
+                    .layoutWeight(1)
+                }
+                .width('100%')
               }
-              .width('100%')
-
-              Divider()
-                .color(this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(136, 136, 136, 1.00)')
-            }
-            .padding({
-              left: item.catalogLevel ? item.catalogLevel * 26 : 16,
-              right: 16,
-            })
+              .padding({
+                left: item.catalogLevel ? item.catalogLevel * 26 : 16,
+                right: 16,
+              })
           }
           .onClick(() => {
             this.bookData.durChapterIndex = index
@@ -630,6 +628,12 @@ struct ReaderPage3 {
           })
         })
       }
+      .divider({
+        strokeWidth: 0.8,
+        color: this.colorMode == 0 ? 'rgba(248, 249, 250, 1)' : 'rgba(136, 136, 136, 1.00)',
+        startMargin: 12,
+        endMargin: 12
+      })
       .width('100%')
       .height('100%')
       .onAppear(() => {

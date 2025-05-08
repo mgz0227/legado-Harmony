@@ -109,7 +109,7 @@ struct BookDetailPage {
   catalogPanel() {
     Column() {
       Search({ placeholder: '搜索目录' }).height(34).padding({ top: 8, bottom: 8 })
-      Tabs({ barPosition: BarPosition.Start }) {
+      Tabs({ index: this.currentIndex, barPosition: BarPosition.Start }) {
         TabContent() {
           Column() {
             List() {
@@ -128,7 +128,8 @@ struct BookDetailPage {
                   }.borderRadius(10).width('100%').backgroundColor(Color.White).onClick(() => { // 跳转到阅读器
                     // this.jumpReadPage(`${item.catalogName}`, index)
                     router.pushUrl({
-                      url: 'pages/view/Reader/ReaderPage3', params: { bookData: this.bookData, clickBookCatalogId: item.catalogId }
+                      url: 'pages/view/Reader/ReaderPage3',
+                      params: { bookData: this.bookData, clickBookCatalogId: item.catalogId }
                     })
                   })
                 }
