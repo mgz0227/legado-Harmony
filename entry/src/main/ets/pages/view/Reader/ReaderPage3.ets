@@ -72,9 +72,9 @@ struct ReaderPage3 {
   private BookHandler: bookParser.BookParserHandler | null = null;
   private scrollerForList: ListScroller = new ListScroller();
   @State themeList: themeItem[] = [
-    { fontColor: '#202224', themeColor: '#FFFFFF', themeBgImg: '' },
-    { fontColor: '#202224', themeColor: '#ffbf9263', themeBgImg: '' },
-    { fontColor: '#202224', themeColor: '#C5E7CE', themeBgImg: '' },
+    { fontColor: '#000000', themeColor: '#FFFFFF', themeBgImg: '' },
+    { fontColor: '#000000', themeColor: '#c6b6a4', themeBgImg: '' },
+    { fontColor: '#000000', themeColor: '#C5E7CE', themeBgImg: '' },
     { fontColor: '#FFFFFF', themeColor: '#202224', themeBgImg: '' },
   ]
 
