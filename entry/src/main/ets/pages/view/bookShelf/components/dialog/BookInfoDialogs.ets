@@ -179,7 +179,7 @@ export default struct BookInfoDialogs{
   async isTopBook(){
     if (this.bookData.id){
       booksUtil.isTopBook(this.bookData.id, !this.bookData.isTop).then((val)=>{
-        val?showMessage(!this.bookData.isTop?'取消置顶成功':'置顶成功'):showMessage('数据更新失败')
+        val?showMessage(!this.bookData.isTop?'置顶成功':'取消置顶成功'):showMessage('数据更新失败')
       })
     }
     // let index = this.booksDataSource.getIndex(this.bookData)
