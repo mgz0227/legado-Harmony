@@ -25,6 +25,7 @@ import { ThemeItem } from '../../../common/model/Theme'
 import { ThemeStorageKey } from '../../../common/constants/Theme'
 import addBookTypeDialog from '../../../componets/common/addBookTypeDialog'
 import rssSourcesUtils from '../../../common/utils/rssSourcesUtils'
+import dialogTitleFuction from '../../../componets/common/dialogTitleFuction'
 
 @Component
 export default struct SubscriptionIndex {
@@ -33,8 +34,7 @@ export default struct SubscriptionIndex {
   @Prop @Watch('currentTabIndexChange') currentTabIndex: number
   @StorageLink('topRectHeight') topRectHeight: number = 0
   @StorageLink(CommonConstants.RSS_SOURCES_REFRESHING) @Watch('getList') refreshing: number = 0
-  @State
-  moreList: IconTitleVo[] = [
+  private moreList: IconTitleVo[] = [
     new IconTitleVo($r('app.media.icon_rule_paste'), '粘贴导入'),
     new IconTitleVo($r('app.media.icon_rule_export'), '本地导入'),
     new IconTitleVo($r('app.media.icon_rule_add'), '新建订阅'),
@@ -48,7 +48,7 @@ export default struct SubscriptionIndex {
   @State rssSourcesList: rssSources[] = []
   @State groupList: rssGroupList[] = []
   @State batchEdit: boolean = false
-  @State newGroupType:string = ''
+  @State newGroupType: string = ''
   //全选
   @Provide('batchAll') batchAll: boolean = false
   // 主题颜色
@@ -141,9 +141,9 @@ export default struct SubscriptionIndex {
                 .height(ImageConstants.IMG_HEIGHT_24)
                 .bindMenu(this.MenuBuilder)
             } else {
-              Text(`${this.batchAll?'取消全选':'全选'}`)
+              Text(`${this.batchAll ? '取消全选' : '全选'}`)
                 .width('33%')
-                .onClick(()=>{
+                .onClick(() => {
                   this.batchAll = !this.batchAll
                   Object.keys(this.batchList).forEach((key: string) => {
                     this.batchList[key] = this.batchAll
@@ -189,7 +189,7 @@ export default struct SubscriptionIndex {
         } else if (!this.groupList.length) {
           SubscriptionContent({
             subscriptionTitle: '收藏',
-            batchEdit:this.batchEdit,
+            batchEdit: this.batchEdit,
             showAddDialog: () => {
               this.isShowNewSources = true
             }
@@ -201,7 +201,7 @@ export default struct SubscriptionIndex {
                 SubscriptionContent({
                   subscriptionTitle: item.title,
                   contentList: item.list,
-                  batchEdit:this.batchEdit,
+                  batchEdit: this.batchEdit,
                   refresh: this.refresh
                 })
               })
@@ -282,20 +282,22 @@ export default struct SubscriptionIndex {
             }
             .onClick(() => {
               let checkRssSources = Object.values(this.batchList).filter(value => value === true).length
-              if (checkRssSources <= 0){
+              if (checkRssSources <= 0) {
                 showMessage('请选择要删除的订阅源');
                 return;
               }
 
               Object.keys(this.batchList).forEach((key: string) => {
-              if (this.batchList[key]) {
-                subscriptionDao.deleteRssSourcesById({
-                  id: Number(key)
-                })
-                this.batchList[key] = false
-              }
+                if (this.batchList[key]) {
+                  subscriptionDao.deleteRssSourcesById({
+                    id: Number(key)
+                  })
+                  this.batchList[key] = false
+                }
               })
-              setTimeout(()=>{this.refresh()},200)
+              setTimeout(() => {
+                this.refresh()
+              }, 200)
               showMessage('删除成功!')
             })
           }
@@ -365,35 +367,18 @@ export default struct SubscriptionIndex {
 
   @Builder
   MenuBuilder() {
-    Flex({ direction: FlexDirection.Column }) {
+    Column() {
       ForEach(this.moreList, (item: IconTitleVo, index) => {
-        Column() {
-          Row() {
-            Image(item.icon)
-              .width(24)
-              .height(24)
-              .margin({
-                right: 5
-              })
-            Text(`${item.title}`).fontSize(14)
-          }
-          .height(40)
-          .justifyContent(FlexAlign.Center)
-          .align(Alignment.Center)
+        dialogTitleFuction({
+          title: item.title,
+          icon: item.icon,
+          isBorder: this.moreList.length !== index + 1
+        })
           .onClick(() => {
             this.MenuOnclick(index)
           })
-
-          if (index !== 5) {
-            Divider()
-          }
-        }
-        .padding(5)
-        .height(40)
-        .margin({ bottom: 20 })
       })
     }
-    .width(100)
   }
 
   async MenuOnclick(value: number | string) {

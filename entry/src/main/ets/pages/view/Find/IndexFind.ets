@@ -33,7 +33,6 @@ export default struct IndexFind {
   @State groupCoverShow: boolean = false
   @State bookType: string = '全部'
   @State GROUP: string = '标签'
-  @State isShowFuction: boolean = false
   @State isShowHelp: boolean = false
   @State isShowImport: boolean = false
   @State sourceList: BookSource[] = []
@@ -76,16 +75,9 @@ export default struct IndexFind {
           .listDirection(Axis.Horizontal)
         }
 
-        Image($r('app.media.addSubscription')).width(24)
-          .bindMenu(this.isShowFuction, this.dialogRightFuction()
-            , {
-              onDisappear: () => {
-                this.isShowFuction = false
-              }
-            })
-          .onClick(() => {
-            this.isShowFuction = true
-          })
+        Image($r('app.media.addSubscription'))
+          .width(24)
+          .bindMenu(this.dialogRightFuction())
       }
       .padding({ top: this.topRectHeight === 0 ? 30 : this.topRectHeight, left: 20, right: 20 })
 
