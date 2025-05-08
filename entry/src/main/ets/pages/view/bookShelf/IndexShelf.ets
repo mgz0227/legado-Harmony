@@ -10,16 +10,22 @@ import booksUtil from '../../../common/utils/booksUtils'
 import axios, { AxiosResponse } from '@ohos/axios'
 import { ThemeItem } from '../../../common/model/Theme'
 import { ThemeStorageKey } from '../../../common/constants/Theme'
+import { IconTitleVo } from '../../../componetsmodel/IconTitleVo'
+import dialogTitleFuction from '../../../componets/common/dialogTitleFuction'
 
 @Component
 export default struct IndexShelf {
   @State currentIndex: number = 0
-  THEME_NAMES: string[] = ['书籍导入', '下载管理', '导入书单', '批量管理']
   titleArray: Array<string> = ['小说', '漫画', '有声书']
   @State bookTypeNumber: number = 2
   @State EXHIBIT: string = '列表'
   @State @Watch('changeGroup') GROUP: string = '标签'
-
+  private moreList: IconTitleVo[] = [
+    new IconTitleVo($r('app.media.import_svg'), '书籍导入'),
+    new IconTitleVo($r('app.media.down_svg'), '下载管理'),
+    new IconTitleVo($r('app.media.import_book_svg'), '导入书单'),
+    new IconTitleVo($r('app.media.batch_svg'), '批量管理'),
+  ]
   changeGroup() {
     if (this.GROUP === '文件夹') {
       this.bookTypeNumber = 1
@@ -129,36 +135,7 @@ export default struct IndexShelf {
               });
             })
             Image($r('app.media.more')).width(24)
-              .bindMenu([
-                {
-                  icon: $r('app.media.import_svg'),
-                  value: this.THEME_NAMES[0],
-                  action: () => {
-                    this.changeTheme(0)
-                  }
-                },
-                {
-                  icon: $r('app.media.down_svg'),
-                  value: this.THEME_NAMES[1],
-                  action: () => {
-                    this.changeTheme(1)
-                  }
-                },
-                {
-                  icon: $r('app.media.import_book_svg'),
-                  value: this.THEME_NAMES[2],
-                  action: () => {
-                    this.changeTheme(2)
-                  }
-                },
-                {
-                  icon: $r('app.media.batch_svg'),
-                  value: this.THEME_NAMES[3],
-                  action: () => {
-                    this.changeTheme(3)
-                  }
-                }
-              ])
+              .bindMenu(this.MenuBuilder())
               .bindSheet($$this.isShowImport, this.ImportDialog(), {
                 // 书籍导入弹窗绑定元素
                 height: 200,
@@ -209,6 +186,21 @@ export default struct IndexShelf {
     .borderRadius({ bottomRight: 5, bottomLeft: 5 })
   }
 
+  @Builder
+  MenuBuilder() {
+    Column() {
+      ForEach(this.moreList, (item: IconTitleVo, index) => {
+        dialogTitleFuction({
+          title: item.title,
+          icon: item.icon,
+          isBorder: this.moreList.length !== index + 1
+        })
+          .onClick(() => {
+            this.changeTheme(index)
+          })
+      })
+    }
+  }
   @Builder
   // 书籍导入UI盒子
   ImportClickBox(index: number, image: string, text: string) {
