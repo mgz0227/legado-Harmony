@@ -107,7 +107,7 @@ jobs:
           fetch-depth: 0  # 必须获取所有分支和提交记录才能进行合并操作
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '16'
           
