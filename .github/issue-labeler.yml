@@ -1,0 +1,34 @@
+bug:
+  - '(?i)(bug|错误|异常|崩溃|闪退|无法|失效|不工作)'
+enhancement:
+  - '(?i)(功能|建议|需求|支持|希望|增加|改进)'
+documentation:
+  - '(?i)(文档|说明|README|拼写|翻译)'
+maintenance:
+  - '(?i)(构建|依赖|CI|workflow|维护|清理)'
+area:reader:
+  - '(?i)(阅读器|阅读|翻页|章节|听书|朗读|正文|目录)'
+area:book-source:
+  - '(?i)(书源|解析规则|规则|换源|搜索书源)'
+area:bookshelf:
+  - '(?i)(书架|收藏|历史|分组|书籍管理)'
+area:manga:
+  - '(?i)(漫画|图片章节|看图)'
+area:audio:
+  - '(?i)(音频|声音|播放器|播放速度)'
+area:data:
+  - '(?i)(同步|备份|导入|导出|数据库|数据)'
+area:build:
+  - '(?i)(HAP|APP|安装|签名|编译|构建|打包)'
+impact:crash:
+  - '(?i)(崩溃|闪退|无法启动|启动失败|卡死)'
+impact:data-loss:
+  - '(?i)(丢失|损坏|清空|覆盖|回退|数据不见)'
+impact:performance:
+  - '(?i)(卡顿|耗电|内存|性能|慢|超时)'
+impact:compatibility:
+  - '(?i)(兼容|设备|HarmonyOS|系统版本|ArkWeb)'
+impact:ui:
+  - '(?i)(界面|布局|按钮|显示|颜色|主题|UI)'
+impact:functional:
+  - '(?i)(不能|无法|失效|不生效|错误|异常)'
