@@ -1,32 +1,47 @@
-name: 功能请求 / Features
-description: Request new features
-labels: ["需求"]
+name: 功能建议
+description: 为 HarmonyOS 版本提出可验证的功能建议
+title: "[Feature] "
+labels: ["enhancement"]
 body:
   - type: checkboxes
+    id: preflight
     attributes:
-      label: 确认 / Assignments
-      description: 提交issue请确保完成以下前提，否则该issue可能被忽略 / Make sure you read checkbox below 
+      label: 提交前确认
       options:
-        - label: 搜索现有issues，不存在相似或相关的issue / No related requests
+        - label: 我已搜索现有 Issue，确认没有重复建议
           required: true
-
-  - type: textarea
+        - label: 该建议适用于 HarmonyOS 版本的使用场景
+          required: true
+  - type: dropdown
+    id: area
     attributes:
-      label: 功能描述 / Features
-      placeholder: 请清晰的、详细的描述你想要的功能
+      label: 相关区域
+      options: [阅读器, 书源, 书架, 漫画, 音频, 数据/同步, 构建/安装, 其他]
     validations:
       required: true
   - type: textarea
+    id: scenario
     attributes:
-      label: 期望实现方式 / How to implement
-      placeholder: 阅读应该如何实现该功能
+      label: 使用场景
+      description: 谁会在什么情况下使用这个功能？
     validations:
       required: true
   - type: textarea
+    id: proposal
     attributes:
-      label: 附加信息 / Additions
-      placeholder: 其他的与功能相关的附加信息
+      label: 建议内容
+      description: 请尽量描述可观察的交互和结果。
+    validations:
+      required: true
   - type: textarea
+    id: alternatives
     attributes:
-      label: 效果演示 / Demo
-      placeholder: 可以手绘一些草图，或者提供可借鉴的图片
+      label: 现有替代方案
+  - type: input
+    id: version
+    attributes:
+      label: 当前应用版本
+  - type: textarea
+    id: demo
+    attributes:
+      label: 草图或参考资料

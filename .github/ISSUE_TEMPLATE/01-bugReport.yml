@@ -1,61 +1,68 @@
-name: BUG提交 / BUG Report
-description: Report bugs to developers
-labels: ["BUG"]
+name: Bug 报告
+description: 报告 HarmonyOS 应用中的可复现问题
+title: "[Bug] "
+labels: ["bug"]
 body:
   - type: checkboxes
+    id: preflight
     attributes:
-      label: 确认 / Assignments
-      description: 提交issue请确保完成以下前提，否则该issue可能被忽略 / Make sure you read checkboxs below
+      label: 提交前确认
       options:
-        - label: 搜索现有issues，不存在相似或相关的issue / No similar or related issues
+        - label: 我已搜索现有 Issue，确认没有重复报告
           required: true
-        - label: 最新版依然存在此问题 / Latest beta app does not work
+        - label: 我使用的是最新可用版本，问题仍然存在
           required: true
-        - label: 此问题和Xposed、Lsposed、Magisk、手机主题、浏览器插件等无关 / Make sure your machine is not touched by hook frameworks, plugins etc
+        - label: 我已移除账号、书源和日志中的隐私信息
           required: true
-
-  - type: textarea
+  - type: dropdown
+    id: area
     attributes:
-      label: 问题描述 / Describe Bugs
+      label: 影响区域
+      options: [阅读器, 书源, 书架, 漫画, 音频, 数据/同步, 构建/安装, 其他]
     validations:
       required: true
-  - type: textarea
+  - type: dropdown
+    id: impact
     attributes:
-      label: 复现步骤 / How to reproduce
-    validations:
-      required: true
-  - type: checkboxes
-    attributes:
-      label: 确认 / Assignment
-      options:
-        - label: 已经提交复现所需要的附加资料 / Submit additions related with bugs
-          required: true
-  - type: textarea
-    attributes:
-      label: 其他信息 / Additions
-      placeholder: "请用```将提交的内容包裹"
-
-  - type: textarea
-    attributes:
-      label: 日志提交 / Relevant log output
-      description: 阅读日志位于我的-关于-崩溃日志、书架-右上角-日志，或者自行使用log工具抓取日志
-      placeholder: "请用```将日志内容包裹"
-
-  - type: input
-    attributes:
-      label: 阅读版本 / Legado version
-      placeholder: "1.1"
+      label: 影响程度
+      options: [功能异常, 界面异常, 性能问题, 崩溃/无法启动, 数据丢失或损坏, 兼容性问题]
     validations:
       required: true
   - type: input
+    id: version
     attributes:
-      label: Harmony OS版本 / Harmony OS version
-      placeholder: "Harmony OS 4"
+      label: 应用版本
+      placeholder: "例如 1.0.2.7"
     validations:
       required: true
   - type: input
+    id: environment
     attributes:
-      label: 机型 / Model
-      placeholder: "mate 40"
+      label: HarmonyOS 版本、设备型号
+      placeholder: "例如 HarmonyOS 4.2 / Mate 60"
     validations:
       required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      description: 请说明实际结果和期望结果。
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤
+      placeholder: "1. 打开...\n2. 点击...\n3. 看到..."
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志或录屏
+      description: 请脱敏后粘贴日志，或拖入可公开分享的截图/录屏。
+      render: text
+  - type: textarea
+    id: additions
+    attributes:
+      label: 其他信息
