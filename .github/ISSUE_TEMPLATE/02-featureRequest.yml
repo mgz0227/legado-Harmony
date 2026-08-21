@@ -16,7 +16,7 @@ body:
     id: area
     attributes:
       label: 相关区域
-      options: [阅读器, 书源, 书架, 漫画, 音频, 数据/同步, 构建/安装, 其他]
+      options: [阅读器, 书源, 书架, 订阅/RSS, 漫画, 音频, 数据/同步, 构建/安装, 其他]
     validations:
       required: true
   - type: textarea
