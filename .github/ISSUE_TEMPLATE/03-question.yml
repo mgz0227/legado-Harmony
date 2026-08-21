@@ -1,0 +1,39 @@
+name: 使用咨询
+description: 咨询 HarmonyOS 版本的使用、安装或功能情况
+title: "[Question] "
+labels: ["question"]
+body:
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: 提交前确认
+      options:
+        - label: 我已搜索现有 Issue，仍未找到答案
+          required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: 相关区域
+      options: [阅读器, 书源, 书架, 订阅/RSS, 漫画, 音频, 数据/同步, 构建/安装, 其他]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 应用版本
+      placeholder: "例如 1.0.3.2；未安装可留空"
+  - type: input
+    id: environment
+    attributes:
+      label: HarmonyOS 版本、设备型号
+      placeholder: "例如 HarmonyOS 4.2 / Mate 60；不涉及设备可留空"
+  - type: textarea
+    id: question
+    attributes:
+      label: 具体问题
+    validations:
+      required: true
+  - type: textarea
+    id: attempts
+    attributes:
+      label: 已尝试的方法

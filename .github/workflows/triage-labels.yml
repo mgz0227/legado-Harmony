@@ -7,43 +7,17 @@ on:
 permissions:
   contents: read
   issues: write
-  pull-requests: write
 
 jobs:
-  ensure-labels:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Ensure Harmony labels exist
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const labels = [
-              ['bug', 'd73a4a'], ['enhancement', 'a2eeef'],
-              ['documentation', '0075ca'], ['maintenance', '6f42c1'],
-              ['area:reader', '5319e7'], ['area:book-source', '5319e7'],
-              ['area:bookshelf', '5319e7'], ['area:manga', '5319e7'],
-              ['area:audio', '5319e7'], ['area:data', '5319e7'],
-              ['area:build', '5319e7'], ['impact:crash', 'b60205'],
-              ['impact:data-loss', 'b60205'], ['impact:performance', 'fbca04'],
-              ['impact:compatibility', 'fbca04'], ['impact:ui', 'fbca04'],
-              ['impact:functional', 'fbca04']
-            ]
-            for (const [name, color] of labels) {
-              try {
-                await github.rest.issues.getLabel({ owner: context.repo.owner, repo: context.repo.repo, name })
-              } catch (error) {
-                if (error.status !== 404) throw error
-                await github.rest.issues.createLabel({ owner: context.repo.owner, repo: context.repo.repo, name, color })
-              }
-            }
   label:
-    needs: ensure-labels
     runs-on: ubuntu-latest
     steps:
       - name: Apply labels from issue text
-        uses: github/issue-labeler@v3.4
+        uses: github/issue-labeler@c1b0f9f52a63158c4adc09425e858e87b32e9685 # v3.4
         with:
           configuration-path: .github/issue-labeler.yml
           enable-versioned-regex: 0
-          include-title: 1
+          include-title: 0
+          sync-labels: 1
+          not-before: '2026-08-21T04:16:50Z'
           repo-token: ${{ github.token }}
