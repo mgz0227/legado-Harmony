@@ -12,7 +12,7 @@ jobs:
       pull-requests: write          # 'write' access to pull requests
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0  # 必须获取所有分支和提交记录才能进行合并操作
       - uses: de-vri-es/setup-git-credentials@v2
